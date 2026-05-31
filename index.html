@@ -425,7 +425,7 @@
   const GEOAPIFY_KEY="5fda6ac6574e46e583b4955b0f578860";
   let geoCache={};
   function mapImgUrl(lat,lon){
-    return "https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=440&height=150&center=lonlat:"+lon+","+lat+"&zoom=6&marker=lonlat:"+lon+","+lat+";color:%23f0556d;size:medium&apiKey="+GEOAPIFY_KEY;
+    return "https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=440&height=160&center=lonlat:"+lon+","+lat+"&zoom=5&marker=lonlat:"+lon+","+lat+";color:%23f0556d;size:large&apiKey="+GEOAPIFY_KEY;
   }
   // Construit le bloc carte (placeholder), puis charge l'image en async
   function miniMapHtml(o){

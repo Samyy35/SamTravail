@@ -406,19 +406,21 @@
     const n=encodeURIComponent(name||"");
     return {
       site:"https://www.google.com/search?q="+n+"+site+officiel",
-      avis:"https://www.glassdoor.fr/Avis/index.htm?keyword="+n,
-      linkedin:"https://www.linkedin.com/search/results/companies/?keywords="+n,
+      wiki:"https://fr.wikipedia.org/w/index.php?search="+n,
+      avis:"https://fr.indeed.com/cmp/"+encodeURIComponent((name||"").trim().replace(/\s+/g,"-"))+"/reviews",
+      avis2:"https://www.google.com/search?q="+n+"+avis+employés+glassdoor",
       societe:"https://www.pappers.fr/recherche?q="+n,
     };
   }
-  // ===== MINI-MAP (MapTiler static -> interactif au clic) =====
-  const MAPTILER_KEY="UBUymJidXlYNJXIifcmG";
+  // ===== MINI-MAP (OpenStreetMap statique, gratuit, sans clé) =====
   function miniMapHtml(o){
     if(!o.lat||!o.lon)return "";
     const lat=o.lat, lon=o.lon;
-    const staticUrl="https://api.maptiler.com/maps/streets-v2/static/"+lon+","+lat+",5/400x140.png?key="+MAPTILER_KEY+"&markers="+lon+","+lat;
-    const gmaps="https://www.google.com/maps/search/?api=1&query="+lat+","+lon;
-    return '<a class="mini-map" href="'+gmaps+'" target="_blank" rel="noopener" title="Ouvrir dans Maps"><img src="'+staticUrl+'" alt="Carte" loading="lazy" /><span class="mini-map-pin">📍 '+esc(o.lieu)+'</span></a>';
+    // staticmap.openstreetmap.de : gratuit, point sur la ville exacte, vue dézoomée (zoom 6)
+    const staticUrl="https://staticmap.openstreetmap.de/staticmap.php?center="+lat+","+lon+"&zoom=6&size=420x150&markers="+lat+","+lon+",red-pushpin";
+    // Au clic -> OpenStreetMap interactif zoomé sur la ville
+    const interactive="https://www.openstreetmap.org/?mlat="+lat+"&mlon="+lon+"#map=12/"+lat+"/"+lon;
+    return '<a class="mini-map" href="'+interactive+'" target="_blank" rel="noopener" title="Voir la carte interactive"><img src="'+staticUrl+'" alt="Carte" loading="lazy" onerror="this.parentElement.style.display=\'none\'" /><span class="mini-map-pin">📍 '+esc(o.lieu)+'</span></a>';
   }
 
   // Cache des infos entreprise déjà récupérées (évite de refaire l'appel)
@@ -699,8 +701,9 @@
             <div class="links">
               <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Offre</a>
               <a href="${companyLinks(o.entreprise).site}" target="_blank" rel="noopener">🏢 Site</a>
+              <a href="${companyLinks(o.entreprise).wiki}" target="_blank" rel="noopener">📖 Wiki</a>
               <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener">⭐ Avis</a>
-              <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 Société/CA</a>
+              <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 CA</a>
             </div>
           </div>
         </div>
@@ -775,8 +778,9 @@
       ${(st==="apostuler"||st==="super")?`<button class="btn sm" style="margin-left:7px;width:calc(100% - 7px);" onclick='markAsApplied(${oData})'>✉️ J'ai postulé → Pipeline</button>`:""}
       <div class="grid-links" style="padding-left:7px;">
         <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Offre</a>
+        <a href="${companyLinks(o.entreprise).wiki}" target="_blank" rel="noopener">📖 Wiki</a>
         <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener">⭐ Avis</a>
-        <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 Société</a>
+        <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 CA</a>
       </div></div>`;
   }
   async function markOffer(o,statut){

@@ -134,6 +134,29 @@
   textarea{resize:vertical;min-height:62px;line-height:1.5;}
 
   .hint{font-size:12px;color:var(--text-dim);margin-top:10px;} .hint b{color:var(--accent);}
+  /* Toolbar grille : regroupement + cacher vues */
+  .grid-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+  .group-by{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .gb-label{font-size:12.5px;color:var(--text-dim);}
+  .gp-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .gp{font-size:12.5px;padding:5px 12px;border-radius:999px;border:1px solid var(--border);cursor:pointer;background:var(--surface);transition:.15s;}
+  .gp:hover{border-color:var(--accent);}
+  .gp.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;}
+  .hide-seen-btn{font-size:12.5px;padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:.15s;}
+  .hide-seen-btn:hover{border-color:var(--accent);}
+  .hide-seen-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;}
+  /* Groupes pliables */
+  .grid-group{margin-bottom:18px;}
+  .grid-group-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;user-select:none;margin-bottom:10px;}
+  .grid-group-head:hover{background:var(--surface-2);}
+  .gg-title{font-family:var(--display);font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .gg-count{font-size:12px;font-weight:600;color:var(--text-dim);background:var(--surface-2);padding:2px 9px;border-radius:999px;}
+  .gg-new{font-size:11px;font-weight:700;color:#fff;background:var(--green);padding:2px 9px;border-radius:999px;}
+  .gg-chevron{font-size:13px;color:var(--text-dim);transition:transform .2s;}
+  .grid-group .grid.collapsed{display:none;}
+  .grid-group:has(.grid.collapsed) .gg-chevron{transform:rotate(-90deg);}
+  /* Badge NOUVEAU */
+  .new-chip{background:var(--green)!important;color:#fff!important;border-color:var(--green)!important;font-weight:700;}
   .hint code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:11.5px;color:var(--text);}
 
   /* SEGMENTED toggle swipe/grille */
@@ -339,6 +362,18 @@
       <div class="pill" data-f="reflexion" onclick="setVeilleFilter('reflexion')">🤔 Plus tard <span class="count" id="vc-reflexion">0</span></div>
       <div class="pill" data-f="postule" onclick="setVeilleFilter('postule')">✅ Postulé <span class="count" id="vc-postule">0</span></div>
     </div>
+    <div class="grid-toolbar" id="grid-toolbar" style="display:none;">
+      <div class="group-by">
+        <span class="gb-label">Grouper par :</span>
+        <div id="grid-group" class="gp-row">
+          <span class="gp active" data-g="secteur" onclick="setGridGroup('secteur')">🏭 Secteur</span>
+          <span class="gp" data-g="date" onclick="setGridGroup('date')">📅 Date</span>
+          <span class="gp" data-g="entreprise" onclick="setGridGroup('entreprise')">🏢 Entreprise</span>
+          <span class="gp" data-g="lieu" onclick="setGridGroup('lieu')">📍 Lieu</span>
+        </div>
+      </div>
+      <button class="hide-seen-btn" id="hideSeenBtn" onclick="toggleHideSeen()">👁️ Cacher déjà triées</button>
+    </div>
     <div id="veille-swipe"></div>
     <div id="veille-grid" style="display:none;"></div>
   </div>
@@ -387,6 +422,8 @@
 
   // ===== ETAT =====
   let allOffers=[], statusMap={}, pipeline=[], reve=[], reseau=[], entretiens=[], evenements=[];
+  let seenOffers={}; // {offer_id: true} — offres déjà affichées au moins une fois
+  let gridGroupBy="secteur", hideSeen=false;
   let veilleFilter="all", viewMode="swipe", swipeIndex=0, swipeQueue=[], entrepriseFilter="";
 
   // ===== SECTEURS (couleur + détection) =====
@@ -621,16 +658,18 @@
   async function loadAll(){
     if(!sb)return;
     try{
-      const [js,pl,rv,rs,et,ev]=await Promise.all([
+      const [js,pl,rv,rs,et,ev,so]=await Promise.all([
         sb.from("job_status").select("*"),
         sb.from("pipeline").select("*").order("date_envoi",{ascending:false}),
         sb.from("entreprises_reve").select("*"),
         sb.from("reseau").select("*"),
         sb.from("entretiens").select("*").order("date_entretien"),
         sb.from("evenements").select("*").order("date_event"),
+        sb.from("seen_offers").select("offer_id"),
       ]);
       statusMap={}; (js.data||[]).forEach(r=>statusMap[r.offer_id]={statut:r.statut,offer:r.offer_data});
       pipeline=pl.data||[]; reve=rv.data||[]; reseau=rs.data||[]; entretiens=et.data||[]; evenements=ev.data||[];
+      seenOffers={}; (so&&so.data||[]).forEach(r=>seenOffers[r.offer_id]=true);
     }catch(e){console.warn(e);}
     // notes (localStorage-free : stockées dans Supabase via table simple ? -> on garde en mémoire + localStorage interdit en artifact, donc on persiste via job_status spécial)
   }
@@ -671,12 +710,21 @@
       });
       // Tri par date décroissante
       deduped.sort((a,b)=>new Date(b.dateCreation||0)-new Date(a.dateCreation||0));
+      // Marque les offres jamais vues comme "nouvelles", puis les enregistre comme vues
+      const nouvelles=[];
+      deduped.forEach(o=>{ o.isNew = !seenOffers[o.id]; if(o.isNew) nouvelles.push(o.id); });
       allOffers=deduped;
+      // enregistre les nouvelles dans seen_offers (Supabase) pour les prochaines fois
+      if(sb && nouvelles.length){
+        nouvelles.forEach(id=>seenOffers[id]=true);
+        try{ sb.from("seen_offers").upsert(nouvelles.map(id=>({offer_id:id})),{onConflict:"offer_id"}); }catch(e){}
+      }
 
       const srcParts=[];
       if(totalFt) srcParts.push("France Travail ~"+totalFt);
       if(totalAdz) srcParts.push("Adzuna ~"+totalAdz);
-      document.getElementById("veille-info").textContent=allOffers.length+" offres"+(srcParts.length?" ("+srcParts.join(" · ")+")":"")+" · swipe pour trier";
+      const nbNew=nouvelles.length;
+      document.getElementById("veille-info").textContent=allOffers.length+" offres"+(nbNew?" ("+nbNew+" nouvelles)":"")+(srcParts.length?" · "+srcParts.join(" · "):"")+" · swipe pour trier";
       if(ftError) document.getElementById("errorZone").innerHTML='<div class="error-box">⚠️ '+ftError+'</div>';
       rebuildSwipeQueue(); renderVeille(); renderCockpit();
     }catch(e){
@@ -693,6 +741,7 @@
     document.getElementById("veille-swipe").style.display=m==="swipe"?"block":"none";
     document.getElementById("veille-grid").style.display=m==="grid"?"block":"none";
     document.getElementById("veille-pills").style.display=m==="grid"?"flex":"none";
+    document.getElementById("grid-toolbar").style.display=m==="grid"?"flex":"none";
     if(m==="swipe"){document.getElementById("veille-info").textContent="Swipe pour décider vite : garde, plus tard, ou passe.";}
     renderVeille();
   }
@@ -812,22 +861,73 @@
 
   // ===== GRILLE =====
   function setVeilleFilter(f){veilleFilter=f;document.querySelectorAll("#veille-pills .pill").forEach(p=>p.classList.toggle("active",p.dataset.f===f));renderGrid();}
+  function setGridGroup(g){gridGroupBy=g;document.querySelectorAll("#grid-group .gp").forEach(p=>p.classList.toggle("active",p.dataset.g===g));renderGrid();}
+  function toggleHideSeen(){hideSeen=!hideSeen;document.getElementById("hideSeenBtn").classList.toggle("active",hideSeen);renderGrid();}
+
+  // Détermine la clé de groupe d'une offre selon le mode choisi
+  function groupKeyOf(o){
+    if(gridGroupBy==="secteur"){ return detectSector(o).key; }
+    if(gridGroupBy==="entreprise"){ return o.entreprise||"Non précisé"; }
+    if(gridGroupBy==="lieu"){
+      // extrait le département entre parenthèses si présent, sinon la ville
+      const m=(o.lieu||"").match(/\((\d{2,3})\)/);
+      if(m) return "Dépt "+m[1];
+      return (o.lieu||"Lieu inconnu").split("(")[0].trim()||"Lieu inconnu";
+    }
+    if(gridGroupBy==="date"){
+      if(!o.dateCreation) return "Sans date";
+      const d=new Date(o.dateCreation), now=new Date();
+      const days=Math.floor((now-d)/86400000);
+      if(days<=0) return "Aujourd'hui";
+      if(days<=2) return "Ces 2 jours";
+      if(days<=7) return "Cette semaine";
+      if(days<=30) return "Ce mois-ci";
+      return "Plus ancien";
+    }
+    return "Autre";
+  }
+  // Ordre d'affichage des groupes date (sinon alphabétique/compteur)
+  const DATE_ORDER=["Aujourd'hui","Ces 2 jours","Cette semaine","Ce mois-ci","Plus ancien","Sans date"];
+
   function renderGrid(){
     const merged={};allOffers.forEach(o=>merged[o.id]=o);
     Object.keys(statusMap).forEach(id=>{if(!merged[id]&&statusMap[id].offer)merged[id]=statusMap[id].offer;});
     let list=Object.values(merged);
     if(veilleFilter!=="all")list=list.filter(o=>statusMap[o.id]&&statusMap[o.id].statut===veilleFilter);
     list=list.filter(matchEntreprise);
+    if(hideSeen)list=list.filter(o=>!statusMap[o.id]); // cache les offres déjà triées
+
     const c=document.getElementById("veille-grid");
-    if(!list.length){c.innerHTML='<div class="empty">Aucune offre dans ce filtre.</div>';return;}
-    c.innerHTML='<div class="grid">'+list.map(gridCard).join("")+'</div>';
+    if(!list.length){c.innerHTML='<div class="empty">Aucune offre'+(hideSeen?" non triée":"")+' dans ce filtre.</div>';return;}
+
+    // Regroupement
+    const groups={};
+    list.forEach(o=>{ const k=groupKeyOf(o); (groups[k]=groups[k]||[]).push(o); });
+    // Ordre des groupes
+    let keys=Object.keys(groups);
+    if(gridGroupBy==="date"){ keys.sort((a,b)=>DATE_ORDER.indexOf(a)-DATE_ORDER.indexOf(b)); }
+    else { keys.sort((a,b)=>groups[b].length-groups[a].length); } // par taille décroissante
+
+    c.innerHTML=keys.map(k=>{
+      const offers=groups[k];
+      const newCount=offers.filter(o=>o.isNew && !statusMap[o.id]).length;
+      const gid="grp-"+k.replace(/[^a-zA-Z0-9]/g,"_");
+      return `<div class="grid-group">
+        <div class="grid-group-head" onclick="document.getElementById('${gid}').classList.toggle('collapsed')">
+          <span class="gg-title">${esc(k)} <span class="gg-count">${offers.length}</span>${newCount?`<span class="gg-new">${newCount} nouv.</span>`:""}</span>
+          <span class="gg-chevron">▾</span>
+        </div>
+        <div class="grid" id="${gid}">${offers.map(gridCard).join("")}</div>
+      </div>`;
+    }).join("");
   }
   function gridCard(o){
     const st=statusMap[o.id]?statusMap[o.id].statut:null;
     const sec=detectSector(o);
     const oData=esc(JSON.stringify(o));
+    const newBadge=(o.isNew && !st)?'<span class="chip new-chip">✨ NOUVEAU</span>':"";
     return `<div class="card ${st?'s-'+st:''}"><div class="card-bar"></div>
-      <div class="c-meta"><span class="chip" style="color:${sec.c};border-color:${sec.c}66;">${sec.key}</span>${o.source?`<span class="chip">${esc(o.source)}</span>`:""}</div>
+      <div class="c-meta">${newBadge}<span class="chip" style="color:${sec.c};border-color:${sec.c}66;">${sec.key}</span>${o.source?`<span class="chip">${esc(o.source)}</span>`:""}</div>
       <div class="c-title">${esc(o.titre)}</div>
       <div class="c-sub">${esc(o.entreprise)}</div>
       <div class="c-meta">${o.lieu?`<span class="chip loc">📍 ${esc(o.lieu)}</span>`:""}${o.typeContrat?`<span class="chip">${esc(o.typeContrat)}</span>`:""}${o.salaire?`<span class="chip">💶 ${esc(o.salaire)}</span>`:""}</div>

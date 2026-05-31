@@ -315,8 +315,8 @@
     <div class="panel">
       <div class="row">
         <div class="field wide"><label>Thème / métier (mots-clés)</label>
-          <input id="q-mots" type="text" value="supply chain, demand planning, approvisionnement" /></div>
-        <div class="field"><label>Entreprise (filtre)</label><input id="q-entreprise" type="text" placeholder="ex: Valeo, Michelin..." oninput="applyEntrepriseFilter()" /></div>
+          <input id="q-mots" type="text" value="supply chain, demand planning, approvisionnement" onkeydown="entrepriseKey(event)" /></div>
+        <div class="field"><label>Entreprise (filtre)</label><input id="q-entreprise" type="text" placeholder="ex: Valeo (puis Entrée)" onkeydown="entrepriseKey(event)" /></div>
         <div class="field"><label>Département</label><input id="q-dep" type="text" placeholder="Tous" /></div>
         <div class="field"><label>Contrat</label><select id="q-contrat"><option value="">Tous</option><option value="CDI">CDI</option><option value="CDD">CDD</option><option value="MIS">Intérim</option></select></div>
         <div class="field" style="flex:0;"><label>&nbsp;</label><button class="btn" id="searchBtn" onclick="doSearch()">Chercher</button></div>
@@ -640,7 +640,17 @@
     const btn=document.getElementById("searchBtn");btn.disabled=true;btn.textContent="...";
     document.getElementById("errorZone").innerHTML="";
     document.getElementById("veille-swipe").innerHTML='<div class="loading"><div class="spinner"></div>Recherche multi-sources en cours...</div>';
-    const qs=new URLSearchParams({motsCles:document.getElementById("q-mots").value,departement:document.getElementById("q-dep").value,typeContrat:document.getElementById("q-contrat").value,parPage:"100",page:"0"}).toString();
+    const entreprise=(document.getElementById("q-entreprise").value||"").trim();
+    // On garde aussi le filtre live pour l'affichage
+    entrepriseFilter=entreprise.toLowerCase();
+    let motsCles=document.getElementById("q-mots").value;
+    // Si une entreprise est saisie, on l'ajoute en "ET" à chaque terme (virgule = OU préservé)
+    if(entreprise){
+      motsCles=motsCles.split(",").map(t=>t.trim()).filter(Boolean).map(t=>t+" "+entreprise).join(",");
+      // si aucun mot-clé, on cherche juste l'entreprise
+      if(!motsCles) motsCles=entreprise;
+    }
+    const qs=new URLSearchParams({motsCles:motsCles,entreprise:entreprise,departement:document.getElementById("q-dep").value,typeContrat:document.getElementById("q-contrat").value,parPage:"100",page:"0"}).toString();
     try{
       // On lance les deux sources en parallèle. Adzuna peut échouer sans bloquer FT.
       const [ftRes, adzRes] = await Promise.allSettled([
@@ -692,9 +702,9 @@
     if(!entrepriseFilter)return true;
     return (o.entreprise||"").toLowerCase().includes(entrepriseFilter);
   }
-  function applyEntrepriseFilter(){
-    entrepriseFilter=(document.getElementById("q-entreprise").value||"").trim().toLowerCase();
-    rebuildSwipeQueue(); renderVeille();
+  // Le champ entreprise se déclenche sur Entrée (pas à chaque lettre)
+  function entrepriseKey(e){
+    if(e.key==="Enter"){ doSearch(); }
   }
   function rebuildSwipeQueue(){
     swipeQueue=allOffers.filter(o=>!statusMap[o.id] && matchEntreprise(o));

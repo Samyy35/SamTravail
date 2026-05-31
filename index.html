@@ -53,12 +53,48 @@
   .todo .t{font-size:12.5px;color:var(--text-dim);font-weight:500;}
   .todo.blue .n{color:var(--accent);} .todo.orange .n{color:var(--orange);} .todo.purple .n{color:var(--purple);} .todo.green .n{color:var(--green);} .todo.red .n{color:var(--red);}
 
-  /* ROADMAP mini */
-  .roadmap{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:22px;}
-  .deadline{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:6px 14px;font-size:12px;display:flex;align-items:center;gap:7px;}
-  .deadline .d-date{font-weight:600;} .deadline .d-days{color:var(--accent);font-weight:700;font-size:11px;}
-  .deadline.urgent{border-color:var(--orange);} .deadline.urgent .d-days{color:var(--orange);}
-  .deadline.past{opacity:.4;}
+  /* TIMELINE repliable */
+  .timeline-wrap{background:linear-gradient(135deg,var(--surface),var(--bg-2));border:1px solid var(--border);border-radius:var(--radius);margin-bottom:22px;overflow:hidden;}
+  .timeline-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;user-select:none;gap:14px;flex-wrap:wrap;}
+  .timeline-head:hover{background:var(--surface-2);}
+  .tl-title{font-family:var(--display);font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1;min-width:0;}
+  .tl-next{display:inline-flex;gap:7px;flex-wrap:wrap;}
+  .tl-mini{font-family:var(--font);font-size:11.5px;font-weight:500;background:var(--surface-2);padding:3px 10px;border-radius:999px;white-space:nowrap;}
+  .tl-mini b{font-weight:700;}
+  .tl-toggle{display:flex;align-items:center;gap:12px;}
+  .tl-chevron{font-size:14px;color:var(--text-dim);transition:transform .25s;}
+  .timeline-wrap.open .tl-chevron{transform:rotate(180deg);}
+  .timeline-body{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+  .timeline-wrap.open .timeline-body{max-height:480px;}
+
+  /* La frise — track plus haut pour séparer cartes et ligne */
+  .frise{position:relative;padding:24px 30px 30px;overflow-x:auto;overflow-y:hidden;}
+  .frise-track{position:relative;min-width:100%;height:340px;}
+  .frise-line{position:absolute;top:170px;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:3px;}
+  .frise-today{position:absolute;top:156px;width:2px;height:31px;background:var(--gold);z-index:4;}
+  .frise-today::after{content:"aujourd'hui";position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--gold);white-space:nowrap;font-weight:700;}
+  .jalon{position:absolute;transform:translateX(-50%);width:124px;z-index:2;}
+  .jalon-card{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;width:124px;text-align:center;cursor:pointer;transition:.15s;}
+  .jalon-card:hover{border-color:currentColor;transform:translateY(-2px);}
+  .jalon-icon{font-size:17px;}
+  .jalon-label{font-size:11px;font-weight:600;line-height:1.2;margin-top:3px;color:var(--text);}
+  .jalon-date{font-size:10px;color:var(--text-dim);margin-top:2px;}
+  .jalon-days{font-size:10.5px;font-weight:700;margin-top:1px;}
+  .jalon-dot{width:16px;height:16px;border-radius:50%;border:3px solid var(--bg-2);box-shadow:0 0 0 2px currentColor;background:var(--bg-2);position:absolute;left:50%;transform:translateX(-50%);}
+  .jalon-connector{position:absolute;left:50%;transform:translateX(-50%);width:2px;background:var(--border);}
+  /* HAUT : carte en haut, connecteur descend vers la ligne, dot sur la ligne */
+  .jalon.up{top:0;}
+  .jalon.up .jalon-card{margin-top:0;}
+  .jalon.up .jalon-connector{top:92px;height:76px;}
+  .jalon.up .jalon-dot{top:162px;}
+  /* BAS : dot sur la ligne, connecteur descend, carte en bas */
+  .jalon.down{top:178px;}
+  .jalon.down .jalon-dot{top:-16px;}
+  .jalon.down .jalon-connector{top:-8px;height:70px;}
+  .jalon.down .jalon-card{margin-top:64px;}
+  .jalon.fixed .jalon-card{background:var(--surface);}
+  .jalon.past{opacity:.45;}
+  .frise-empty{text-align:center;color:var(--text-dim);font-size:13px;padding:30px;}
 
   /* NAV */
   .nav{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:5px;flex-wrap:wrap;}
@@ -253,8 +289,14 @@
     <div class="todo-grid" id="cockpit"></div>
   </div>
 
-  <!-- ROADMAP -->
-  <div class="roadmap" id="roadmap"></div>
+  <!-- TIMELINE repliable -->
+  <div class="timeline-wrap" id="timelineWrap">
+    <div class="timeline-head" onclick="toggleTimeline()">
+      <div class="tl-title">🗓️ Ma timeline <span class="tl-next" id="tlNext"></span></div>
+      <div class="tl-toggle"><button class="btn ghost sm" onclick="event.stopPropagation();openEventMenu()">+ Événement</button><span class="tl-chevron" id="tlChevron">▾</span></div>
+    </div>
+    <div class="timeline-body" id="timelineBody"></div>
+  </div>
 
   <!-- NAV -->
   <div class="nav" id="nav">
@@ -414,23 +456,68 @@
     {icon:"🎓",label:"Diplôme IÉSEG",date:"2026-10-01",fixed:true},
   ];
   const EVENT_ICONS={Entretien:"🎤",Deadline:"⏰",Relance:"🔔",Perso:"🏖",Autre:"📌"};
+  const EVENT_COLORS={Entretien:"var(--purple)",Deadline:"var(--orange)",Relance:"var(--cyan)",Perso:"var(--pink)",Autre:"var(--accent)"};
+
+  function toggleTimeline(){
+    document.getElementById("timelineWrap").classList.toggle("open");
+  }
+
   function renderRoadmap(){
     const now=new Date();now.setHours(0,0,0,0);
-    // Fusionne échéances fixes + événements perso (Supabase), triés par date
-    const fixed=DEADLINES.map(d=>({...d,id:null}));
-    const perso=evenements.map(e=>({icon:EVENT_ICONS[e.type]||"📌",label:e.titre,date:e.date_event,id:e.id,fixed:false}));
-    const all=[...fixed,...perso].filter(d=>{
-      const days=Math.round((new Date(d.date)-now)/86400000);
-      return days>=-3; // on garde l'à-venir + ce qui vient de passer
-    }).sort((a,b)=>new Date(a.date)-new Date(b.date));
-    const items=all.map(d=>{
-      const dt=new Date(d.date),days=Math.round((dt-now)/86400000),past=days<0,urgent=days>=0&&days<=14;
+    const fixed=DEADLINES.map(d=>({...d,id:null,color:"var(--green)"}));
+    const perso=evenements.map(e=>({icon:EVENT_ICONS[e.type]||"📌",label:e.titre,date:e.date_event,id:e.id,fixed:false,color:EVENT_COLORS[e.type]||"var(--accent)"}));
+    const all=[...fixed,...perso]
+      .filter(d=>Math.round((new Date(d.date)-now)/86400000)>=-7)
+      .sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+    // Aperçu : les 4 prochaines échéances (mini-pastilles)
+    const upcoming=all.filter(d=>Math.round((new Date(d.date)-now)/86400000)>=0).slice(0,4);
+    const nextEl=document.getElementById("tlNext");
+    if(nextEl){
+      if(upcoming.length){
+        nextEl.innerHTML=upcoming.map(d=>{
+          const dd=Math.round((new Date(d.date)-now)/86400000);
+          return `<span class="tl-mini" style="color:${d.color};">${d.icon} ${esc(d.label)} <b>${dd===0?"auj.":"J-"+dd}</b></span>`;
+        }).join("");
+      } else nextEl.innerHTML='<span class="tl-mini">Rien à venir</span>';
+    }
+
+    const body=document.getElementById("timelineBody");
+    if(!all.length){body.innerHTML='<div class="frise-empty">Aucun événement. Clique sur « + Événement » pour en ajouter.</div>';return;}
+
+    // Largeur : espace chaque jalon de ~150px
+    const spacing=150;
+    const trackWidth=Math.max(all.length*spacing+60, 100);
+    // Position du "aujourd'hui" : interpolation entre min et max date
+    const dates=all.map(d=>new Date(d.date).getTime());
+    const minD=Math.min(...dates), maxD=Math.max(...dates);
+    const span=maxD-minD||1;
+    const todayPct=Math.max(0,Math.min(100,((now.getTime()-minD)/span)*100));
+
+    const jalons=all.map((d,i)=>{
+      const dt=new Date(d.date),days=Math.round((dt-now)/86400000),past=days<0;
       const ds=dt.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
-      const clickable=d.id?`onclick="openEventMenu('${d.id}')" style="cursor:pointer;"`:"";
-      return `<div class="deadline ${past?'past':''} ${urgent?'urgent':''}" ${clickable}><span>${d.icon}</span><span>${esc(d.label)}</span><span class="d-date">${ds}</span><span class="d-days">${past?'✓':days===0?"auj.":"J-"+days}</span></div>`;
+      const x=((i+0.5)/all.length)*100;
+      const updown=i%2===0?"up":"down";
+      const daysStr=past?"✓ passé":days===0?"aujourd'hui":"J-"+days;
+      const onclick=d.id?`onclick="openEventMenu('${d.id}')"`:"";
+      return `<div class="jalon ${updown} ${past?'past':''} ${d.fixed?'fixed':''}" style="left:${x}%;color:${d.color};">
+        <div class="jalon-card" ${onclick}>
+          <div class="jalon-icon">${d.icon}</div>
+          <div class="jalon-label">${esc(d.label)}</div>
+          <div class="jalon-date">${ds}</div>
+          <div class="jalon-days" style="color:${d.color};">${daysStr}</div>
+        </div>
+        <div class="jalon-connector"></div>
+        <div class="jalon-dot"></div>
+      </div>`;
     }).join("");
-    // bouton + discret en fin de ligne
-    document.getElementById("roadmap").innerHTML=items+`<div class="deadline add-event" onclick="openEventMenu()" title="Ajouter un événement" style="cursor:pointer;border-style:dashed;"><span>＋</span></div>`;
+
+    body.innerHTML=`<div class="frise"><div class="frise-track" style="min-width:${trackWidth}px;">
+      <div class="frise-line"></div>
+      <div class="frise-today" style="left:${todayPct}%;"></div>
+      ${jalons}
+    </div></div>`;
   }
 
   // ===== MENU ÉVÉNEMENTS =====

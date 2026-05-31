@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JobDeck — ton command center emploi</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e1015; --bg-2:#13161e; --surface:#191d27; --surface-2:#222734; --surface-3:#2a3040;
+    --border:#2c3240; --border-light:#3a4250;
+    --text:#edf0f6; --text-dim:#9aa2b4; --text-mute:#646c80;
+    --accent:#5b8def; --accent-h:#73a0f5; --accent-soft:rgba(91,141,239,.14);
+    --green:#22c55e; --green-soft:rgba(34,197,94,.14);
+    --orange:#f59e0b; --orange-soft:rgba(245,158,11,.14);
+    --red:#f0556d; --red-soft:rgba(240,85,109,.14);
+    --purple:#a87ffb; --purple-soft:rgba(168,127,251,.14);
+    --cyan:#22d3ee; --cyan-soft:rgba(34,211,238,.14);
+    --pink:#f472b6; --gold:#fbbf24;
+    --radius:16px; --radius-sm:11px;
+    --display:'Fraunces',Georgia,serif; --font:'Outfit',system-ui,sans-serif;
+    --shadow:0 8px 30px rgba(0,0,0,.35); --shadow-lg:0 20px 60px rgba(0,0,0,.5);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  body::before{content:"";position:fixed;inset:0;background:
+    radial-gradient(1000px 500px at 85% -5%,rgba(91,141,239,.10),transparent),
+    radial-gradient(800px 500px at 5% 100%,rgba(168,127,251,.08),transparent);
+    pointer-events:none;z-index:0;}
+  .wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:24px 22px 90px;}
+  ::-webkit-scrollbar{width:10px;height:10px;} ::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:6px;}
+
+  /* HEADER */
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:12px;}
+  .brand{display:flex;align-items:center;gap:13px;}
+  .brand-mark{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--purple));display:grid;place-items:center;font-size:23px;box-shadow:0 6px 20px rgba(91,141,239,.4);}
+  .brand h1{font-family:var(--display);font-size:27px;font-weight:600;letter-spacing:-.5px;}
+  .brand .tag{color:var(--text-dim);font-size:13px;margin-top:-2px;}
+  .greeting{text-align:right;}
+  .greeting .hi{font-family:var(--display);font-size:18px;font-weight:500;}
+  .greeting .date{color:var(--text-mute);font-size:12px;}
+
+  /* DECK DU JOUR (cockpit) */
+  .cockpit{background:linear-gradient(135deg,var(--surface),var(--bg-2));border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:20px;position:relative;overflow:hidden;}
+  .cockpit::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,var(--accent-soft),transparent 70%);}
+  .cockpit-title{font-family:var(--display);font-size:18px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:9px;}
+  .todo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;position:relative;z-index:1;}
+  .todo{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 15px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:3px;}
+  .todo:hover{border-color:var(--accent);transform:translateY(-2px);}
+  .todo .n{font-family:var(--display);font-size:28px;font-weight:700;line-height:1;}
+  .todo .t{font-size:12.5px;color:var(--text-dim);font-weight:500;}
+  .todo.blue .n{color:var(--accent);} .todo.orange .n{color:var(--orange);} .todo.purple .n{color:var(--purple);} .todo.green .n{color:var(--green);} .todo.red .n{color:var(--red);}
+
+  /* ROADMAP mini */
+  .roadmap{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:22px;}
+  .deadline{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:6px 14px;font-size:12px;display:flex;align-items:center;gap:7px;}
+  .deadline .d-date{font-weight:600;} .deadline .d-days{color:var(--accent);font-weight:700;font-size:11px;}
+  .deadline.urgent{border-color:var(--orange);} .deadline.urgent .d-days{color:var(--orange);}
+  .deadline.past{opacity:.4;}
+
+  /* NAV */
+  .nav{display:flex;gap:4px;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:5px;flex-wrap:wrap;}
+  .nav-tab{flex:1;background:transparent;border:none;color:var(--text-dim);padding:11px 14px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--font);transition:.15s;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;white-space:nowrap;}
+  .nav-tab:hover{color:var(--text);background:var(--surface-2);}
+  .nav-tab.active{color:#fff;background:var(--accent);box-shadow:0 4px 14px rgba(91,141,239,.4);}
+  .nav-tab .badge{background:rgba(255,255,255,.2);border-radius:999px;padding:0 7px;font-size:11px;font-weight:700;}
+  .nav-tab:not(.active) .badge{background:var(--surface-3);}
+
+  .view{display:none;animation:fade .3s;} .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* SECTION HEAD */
+  .sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:14px;flex-wrap:wrap;}
+  .sec-head h2{font-family:var(--display);font-size:21px;font-weight:600;}
+  .sec-head .sub{font-size:13px;color:var(--text-dim);}
+
+  /* BUTTONS */
+  .btn{background:var(--accent);color:#fff;border:none;padding:11px 20px;border-radius:11px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s;font-family:var(--font);white-space:nowrap;}
+  .btn:hover{background:var(--accent-h);transform:translateY(-1px);} .btn:active{transform:none;} .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn.sm{padding:8px 14px;font-size:12.5px;}
+  .btn.ghost{background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--text);background:var(--surface-2);}
+  .btn.danger{background:transparent;border:1px solid var(--red);color:var(--red);}
+  .btn.danger:hover{background:var(--red);color:#fff;}
+
+  /* SEARCH */
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;}
+  .row{display:flex;gap:11px;flex-wrap:wrap;align-items:flex-end;}
+  .field{flex:1;min-width:150px;} .field.wide{flex:2;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-weight:600;}
+  .field input,.field select,.field textarea{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:11px 13px;border-radius:10px;font-size:14px;font-family:var(--font);outline:none;transition:.15s;}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .field input::placeholder{color:var(--text-mute);}
+  textarea{resize:vertical;min-height:62px;line-height:1.5;}
+
+  .hint{font-size:12px;color:var(--text-dim);margin-top:10px;} .hint b{color:var(--accent);}
+
+  /* SEGMENTED toggle swipe/grille */
+  .segmented{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:3px;}
+  .seg{padding:7px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--text-dim);cursor:pointer;transition:.15s;border:none;background:transparent;font-family:var(--font);}
+  .seg.active{background:var(--accent);color:#fff;}
+
+  /* PILLS */
+  .pills{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap;}
+  .pill{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);padding:7px 14px;border-radius:999px;font-size:12.5px;cursor:pointer;transition:.15s;font-weight:600;}
+  .pill:hover{border-color:var(--accent);color:var(--text);} .pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .pill .count{margin-left:5px;opacity:.8;font-size:11px;}
+  .info{color:var(--text-dim);font-size:13px;margin-bottom:14px;}
+
+  /* ===== SWIPE DECK ===== */
+  .swipe-stage{display:flex;flex-direction:column;align-items:center;padding:8px 0 0;}
+  .swipe-progress{width:100%;max-width:480px;margin-bottom:16px;}
+  .swipe-progress .bar{height:7px;background:var(--surface-2);border-radius:999px;overflow:hidden;}
+  .swipe-progress .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:999px;transition:width .3s;}
+  .swipe-progress .lbl{font-size:12px;color:var(--text-dim);margin-top:7px;text-align:center;}
+  .swipe-card-wrap{position:relative;width:100%;max-width:480px;height:560px;}
+  .swipe-card{position:absolute;inset:0;background:linear-gradient(160deg,var(--surface),var(--bg-2));border:1px solid var(--border-light);border-radius:24px;padding:26px;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);transition:transform .35s cubic-bezier(.2,.8,.3,1),opacity .35s;overflow:hidden;}
+  .swipe-card.gone-left{transform:translateX(-130%) rotate(-18deg);opacity:0;}
+  .swipe-card.gone-right{transform:translateX(130%) rotate(18deg);opacity:0;}
+  .swipe-card.gone-up{transform:translateY(-130%) scale(.9);opacity:0;}
+  .swipe-card.gone-down{transform:translateY(60%);opacity:0;}
+  .swipe-card .sector-tag{align-self:flex-start;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:14px;}
+  .swipe-card h3{font-family:var(--display);font-size:25px;font-weight:600;line-height:1.2;margin-bottom:8px;}
+  .swipe-card .company{font-size:16px;color:var(--accent);font-weight:600;margin-bottom:16px;}
+  .swipe-card .facts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .fact{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:12.5px;display:flex;align-items:center;gap:6px;}
+  .fact .fl{color:var(--text-mute);} .fact .fv{color:var(--text);font-weight:600;}
+  .swipe-card .desc{font-size:13.5px;color:var(--text-dim);line-height:1.6;flex:1;overflow-y:auto;padding-right:4px;}
+  .swipe-card .links{display:flex;gap:9px;margin-top:14px;}
+  .swipe-card .links a{flex:1;text-align:center;padding:9px;border-radius:10px;border:1px solid var(--border-light);color:var(--text-dim);text-decoration:none;font-size:12.5px;font-weight:600;transition:.15s;}
+  .swipe-card .links a:hover{border-color:var(--accent);color:var(--accent);}
+  .swipe-badge{position:absolute;top:26px;font-family:var(--display);font-size:30px;font-weight:700;padding:6px 18px;border-radius:12px;border:3px solid;opacity:0;transition:opacity .15s;pointer-events:none;}
+  .swipe-badge.like{right:24px;color:var(--green);border-color:var(--green);transform:rotate(12deg);}
+  .swipe-badge.nope{left:24px;color:var(--red);border-color:var(--red);transform:rotate(-12deg);}
+  .swipe-badge.show{opacity:1;}
+
+  .swipe-actions{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:22px;}
+  .sa{width:60px;height:60px;border-radius:50%;border:2px solid var(--border-light);background:var(--surface);display:grid;place-items:center;font-size:24px;cursor:pointer;transition:.18s;}
+  .sa:hover{transform:scale(1.12);}
+  .sa.nope:hover{border-color:var(--red);background:var(--red-soft);}
+  .sa.later{width:50px;height:50px;font-size:20px;} .sa.later:hover{border-color:var(--cyan);background:var(--cyan-soft);}
+  .sa.like:hover{border-color:var(--green);background:var(--green-soft);}
+  .sa.super{width:54px;height:54px;font-size:22px;background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;} .sa.super:hover{box-shadow:0 0 24px rgba(251,191,36,.6);}
+  .swipe-hint{font-size:12px;color:var(--text-mute);text-align:center;margin-top:14px;}
+  .swipe-done{text-align:center;padding:60px 20px;}
+  .swipe-done .big{font-family:var(--display);font-size:30px;font-weight:600;margin-bottom:10px;}
+
+  /* GRID */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:9px;transition:.15s;position:relative;overflow:hidden;}
+  .card:hover{border-color:var(--border-light);transform:translateY(-2px);box-shadow:var(--shadow);}
+  .card-bar{position:absolute;left:0;top:0;bottom:0;width:4px;background:transparent;}
+  .card.s-apostuler .card-bar{background:var(--green);} .card.s-super .card-bar{background:linear-gradient(var(--gold),var(--orange));}
+  .card.s-reflexion .card-bar{background:var(--cyan);} .card.s-postule .card-bar{background:var(--purple);}
+  .card.s-ignore{opacity:.5;} .card.s-ignore .card-bar{background:var(--text-mute);}
+  .c-title{font-size:15.5px;font-weight:700;line-height:1.35;padding-left:7px;}
+  .c-sub{font-size:13px;color:var(--accent);font-weight:600;padding-left:7px;}
+  .c-meta{display:flex;flex-wrap:wrap;gap:6px;padding-left:7px;}
+  .chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:3px 9px;border-radius:999px;}
+  .chip.loc{color:var(--text);} .chip.haute{color:var(--orange);border-color:var(--orange);} .chip.green{color:var(--green);border-color:var(--green);}
+  .c-desc{font-size:12.5px;color:var(--text-dim);padding-left:7px;flex:1;}
+  .c-date{font-size:11px;color:var(--text-mute);padding-left:7px;}
+  .c-actions{display:flex;gap:6px;flex-wrap:wrap;padding-left:7px;margin-top:3px;}
+  .mini{flex:1;min-width:46px;font-size:14px;padding:7px 5px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;transition:.12s;font-family:var(--font);}
+  .mini:hover{border-color:var(--accent);transform:translateY(-1px);}
+  .mini.a-super{background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;}
+  .mini.a-apostuler{background:var(--green-soft);border-color:var(--green);}
+  .mini.a-reflexion{background:var(--cyan-soft);border-color:var(--cyan);}
+  .mini.a-postule{background:var(--purple-soft);border-color:var(--purple);}
+  .mini.a-ignore{background:var(--surface-3);border-color:var(--text-mute);}
+  .c-link{display:block;text-align:center;background:transparent;border:1px solid var(--border-light);color:var(--text-dim);padding:8px;border-radius:8px;text-decoration:none;font-size:12.5px;font-weight:600;margin-left:7px;transition:.12s;}
+  .c-link:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* KANBAN pipeline */
+  .kanban{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px;}
+  .kcol{background:var(--bg-2);border:1px solid var(--border);border-radius:14px;padding:12px;min-height:200px;}
+  .kcol-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;font-size:13px;font-weight:700;}
+  .kcol-head .kn{background:var(--surface-2);border-radius:999px;padding:1px 8px;font-size:11px;color:var(--text-dim);}
+  .kcol.envoye .kcol-head{color:var(--accent);} .kcol.entretien .kcol-head{color:var(--purple);}
+  .kcol.offre .kcol-head{color:var(--green);} .kcol.refuse .kcol-head{color:var(--red);} .kcol.relance .kcol-head{color:var(--orange);}
+  .kcard{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px;margin-bottom:9px;cursor:grab;transition:.15s;}
+  .kcard:hover{border-color:var(--border-light);}
+  .kcard.dragging{opacity:.4;}
+  .kcard .kt{font-size:13.5px;font-weight:700;line-height:1.3;}
+  .kcard .kc{font-size:12px;color:var(--accent);margin-top:2px;}
+  .kcard .km{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
+  .kcard .kdays{font-size:10.5px;color:var(--text-mute);}
+  .kcard .kdays.warn{color:var(--orange);font-weight:700;}
+  .kcol.drop-hover{border-color:var(--accent);background:var(--accent-soft);}
+
+  /* NOTES libre (bloc-notes) */
+  .notes-board{background:linear-gradient(135deg,var(--surface),var(--bg-2));border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-top:18px;}
+  .notes-board h3{font-family:var(--display);font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .notes-board textarea{width:100%;background:repeating-linear-gradient(transparent,transparent 27px,var(--border) 27px,var(--border) 28px);background-attachment:local;border:1px solid var(--border);border-radius:11px;color:var(--text);padding:8px 13px;font-size:14px;line-height:28px;font-family:var(--font);outline:none;min-height:140px;resize:vertical;}
+  .notes-board textarea:focus{border-color:var(--accent);}
+  .notes-board .saved{font-size:11px;color:var(--green);margin-top:6px;height:14px;}
+
+  .empty,.loading{text-align:center;padding:55px 20px;color:var(--text-dim);}
+  .spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;margin:0 auto 15px;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .error-box{background:var(--red-soft);border:1px solid var(--red);color:#fca5b5;padding:13px;border-radius:11px;margin-bottom:15px;font-size:13px;}
+  .setup-box{background:var(--orange-soft);border:1px solid var(--orange);color:#fcd9a0;padding:14px;border-radius:12px;margin-bottom:18px;font-size:13px;}
+  .setup-box code{background:rgba(0,0,0,.3);padding:1px 6px;border-radius:5px;}
+
+  /* MODAL */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:50;backdrop-filter:blur(4px);}
+  .modal-bg.open{display:grid;place-items:center;}
+  .modal{background:var(--surface);border:1px solid var(--border-light);border-radius:18px;padding:24px;width:min(560px,93vw);max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+  .modal h3{font-family:var(--display);font-size:19px;margin-bottom:16px;}
+  .modal .field{margin-bottom:13px;min-width:0;}
+  .modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:8px;}
+  .add-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap;}
+
+  @media(max-width:600px){.grid{grid-template-columns:1fr;}.swipe-card-wrap{height:520px;}.kanban{grid-template-columns:repeat(5,minmax(180px,1fr));}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="brand-mark">🧭</div>
+      <div><h1>JobDeck</h1><div class="tag">Ta recherche d'emploi, en mode pilote</div></div>
+    </div>
+    <div class="greeting">
+      <div class="hi" id="greet">Salut Samuel 👋</div>
+      <div class="date" id="today"></div>
+    </div>
+  </header>
+
+  <div id="setupZone"></div>
+
+  <!-- COCKPIT DU JOUR -->
+  <div class="cockpit">
+    <div class="cockpit-title">☀️ Ton brief du jour</div>
+    <div class="todo-grid" id="cockpit"></div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="roadmap" id="roadmap"></div>
+
+  <!-- NAV -->
+  <div class="nav" id="nav">
+    <button class="nav-tab active" data-view="veille" onclick="setView('veille')">🔥 Trier</button>
+    <button class="nav-tab" data-view="pipeline" onclick="setView('pipeline')">📋 Pipeline <span class="badge" id="nb-pipeline">0</span></button>
+    <button class="nav-tab" data-view="reve" onclick="setView('reve')">🎯 Rêve <span class="badge" id="nb-reve">0</span></button>
+    <button class="nav-tab" data-view="reseau" onclick="setView('reseau')">🤝 Réseau <span class="badge" id="nb-reseau">0</span></button>
+    <button class="nav-tab" data-view="entretiens" onclick="setView('entretiens')">🎤 Entretiens <span class="badge" id="nb-entretiens">0</span></button>
+  </div>
+
+  <!-- VIEW VEILLE -->
+  <div class="view active" id="view-veille">
+    <div class="panel">
+      <div class="row">
+        <div class="field wide"><label>Mots-clés (virgule = multi-recherche)</label>
+          <input id="q-mots" type="text" value="supply chain, demand planning, approvisionnement" /></div>
+        <div class="field"><label>Département</label><input id="q-dep" type="text" placeholder="Tous" /></div>
+        <div class="field"><label>Contrat</label><select id="q-contrat"><option value="">Tous</option><option value="CDI">CDI</option><option value="CDD">CDD</option><option value="MIS">Intérim</option></select></div>
+        <div class="field" style="flex:0;"><label>&nbsp;</label><button class="btn" id="searchBtn" onclick="doSearch()">Chercher</button></div>
+      </div>
+    </div>
+    <div class="sec-head">
+      <div><h2>À trier</h2><div class="sub" id="veille-info">Swipe pour décider vite : garde, plus tard, ou passe.</div></div>
+      <div class="segmented">
+        <button class="seg active" id="seg-swipe" onclick="setMode('swipe')">🔥 Swipe</button>
+        <button class="seg" id="seg-grid" onclick="setMode('grid')">▦ Grille</button>
+      </div>
+    </div>
+    <div id="errorZone"></div>
+    <!-- mode grille filtres -->
+    <div class="pills" id="veille-pills" style="display:none;">
+      <div class="pill active" data-f="all" onclick="setVeilleFilter('all')">Toutes <span class="count" id="vc-all">0</span></div>
+      <div class="pill" data-f="super" onclick="setVeilleFilter('super')">⭐ Coups de cœur <span class="count" id="vc-super">0</span></div>
+      <div class="pill" data-f="apostuler" onclick="setVeilleFilter('apostuler')">❤️ À postuler <span class="count" id="vc-apostuler">0</span></div>
+      <div class="pill" data-f="reflexion" onclick="setVeilleFilter('reflexion')">🤔 Plus tard <span class="count" id="vc-reflexion">0</span></div>
+      <div class="pill" data-f="postule" onclick="setVeilleFilter('postule')">✅ Postulé <span class="count" id="vc-postule">0</span></div>
+    </div>
+    <div id="veille-swipe"></div>
+    <div id="veille-grid" style="display:none;"></div>
+  </div>
+
+  <!-- VIEW PIPELINE (kanban) -->
+  <div class="view" id="view-pipeline">
+    <div class="add-bar">
+      <div><h2 style="font-family:var(--display);font-size:21px;">Pipeline</h2><div class="sub">Glisse une carte entre colonnes pour changer son statut.</div></div>
+      <button class="btn sm" onclick="openModal('pipeline')">+ Candidature</button>
+    </div>
+    <div id="pipeline-content"></div>
+    <div class="notes-board">
+      <h3>📝 Bloc-notes pipeline</h3>
+      <textarea id="notes-pipeline" placeholder="Tes notes libres : idées, relances à faire, infos recruteurs..." oninput="saveNote('pipeline')"></textarea>
+      <div class="saved" id="saved-pipeline"></div>
+    </div>
+  </div>
+
+  <!-- VIEW REVE -->
+  <div class="view" id="view-reve">
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Entreprises rêve</h2><div class="sub">Ta target list — clique pour éditer.</div></div><button class="btn sm" onclick="openModal('reve')">+ Entreprise</button></div>
+    <div id="reve-content"></div>
+    <div class="notes-board"><h3>📝 Notes stratégie</h3><textarea id="notes-reve" placeholder="Idées d'approche, contacts à activer, candidatures spontanées à tenter..." oninput="saveNote('reve')"></textarea><div class="saved" id="saved-reve"></div></div>
+  </div>
+
+  <!-- VIEW RESEAU -->
+  <div class="view" id="view-reseau">
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Réseau</h2><div class="sub">Tes contacts et échanges LinkedIn.</div></div><button class="btn sm" onclick="openModal('reseau')">+ Contact</button></div>
+    <div id="reseau-content"></div>
+  </div>
+
+  <!-- VIEW ENTRETIENS -->
+  <div class="view" id="view-entretiens">
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Entretiens</h2><div class="sub">Préparation et suivi.</div></div><button class="btn sm" onclick="openModal('entretiens')">+ Entretien</button></div>
+    <div id="entretiens-content"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modalBox"></div></div>
+<script>
+  // ===== CONFIG =====
+  const SUPABASE_URL="TON_SUPABASE_URL";
+  const SUPABASE_ANON_KEY="TON_SUPABASE_ANON_KEY";
+  let sb=null; const sbReady=(SUPABASE_URL!=="TON_SUPABASE_URL");
+  try{ if(sbReady) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); }catch(e){}
+
+  // ===== ETAT =====
+  let allOffers=[], statusMap={}, pipeline=[], reve=[], reseau=[], entretiens=[];
+  let veilleFilter="all", viewMode="swipe", swipeIndex=0, swipeQueue=[];
+
+  // ===== SECTEURS (couleur + détection) =====
+  const SECTORS=[
+    {key:"Automobile",kw:["automobile","auto","stellantis","renault","peugeot","valeo","faurecia","forvia"],c:"#5b8def"},
+    {key:"Aéronautique",kw:["aéronau","aviation","airbus","safran","thales","dassault","spatial"],c:"#22d3ee"},
+    {key:"Pharma / Santé",kw:["pharma","santé","vaccin","gsk","sanofi","médical","biotech","laborat"],c:"#22c55e"},
+    {key:"Nautisme",kw:["nautisme","bateau","beneteau","naval","marine","voile"],c:"#a87ffb"},
+    {key:"Luxe / Cosmétique",kw:["luxe","cosmét","l'oréal","lvmh","parfum"],c:"#f472b6"},
+    {key:"Agroalimentaire",kw:["agroaliment","danone","nestlé","food","alimentaire"],c:"#fbbf24"},
+    {key:"Industrie",kw:["industrie","usine","production","manufactur"],c:"#f59e0b"},
+  ];
+  function detectSector(o){
+    const t=((o.titre||"")+" "+(o.entreprise||"")+" "+(o.description||"")+" "+(o.rome||"")).toLowerCase();
+    for(const s of SECTORS){ if(s.kw.some(k=>t.includes(k))) return s; }
+    return {key:"Supply Chain",kw:[],c:"#9aa2b4"};
+  }
+  function companyWebsite(name){
+    // Lien de recherche entreprise (Google) — ouvre le site officiel en 1 clic
+    return "https://www.google.com/search?q="+encodeURIComponent((name||"")+" entreprise site officiel");
+  }
+
+  // ===== ROADMAP =====
+  const DEADLINES=[
+    {icon:"📝",label:"Rendu mémoire",date:"2026-06-22"},
+    {icon:"📋",label:"Rapport stage",date:"2026-07-01"},
+    {icon:"💼",label:"Fin stage GSK",date:"2026-07-16"},
+    {icon:"🎓",label:"Diplôme IÉSEG",date:"2026-10-01"},
+  ];
+  function renderRoadmap(){
+    const now=new Date();now.setHours(0,0,0,0);
+    document.getElementById("roadmap").innerHTML=DEADLINES.map(d=>{
+      const dt=new Date(d.date),days=Math.round((dt-now)/86400000),past=days<0,urgent=days>=0&&days<=30;
+      const ds=dt.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
+      return `<div class="deadline ${past?'past':''} ${urgent?'urgent':''}"><span>${d.icon}</span><span>${d.label}</span><span class="d-date">${ds}</span><span class="d-days">${past?'✓':days===0?"auj.":"J-"+days}</span></div>`;
+    }).join("");
+  }
+
+  // ===== COCKPIT DU JOUR =====
+  function renderCockpit(){
+    const now=new Date();now.setHours(0,0,0,0);
+    const aTrier=swipeQueue.length;
+    const aPostuler=Object.values(statusMap).filter(s=>s.statut==="apostuler"||s.statut==="super").length;
+    const relances=pipeline.filter(p=>{const d=p.date_envoi?Math.round((Date.now()-new Date(p.date_envoi))/86400000):0;return p.statut==="Envoyé"&&d>10;}).length;
+    const entretiensProches=entretiens.filter(e=>{if(!e.date_entretien)return false;const d=Math.round((new Date(e.date_entretien)-now)/86400000);return d>=0&&d<=7;}).length;
+    const offres=pipeline.filter(p=>p.statut==="Offre reçue").length;
+    const items=[
+      {n:aTrier,t:"offres à trier",cls:"blue",act:()=>{setView('veille');setMode('swipe');}},
+      {n:aPostuler,t:"prêtes à postuler",cls:"green",act:()=>{setView('veille');setMode('grid');setVeilleFilter('apostuler');}},
+      {n:relances,t:"relances à faire",cls:"orange",act:()=>setView('pipeline')},
+      {n:entretiensProches,t:"entretiens cette semaine",cls:"purple",act:()=>setView('entretiens')},
+      {n:offres,t:"offres reçues 🎉",cls:"red",act:()=>setView('pipeline')},
+    ];
+    document.getElementById("cockpit").innerHTML=items.map((it,i)=>
+      `<div class="todo ${it.cls}" onclick="cockpitAct(${i})"><div class="n">${it.n}</div><div class="t">${it.t}</div></div>`
+    ).join("");
+    window._cockpitActs=items.map(it=>it.act);
+  }
+  function cockpitAct(i){ if(window._cockpitActs&&window._cockpitActs[i])window._cockpitActs[i](); }
+
+  // ===== NAV =====
+  function setView(v){
+    document.querySelectorAll(".nav-tab").forEach(t=>t.classList.toggle("active",t.dataset.view===v));
+    document.querySelectorAll(".view").forEach(el=>el.classList.toggle("active",el.id==="view-"+v));
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  // ===== SUPABASE LOAD =====
+  async function loadAll(){
+    if(!sb)return;
+    try{
+      const [js,pl,rv,rs,et]=await Promise.all([
+        sb.from("job_status").select("*"),
+        sb.from("pipeline").select("*").order("date_envoi",{ascending:false}),
+        sb.from("entreprises_reve").select("*"),
+        sb.from("reseau").select("*"),
+        sb.from("entretiens").select("*").order("date_entretien"),
+      ]);
+      statusMap={}; (js.data||[]).forEach(r=>statusMap[r.offer_id]={statut:r.statut,offer:r.offer_data});
+      pipeline=pl.data||[]; reve=rv.data||[]; reseau=rs.data||[]; entretiens=et.data||[];
+    }catch(e){console.warn(e);}
+    // notes (localStorage-free : stockées dans Supabase via table simple ? -> on garde en mémoire + localStorage interdit en artifact, donc on persiste via job_status spécial)
+  }
+
+  // ===== RECHERCHE (France Travail + Adzuna en parallèle) =====
+  async function doSearch(){
+    const btn=document.getElementById("searchBtn");btn.disabled=true;btn.textContent="...";
+    document.getElementById("errorZone").innerHTML="";
+    document.getElementById("veille-swipe").innerHTML='<div class="loading"><div class="spinner"></div>Recherche multi-sources en cours...</div>';
+    const qs=new URLSearchParams({motsCles:document.getElementById("q-mots").value,departement:document.getElementById("q-dep").value,typeContrat:document.getElementById("q-contrat").value,parPage:"100",page:"0"}).toString();
+    try{
+      // On lance les deux sources en parallèle. Adzuna peut échouer sans bloquer FT.
+      const [ftRes, adzRes] = await Promise.allSettled([
+        fetch("/api/search?"+qs).then(r=>r.ok?r.json():Promise.reject(r)),
+        fetch("/api/adzuna?"+qs).then(r=>r.ok?r.json():{offers:[],total:0}),
+      ]);
+
+      let combined=[]; let totalFt=0; let totalAdz=0; let ftError=null;
+      if(ftRes.status==="fulfilled"){ combined=combined.concat(ftRes.value.offers||[]); totalFt=ftRes.value.total||0; }
+      else { ftError="France Travail indisponible (vérifie tes clés dans Vercel)."; }
+      if(adzRes.status==="fulfilled"&&adzRes.value.offers){ combined=combined.concat(adzRes.value.offers); totalAdz=adzRes.value.total||0; }
+
+      // Déduplication inter-sources : par titre+entreprise normalisés
+      const seen=new Set(); const deduped=[];
+      combined.forEach(o=>{
+        const key=((o.titre||"")+"|"+(o.entreprise||"")).toLowerCase().replace(/\s+/g,"").slice(0,60);
+        if(seen.has(key))return; seen.add(key); deduped.push(o);
+      });
+      // Tri par date décroissante
+      deduped.sort((a,b)=>new Date(b.dateCreation||0)-new Date(a.dateCreation||0));
+      allOffers=deduped;
+
+      const srcParts=[];
+      if(totalFt) srcParts.push("France Travail ~"+totalFt);
+      if(totalAdz) srcParts.push("Adzuna ~"+totalAdz);
+      document.getElementById("veille-info").textContent=allOffers.length+" offres"+(srcParts.length?" ("+srcParts.join(" · ")+")":"")+" · swipe pour trier";
+      if(ftError) document.getElementById("errorZone").innerHTML='<div class="error-box">⚠️ '+ftError+'</div>';
+      rebuildSwipeQueue(); renderVeille(); renderCockpit();
+    }catch(e){
+      document.getElementById("errorZone").innerHTML='<div class="error-box">⚠️ '+e.message+'</div>';
+      document.getElementById("veille-swipe").innerHTML='<div class="empty">Impossible de charger. Vérifie la config API dans Vercel.</div>';
+    }finally{btn.disabled=false;btn.textContent="Chercher";}
+  }
+
+  // ===== MODE swipe / grid =====
+  function setMode(m){
+    viewMode=m;
+    document.getElementById("seg-swipe").classList.toggle("active",m==="swipe");
+    document.getElementById("seg-grid").classList.toggle("active",m==="grid");
+    document.getElementById("veille-swipe").style.display=m==="swipe"?"block":"none";
+    document.getElementById("veille-grid").style.display=m==="grid"?"block":"none";
+    document.getElementById("veille-pills").style.display=m==="grid"?"flex":"none";
+    if(m==="swipe"){document.getElementById("veille-info").textContent="Swipe pour décider vite : garde, plus tard, ou passe.";}
+    renderVeille();
+  }
+
+  // File de swipe = offres pas encore triées
+  function rebuildSwipeQueue(){
+    swipeQueue=allOffers.filter(o=>!statusMap[o.id]);
+    swipeIndex=0;
+  }
+
+  function esc(s){return (s||"").toString().replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+
+  // ===== RENDER VEILLE (dispatch) =====
+  function renderVeille(){
+    // compteurs grille
+    const merged={};allOffers.forEach(o=>merged[o.id]=o);
+    Object.keys(statusMap).forEach(id=>{if(!merged[id]&&statusMap[id].offer)merged[id]=statusMap[id].offer;});
+    const list=Object.values(merged);
+    const counts={all:list.length,super:0,apostuler:0,reflexion:0,postule:0};
+    list.forEach(o=>{const s=statusMap[o.id]&&statusMap[o.id].statut;if(s&&counts[s]!==undefined)counts[s]++;});
+    Object.keys(counts).forEach(k=>{const el=document.getElementById("vc-"+k);if(el)el.textContent=counts[k];});
+    if(viewMode==="swipe") renderSwipe(); else renderGrid();
+  }
+
+  // ===== SWIPE =====
+  function renderSwipe(){
+    const c=document.getElementById("veille-swipe");
+    if(!allOffers.length){c.innerHTML='<div class="empty">Lance une recherche pour commencer à trier.</div>';return;}
+    if(swipeIndex>=swipeQueue.length){
+      c.innerHTML=`<div class="swipe-done"><div class="big">🎉 Tout est trié !</div><p class="info">Tu as passé en revue les ${swipeQueue.length} offres. Va voir tes coups de cœur dans le Pipeline ou relance une recherche.</p><button class="btn" onclick="setMode('grid')">Voir mes sélections</button></div>`;
+      return;
+    }
+    const o=swipeQueue[swipeIndex];
+    const sec=detectSector(o);
+    const dateStr=o.dateCreation?new Date(o.dateCreation).toLocaleDateString("fr-FR"):"";
+    const oData=esc(JSON.stringify(o));
+    const progress=Math.round((swipeIndex/swipeQueue.length)*100);
+    c.innerHTML=`
+      <div class="swipe-stage">
+        <div class="swipe-progress"><div class="bar"><div class="fill" style="width:${progress}%"></div></div><div class="lbl">${swipeIndex} / ${swipeQueue.length} triées</div></div>
+        <div class="swipe-card-wrap">
+          <div class="swipe-card" id="swipeCard">
+            <div class="swipe-badge like" id="badge-like">GARDÉ</div>
+            <div class="swipe-badge nope" id="badge-nope">PASSÉ</div>
+            <div class="sector-tag" style="background:${sec.c}22;color:${sec.c};border:1px solid ${sec.c}55;">${sec.key}${o.source?' · '+o.source:''}</div>
+            <h3>${esc(o.titre)}</h3>
+            <div class="company">${esc(o.entreprise)}</div>
+            <div class="facts">
+              ${o.lieu?`<div class="fact"><span class="fl">📍</span><span class="fv">${esc(o.lieu)}</span></div>`:""}
+              ${o.typeContrat?`<div class="fact"><span class="fl">📄</span><span class="fv">${esc(o.typeContrat)}</span></div>`:""}
+              ${o.experience?`<div class="fact"><span class="fl">⏱</span><span class="fv">${esc(o.experience)}</span></div>`:""}
+              ${o.salaire?`<div class="fact"><span class="fl">💶</span><span class="fv">${esc(o.salaire)}</span></div>`:""}
+            </div>
+            <div class="desc">${esc(o.description)||"Pas de description fournie."}${o.description&&o.description.length>=300?"…":""}</div>
+            ${dateStr?`<div class="c-date" style="padding-left:0;margin-top:10px;">Publié le ${dateStr}</div>`:""}
+            <div class="links">
+              <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Voir l'offre</a>
+              <a href="${companyWebsite(o.entreprise)}" target="_blank" rel="noopener">🏢 Site entreprise</a>
+            </div>
+          </div>
+        </div>
+        <div class="swipe-actions">
+          <div class="sa nope" title="Passer (←)" onclick="swipeAction('ignore')">🚫</div>
+          <div class="sa later" title="Plus tard (↓)" onclick="swipeAction('reflexion')">🤔</div>
+          <div class="sa like" title="Garder / à postuler (→)" onclick="swipeAction('apostuler')">❤️</div>
+          <div class="sa super" title="Coup de cœur (↑)" onclick="swipeAction('super')">⭐</div>
+        </div>
+        <div class="swipe-hint">⌨️ Raccourcis : ← passer · → garder · ↑ coup de cœur · ↓ plus tard</div>
+      </div>`;
+  }
+
+  async function swipeAction(statut){
+    if(swipeIndex>=swipeQueue.length)return;
+    const o=swipeQueue[swipeIndex];
+    const card=document.getElementById("swipeCard");
+    // animation
+    const dir=statut==="ignore"?"gone-left":statut==="apostuler"?"gone-right":statut==="super"?"gone-up":"gone-down";
+    if(card){
+      if(statut==="apostuler"||statut==="super"){const b=document.getElementById("badge-like");if(b)b.classList.add("show");}
+      if(statut==="ignore"){const b=document.getElementById("badge-nope");if(b)b.classList.add("show");}
+      card.classList.add(dir);
+    }
+    // enregistre
+    statusMap[o.id]={statut,offer:o};
+    if(sb) await sb.from("job_status").upsert({offer_id:o.id,statut,offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
+    if(statut==="super"||statut==="apostuler") await pushToPipeline(o, statut==="super");
+    swipeIndex++;
+    setTimeout(()=>{renderSwipe();renderCockpit();renderStatsBadges();},340);
+  }
+
+  // clavier
+  document.addEventListener("keydown",(e)=>{
+    if(viewMode!=="swipe"||!document.getElementById("view-veille").classList.contains("active"))return;
+    if(document.querySelector(".modal-bg.open"))return;
+    if(e.key==="ArrowLeft")swipeAction("ignore");
+    else if(e.key==="ArrowRight")swipeAction("apostuler");
+    else if(e.key==="ArrowUp"){e.preventDefault();swipeAction("super");}
+    else if(e.key==="ArrowDown"){e.preventDefault();swipeAction("reflexion");}
+  });
+
+  // ===== GRILLE =====
+  function setVeilleFilter(f){veilleFilter=f;document.querySelectorAll("#veille-pills .pill").forEach(p=>p.classList.toggle("active",p.dataset.f===f));renderGrid();}
+  function renderGrid(){
+    const merged={};allOffers.forEach(o=>merged[o.id]=o);
+    Object.keys(statusMap).forEach(id=>{if(!merged[id]&&statusMap[id].offer)merged[id]=statusMap[id].offer;});
+    let list=Object.values(merged);
+    if(veilleFilter!=="all")list=list.filter(o=>statusMap[o.id]&&statusMap[o.id].statut===veilleFilter);
+    const c=document.getElementById("veille-grid");
+    if(!list.length){c.innerHTML='<div class="empty">Aucune offre dans ce filtre.</div>';return;}
+    c.innerHTML='<div class="grid">'+list.map(gridCard).join("")+'</div>';
+  }
+  function gridCard(o){
+    const st=statusMap[o.id]?statusMap[o.id].statut:null;
+    const sec=detectSector(o);
+    const oData=esc(JSON.stringify(o));
+    return `<div class="card ${st?'s-'+st:''}"><div class="card-bar"></div>
+      <div class="c-meta"><span class="chip" style="color:${sec.c};border-color:${sec.c}66;">${sec.key}</span>${o.source?`<span class="chip">${esc(o.source)}</span>`:""}</div>
+      <div class="c-title">${esc(o.titre)}</div>
+      <div class="c-sub">${esc(o.entreprise)}</div>
+      <div class="c-meta">${o.lieu?`<span class="chip loc">📍 ${esc(o.lieu)}</span>`:""}${o.typeContrat?`<span class="chip">${esc(o.typeContrat)}</span>`:""}${o.salaire?`<span class="chip">💶 ${esc(o.salaire)}</span>`:""}</div>
+      <div class="c-desc">${esc(o.description)}${o.description&&o.description.length>=300?"…":""}</div>
+      <div class="c-actions">
+        <button class="mini ${st==="super"?"a-super":""}" onclick='markOffer(${oData},"super")' title="Coup de cœur">⭐</button>
+        <button class="mini ${st==="apostuler"?"a-apostuler":""}" onclick='markOffer(${oData},"apostuler")' title="À postuler">❤️</button>
+        <button class="mini ${st==="reflexion"?"a-reflexion":""}" onclick='markOffer(${oData},"reflexion")' title="Plus tard">🤔</button>
+        <button class="mini ${st==="postule"?"a-postule":""}" onclick='markOffer(${oData},"postule")' title="Postulé">✅</button>
+        <button class="mini ${st==="ignore"?"a-ignore":""}" onclick='markOffer(${oData},"ignore")' title="Passer">🚫</button>
+      </div>
+      <a class="c-link" href="${esc(o.lien)}" target="_blank" rel="noopener">Voir l'offre →</a></div>`;
+  }
+  async function markOffer(o,statut){
+    const cur=statusMap[o.id]?statusMap[o.id].statut:null;
+    const ns=cur===statut?null:statut;
+    if(ns===null){delete statusMap[o.id];if(sb)await sb.from("job_status").delete().eq("offer_id",o.id);}
+    else{statusMap[o.id]={statut:ns,offer:o};if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:ns,offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});if(ns==="super"||ns==="apostuler")await pushToPipeline(o,ns==="super");}
+    renderVeille();renderCockpit();renderStatsBadges();
+  }
+
+  async function pushToPipeline(o,priority){
+    if(pipeline.some(p=>p.lien_offre===o.lien))return;
+    const row={entreprise:o.entreprise,poste:o.titre,ville:o.lieu,source:"France Travail",lien_offre:o.lien,statut:"Envoyé",niveau_envie:priority?5:3,date_envoi:new Date().toISOString().slice(0,10)};
+    if(sb){const {data}=await sb.from("pipeline").insert(row).select();if(data)pipeline.unshift(data[0]);}
+    else{row.id="local-"+Date.now();pipeline.unshift(row);}
+    renderPipeline();
+  }
+  // ===== PIPELINE KANBAN =====
+  const KCOLS=[
+    {key:"Envoyé",cls:"envoye",label:"📤 Envoyé"},
+    {key:"Entretien",cls:"entretien",label:"🎤 Entretien"},
+    {key:"Offre reçue",cls:"offre",label:"🎉 Offre"},
+    {key:"Refusé",cls:"refuse",label:"❌ Refusé"},
+    {key:"Non intéressé",cls:"relance",label:"💤 Pas pour moi"},
+  ];
+  function renderPipeline(){
+    const c=document.getElementById("pipeline-content");
+    if(!pipeline.length){c.innerHTML='<div class="empty">Aucune candidature. Swipe ❤️ ou ⭐ une offre pour la pousser ici, ou ajoute-en une.</div>';renderStatsBadges();return;}
+    c.innerHTML='<div class="kanban">'+KCOLS.map(col=>{
+      const items=pipeline.filter(p=>p.statut===col.key);
+      return `<div class="kcol ${col.cls}" data-col="${col.key}" ondragover="kDragOver(event)" ondragleave="kDragLeave(event)" ondrop="kDrop(event,'${col.key}')">
+        <div class="kcol-head"><span>${col.label}</span><span class="kn">${items.length}</span></div>
+        ${items.map(kCard).join("")}
+      </div>`;
+    }).join("")+'</div>';
+    renderStatsBadges();
+  }
+  function kCard(p){
+    const days=p.date_envoi?Math.round((Date.now()-new Date(p.date_envoi))/86400000):null;
+    const warn=days!==null&&days>10&&p.statut==="Envoyé";
+    const star=p.niveau_envie>=5?"⭐ ":"";
+    return `<div class="kcard" draggable="true" ondragstart="kDragStart(event,'${p.id}')" ondragend="kDragEnd(event)" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>
+      <div class="kt">${star}${esc(p.poste||"—")}</div>
+      <div class="kc">${esc(p.entreprise)}</div>
+      <div class="km">${p.ville?`<span class="chip loc">📍 ${esc(p.ville)}</span>`:""}</div>
+      ${days!==null?`<div class="kdays ${warn?"warn":""}">${warn?"⚠️ à relancer · ":""}${days} j</div>`:""}
+    </div>`;
+  }
+  let dragId=null;
+  function kDragStart(e,id){dragId=id;e.target.classList.add("dragging");e.stopPropagation();}
+  function kDragEnd(e){e.target.classList.remove("dragging");document.querySelectorAll(".kcol").forEach(c=>c.classList.remove("drop-hover"));}
+  function kDragOver(e){e.preventDefault();e.currentTarget.classList.add("drop-hover");}
+  function kDragLeave(e){e.currentTarget.classList.remove("drop-hover");}
+  async function kDrop(e,col){
+    e.preventDefault();e.currentTarget.classList.remove("drop-hover");
+    const p=pipeline.find(x=>x.id===dragId);if(!p||p.statut===col)return;
+    p.statut=col;
+    const patch={statut:col};
+    if(col!=="Envoyé"&&!p.date_reponse){patch.date_reponse=new Date().toISOString().slice(0,10);p.date_reponse=patch.date_reponse;}
+    if(sb)await sb.from("pipeline").update(patch).eq("id",dragId);
+    renderPipeline();renderCockpit();
+  }
+
+  // ===== REVE =====
+  function renderReve(){
+    const c=document.getElementById("reve-content");
+    if(!reve.length){c.innerHTML='<div class="empty">Aucune entreprise. Ajoutes-en une !</div>';return;}
+    const order={Haute:0,Moyenne:1,Basse:2};
+    const sorted=reve.slice().sort((a,b)=>(order[a.priorite]??9)-(order[b.priorite]??9));
+    c.innerHTML='<div class="grid">'+sorted.map(e=>{
+      const col=e.priorite==="Haute"?"var(--orange)":e.priorite==="Moyenne"?"var(--cyan)":"var(--text-mute)";
+      return `<div class="card"><div class="card-bar" style="background:${col}"></div>
+        <div class="c-title">${esc(e.entreprise)}</div>
+        <div class="c-sub">${esc(e.secteur||"")}</div>
+        <div class="c-meta">${e.ville?`<span class="chip loc">📍 ${esc(e.ville)}</span>`:""}<span class="chip" style="color:${col};border-color:${col}66;">${esc(e.priorite)}</span><span class="chip">${esc(e.statut)}</span></div>
+        ${e.pourquoi?`<div class="c-desc">${esc(e.pourquoi)}</div>`:""}
+        <div class="c-actions">
+          <a class="c-link" style="flex:1;margin-left:7px;" href="${companyWebsite(e.entreprise)}" target="_blank">🏢 Site</a>
+          <button class="btn ghost sm" onclick='openModal("reve",${esc(JSON.stringify(e))})'>Éditer</button>
+          <button class="btn danger sm" onclick="delRow('entreprises_reve','${e.id}')">✕</button>
+        </div></div>`;
+    }).join("")+'</div>';
+  }
+
+  // ===== RESEAU =====
+  function renderReseau(){
+    const c=document.getElementById("reseau-content");
+    if(!reseau.length){c.innerHTML='<div class="empty">Aucun contact.</div>';return;}
+    c.innerHTML='<div class="grid">'+reseau.map(r=>`<div class="card"><div class="card-bar" style="background:var(--cyan)"></div>
+      <div class="c-title">${esc(r.prenom||"")} ${esc(r.nom||"")}</div>
+      <div class="c-sub">${esc(r.entreprise||"")}${r.poste?" · "+esc(r.poste):""}</div>
+      <div class="c-meta"><span class="chip">${esc(r.statut)}</span>${r.dernier_contact?`<span class="chip">${new Date(r.dernier_contact).toLocaleDateString("fr-FR")}</span>`:""}</div>
+      ${r.notes?`<div class="c-desc">${esc(r.notes)}</div>`:""}
+      <div class="c-actions">${r.lien_linkedin?`<a class="c-link" style="flex:1;margin-left:7px;" href="${esc(r.lien_linkedin)}" target="_blank">LinkedIn</a>`:""}<button class="btn ghost sm" onclick='openModal("reseau",${esc(JSON.stringify(r))})'>Éditer</button><button class="btn danger sm" onclick="delRow('reseau','${r.id}')">✕</button></div></div>`).join("")+'</div>';
+  }
+
+  // ===== ENTRETIENS =====
+  function renderEntretiens(){
+    const c=document.getElementById("entretiens-content");
+    if(!entretiens.length){c.innerHTML='<div class="empty">Aucun entretien planifié.</div>';return;}
+    const now=new Date();now.setHours(0,0,0,0);
+    c.innerHTML='<div class="grid">'+entretiens.map(en=>{
+      const dt=en.date_entretien?new Date(en.date_entretien):null,past=dt&&dt<now;
+      return `<div class="card"><div class="card-bar" style="background:${past?"var(--text-mute)":"var(--purple)"}"></div>
+      <div class="c-title">${esc(en.poste||"—")}</div><div class="c-sub">${esc(en.entreprise)}</div>
+      <div class="c-meta">${dt?`<span class="chip ${past?"":"haute"}">📅 ${dt.toLocaleDateString("fr-FR")}</span>`:""}${en.type_entretien?`<span class="chip">${esc(en.type_entretien)}</span>`:""}${en.personnes?`<span class="chip">${esc(en.personnes)}</span>`:""}</div>
+      ${en.questions?`<div class="c-desc"><b>Questions :</b> ${esc(en.questions)}</div>`:""}
+      ${en.points_forts?`<div class="c-desc"><b>Mes atouts :</b> ${esc(en.points_forts)}</div>`:""}
+      <div class="c-actions"><button class="btn ghost sm" style="flex:1" onclick='openModal("entretiens",${esc(JSON.stringify(en))})'>Éditer</button><button class="btn danger sm" onclick="delRow('entretiens','${en.id}')">✕</button></div></div>`;
+    }).join("")+'</div>';
+  }
+
+  // ===== BADGES nav =====
+  function renderStatsBadges(){
+    document.getElementById("nb-pipeline").textContent=pipeline.length;
+    document.getElementById("nb-reve").textContent=reve.length;
+    document.getElementById("nb-reseau").textContent=reseau.length;
+    document.getElementById("nb-entretiens").textContent=entretiens.length;
+  }
+
+  // ===== NOTES libres (persistées dans Supabase via table job_status clé spéciale) =====
+  let noteTimers={};
+  async function saveNote(key){
+    const val=document.getElementById("notes-"+key).value;
+    clearTimeout(noteTimers[key]);
+    noteTimers[key]=setTimeout(async()=>{
+      if(sb)await sb.from("job_status").upsert({offer_id:"__note_"+key,statut:"note",offer_data:{text:val},updated_at:new Date().toISOString()},{onConflict:"offer_id"});
+      const s=document.getElementById("saved-"+key);if(s){s.textContent="✓ enregistré";setTimeout(()=>s.textContent="",1500);}
+    },700);
+  }
+  function loadNotes(){
+    ["pipeline","reve"].forEach(key=>{
+      const rec=statusMap["__note_"+key];
+      const el=document.getElementById("notes-"+key);
+      if(el&&rec&&rec.offer&&rec.offer.text)el.value=rec.offer.text;
+    });
+  }
+
+  // ===== MODAL =====
+  const FORMS={
+    pipeline:{title:"Candidature",table:"pipeline",fields:[
+      {k:"entreprise",l:"Entreprise",t:"text"},{k:"poste",l:"Poste",t:"text"},{k:"ville",l:"Ville",t:"text"},
+      {k:"secteur",l:"Secteur",t:"text"},{k:"source",l:"Source",t:"text"},{k:"lien_offre",l:"Lien offre",t:"text"},
+      {k:"statut",l:"Statut",t:"select",opts:["Envoyé","Entretien","Offre reçue","Refusé","Non intéressé"]},
+      {k:"niveau_envie",l:"Niveau d'envie (1-5)",t:"number"},{k:"contact",l:"Contact",t:"text"},
+      {k:"date_envoi",l:"Date d'envoi",t:"date"},{k:"date_relance",l:"Dernière relance",t:"date"},{k:"notes",l:"Notes",t:"textarea"},
+    ]},
+    reve:{title:"Entreprise rêve",table:"entreprises_reve",fields:[
+      {k:"entreprise",l:"Entreprise",t:"text"},{k:"secteur",l:"Secteur",t:"text"},
+      {k:"priorite",l:"Priorité",t:"select",opts:["Haute","Moyenne","Basse"]},{k:"ville",l:"Ville visée",t:"text"},
+      {k:"statut",l:"Statut",t:"select",opts:["À explorer","À postuler","Postulé"]},
+      {k:"source_info",l:"Source d'info",t:"text"},{k:"pourquoi",l:"Pourquoi cette boîte",t:"textarea"},{k:"notes",l:"Notes",t:"textarea"},
+    ]},
+    reseau:{title:"Contact",table:"reseau",fields:[
+      {k:"prenom",l:"Prénom",t:"text"},{k:"nom",l:"Nom",t:"text"},{k:"entreprise",l:"Entreprise",t:"text"},
+      {k:"poste",l:"Poste",t:"text"},{k:"lien_linkedin",l:"Lien LinkedIn",t:"text"},
+      {k:"statut",l:"Statut",t:"select",opts:["À contacter","Message envoyé","Échange en cours","À recontacter"]},
+      {k:"dernier_contact",l:"Dernier contact",t:"date"},{k:"notes",l:"Notes / Historique",t:"textarea"},
+    ]},
+    entretiens:{title:"Entretien",table:"entretiens",fields:[
+      {k:"entreprise",l:"Entreprise",t:"text"},{k:"poste",l:"Poste",t:"text"},{k:"date_entretien",l:"Date",t:"date"},
+      {k:"personnes",l:"Personnes (RH/Manager/DG)",t:"text"},{k:"type_entretien",l:"Type",t:"select",opts:["Téléphone","Visio","Présentiel"]},
+      {k:"questions",l:"Questions probables",t:"textarea"},{k:"points_forts",l:"Mes atouts à mettre en avant",t:"textarea"},{k:"notes",l:"Notes",t:"textarea"},
+    ]},
+  };
+  let editing=null;
+  function openModal(type,row){
+    if(typeof row==="string"){try{row=JSON.parse(row);}catch(e){row=null;}}
+    const f=FORMS[type];editing={type,id:row?row.id:null};
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<h3>${row?"Éditer":"Ajouter"} — ${f.title}</h3>`+f.fields.map(fl=>{
+      const v=row?(row[fl.k]??""):"";
+      if(fl.t==="select")return `<div class="field"><label>${fl.l}</label><select id="m-${fl.k}">${fl.opts.map(o=>`<option ${o===v?"selected":""}>${o}</option>`).join("")}</select></div>`;
+      if(fl.t==="textarea")return `<div class="field"><label>${fl.l}</label><textarea id="m-${fl.k}">${esc(v)}</textarea></div>`;
+      return `<div class="field"><label>${fl.l}</label><input id="m-${fl.k}" type="${fl.t}" value="${esc(v)}" /></div>`;
+    }).join("")+`<div class="modal-actions">${editing.id?`<button class="btn danger" onclick="delFromModal()">Supprimer</button>`:""}<button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveModal()">Enregistrer</button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  function closeModal(){document.getElementById("modalBg").classList.remove("open");editing=null;}
+  async function saveModal(){
+    const f=FORMS[editing.type],obj={};
+    f.fields.forEach(fl=>{const el=document.getElementById("m-"+fl.k);let val=el.value;if(fl.t==="number")val=val?parseInt(val):null;if(val==="")val=null;obj[fl.k]=val;});
+    if(sb){if(editing.id)await sb.from(f.table).update(obj).eq("id",editing.id);else await sb.from(f.table).insert(obj);}
+    await loadAll();refreshAll();closeModal();
+  }
+  async function delFromModal(){if(editing&&editing.id){await delRow(FORMS[editing.type].table,editing.id,true);closeModal();}}
+  async function delRow(table,id,skipConfirm){
+    if(!skipConfirm&&!confirm("Supprimer ?"))return;
+    if(sb)await sb.from(table).delete().eq("id",id);
+    await loadAll();refreshAll();
+  }
+  document.getElementById("modalBg").addEventListener("click",e=>{if(e.target.id==="modalBg")closeModal();});
+
+  // ===== REFRESH =====
+  function refreshAll(){renderStatsBadges();renderPipeline();renderReve();renderReseau();renderEntretiens();renderVeille();renderCockpit();}
+
+  // ===== INIT =====
+  if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box">⚙️ <b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
+  function initDate(){
+    const d=new Date();
+    document.getElementById("today").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+    const h=d.getHours();
+    document.getElementById("greet").textContent=(h<12?"Bonjour":h<18?"Bon après-midi":"Bonsoir")+" Samuel 👋";
+  }
+  (async function init(){
+    initDate();renderRoadmap();
+    await loadAll();loadNotes();refreshAll();
+    doSearch();
+  })();
+</script>
+</body>
+</html>

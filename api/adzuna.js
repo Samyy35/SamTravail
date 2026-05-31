@@ -61,6 +61,8 @@ export default async function handler(req, res) {
           titre: j.title || "",
           entreprise: (j.company && j.company.display_name) || "Non précisé",
           lieu: (j.location && j.location.display_name) || "",
+          lat: j.latitude || null,
+          lon: j.longitude || null,
           typeContrat: j.contract_time === "part_time" ? "Temps partiel"
             : j.contract_type === "permanent" ? "CDI"
             : j.contract_type === "contract" ? "CDD" : "",

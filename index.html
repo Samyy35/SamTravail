@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>JobDeck — ton command center emploi</title>
+<title>Sam'Travail — ta recherche d'emploi</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -213,7 +213,23 @@
   .modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:8px;}
   .add-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap;}
 
-  @media(max-width:600px){.grid{grid-template-columns:1fr;}.swipe-card-wrap{height:520px;}.kanban{grid-template-columns:repeat(5,minmax(180px,1fr));}}
+  /* Infos société (fiche entreprise) */
+  .company-info{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+  .ci-chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:4px 9px;border-radius:8px;}
+  .ci-na{font-size:11px;color:var(--text-mute);font-style:italic;}
+  .grid-links{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .grid-links a{flex:1;text-align:center;font-size:11.5px;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:7px;padding:6px 4px;transition:.12s;}
+  .grid-links a:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* Mini-map */
+  .mini-map{display:block;position:relative;margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--border);text-decoration:none;}
+  .mini-map img{width:100%;height:auto;display:block;filter:saturate(.9) brightness(.92);transition:.2s;}
+  .mini-map:hover img{filter:saturate(1.1) brightness(1);}
+  .mini-map-pin{position:absolute;bottom:8px;left:8px;background:rgba(14,16,21,.85);color:var(--text);font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:8px;backdrop-filter:blur(4px);}
+  .deadline.add-event{color:var(--text-mute);font-weight:700;}
+  .deadline.add-event:hover{border-color:var(--accent);color:var(--accent);}
+
+  @media(max-width:600px){.grid{grid-template-columns:1fr;}.swipe-card-wrap{height:560px;}.kanban{grid-template-columns:repeat(5,minmax(180px,1fr));}}
 </style>
 </head>
 <body>
@@ -221,7 +237,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark">🧭</div>
-      <div><h1>JobDeck</h1><div class="tag">Ta recherche d'emploi, en mode pilote</div></div>
+      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote</div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet">Salut Samuel 👋</div>
@@ -323,7 +339,7 @@
   try{ if(sbReady) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); }catch(e){}
 
   // ===== ETAT =====
-  let allOffers=[], statusMap={}, pipeline=[], reve=[], reseau=[], entretiens=[];
+  let allOffers=[], statusMap={}, pipeline=[], reve=[], reseau=[], entretiens=[], evenements=[];
   let veilleFilter="all", viewMode="swipe", swipeIndex=0, swipeQueue=[];
 
   // ===== SECTEURS (couleur + détection) =====
@@ -342,24 +358,103 @@
     return {key:"Supply Chain",kw:[],c:"#9aa2b4"};
   }
   function companyWebsite(name){
-    // Lien de recherche entreprise (Google) — ouvre le site officiel en 1 clic
     return "https://www.google.com/search?q="+encodeURIComponent((name||"")+" entreprise site officiel");
+  }
+  function companyLinks(name){
+    const n=encodeURIComponent(name||"");
+    return {
+      site:"https://www.google.com/search?q="+n+"+site+officiel",
+      avis:"https://www.glassdoor.fr/Avis/index.htm?keyword="+n,
+      linkedin:"https://www.linkedin.com/search/results/companies/?keywords="+n,
+      societe:"https://www.pappers.fr/recherche?q="+n,
+    };
+  }
+  // ===== MINI-MAP (MapTiler static -> interactif au clic) =====
+  const MAPTILER_KEY="UBUymJidXlYNJXIifcmG";
+  function miniMapHtml(o){
+    if(!o.lat||!o.lon)return "";
+    const lat=o.lat, lon=o.lon;
+    const staticUrl="https://api.maptiler.com/maps/streets-v2/static/"+lon+","+lat+",5/400x140.png?key="+MAPTILER_KEY+"&markers="+lon+","+lat;
+    const gmaps="https://www.google.com/maps/search/?api=1&query="+lat+","+lon;
+    return '<a class="mini-map" href="'+gmaps+'" target="_blank" rel="noopener" title="Ouvrir dans Maps"><img src="'+staticUrl+'" alt="Carte" loading="lazy" /><span class="mini-map-pin">📍 '+esc(o.lieu)+'</span></a>';
+  }
+
+  // Cache des infos entreprise déjà récupérées (évite de refaire l'appel)
+  let companyCache={};
+  async function fetchCompany(name){
+    if(!name)return null;
+    if(companyCache[name]!==undefined)return companyCache[name];
+    try{
+      const resp=await fetch("/api/company?nom="+encodeURIComponent(name));
+      const data=await resp.json();
+      companyCache[name]=data&&data.found?data:null;
+    }catch(e){companyCache[name]=null;}
+    return companyCache[name];
+  }
+  // Injecte les infos entreprise dans le bloc #company-info-{id} une fois chargées
+  async function loadCompanyInto(targetId,name){
+    const data=await fetchCompany(name);
+    const el=document.getElementById(targetId);
+    if(!el)return;
+    if(!data){el.innerHTML='<span class="ci-na">Infos société non trouvées dans l\'annuaire officiel</span>';return;}
+    const bits=[];
+    if(data.effectif&&data.effectif!=="Non renseigné")bits.push(`<span class="ci-chip">👥 ${esc(data.effectif)}</span>`);
+    if(data.ville_siege)bits.push(`<span class="ci-chip">🏛 Siège : ${esc(data.ville_siege)}</span>`);
+    if(data.activite)bits.push(`<span class="ci-chip">🏭 ${esc(data.activite)}</span>`);
+    if(data.date_creation)bits.push(`<span class="ci-chip">📅 Créée en ${esc((data.date_creation||"").slice(0,4))}</span>`);
+    el.innerHTML=bits.length?bits.join(""):'<span class="ci-na">Pas de détails société publics</span>';
   }
 
   // ===== ROADMAP =====
+  // Échéances fixes (parcours) — non modifiables
   const DEADLINES=[
-    {icon:"📝",label:"Rendu mémoire",date:"2026-06-22"},
-    {icon:"📋",label:"Rapport stage",date:"2026-07-01"},
-    {icon:"💼",label:"Fin stage GSK",date:"2026-07-16"},
-    {icon:"🎓",label:"Diplôme IÉSEG",date:"2026-10-01"},
+    {icon:"📝",label:"Rendu mémoire",date:"2026-06-22",fixed:true},
+    {icon:"📋",label:"Rapport stage",date:"2026-07-01",fixed:true},
+    {icon:"💼",label:"Fin stage GSK",date:"2026-07-16",fixed:true},
+    {icon:"🎓",label:"Diplôme IÉSEG",date:"2026-10-01",fixed:true},
   ];
+  const EVENT_ICONS={Entretien:"🎤",Deadline:"⏰",Relance:"🔔",Perso:"🏖",Autre:"📌"};
   function renderRoadmap(){
     const now=new Date();now.setHours(0,0,0,0);
-    document.getElementById("roadmap").innerHTML=DEADLINES.map(d=>{
-      const dt=new Date(d.date),days=Math.round((dt-now)/86400000),past=days<0,urgent=days>=0&&days<=30;
+    // Fusionne échéances fixes + événements perso (Supabase), triés par date
+    const fixed=DEADLINES.map(d=>({...d,id:null}));
+    const perso=evenements.map(e=>({icon:EVENT_ICONS[e.type]||"📌",label:e.titre,date:e.date_event,id:e.id,fixed:false}));
+    const all=[...fixed,...perso].filter(d=>{
+      const days=Math.round((new Date(d.date)-now)/86400000);
+      return days>=-3; // on garde l'à-venir + ce qui vient de passer
+    }).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    const items=all.map(d=>{
+      const dt=new Date(d.date),days=Math.round((dt-now)/86400000),past=days<0,urgent=days>=0&&days<=14;
       const ds=dt.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
-      return `<div class="deadline ${past?'past':''} ${urgent?'urgent':''}"><span>${d.icon}</span><span>${d.label}</span><span class="d-date">${ds}</span><span class="d-days">${past?'✓':days===0?"auj.":"J-"+days}</span></div>`;
+      const clickable=d.id?`onclick="openEventMenu('${d.id}')" style="cursor:pointer;"`:"";
+      return `<div class="deadline ${past?'past':''} ${urgent?'urgent':''}" ${clickable}><span>${d.icon}</span><span>${esc(d.label)}</span><span class="d-date">${ds}</span><span class="d-days">${past?'✓':days===0?"auj.":"J-"+days}</span></div>`;
     }).join("");
+    // bouton + discret en fin de ligne
+    document.getElementById("roadmap").innerHTML=items+`<div class="deadline add-event" onclick="openEventMenu()" title="Ajouter un événement" style="cursor:pointer;border-style:dashed;"><span>＋</span></div>`;
+  }
+
+  // ===== MENU ÉVÉNEMENTS =====
+  function openEventMenu(id){
+    let ev=id?evenements.find(e=>e.id===id):null;
+    const box=document.getElementById("modalBox");
+    const types=["Entretien","Deadline","Relance","Perso","Autre"];
+    box.innerHTML=`<h3>${ev?"Éditer":"Ajouter"} un événement</h3>
+      <div class="field"><label>Titre</label><input id="ev-titre" type="text" value="${ev?esc(ev.titre):""}" placeholder="Ex: Entretien Michelin, Deadline candidature..." /></div>
+      <div class="field"><label>Date</label><input id="ev-date" type="date" value="${ev?ev.date_event:""}" /></div>
+      <div class="field"><label>Type</label><select id="ev-type">${types.map(t=>`<option ${ev&&ev.type===t?"selected":""}>${t}</option>`).join("")}</select></div>
+      <div class="field"><label>Notes</label><textarea id="ev-notes">${ev?esc(ev.notes||""):""}</textarea></div>
+      <div class="modal-actions">${ev?`<button class="btn danger" onclick="delEvent('${ev.id}')">Supprimer</button>`:""}<button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveEvent('${ev?ev.id:""}')">Enregistrer</button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  async function saveEvent(id){
+    const obj={titre:document.getElementById("ev-titre").value,date_event:document.getElementById("ev-date").value,type:document.getElementById("ev-type").value,notes:document.getElementById("ev-notes").value};
+    if(!obj.titre||!obj.date_event){alert("Titre et date obligatoires");return;}
+    if(sb){ if(id)await sb.from("evenements").update(obj).eq("id",id); else await sb.from("evenements").insert(obj); }
+    await loadAll();renderRoadmap();renderCockpit();closeModal();
+  }
+  async function delEvent(id){
+    if(sb)await sb.from("evenements").delete().eq("id",id);
+    await loadAll();renderRoadmap();renderCockpit();closeModal();
   }
 
   // ===== COCKPIT DU JOUR =====
@@ -395,15 +490,16 @@
   async function loadAll(){
     if(!sb)return;
     try{
-      const [js,pl,rv,rs,et]=await Promise.all([
+      const [js,pl,rv,rs,et,ev]=await Promise.all([
         sb.from("job_status").select("*"),
         sb.from("pipeline").select("*").order("date_envoi",{ascending:false}),
         sb.from("entreprises_reve").select("*"),
         sb.from("reseau").select("*"),
         sb.from("entretiens").select("*").order("date_entretien"),
+        sb.from("evenements").select("*").order("date_event"),
       ]);
       statusMap={}; (js.data||[]).forEach(r=>statusMap[r.offer_id]={statut:r.statut,offer:r.offer_data});
-      pipeline=pl.data||[]; reve=rv.data||[]; reseau=rs.data||[]; entretiens=et.data||[];
+      pipeline=pl.data||[]; reve=rv.data||[]; reseau=rs.data||[]; entretiens=et.data||[]; evenements=ev.data||[];
     }catch(e){console.warn(e);}
     // notes (localStorage-free : stockées dans Supabase via table simple ? -> on garde en mémoire + localStorage interdit en artifact, donc on persiste via job_status spécial)
   }
@@ -510,10 +606,14 @@
               ${o.salaire?`<div class="fact"><span class="fl">💶</span><span class="fv">${esc(o.salaire)}</span></div>`:""}
             </div>
             <div class="desc">${esc(o.description)||"Pas de description fournie."}${o.description&&o.description.length>=300?"…":""}</div>
+            ${miniMapHtml(o)}
             ${dateStr?`<div class="c-date" style="padding-left:0;margin-top:10px;">Publié le ${dateStr}</div>`:""}
+            <div class="company-info" id="ci-${o.id}"><span class="ci-na">Chargement infos société…</span></div>
             <div class="links">
-              <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Voir l'offre</a>
-              <a href="${companyWebsite(o.entreprise)}" target="_blank" rel="noopener">🏢 Site entreprise</a>
+              <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Offre</a>
+              <a href="${companyLinks(o.entreprise).site}" target="_blank" rel="noopener">🏢 Site</a>
+              <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener">⭐ Avis</a>
+              <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 Société/CA</a>
             </div>
           </div>
         </div>
@@ -525,6 +625,8 @@
         </div>
         <div class="swipe-hint">⌨️ Raccourcis : ← passer · → garder · ↑ coup de cœur · ↓ plus tard</div>
       </div>`;
+    // charge les infos société en asynchrone (sans bloquer l'affichage)
+    loadCompanyInto("ci-"+o.id, o.entreprise);
   }
 
   async function swipeAction(statut){
@@ -538,10 +640,9 @@
       if(statut==="ignore"){const b=document.getElementById("badge-nope");if(b)b.classList.add("show");}
       card.classList.add(dir);
     }
-    // enregistre
+    // enregistre (apostuler/super = liste "à postuler", PAS encore dans le pipeline)
     statusMap[o.id]={statut,offer:o};
     if(sb) await sb.from("job_status").upsert({offer_id:o.id,statut,offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
-    if(statut==="super"||statut==="apostuler") await pushToPipeline(o, statut==="super");
     swipeIndex++;
     setTimeout(()=>{renderSwipe();renderCockpit();renderStatsBadges();},340);
   }
@@ -584,22 +685,34 @@
         <button class="mini ${st==="postule"?"a-postule":""}" onclick='markOffer(${oData},"postule")' title="Postulé">✅</button>
         <button class="mini ${st==="ignore"?"a-ignore":""}" onclick='markOffer(${oData},"ignore")' title="Passer">🚫</button>
       </div>
-      <a class="c-link" href="${esc(o.lien)}" target="_blank" rel="noopener">Voir l'offre →</a></div>`;
+      ${(st==="apostuler"||st==="super")?`<button class="btn sm" style="margin-left:7px;width:calc(100% - 7px);" onclick='markAsApplied(${oData})'>✉️ J'ai postulé → Pipeline</button>`:""}
+      <div class="grid-links" style="padding-left:7px;">
+        <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Offre</a>
+        <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener">⭐ Avis</a>
+        <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 Société</a>
+      </div></div>`;
   }
   async function markOffer(o,statut){
     const cur=statusMap[o.id]?statusMap[o.id].statut:null;
     const ns=cur===statut?null:statut;
     if(ns===null){delete statusMap[o.id];if(sb)await sb.from("job_status").delete().eq("offer_id",o.id);}
-    else{statusMap[o.id]={statut:ns,offer:o};if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:ns,offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});if(ns==="super"||ns==="apostuler")await pushToPipeline(o,ns==="super");}
+    else{statusMap[o.id]={statut:ns,offer:o};if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:ns,offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});}
     renderVeille();renderCockpit();renderStatsBadges();
   }
 
-  async function pushToPipeline(o,priority){
-    if(pipeline.some(p=>p.lien_offre===o.lien))return;
-    const row={entreprise:o.entreprise,poste:o.titre,ville:o.lieu,source:"France Travail",lien_offre:o.lien,statut:"Envoyé",niveau_envie:priority?5:3,date_envoi:new Date().toISOString().slice(0,10)};
+  // Appelé quand tu cliques "J'ai postulé" depuis la liste à postuler -> crée l'entrée Pipeline
+  async function markAsApplied(o){
+    if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
+    if(pipeline.some(p=>p.lien_offre===o.lien)){alert("Déjà dans ton pipeline.");return;}
+    const priority=statusMap[o.id]&&statusMap[o.id].statut==="super";
+    const row={entreprise:o.entreprise,poste:o.titre,ville:o.lieu,source:o.source||"France Travail",lien_offre:o.lien,statut:"Envoyé",niveau_envie:priority?5:3,date_envoi:new Date().toISOString().slice(0,10)};
     if(sb){const {data}=await sb.from("pipeline").insert(row).select();if(data)pipeline.unshift(data[0]);}
     else{row.id="local-"+Date.now();pipeline.unshift(row);}
-    renderPipeline();
+    // on marque l'offre comme "postulé" dans la veille
+    statusMap[o.id]={statut:"postule",offer:o};
+    if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:"postule",offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
+    renderPipeline();renderVeille();renderCockpit();
+    alert("✅ Ajouté au Pipeline (statut Envoyé) !");
   }
   // ===== PIPELINE KANBAN =====
   const KCOLS=[

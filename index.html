@@ -258,7 +258,8 @@
   .grid-links a:hover{border-color:var(--accent);color:var(--accent);}
 
   /* Mini-map */
-  .mini-map{display:block;position:relative;margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--border);text-decoration:none;}
+  .mini-map-slot{margin-top:12px;}
+  .mini-map{display:block;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--border);text-decoration:none;}
   .mini-map img{width:100%;height:auto;display:block;filter:saturate(.9) brightness(.92);transition:.2s;}
   .mini-map:hover img{filter:saturate(1.1) brightness(1);}
   .mini-map-pin{position:absolute;bottom:8px;left:8px;background:rgba(14,16,21,.85);color:var(--text);font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:8px;backdrop-filter:blur(4px);}
@@ -420,22 +421,48 @@
       societe:"https://www.pappers.fr/recherche?q="+n,
     };
   }
-  // ===== MINI-MAP (Geoapify) avec fallback bandeau lieu =====
+  // ===== MINI-MAP (Geoapify) — géocode la ville si pas de coords =====
   const GEOAPIFY_KEY="5fda6ac6574e46e583b4955b0f578860";
+  let geoCache={};
+  function mapImgUrl(lat,lon){
+    return "https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=440&height=150&center=lonlat:"+lon+","+lat+"&zoom=6&marker=lonlat:"+lon+","+lat+";color:%23f0556d;size:medium&apiKey="+GEOAPIFY_KEY;
+  }
+  // Construit le bloc carte (placeholder), puis charge l'image en async
   function miniMapHtml(o){
-    // Pas de lieu du tout -> rien
     if(!o.lieu && !o.lat) return "";
-    const ville=esc(o.lieu||"Lieu non précisé");
-    // Cas 1 : on a des coordonnées GPS -> vraie carte Geoapify
-    if(o.lat && o.lon && GEOAPIFY_KEY!=="TON_GEOAPIFY_KEY"){
-      const lat=o.lat, lon=o.lon;
-      const staticUrl="https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=440&height=150&center=lonlat:"+lon+","+lat+"&zoom=6&marker=lonlat:"+lon+","+lat+";color:%23f0556d;size:medium&apiKey="+GEOAPIFY_KEY;
-      const interactive="https://www.openstreetmap.org/?mlat="+lat+"&mlon="+lon+"#map=12/"+lat+"/"+lon;
-      return '<a class="mini-map" href="'+interactive+'" target="_blank" rel="noopener" title="Voir la carte"><img src="'+staticUrl+'" alt="Carte" loading="lazy" onerror="this.closest(\'.mini-map\').classList.add(\'map-failed\')" /><span class="mini-map-pin">📍 '+ville+'</span></a>';
+    const ville=esc(o.lieu||"Lieu");
+    // conteneur avec id unique ; on remplit l'image après (coords directes ou géocodage)
+    return '<div class="mini-map-slot" id="map-'+o.id+'" data-lieu="'+ville+'" data-lat="'+(o.lat||"")+'" data-lon="'+(o.lon||"")+'"><div class="mini-map map-fallback"><span class="mini-map-pin">📍 '+ville+'</span></div></div>';
+  }
+  // Appelée après le rendu de la carte swipe : remplit la vraie carte
+  async function loadMapInto(offerId, lieu, lat, lon){
+    const slot=document.getElementById("map-"+offerId);
+    if(!slot)return;
+    // 1) coordonnées directes ?
+    let la=lat, lo=lon;
+    // 2) sinon géocodage de la ville (avec cache)
+    if((!la||!lo) && lieu){
+      const key=lieu.toLowerCase();
+      if(geoCache[key]){ la=geoCache[key].lat; lo=geoCache[key].lon; }
+      else{
+        try{
+          // on nettoie le lieu : "Toulouse (31)" -> "Toulouse 31"
+          const q=lieu.replace(/[()]/g," ").trim();
+          const r=await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(q)+"&type=city&filter=countrycode:fr,be,ch,lu&format=json&limit=1&apiKey="+GEOAPIFY_KEY);
+          const d=await r.json();
+          if(d.results&&d.results[0]){ la=d.results[0].lat; lo=d.results[0].lon; geoCache[key]={lat:la,lon:lo}; }
+        }catch(e){}
+      }
     }
-    // Cas 2 : pas de coordonnées -> bandeau lieu cliquable vers Google Maps
-    const gmaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(o.lieu||"");
-    return '<a class="mini-map map-fallback" href="'+gmaps+'" target="_blank" rel="noopener" title="Ouvrir dans Maps"><span class="mini-map-pin">📍 '+ville+' — voir sur la carte</span></a>';
+    const villeEsc=esc(lieu||"Lieu");
+    if(la&&lo){
+      const interactive="https://www.openstreetmap.org/?mlat="+la+"&mlon="+lo+"#map=12/"+la+"/"+lo;
+      slot.innerHTML='<a class="mini-map" href="'+interactive+'" target="_blank" rel="noopener" title="Voir la carte"><img src="'+mapImgUrl(la,lo)+'" alt="Carte" loading="lazy" onerror="this.closest(\'.mini-map\').classList.add(\'map-failed\')" /><span class="mini-map-pin">📍 '+villeEsc+'</span></a>';
+    }else{
+      // pas de géocodage possible -> garde le bandeau cliquable Google Maps
+      const gmaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(lieu||"");
+      slot.innerHTML='<a class="mini-map map-fallback" href="'+gmaps+'" target="_blank" rel="noopener"><span class="mini-map-pin">📍 '+villeEsc+' — voir sur la carte</span></a>';
+    }
   }
 
   // Cache des infos entreprise déjà récupérées (évite de refaire l'appel)
@@ -732,6 +759,7 @@
       </div>`;
     // charge les infos société en asynchrone (sans bloquer l'affichage)
     loadCompanyInto("ci-"+o.id, o.entreprise);
+    loadMapInto(o.id, o.lieu, o.lat, o.lon);
   }
 
   async function swipeAction(statut){

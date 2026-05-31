@@ -134,6 +134,7 @@
   textarea{resize:vertical;min-height:62px;line-height:1.5;}
 
   .hint{font-size:12px;color:var(--text-dim);margin-top:10px;} .hint b{color:var(--accent);}
+  .hint code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:11.5px;color:var(--text);}
 
   /* SEGMENTED toggle swipe/grille */
   .segmented{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:3px;}
@@ -313,12 +314,14 @@
   <div class="view active" id="view-veille">
     <div class="panel">
       <div class="row">
-        <div class="field wide"><label>Mots-clés (virgule = multi-recherche)</label>
+        <div class="field wide"><label>Thème / métier (mots-clés)</label>
           <input id="q-mots" type="text" value="supply chain, demand planning, approvisionnement" /></div>
+        <div class="field"><label>Entreprise (filtre)</label><input id="q-entreprise" type="text" placeholder="ex: Valeo, Michelin..." oninput="applyEntrepriseFilter()" /></div>
         <div class="field"><label>Département</label><input id="q-dep" type="text" placeholder="Tous" /></div>
         <div class="field"><label>Contrat</label><select id="q-contrat"><option value="">Tous</option><option value="CDI">CDI</option><option value="CDD">CDD</option><option value="MIS">Intérim</option></select></div>
         <div class="field" style="flex:0;"><label>&nbsp;</label><button class="btn" id="searchBtn" onclick="doSearch()">Chercher</button></div>
       </div>
+      <p class="hint">💡 <b>Virgule</b> = OU (plusieurs recherches). <b>Espace</b> = ET (tous les mots requis). Ex : <code>supply chain automobile, demand planning</code> → cherche (supply chain ET automobile) OU (demand planning). Le champ <b>Entreprise</b> filtre les résultats en direct.</p>
     </div>
     <div class="sec-head">
       <div><h2>À trier</h2><div class="sub" id="veille-info">Swipe pour décider vite : garde, plus tard, ou passe.</div></div>
@@ -384,7 +387,7 @@
 
   // ===== ETAT =====
   let allOffers=[], statusMap={}, pipeline=[], reve=[], reseau=[], entretiens=[], evenements=[];
-  let veilleFilter="all", viewMode="swipe", swipeIndex=0, swipeQueue=[];
+  let veilleFilter="all", viewMode="swipe", swipeIndex=0, swipeQueue=[], entrepriseFilter="";
 
   // ===== SECTEURS (couleur + détection) =====
   const SECTORS=[
@@ -685,8 +688,16 @@
   }
 
   // File de swipe = offres pas encore triées
+  function matchEntreprise(o){
+    if(!entrepriseFilter)return true;
+    return (o.entreprise||"").toLowerCase().includes(entrepriseFilter);
+  }
+  function applyEntrepriseFilter(){
+    entrepriseFilter=(document.getElementById("q-entreprise").value||"").trim().toLowerCase();
+    rebuildSwipeQueue(); renderVeille();
+  }
   function rebuildSwipeQueue(){
-    swipeQueue=allOffers.filter(o=>!statusMap[o.id]);
+    swipeQueue=allOffers.filter(o=>!statusMap[o.id] && matchEntreprise(o));
     swipeIndex=0;
   }
 
@@ -796,6 +807,7 @@
     Object.keys(statusMap).forEach(id=>{if(!merged[id]&&statusMap[id].offer)merged[id]=statusMap[id].offer;});
     let list=Object.values(merged);
     if(veilleFilter!=="all")list=list.filter(o=>statusMap[o.id]&&statusMap[o.id].statut===veilleFilter);
+    list=list.filter(matchEntreprise);
     const c=document.getElementById("veille-grid");
     if(!list.length){c.innerHTML='<div class="empty">Aucune offre dans ce filtre.</div>';return;}
     c.innerHTML='<div class="grid">'+list.map(gridCard).join("")+'</div>';

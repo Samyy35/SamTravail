@@ -350,6 +350,9 @@
   .chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:3px 9px;border-radius:999px;}
   .chip.loc{color:var(--text);} .chip.haute{color:var(--orange);border-color:var(--orange);} .chip.green{color:var(--green);border-color:var(--green);}
   .c-desc{font-size:12.5px;color:var(--text-dim);padding-left:7px;flex:1;}
+  .c-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .desc-more{margin:2px 0 0 7px;background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;font-family:var(--font);}
+  .desc-more:hover{text-decoration:underline;}
   .c-date{font-size:11px;color:var(--text-mute);padding-left:7px;}
   .c-actions{display:flex;gap:6px;flex-wrap:wrap;padding-left:7px;margin-top:3px;}
   .mini{flex:1;min-width:46px;font-size:14px;padding:7px 5px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;transition:.12s;font-family:var(--font);}
@@ -407,7 +410,11 @@
   .ci-chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:4px 9px;border-radius:8px;}
   .ci-na{font-size:11px;color:var(--text-mute);font-style:italic;}
   .grid-links{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
-  .grid-links a{flex:1;text-align:center;font-size:11.5px;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:7px;padding:6px 4px;transition:.12s;}
+  .grid-links a{flex:1;text-align:center;font-size:11.5px;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:7px;padding:6px 4px;transition:.12s;cursor:pointer;}
+  .offer-map{height:340px;border-radius:12px;overflow:hidden;margin-top:6px;border:1px solid var(--border);}
+  .carte-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+  .carte-map{height:540px;border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);}
+  @media(max-width:640px){.carte-map{height:420px;}}
   .grid-links a:hover{border-color:var(--accent);color:var(--accent);}
 
   /* Mini-map interactive (Leaflet) */
@@ -426,7 +433,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark">🧭</div>
-      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote <span style="opacity:.4;font-size:11px;">v10</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote <span style="opacity:.4;font-size:11px;">v12</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -471,6 +478,7 @@
     <button class="nav-tab" data-view="reseau" onclick="setView('reseau')">🤝 Réseau <span class="badge" id="nb-reseau">0</span></button>
     <button class="nav-tab" data-view="entretiens" onclick="setView('entretiens')">🎤 Entretiens <span class="badge" id="nb-entretiens">0</span></button>
     <button class="nav-tab" data-view="bilan" onclick="setView('bilan')">📊 Bilan</button>
+    <button class="nav-tab" data-view="carte" onclick="setView('carte')">🗺️ Carte</button>
   </div>
 
   <!-- VIEW VEILLE -->
@@ -562,6 +570,21 @@
   <div class="view" id="view-bilan">
     <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">📊 Bilan de ma recherche</h2><div class="sub">Tes chiffres et l'avancement de tes campagnes.</div></div><button class="btn sm ghost" onclick="exportCSV()">⬇️ Export CSV</button></div>
     <div id="bilan-content"></div>
+  </div>
+
+  <!-- VIEW CARTE -->
+  <div class="view" id="view-carte">
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">🗺️ Carte des offres</h2><div class="sub" id="carteCount">Tes offres géolocalisées.</div></div></div>
+    <div class="carte-toolbar">
+      <div id="carte-pills" class="pills">
+        <span class="pill active" data-f="all" onclick="setCarteFilter('all')">Toutes</span>
+        <span class="pill" data-f="super" onclick="setCarteFilter('super')">⭐ Coups de cœur</span>
+        <span class="pill" data-f="apostuler" onclick="setCarteFilter('apostuler')">❤️ À postuler</span>
+        <span class="pill" data-f="postule" onclick="setCarteFilter('postule')">✅ Postulé</span>
+      </div>
+      <select id="carteSectorSel" class="gb-select" onchange="setCarteSector(this.value)"><option value="all">Tous les secteurs</option></select>
+    </div>
+    <div id="carteMap" class="carte-map"></div>
   </div>
 </div>
 
@@ -689,6 +712,19 @@
   const MAP_STYLE="positron";
   let geoCache={};
   let mapInstances={}; // pour nettoyer les cartes Leaflet entre les slides
+  // Géocodage ville -> {lat,lon} (réutilisable, avec cache)
+  async function geocode(lieu){
+    if(!lieu)return null;
+    const key=lieu.toLowerCase();
+    if(geoCache[key])return geoCache[key];
+    try{
+      const q=lieu.replace(/[()]/g," ").trim();
+      const r=await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(q)+"&type=city&filter=countrycode:fr,be,ch,lu&format=json&limit=1&apiKey="+GEOAPIFY_KEY);
+      const d=await r.json();
+      if(d.results&&d.results[0]){geoCache[key]={lat:d.results[0].lat,lon:d.results[0].lon};return geoCache[key];}
+    }catch(e){}
+    return null;
+  }
   // Placeholder : un conteneur qui recevra la carte interactive
   function miniMapHtml(o){
     if(!o.lieu && !o.lat) return "";
@@ -730,6 +766,77 @@
       // recalcule la taille après affichage (Leaflet a besoin que le conteneur soit visible)
       setTimeout(()=>{try{map.invalidateSize();}catch(e){}},200);
     }catch(e){ box.innerHTML='<div class="mini-map-loading">📍 '+esc(lieu||"")+'</div>'; }
+  }
+
+  function tileUrl(){return "https://maps.geoapify.com/v1/tile/"+MAP_STYLE+"/{z}/{x}/{y}.png?apiKey="+GEOAPIFY_KEY;}
+  function pinIcon(){return L.divIcon({className:"job-pin",html:'<div class="job-pin-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]});}
+
+  // ===== APERÇU CARTE D'UNE OFFRE (clic) =====
+  async function openOfferMap(o){
+    if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3>📍 ${esc(o.titre||"Offre")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="modal-sub">${esc(o.entreprise||"")}${o.lieu?" · "+esc(o.lieu):""}</div>
+      <div id="offerMap" class="offer-map"><div class="mini-map-loading">Chargement de la carte…</div></div>`;
+    document.getElementById("modalBg").classList.add("open");
+    let la=o.lat,lo=o.lon;
+    if((!la||!lo)&&o.lieu){const g=await geocode(o.lieu);if(g){la=g.lat;lo=g.lon;}}
+    const mb=document.getElementById("offerMap");if(!mb)return;
+    if(!la||!lo){
+      const gm="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(o.lieu||"");
+      mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gm+'" target="_blank" rel="noopener">📍 Lieu non localisable — voir sur Google Maps</a>';return;
+    }
+    mb.innerHTML="";
+    try{
+      const map=L.map(mb,{scrollWheelZoom:true,attributionControl:false}).setView([la,lo],11);
+      L.tileLayer(tileUrl(),{maxZoom:18}).addTo(map);
+      L.marker([la,lo],{icon:pinIcon()}).addTo(map);
+      setTimeout(()=>{try{map.invalidateSize();}catch(e){}},250);
+    }catch(e){}
+  }
+
+  // ===== CARTE GÉNÉRALE (toutes les offres) =====
+  let carteMap=null,carteMarkers=[],carteFilter="all",carteSector="all";
+  function setCarteFilter(f){carteFilter=f;document.querySelectorAll("#carte-pills .pill").forEach(p=>p.classList.toggle("active",p.dataset.f===f));renderCarteMap();}
+  function setCarteSector(v){carteSector=v;renderCarteMap();}
+  function carteOffers(){
+    let list=Object.values(statusMap).filter(s=>s.offer&&s.statut&&s.statut!=="passe"&&s.statut!=="ignore").map(s=>({o:s.offer,statut:s.statut}));
+    if(carteFilter==="super")list=list.filter(x=>x.statut==="super");
+    else if(carteFilter==="apostuler")list=list.filter(x=>x.statut==="apostuler"||x.statut==="super");
+    else if(carteFilter==="postule")list=list.filter(x=>x.statut==="postule");
+    if(carteSector!=="all")list=list.filter(x=>detectSector(x.o).key===carteSector);
+    return list;
+  }
+  async function renderCarteMap(){
+    const box=document.getElementById("carteMap");if(!box||typeof L==="undefined")return;
+    // remplit le filtre secteur une fois
+    const sel=document.getElementById("carteSectorSel");
+    if(sel && !sel.dataset.filled){
+      const secs=[...new Set(Object.values(statusMap).filter(s=>s.offer).map(s=>detectSector(s.o||s.offer).key))];
+      sel.innerHTML='<option value="all">Tous les secteurs</option>'+secs.map(k=>`<option value="${esc(k)}">${esc(k)}</option>`).join("");
+      sel.dataset.filled="1";
+    }
+    if(!carteMap){
+      carteMap=L.map(box,{scrollWheelZoom:true,attributionControl:false}).setView([46.6,2.4],5);
+      L.tileLayer(tileUrl(),{maxZoom:18}).addTo(carteMap);
+    } else { carteMarkers.forEach(m=>{try{carteMap.removeLayer(m);}catch(e){}}); }
+    carteMarkers=[];
+    setTimeout(()=>{try{carteMap.invalidateSize();}catch(e){}},250);
+    const list=carteOffers();
+    const cnt=document.getElementById("carteCount");
+    if(cnt)cnt.textContent="Localisation de "+list.length+" offre(s)…";
+    const pts=[];
+    for(const x of list){
+      const o=x.o;let la=o.lat,lo=o.lon;
+      if((!la||!lo)&&o.lieu){const g=await geocode(o.lieu);if(g){la=g.lat;lo=g.lon;}}
+      if(!la||!lo)continue;
+      const m=L.marker([la,lo],{icon:pinIcon()}).addTo(carteMap);
+      const badge=x.statut==="super"?"⭐ ":x.statut==="postule"?"✅ ":"";
+      m.bindPopup('<b>'+badge+esc(o.titre||"")+'</b><br>'+esc(o.entreprise||"")+'<br><span style="color:#888">'+esc(o.lieu||"")+'</span>'+(o.lien?'<br><a href="'+esc(o.lien)+'" target="_blank" rel="noopener">voir l\'offre</a>':""));
+      carteMarkers.push(m);pts.push([la,lo]);
+    }
+    if(cnt)cnt.textContent=pts.length+" offre(s) sur la carte"+(list.length>pts.length?" ("+(list.length-pts.length)+" sans lieu)":"");
+    setTimeout(()=>{try{carteMap.invalidateSize();if(pts.length===1)carteMap.setView(pts[0],10);else if(pts.length>1)carteMap.fitBounds(pts,{padding:[40,40],maxZoom:11});}catch(e){}},300);
   }
 
   // Cache des infos entreprise déjà récupérées (évite de refaire l'appel)
@@ -884,6 +991,7 @@
     // amène la barre d'onglets en haut de l'écran -> le contenu de l'onglet est visible juste en dessous
     const nav=document.getElementById("nav");
     if(nav){const y=nav.getBoundingClientRect().top+window.pageYOffset-12;window.scrollTo({top:y,behavior:"smooth"});}
+    if(v==="carte"){setTimeout(renderCarteMap,100);}
   }
 
   // ===== SUPABASE LOAD =====
@@ -1223,6 +1331,11 @@
     document.getElementById("modalBg").classList.add("open");
   }
 
+  function toggleDesc(id,btn){
+    const el=document.getElementById("desc-"+id);if(!el)return;
+    const open=el.classList.toggle("clamp")===false;
+    btn.textContent=open?"voir moins":"voir plus";
+  }
   function gridCard(o){
     const st=statusMap[o.id]?statusMap[o.id].statut:null;
     const sec=detectSector(o);
@@ -1234,7 +1347,7 @@
       <div class="c-title">${esc(o.titre)}</div>
       <div class="c-sub">${esc(o.entreprise)}</div>
       <div class="c-meta">${o.lieu?`<span class="chip loc">📍 ${esc(o.lieu)}</span>`:""}${o.typeContrat?`<span class="chip">${esc(o.typeContrat)}</span>`:""}${o.experience?`<span class="chip">👤 ${esc(o.experience)}</span>`:""}${o.salaire?`<span class="chip">💶 ${esc(o.salaire)}</span>`:""}</div>
-      <div class="c-desc">${esc(o.description)}${o.description&&o.description.length>=300?"…":""}</div>
+      ${o.description?`<div class="c-desc clamp" id="desc-${o.id}">${esc(o.description)}</div>${o.description.length>180?`<button class="desc-more" onclick="toggleDesc('${o.id}',this)">voir plus</button>`:""}`:""}
       <div class="c-tags" id="tags-${o.id}">${renderTagsInline(o)}</div>
       <div class="c-actions">
         <button class="mini ${st==="super"?"a-super":""}" onclick='markOffer(${oData},"super")' title="Coup de cœur">⭐</button>
@@ -1247,6 +1360,7 @@
       ${(st==="apostuler"||st==="super")?`<button class="btn sm" style="margin-left:7px;width:calc(100% - 7px);" onclick='markAsApplied(${oData})'>✉️ J'ai postulé → Pipeline</button>`:""}
       <div class="grid-links" style="padding-left:7px;">
         <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Offre</a>
+        ${(o.lieu||o.lat)?`<a href="#" onclick='openOfferMap(${oData});return false;'>📍 Carte</a>`:""}
         <a href="${companyLinks(o.entreprise).wiki}" target="_blank" rel="noopener">📖 Wiki</a>
         <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener">⭐ Avis</a>
         <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 CA</a>
@@ -1265,7 +1379,7 @@
   function openAddLinks(prefillUrl, prefillTitle){
     const origin=window.location.origin;
     // Le bookmarklet capture l'URL ET le titre de la page (depuis TON navigateur = pas de blocage)
-    const bookmarklet="javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,600);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,600);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,600);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal);window.open(u,'_blank');})();";
+    const bookmarklet="javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}var LIM=5000;var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,LIM);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,LIM);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(d.ds.length<300){var sels=['[class*=description i]','[id*=description i]','[class*=job-description i]','[class*=offer-content i]','[class*=jobdesc i]','[class*=vacancy i]','article'];var best=d.ds;for(var q=0;q<sels.length;q++){var el=document.querySelector(sels[q]);if(el){var tx=(el.innerText||el.textContent||'').replace(W(),' ').trim();if(tx.length>best.length&&tx.length<12000)best=tx;}}if(best.length>d.ds.length)d.ds=best.slice(0,LIM);}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,LIM);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal);window.open(u,'_blank');})();";
     const box=document.getElementById("modalBox");
     box.innerHTML=`
       <div class="modal-head"><h3>➕ Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>

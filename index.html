@@ -74,6 +74,16 @@
   .empty-h{font-family:var(--display);font-size:20px;font-weight:600;margin-bottom:8px;}
   .empty-p{font-size:14px;color:var(--text-dim);max-width:440px;margin:0 auto 20px;line-height:1.6;}
   .empty-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  /* Encart installation bookmarklet */
+  .bm-setup{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:linear-gradient(135deg,var(--accent-soft),var(--purple-soft));border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:16px;}
+  .bm-setup-txt{flex:1;min-width:200px;}
+  .bm-setup-h{font-weight:700;font-size:14px;margin-bottom:3px;}
+  .bm-setup-p{font-size:12.5px;color:var(--text-dim);line-height:1.5;}
+  .bm-setup .bookmarklet-btn{cursor:grab;}
+  .bm-setup-done{background:none;border:none;color:var(--text-dim);font-size:12px;cursor:pointer;font-family:var(--font);text-decoration:underline;white-space:nowrap;}
+  .bm-setup-done:hover{color:var(--text);}
+  /* stat live */
+  .stat-live{border-color:var(--accent);background:var(--accent-soft);}
   .brand h1{font-family:var(--display);font-size:27px;font-weight:600;letter-spacing:-.5px;}
   .brand .tag{color:var(--text-dim);font-size:13px;margin-top:-2px;}
   .greeting{text-align:right;}
@@ -478,7 +488,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark">🧭</div>
-      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote <span style="opacity:.4;font-size:11px;">v16</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote <span style="opacity:.4;font-size:11px;">v17</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -513,6 +523,9 @@
     <span class="flow-arrow">→</span>
     <button class="flow-step" onclick="setView('pipeline')"><span class="flow-num">3</span><span class="flow-txt"><b>Suis</b> tes candidatures</span></button>
   </div>
+
+  <!-- ENCART INSTALLATION BOOKMARKLET (visible tant que pas installé) -->
+  <div id="bmSetup" class="bm-setup" style="display:none;"></div>
 
   <!-- NAV -->
   <div class="nav" id="nav">
@@ -1051,6 +1064,7 @@
     const nav=document.getElementById("nav");
     if(nav){const y=nav.getBoundingClientRect().top+window.pageYOffset-12;window.scrollTo({top:y,behavior:"smooth"});}
     if(v==="carte"){setTimeout(renderCarteMap,100);}
+    if(v==="bilan"){renderBilan();}
   }
   function toggleMore(e){if(e)e.stopPropagation();const m=document.getElementById("moreMenu");if(m)m.classList.toggle("open");}
   function closeMore(){const m=document.getElementById("moreMenu");if(m)m.classList.remove("open");}
@@ -1438,10 +1452,30 @@
 
   // ===== AJOUT D'OFFRES PAR LIEN =====
   let addLinksData=[]; // offres en cours de préparation
+  function renderBmSetup(){
+    const el=document.getElementById("bmSetup");if(!el)return;
+    let done=false;
+    try{done=localStorage.getItem("st_bm_done")==="1";}catch(e){}
+    // inutile sur mobile (le glisser-déposer ne marche pas)
+    if(done || window.innerWidth<768){el.style.display="none";return;}
+    el.style.display="flex";
+    el.innerHTML=`
+      <div class="bm-setup-txt">
+        <div class="bm-setup-h">🧭 Ajoute une offre en 1 clic depuis le web</div>
+        <div class="bm-setup-p">Glisse ce bouton dans ta barre de favoris (Ctrl+Maj+B). Ensuite, sur n'importe quelle offre (LinkedIn, WTTJ…), un clic dessus l'envoie ici, pré-remplie.</div>
+      </div>
+      <a class="bookmarklet-btn" href="${bookmarkletCode()}" onclick="return false;" draggable="true">🧭 Sam'Travail</a>
+      <button class="bm-setup-done" onclick="dismissBmSetup()">J'ai installé · masquer</button>`;
+  }
+  function dismissBmSetup(){try{localStorage.setItem("st_bm_done","1");}catch(e){}const el=document.getElementById("bmSetup");if(el)el.style.display="none";}
+  function bookmarkletCode(){
+    const origin=window.location.origin;
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}var LIM=5000;var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,LIM);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,LIM);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(d.ds.length<300){var sels=['[class*=description i]','[id*=description i]','[class*=job-description i]','[class*=offer-content i]','[class*=jobdesc i]','[class*=vacancy i]','article'];var best=d.ds;for(var q=0;q<sels.length;q++){var el=document.querySelector(sels[q]);if(el){var tx=(el.innerText||el.textContent||'').replace(W(),' ').trim();if(tx.length>best.length&&tx.length<12000)best=tx;}}if(best.length>d.ds.length)d.ds=best.slice(0,LIM);}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,LIM);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal);window.open(u,'_blank');})();";
+  }
   function openAddLinks(prefillUrl, prefillTitle){
     const origin=window.location.origin;
     // Le bookmarklet capture l'URL ET le titre de la page (depuis TON navigateur = pas de blocage)
-    const bookmarklet="javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}var LIM=5000;var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,LIM);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,LIM);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(d.ds.length<300){var sels=['[class*=description i]','[id*=description i]','[class*=job-description i]','[class*=offer-content i]','[class*=jobdesc i]','[class*=vacancy i]','article'];var best=d.ds;for(var q=0;q<sels.length;q++){var el=document.querySelector(sels[q]);if(el){var tx=(el.innerText||el.textContent||'').replace(W(),' ').trim();if(tx.length>best.length&&tx.length<12000)best=tx;}}if(best.length>d.ds.length)d.ds=best.slice(0,LIM);}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,LIM);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal);window.open(u,'_blank');})();";
+    const bookmarklet=bookmarkletCode();
     const box=document.getElementById("modalBox");
     box.innerHTML=`
       <div class="modal-head"><h3>➕ Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>
@@ -1557,7 +1591,7 @@
     // on marque l'offre comme "postulé" dans la veille
     statusMap[o.id]={statut:"postule",offer:o};
     if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:"postule",offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
-    renderPipeline();renderVeille();renderCockpit();
+    renderPipeline();renderVeille();renderCockpit();renderBilan();
     alert("✅ Ajouté au Pipeline (statut Envoyé) !");
   }
   // ===== PIPELINE KANBAN =====
@@ -1673,7 +1707,7 @@
     const patch={statut:col};
     if(col!=="Envoyé"&&!p.date_reponse){patch.date_reponse=new Date().toISOString().slice(0,10);p.date_reponse=patch.date_reponse;}
     if(sb)await sb.from("pipeline").update(patch).eq("id",dragId);
-    renderPipeline();renderCockpit();
+    renderPipeline();renderCockpit();renderBilan();renderStatsBadges();
   }
 
   // ===== REVE =====
@@ -1833,6 +1867,7 @@
     const entretiens_=pipeline.filter(p=>p.statut==="Entretien").length;
     const offres_=pipeline.filter(p=>p.statut==="Offre reçue").length;
     const refus=pipeline.filter(p=>p.statut==="Refusé").length;
+    const enCours=pipeline.filter(p=>p.statut==="Envoyé"||p.statut==="Entretien").length;
     const reponses=pipeline.filter(p=>p.statut==="Entretien"||p.statut==="Offre reçue"||p.statut==="Refusé"||p.date_reponse).length;
     const tauxRep=envoyees?Math.round(reponses/envoyees*100):0;
     const tauxEnt=envoyees?Math.round(entretiens_/envoyees*100):0;
@@ -1859,12 +1894,13 @@
 
     c.innerHTML=`
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-n">${envoyees}</div><div class="stat-l">candidatures envoyées</div></div>
+        <div class="stat-card stat-live"><div class="stat-n">${enCours}</div><div class="stat-l">🔴 en cours (live)</div></div>
+        <div class="stat-card"><div class="stat-n">${envoyees}</div><div class="stat-l">candidatures au total</div></div>
         <div class="stat-card"><div class="stat-n">${tauxRep}%</div><div class="stat-l">taux de réponse</div></div>
         <div class="stat-card"><div class="stat-n">${tauxEnt}%</div><div class="stat-l">taux d'entretien</div></div>
-        <div class="stat-card"><div class="stat-n">${tempsMoyen}</div><div class="stat-l">délai moyen de réponse</div></div>
-        <div class="stat-card"><div class="stat-n">${entretiens_}</div><div class="stat-l">entretiens décrochés</div></div>
+        <div class="stat-card"><div class="stat-n">${entretiens_}</div><div class="stat-l">entretiens en cours</div></div>
         <div class="stat-card"><div class="stat-n">${offres_}</div><div class="stat-l">offres reçues 🎉</div></div>
+        <div class="stat-card"><div class="stat-n">${tempsMoyen}</div><div class="stat-l">délai moyen de réponse</div></div>
       </div>
 
       <div class="bilan-block">
@@ -1987,7 +2023,7 @@
     const addUrl=params.get("addUrl");
     await loadAll();loadNotes();loadStreak();loadTheme();
     await loadProfil(!!addUrl);  // si on arrive via bookmarklet, on ne demande pas le nom maintenant
-    refreshAll();
+    refreshAll();renderBmSetup();
     // Bookmarklet : si ?addUrl=... -> ouvre directement l'ajout par lien
     if(addUrl){
       window._prefill={

@@ -417,6 +417,27 @@
   @keyframes pstepPop{0%{transform:scale(1);}40%{transform:scale(1.45);}100%{transform:scale(1);}}
   .pipe-row.flash{animation:rowFlash .5s ease;}
   @keyframes rowFlash{0%{background:var(--surface);}30%{background:color-mix(in srgb,var(--flash) 22%,var(--surface));border-left-width:7px;}100%{background:var(--surface);}}
+  /* bouton checklist + panneau inline */
+  .pipe-row-wrap{display:flex;flex-direction:column;}
+  .pipe-check{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px;width:46px;padding:5px 4px;border-radius:9px;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;transition:.12s;font-family:var(--font);}
+  .pipe-check:hover{border-color:var(--accent);}
+  .pipe-check.active{border-color:var(--accent);background:var(--accent-soft);}
+  .pipe-check.part{border-color:var(--orange);}
+  .pipe-check.full{border-color:var(--green);background:var(--green-soft);}
+  .pipe-check-ico{font-size:14px;line-height:1;}
+  .pipe-check-n{font-size:10px;font-weight:700;color:var(--text-dim);}
+  .pipe-checklist{display:flex;flex-wrap:wrap;gap:6px 18px;background:var(--surface-2);border:1px solid var(--border);border-top:none;border-radius:0 0 11px 11px;padding:11px 16px;margin:-2px 0 0;animation:fade .2s;}
+  .pchk-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text);cursor:pointer;}
+  .pchk-item input{width:15px;height:15px;accent-color:var(--accent);}
+  /* fiche riche candidature */
+  .pc-company{font-size:15px;color:var(--accent);font-weight:600;margin:-8px 0 12px;}
+  .pc-badges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+  .pc-badge{font-size:12px;font-weight:600;padding:4px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);}
+  .pc-links{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+  .pc-links a{flex:1;min-width:70px;text-align:center;font-size:12px;font-weight:600;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:9px;padding:9px 6px;transition:.12s;}
+  .pc-links a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+  .pc-section-h{font-size:12.5px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 9px;}
+  .pc-notes{font-size:13px;color:var(--text-dim);line-height:1.55;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;white-space:pre-wrap;}
   @media(max-width:680px){
     .pipe-row{flex-direction:column;align-items:stretch;gap:9px;}
     .pipe-steps{width:100%;justify-content:space-between;}
@@ -1780,24 +1801,102 @@
     const warn=days!==null&&days>10&&p.statut==="Envoyé";
     const star=p.niveau_envie>=5?'<span class="pipe-star" title="Coup de cœur">⭐</span>':"";
     const chk=p.checklist||{};const done=Object.keys(chk).filter(k=>chk[k]).length;
+    const all=CHECKLIST_ITEMS.length;
+    const chkDone=done===all;
     const col=pipeColor(p.statut);
-    const opts=KCOLS.map(c=>`<option value="${c.key}" ${p.statut===c.key?"selected":""}>${c.label}</option>`).join("");
-    return `<div class="pipe-row" style="border-left-color:${col};">
-      <div class="pipe-main" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>
-        <div class="pipe-row-top">${star}<span class="pipe-poste">${esc(p.poste||"—")}</span><span class="pipe-ent">${esc(p.entreprise||"")}</span></div>
-        <div class="pipe-row-meta">
-          ${p.ville?`<span class="pipe-m">📍 ${esc(p.ville)}</span>`:""}
-          ${days!==null?`<span class="pipe-m ${warn?"warn":""}">${warn?"⚠️ à relancer · ":""}🕒 ${days} j</span>`:""}
-          ${done?`<span class="pipe-m">✅ ${done}/${CHECKLIST_ITEMS.length}</span>`:""}
-          ${p.lien_offre?`<a class="pipe-m link" href="${esc(p.lien_offre)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 offre</a>`:""}
+    return `<div class="pipe-row-wrap">
+      <div class="pipe-row" style="border-left-color:${col};">
+        <button class="pipe-check ${chkDone?"full":done?"part":""}" title="Actions à faire (${done}/${all})" onclick="togglePipeCheck('${p.id}',this)">
+          <span class="pipe-check-ico">${chkDone?"✅":"☑️"}</span><span class="pipe-check-n">${done}/${all}</span>
+        </button>
+        <div class="pipe-main" onclick="openPipeCard('${p.id}')">
+          <div class="pipe-row-top">${star}<span class="pipe-poste">${esc(p.poste||"—")}</span><span class="pipe-ent">${esc(p.entreprise||"")}</span></div>
+          <div class="pipe-row-meta">
+            ${p.ville?`<span class="pipe-m">📍 ${esc(p.ville)}</span>`:""}
+            ${days!==null?`<span class="pipe-m ${warn?"warn":""}">${warn?"⚠️ à relancer · ":""}🕒 ${days} j</span>`:""}
+            ${p.lien_offre?`<a class="pipe-m link" href="${esc(p.lien_offre)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 offre</a>`:""}
+          </div>
+        </div>
+        <div class="pipe-steps" onclick="event.stopPropagation()">
+          ${KCOLS.map(c=>{const cc=pipeColor(c.key);const on=p.statut===c.key;const ic=(c.label.match(/^\S+/)||[""])[0];
+            return `<button class="pstep ${on?"on":""}" title="${esc(c.label)}" onclick="changePipeStatut('${p.id}','${c.key}',this)" style="${on?`background:${cc};border-color:${cc};`:`color:${cc};border-color:${cc}55;`}">${ic}</button>`;
+          }).join("")}
         </div>
       </div>
-      <div class="pipe-steps" onclick="event.stopPropagation()">
-        ${KCOLS.map(c=>{const cc=pipeColor(c.key);const on=p.statut===c.key;const ic=(c.label.match(/^\S+/)||[""])[0];
-          return `<button class="pstep ${on?"on":""}" title="${esc(c.label)}" onclick="changePipeStatut('${p.id}','${c.key}',this)" style="${on?`background:${cc};border-color:${cc};`:`color:${cc};border-color:${cc}55;`}">${ic}</button>`;
-        }).join("")}
+      <div class="pipe-checklist" id="pchk-${p.id}" style="display:none;">
+        ${CHECKLIST_ITEMS.map((it,i)=>`<label class="pchk-item"><input type="checkbox" ${chk[it]?"checked":""} onchange="setPipeCheckItem('${p.id}','${esc(it)}',this.checked)"> ${esc(it)}</label>`).join("")}
       </div>
     </div>`;
+  }
+  // ouvre/ferme le panneau checklist inline
+  function togglePipeCheck(id,btn){
+    const el=document.getElementById("pchk-"+id);if(!el)return;
+    const open=el.style.display==="none";
+    document.querySelectorAll(".pipe-checklist").forEach(x=>{if(x!==el)x.style.display="none";});
+    el.style.display=open?"flex":"none";
+    if(btn)btn.classList.toggle("active",open);
+  }
+  // coche/décoche un item et persiste, sans tout re-render (maj du compteur seulement)
+  async function setPipeCheckItem(id,item,checked){
+    const p=pipeline.find(x=>String(x.id)===String(id));if(!p)return;
+    p.checklist=p.checklist||{};
+    if(checked)p.checklist[item]=true; else delete p.checklist[item];
+    if(sb)await sb.from("pipeline").update({checklist:p.checklist}).eq("id",id);
+    // maj du badge compteur sur le bouton ✓ sans réafficher toute la liste
+    const done=Object.keys(p.checklist).filter(k=>p.checklist[k]).length, all=CHECKLIST_ITEMS.length;
+    const wrap=document.getElementById("pchk-"+id);
+    const btn=wrap&&wrap.parentElement.querySelector(".pipe-check");
+    if(btn){btn.querySelector(".pipe-check-n").textContent=done+"/"+all;btn.classList.toggle("full",done===all);btn.classList.toggle("part",done>0&&done<all);btn.querySelector(".pipe-check-ico").textContent=done===all?"✅":"☑️";}
+  }
+
+  // ===== FICHE RICHE d'une candidature (clic sur la ligne) =====
+  function openPipeCard(id){
+    const p=pipeline.find(x=>String(x.id)===String(id));if(!p)return;
+    const col=pipeColor(p.statut);
+    const days=p.date_envoi?Math.round((Date.now()-new Date(p.date_envoi))/86400000):null;
+    const cl=companyLinks(p.entreprise||"");
+    const chk=p.checklist||{};
+    const gmaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(p.ville||p.entreprise||"");
+    const statutLabel=(KCOLS.find(c=>c.key===p.statut)||{}).label||p.statut||"—";
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`
+      <div class="modal-head"><h3>${esc(p.poste||"Candidature")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="pc-company">${esc(p.entreprise||"")}</div>
+      <div class="pc-badges">
+        <span class="pc-badge" style="background:${col}1a;color:${col};border-color:${col}55;">${esc(statutLabel)}</span>
+        ${p.ville?`<span class="pc-badge">📍 ${esc(p.ville)}</span>`:""}
+        ${days!==null?`<span class="pc-badge">🕒 ${days} j</span>`:""}
+        ${p.niveau_envie?`<span class="pc-badge">${"⭐".repeat(Math.min(5,p.niveau_envie))}</span>`:""}
+        ${p.source?`<span class="pc-badge">${esc(p.source)}</span>`:""}
+      </div>
+      ${(p.ville||p.entreprise)?`<div id="pcMap" class="offer-map"><div class="mini-map-loading">Chargement de la carte…</div></div>`:""}
+      <div class="pc-links">
+        ${p.lien_offre?`<a href="${esc(p.lien_offre)}" target="_blank" rel="noopener">📋 Offre</a>`:""}
+        <a href="${cl.site}" target="_blank" rel="noopener">🏢 Site</a>
+        <a href="${cl.wiki}" target="_blank" rel="noopener">📖 Wiki</a>
+        <a href="${cl.avis}" target="_blank" rel="noopener">⭐ Avis</a>
+        <a href="${cl.societe}" target="_blank" rel="noopener">📊 CA</a>
+        <a href="${gmaps}" target="_blank" rel="noopener">🗺 Maps</a>
+      </div>
+      <div class="pc-section-h">✅ Actions</div>
+      <div class="modal-checklist">
+        ${CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="pcchk-${i}" ${chk[it]?"checked":""} onchange="setPipeCheckItem('${p.id}','${esc(it)}',this.checked)"> ${esc(it)}</label>`).join("")}
+      </div>
+      ${p.notes?`<div class="pc-section-h">📝 Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
+      <div class="modal-actions" style="flex-direction:row;justify-content:flex-end;">
+        <button class="btn ghost" onclick="closeModal()">Fermer</button>
+        <button class="btn" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>✏️ Éditer</button>
+      </div>`;
+    document.getElementById("modalBg").classList.add("open");
+    // monte la mini-carte interactive (même logique que les offres)
+    (async()=>{
+      const mb=document.getElementById("pcMap");if(!mb)return;
+      let la=null,lo=null;
+      if(p.ville){const g=await geocode(p.ville);if(g){la=g.lat;lo=g.lon;}}
+      if(!la||!lo){mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gmaps+'" target="_blank" rel="noopener">📍 '+esc(p.ville||p.entreprise||"")+' — voir sur Google Maps</a>';return;}
+      mb.innerHTML="";
+      try{const map=L.map(mb,{scrollWheelZoom:true,attributionControl:false}).setView([la,lo],11);L.tileLayer(tileUrl(),{maxZoom:18}).addTo(map);L.marker([la,lo],{icon:pinIconC(col.startsWith("var")?"#0071e3":col)}).addTo(map);setTimeout(()=>{try{map.invalidateSize();}catch(e){}},250);}catch(e){}
+    })();
   }
   // Faire évoluer une ligne via le dropdown (remplace le drag-and-drop)
   async function changePipeStatut(id,col,btn){

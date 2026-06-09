@@ -386,22 +386,38 @@
   .c-link{display:block;text-align:center;background:transparent;border:1px solid var(--border-light);color:var(--text-dim);padding:8px;border-radius:8px;text-decoration:none;font-size:12.5px;font-weight:600;margin-left:7px;transition:.12s;}
   .c-link:hover{border-color:var(--accent);color:var(--accent);}
 
-  /* KANBAN pipeline */
-  .kanban{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px;}
-  .kcol{background:var(--bg-2);border:1px solid var(--border);border-radius:14px;padding:12px;min-height:200px;}
-  .kcol-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;font-size:13px;font-weight:700;}
-  .kcol-head .kn{background:var(--surface-2);border-radius:999px;padding:1px 8px;font-size:11px;color:var(--text-dim);}
-  .kcol.envoye .kcol-head{color:var(--accent);} .kcol.entretien .kcol-head{color:var(--purple);}
-  .kcol.offre .kcol-head{color:var(--green);} .kcol.refuse .kcol-head{color:var(--red);} .kcol.relance .kcol-head{color:var(--orange);}
-  .kcard{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px;margin-bottom:9px;cursor:grab;transition:.15s;}
-  .kcard:hover{border-color:var(--border-light);}
-  .kcard.dragging{opacity:.4;}
-  .kcard .kt{font-size:13.5px;font-weight:700;line-height:1.3;}
-  .kcard .kc{font-size:12px;color:var(--accent);margin-top:2px;}
-  .kcard .km{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;}
-  .kcard .kdays{font-size:10.5px;color:var(--text-mute);}
-  .kcard .kdays.warn{color:var(--orange);font-weight:700;}
-  .kcol.drop-hover{border-color:var(--accent);background:var(--accent-soft);}
+  /* ===== SUIVI : liste dense (remplace le kanban) ===== */
+  .pipe-overview{margin-bottom:14px;}
+  .pipe-bar{display:flex;gap:3px;height:10px;border-radius:999px;overflow:hidden;background:var(--surface-2);}
+  .pipe-seg{min-width:6px;transition:flex .4s;}
+  .pipe-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+  .pipe-pills{display:flex;gap:7px;flex-wrap:wrap;}
+  .pipe-pill{font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:.15s;white-space:nowrap;}
+  .pipe-pill:hover{border-color:var(--accent);color:var(--text);}
+  .pipe-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .pipe-pill b{font-weight:700;margin-left:3px;}
+  .pipe-list{display:flex;flex-direction:column;gap:8px;}
+  .pipe-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:11px;padding:11px 14px;transition:.12s;}
+  .pipe-row:hover{border-color:var(--border-light);box-shadow:var(--shadow);}
+  .pipe-main{flex:1;min-width:0;cursor:pointer;}
+  .pipe-row-top{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+  .pipe-star{flex-shrink:0;}
+  .pipe-poste{font-size:14.5px;font-weight:700;line-height:1.25;}
+  .pipe-ent{font-size:13px;color:var(--accent);font-weight:600;}
+  .pipe-row-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:5px;}
+  .pipe-m{font-size:11.5px;color:var(--text-dim);white-space:nowrap;}
+  .pipe-m.warn{color:var(--orange);font-weight:700;}
+  .pipe-m.link{color:var(--accent);text-decoration:none;}
+  .pipe-m.link:hover{text-decoration:underline;}
+  .pipe-statut{flex-shrink:0;font-size:12.5px;font-weight:600;padding:7px 30px 7px 12px;border-radius:9px;border:1px solid;background:var(--surface);}
+  @media(max-width:680px){
+    .pipe-row{flex-direction:column;align-items:stretch;gap:9px;}
+    .pipe-statut{width:100%;}
+    .pipe-toolbar{flex-direction:column;align-items:stretch;}
+    .pipe-pills{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .pipe-pills::-webkit-scrollbar{display:none;}
+    .pipe-pill{flex:0 0 auto;}
+  }
 
   /* NOTES libre (bloc-notes) */
   .notes-board{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-top:18px;box-shadow:var(--shadow);}
@@ -496,6 +512,7 @@
   .phase-leg b{color:var(--text);font-weight:600;}
   .phase-leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
   .phase-leg-w{color:var(--text-mute);}
+  .phase-leg-c{font-size:11px;font-weight:600;color:var(--text-dim);background:var(--surface-2);padding:1px 8px;border-radius:999px;}
   /* ===== Historique candidatures (Bilan) ===== */
   .hist-count{font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-dim);background:var(--surface-2);padding:2px 9px;border-radius:999px;margin-left:6px;}
   .hist-wrap{overflow-x:auto;}
@@ -603,7 +620,7 @@
       <div class="pill" data-f="super" onclick="setVeilleFilter('super')">⭐ Coups de cœur <span class="count" id="vc-super">0</span></div>
       <div class="pill" data-f="apostuler" onclick="setVeilleFilter('apostuler')">❤️ À postuler <span class="count" id="vc-apostuler">0</span></div>
       <div class="pill" data-f="reflexion" onclick="setVeilleFilter('reflexion')">🤔 Plus tard <span class="count" id="vc-reflexion">0</span></div>
-      <div class="pill" data-f="postule" onclick="setVeilleFilter('postule')">✅ Postulé <span class="count" id="vc-postule">0</span></div>
+      <div class="pill" data-f="postule" onclick="setVeilleFilter('postule')">✅ Déjà postulé <span class="count" id="vc-postule">0</span></div>
     </div>
     <div class="grid-toolbar" id="grid-toolbar">
       <div class="group-by">
@@ -623,13 +640,13 @@
   <!-- VIEW PIPELINE (kanban) -->
   <div class="view" id="view-pipeline">
     <div class="add-bar">
-      <div><h2 style="font-family:var(--display);font-size:21px;">Pipeline</h2><div class="sub">Glisse une carte entre colonnes pour changer son statut.</div></div>
+      <div><h2 style="font-family:var(--display);font-size:21px;">Suivi de mes candidatures</h2><div class="sub">Glisse une carte entre colonnes pour changer son statut.</div></div>
       <button class="btn sm" onclick="openModal('pipeline')">+ Candidature</button>
     </div>
     <div id="relances-panel"></div>
     <div id="pipeline-content"></div>
     <div class="notes-board">
-      <h3>📝 Bloc-notes pipeline</h3>
+      <h3>📝 Bloc-notes du suivi</h3>
       <textarea id="notes-pipeline" placeholder="Tes notes libres : idées, relances à faire, infos recruteurs..." oninput="saveNote('pipeline')"></textarea>
       <div class="saved" id="saved-pipeline"></div>
     </div>
@@ -668,7 +685,7 @@
         <span class="pill active" data-f="all" onclick="setCarteFilter('all')">Toutes</span>
         <span class="pill" data-f="super" onclick="setCarteFilter('super')">⭐ Coups de cœur</span>
         <span class="pill" data-f="apostuler" onclick="setCarteFilter('apostuler')">❤️ À postuler</span>
-        <span class="pill" data-f="postule" onclick="setCarteFilter('postule')">✅ Postulé</span>
+        <span class="pill" data-f="postule" onclick="setCarteFilter('postule')">✅ Déjà postulé</span>
       </div>
       <select id="carteSectorSel" class="sel" onchange="setCarteSector(this.value)"><option value="all">Tous les secteurs</option></select>
     </div>
@@ -1060,17 +1077,22 @@
   // ===== COCKPIT DU JOUR =====
   function renderCockpit(){
     const now=new Date();now.setHours(0,0,0,0);
-    const aTrier=swipeQueue.length;
+    // À trier — API : offres trouvées par la recherche, pas encore swipées
+    const aTrierApi=swipeQueue.length;
+    // À trier — manuel/lien : offres ajoutées à la main (id "manual_"), pas encore envoyées
+    const aTrierManuel=Object.values(statusMap).filter(s=>s.offer&&String(s.offer.id||"").startsWith("manual_")&&["apostuler","super","reflexion"].includes(s.statut)).length;
+    // À postuler : tout ce qui est gardé prêt à candidater (coup de cœur + à postuler)
     const aPostuler=Object.values(statusMap).filter(s=>s.statut==="apostuler"||s.statut==="super").length;
-    const relances=pipeline.filter(relanceDue).length;
-    const entretiensProches=entretiens.filter(e=>{if(!e.date_entretien)return false;const d=Math.round((new Date(e.date_entretien)-now)/86400000);return d>=0&&d<=7;}).length;
-    const offres=pipeline.filter(p=>p.statut==="Offre reçue").length;
+    const candidatures=pipeline.length;
+    const entretiens_=pipeline.filter(p=>p.statut==="Entretien").length;
+    const propositions=pipeline.filter(p=>p.statut==="Offre reçue").length;
     const items=[
-      {n:aTrier,t:"offres à trier",cls:"blue",act:()=>{setView('veille');}},
-      {n:aPostuler,t:"prêtes à postuler",cls:"green",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
-      {n:relances,t:"relances à faire",cls:"orange",act:()=>setView('pipeline')},
-      {n:entretiensProches,t:"entretiens cette semaine",cls:"purple",act:()=>setView('entretiens')},
-      {n:offres,t:"offres reçues 🎉",cls:"red",act:()=>setView('pipeline')},
+      {n:aTrierApi,t:"à trier (recherche API)",cls:"blue",act:()=>setView('veille')},
+      {n:aTrierManuel,t:"à trier (ajout manuel)",cls:"blue",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
+      {n:aPostuler,t:"à postuler",cls:"green",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
+      {n:candidatures,t:"candidatures envoyées",cls:"purple",act:()=>setView('pipeline')},
+      {n:entretiens_,t:"entretiens",cls:"orange",act:()=>setView('pipeline')},
+      {n:propositions,t:"propositions 🎉",cls:"red",act:()=>setView('pipeline')},
     ];
     document.getElementById("cockpit").innerHTML=items.map((it,i)=>
       `<div class="todo ${it.cls} ${it.n===0?'zero':''}" onclick="cockpitAct(${i})"><div class="n">${it.n}</div><div class="t">${it.t}</div></div>`
@@ -1267,7 +1289,7 @@
         <div class="swipe-actions">
           <div class="sa nope" title="Passer (←)" onclick="swipeAction('ignore')">🚫</div>
           <div class="sa later" title="Plus tard (↓)" onclick="swipeAction('reflexion')">🤔</div>
-          <div class="sa like" title="Garder / à postuler (→)" onclick="swipeAction('apostuler')">❤️</div>
+          <div class="sa like" title="À postuler (→)" onclick="swipeAction('apostuler')">❤️</div>
           <div class="sa super" title="Coup de cœur (↑)" onclick="swipeAction('super')">⭐</div>
         </div>
         <div class="swipe-hint">⌨️ Raccourcis : ← passer · → garder · ↑ coup de cœur · ↓ plus tard</div>
@@ -1456,11 +1478,11 @@
         <button class="mini ${st==="super"?"a-super":""}" onclick='markOffer(${oData},"super")' title="Coup de cœur">⭐</button>
         <button class="mini ${st==="apostuler"?"a-apostuler":""}" onclick='markOffer(${oData},"apostuler")' title="À postuler">❤️</button>
         <button class="mini ${st==="reflexion"?"a-reflexion":""}" onclick='markOffer(${oData},"reflexion")' title="Plus tard">🤔</button>
-        <button class="mini ${st==="postule"?"a-postule":""}" onclick='markOffer(${oData},"postule")' title="Postulé">✅</button>
+        <button class="mini ${st==="postule"?"a-postule":""}" onclick='markOffer(${oData},"postule")' title="Déjà postulé">✅</button>
         <button class="mini ${st==="ignore"?"a-ignore":""}" onclick='markOffer(${oData},"ignore")' title="Passer">🚫</button>
         <button class="mini ${compareIds.includes(o.id)?"a-super":""}" onclick='toggleCompare("${o.id}")' title="Comparer">⚖️</button>
       </div>
-      ${(st==="apostuler"||st==="super")?`<button class="btn sm" style="margin-left:7px;width:calc(100% - 7px);" onclick='markAsApplied(${oData})'>✉️ J'ai postulé → Pipeline</button>`:""}
+      ${(st==="apostuler"||st==="super")?`<button class="btn sm" style="margin-left:7px;width:calc(100% - 7px);" onclick='markAsApplied(${oData})'>✉️ J'ai postulé → Suivi</button>`:""}
       <div class="grid-links" style="padding-left:7px;">
         <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Offre</a>
         ${(o.lieu||o.lat)?`<a href="#" onclick='openOfferMap(${oData});return false;'>📍 Carte</a>`:""}
@@ -1619,14 +1641,14 @@
     statusMap[o.id]={statut:"postule",offer:o};
     if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:"postule",offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
     renderPipeline();renderVeille();renderCockpit();renderBilan();
-    alert("✅ Ajouté au Pipeline (statut Envoyé) !");
+    alert("✅ Ajouté au Suivi (statut Envoyée) !");
   }
   // ===== PIPELINE KANBAN =====
   const KCOLS=[
-    {key:"Envoyé",cls:"envoye",label:"📤 Envoyé"},
+    {key:"Envoyé",cls:"envoye",label:"📤 Candidature envoyée"},
     {key:"Entretien",cls:"entretien",label:"🎤 Entretien"},
-    {key:"Offre reçue",cls:"offre",label:"🎉 Offre"},
-    {key:"Refusé",cls:"refuse",label:"❌ Refusé"},
+    {key:"Offre reçue",cls:"offre",label:"🎉 Offre reçue"},
+    {key:"Refusé",cls:"refuse",label:"❌ Refus"},
     {key:"Non intéressé",cls:"relance",label:"💤 Pas pour moi"},
   ];
   // ===== RELANCES groupées par campagne (vague) =====
@@ -1696,44 +1718,78 @@
     renderRelances();renderCockpit();
   }
 
+  // ===== SUIVI : liste dense filtrable (scale jusqu'à 100+ candidatures) =====
+  let pipeFilter="all", pipeSort="recent";
+  function setPipeFilter(f){pipeFilter=f;renderPipeline();}
+  function setPipeSort(v){pipeSort=v;renderPipeline();}
   function renderPipeline(){
     renderRelances();
     const c=document.getElementById("pipeline-content");
     if(!pipeline.length){c.innerHTML='<div class="empty-cta"><div class="empty-ico">📋</div><div class="empty-h">Aucune candidature suivie</div><div class="empty-p">Quand tu postules à une offre gardée, elle arrive ici. Tu suis alors les relances, entretiens et réponses.</div><div class="empty-actions"><button class="btn" onclick="setView(\'offres\')">Voir mes offres</button></div></div>';renderStatsBadges();return;}
-    c.innerHTML='<div class="kanban">'+KCOLS.map(col=>{
-      const items=pipeline.filter(p=>p.statut===col.key);
-      return `<div class="kcol ${col.cls}" data-col="${col.key}" ondragover="kDragOver(event)" ondragleave="kDragLeave(event)" ondrop="kDrop(event,'${col.key}')">
-        <div class="kcol-head"><span>${col.label}</span><span class="kn">${items.length}</span></div>
-        ${items.map(kCard).join("")}
-      </div>`;
-    }).join("")+'</div>';
+
+    // compteurs par statut (barre de filtres + vue d'ensemble)
+    const counts={}; KCOLS.forEach(col=>counts[col.key]=0);
+    pipeline.forEach(p=>{ if(counts[p.statut]!==undefined)counts[p.statut]++; });
+    const pills=`<span class="pipe-pill ${pipeFilter==="all"?"active":""}" onclick="setPipeFilter('all')">Toutes <b>${pipeline.length}</b></span>`+
+      KCOLS.map(col=>`<span class="pipe-pill ${pipeFilter===col.key?"active":""}" onclick="setPipeFilter('${col.key}')" style="${pipeFilter===col.key?`background:${pipeColor(col.key)};border-color:${pipeColor(col.key)};color:#fff;`:""}">${col.label} <b>${counts[col.key]}</b></span>`).join("");
+
+    // mini-barre proportionnelle (vue d'ensemble visuelle, remplace le "kanban")
+    const segs=KCOLS.filter(col=>counts[col.key]>0).map(col=>`<div class="pipe-seg" style="flex:${counts[col.key]};background:${pipeColor(col.key)};" title="${col.label} : ${counts[col.key]}"></div>`).join("");
+
+    // liste filtrée + triée
+    let list=pipeline.slice();
+    if(pipeFilter!=="all")list=list.filter(p=>p.statut===pipeFilter);
+    list.sort((a,b)=>{
+      if(pipeSort==="envie")return (b.niveau_envie||0)-(a.niveau_envie||0);
+      if(pipeSort==="entreprise")return (a.entreprise||"").localeCompare(b.entreprise||"");
+      if(pipeSort==="statut")return KCOLS.findIndex(c=>c.key===a.statut)-KCOLS.findIndex(c=>c.key===b.statut);
+      return new Date(b.date_envoi||0)-new Date(a.date_envoi||0); // recent par défaut
+    });
+
+    c.innerHTML=`
+      <div class="pipe-overview"><div class="pipe-bar">${segs}</div></div>
+      <div class="pipe-toolbar">
+        <div class="pipe-pills">${pills}</div>
+        <select class="sel" onchange="setPipeSort(this.value)">
+          <option value="recent">Plus récentes</option>
+          <option value="envie" ${pipeSort==="envie"?"selected":""}>Niveau d'envie</option>
+          <option value="entreprise" ${pipeSort==="entreprise"?"selected":""}>Entreprise A→Z</option>
+          <option value="statut" ${pipeSort==="statut"?"selected":""}>Par statut</option>
+        </select>
+      </div>
+      ${list.length?`<div class="pipe-list">${list.map(pipeRow).join("")}</div>`:'<div class="empty">Aucune candidature dans ce filtre.</div>'}`;
     renderStatsBadges();
   }
-  function kCard(p){
+  function pipeColor(key){
+    return {"Envoyé":"var(--accent)","Entretien":"var(--purple)","Offre reçue":"var(--green)","Refusé":"var(--red)","Non intéressé":"var(--text-mute)"}[key]||"var(--text-mute)";
+  }
+  function pipeRow(p){
     const days=p.date_envoi?Math.round((Date.now()-new Date(p.date_envoi))/86400000):null;
     const warn=days!==null&&days>10&&p.statut==="Envoyé";
-    const star=p.niveau_envie>=5?"⭐ ":"";
+    const star=p.niveau_envie>=5?'<span class="pipe-star" title="Coup de cœur">⭐</span>':"";
     const chk=p.checklist||{};const done=Object.keys(chk).filter(k=>chk[k]).length;
-    const chkBar=done?`<div class="kchk">✅ ${done}/${CHECKLIST_ITEMS.length}</div>`:"";
-    return `<div class="kcard" draggable="true" ondragstart="kDragStart(event,'${p.id}')" ondragend="kDragEnd(event)" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>
-      <div class="kt">${star}${esc(p.poste||"—")}</div>
-      <div class="kc">${esc(p.entreprise)}</div>
-      <div class="km">${p.ville?`<span class="chip loc">📍 ${esc(p.ville)}</span>`:""}${chkBar}</div>
-      ${days!==null?`<div class="kdays ${warn?"warn":""}">${warn?"⚠️ à relancer · ":""}${days} j</div>`:""}
+    const col=pipeColor(p.statut);
+    const opts=KCOLS.map(c=>`<option value="${c.key}" ${p.statut===c.key?"selected":""}>${c.label}</option>`).join("");
+    return `<div class="pipe-row" style="border-left-color:${col};">
+      <div class="pipe-main" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>
+        <div class="pipe-row-top">${star}<span class="pipe-poste">${esc(p.poste||"—")}</span><span class="pipe-ent">${esc(p.entreprise||"")}</span></div>
+        <div class="pipe-row-meta">
+          ${p.ville?`<span class="pipe-m">📍 ${esc(p.ville)}</span>`:""}
+          ${days!==null?`<span class="pipe-m ${warn?"warn":""}">${warn?"⚠️ à relancer · ":""}🕒 ${days} j</span>`:""}
+          ${done?`<span class="pipe-m">✅ ${done}/${CHECKLIST_ITEMS.length}</span>`:""}
+          ${p.lien_offre?`<a class="pipe-m link" href="${esc(p.lien_offre)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 offre</a>`:""}
+        </div>
+      </div>
+      <select class="pipe-statut sel" onchange="changePipeStatut('${p.id}',this.value)" style="color:${col};border-color:${col}66;" onclick="event.stopPropagation()">${opts}</select>
     </div>`;
   }
-  let dragId=null;
-  function kDragStart(e,id){dragId=id;e.target.classList.add("dragging");e.stopPropagation();}
-  function kDragEnd(e){e.target.classList.remove("dragging");document.querySelectorAll(".kcol").forEach(c=>c.classList.remove("drop-hover"));}
-  function kDragOver(e){e.preventDefault();e.currentTarget.classList.add("drop-hover");}
-  function kDragLeave(e){e.currentTarget.classList.remove("drop-hover");}
-  async function kDrop(e,col){
-    e.preventDefault();e.currentTarget.classList.remove("drop-hover");
-    const p=pipeline.find(x=>x.id===dragId);if(!p||p.statut===col)return;
+  // Faire évoluer une ligne via le dropdown (remplace le drag-and-drop)
+  async function changePipeStatut(id,col){
+    const p=pipeline.find(x=>String(x.id)===String(id));if(!p||p.statut===col)return;
     p.statut=col;
     const patch={statut:col};
     if(col!=="Envoyé"&&!p.date_reponse){patch.date_reponse=new Date().toISOString().slice(0,10);p.date_reponse=patch.date_reponse;}
-    if(sb)await sb.from("pipeline").update(patch).eq("id",dragId);
+    if(sb)await sb.from("pipeline").update(patch).eq("id",id);
     renderPipeline();renderCockpit();renderBilan();renderStatsBadges();
   }
 
@@ -1887,26 +1943,20 @@
   function expectedActivity(){
     const rows=[];
     const push=(offer_id,etape,ts)=>{ if(offer_id&&ts) rows.push({offer_id:String(offer_id),etape,ts:new Date(ts).toISOString()}); };
-    const keptSet=["apostuler","super","reflexion","postule"];
-    const pipeLiens=new Set(pipeline.map(p=>p.lien_offre).filter(Boolean));
-    const entEntreprises=new Set(entretiens.map(e=>(e.entreprise||"").toLowerCase().trim()).filter(Boolean));
+    const keptSet=["apostuler","super"]; // courbe "À postuler" = coup de cœur + à postuler
+    // 1) À POSTULER : offres marquées apostuler/super dans la veille
     Object.entries(statusMap).forEach(([id,s])=>{
-      if(!s.statut||["passe","ignore","note"].includes(s.statut))return;
-      const d=s.updated_at||(s.offer&&(s.offer.dateAjout||s.offer.dateCreation))||new Date().toISOString();
-      if(keptSet.includes(s.statut)) push(id,"gardee",d);
-      if(s.statut==="postule"){
-        const lien=s.offer&&s.offer.lien;
-        if(!(lien&&pipeLiens.has(lien))) push("js_"+id,"envoyee",d);
+      if(keptSet.includes(s.statut)){
+        const d=s.updated_at||(s.offer&&(s.offer.dateAjout||s.offer.dateCreation))||new Date().toISOString();
+        push(id,"gardee",d);
       }
     });
+    // 2) ENVOYÉ + ENTRETIEN : uniquement depuis le pipeline
     pipeline.forEach(p=>{
       push("pipe_"+p.id,"envoyee",p.date_envoi||new Date().toISOString());
-      if(["Entretien","Offre reçue"].includes(p.statut)){
-        const ent=(p.entreprise||"").toLowerCase().trim();
-        if(!entEntreprises.has(ent)) push("pipe_"+p.id,"entretien",p.date_reponse||p.date_envoi||new Date().toISOString());
-      }
+      if(["Entretien","Offre reçue"].includes(p.statut))
+        push("pipe_"+p.id,"entretien",p.date_reponse||p.date_envoi||new Date().toISOString());
     });
-    entretiens.forEach(e=>{ if(e.date_entretien) push("ent_"+e.id,"entretien",e.date_entretien); });
     return rows;
   }
 
@@ -1922,7 +1972,7 @@
 
   // ===== GRAPH ÉVOLUTION + PHASES =====
   const ACT_META={
-    gardee:{label:"Offres gardées",icon:"📥",color:"#a87ffb"},
+    gardee:{label:"À postuler",icon:"❤️",color:"#a87ffb"},
     envoyee:{label:"Candidatures envoyées",icon:"📤",color:"#22d3ee"},
     entretien:{label:"Entretiens",icon:"🎤",color:"#fbbf24"},
   };
@@ -1967,9 +2017,14 @@
     const weeks={};
     log.forEach(a=>{const w=weekKey(a.ts);(weeks[w]=weeks[w]||{gardee:0,envoyee:0,entretien:0})[a.etape]++;});
     const keys=Object.keys(weeks).sort();
-    const wk=keys.map(k=>{const c=weeks[k];const ranked=[["entretien",c.entretien],["envoyee",c.envoyee],["gardee",c.gardee]].sort((a,b)=>b[1]-a[1]);return {week:k,kind:ranked[0][1]>0?ranked[0][0]:"gardee"};});
+    const wk=keys.map(k=>{const c=weeks[k];const ranked=[["entretien",c.entretien],["envoyee",c.envoyee],["gardee",c.gardee]].sort((a,b)=>b[1]-a[1]);return {week:k,kind:ranked[0][1]>0?ranked[0][0]:"gardee",counts:c};});
     const phases=[];
-    wk.forEach(w=>{const last=phases[phases.length-1];if(last&&last.kind===w.kind){last.weeks++;last.end=w.week;}else phases.push({kind:w.kind,start:w.week,end:w.week,weeks:1});});
+    wk.forEach(w=>{
+      const last=phases[phases.length-1];
+      const merge=(t)=>{t.counts.gardee+=w.counts.gardee;t.counts.envoyee+=w.counts.envoyee;t.counts.entretien+=w.counts.entretien;};
+      if(last&&last.kind===w.kind){last.weeks++;last.end=w.week;merge(last);}
+      else phases.push({kind:w.kind,start:w.week,end:w.week,weeks:1,counts:{gardee:w.counts.gardee,envoyee:w.counts.envoyee,entretien:w.counts.entretien}});
+    });
     return phases.map(p=>({...p,...ACT_META[p.kind]}));
   }
   function phasesHTML(){
@@ -1977,8 +2032,16 @@
     if(!phases.length)return "";
     const total=phases.reduce((a,p)=>a+p.weeks,0);
     const fmt=k=>new Date(k).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
-    const bar=phases.map(p=>`<div class="phase-seg" style="flex:0 0 ${Math.max(8,p.weeks/total*100)}%;background:${p.color};" title="${p.icon} ${p.label} — dès le ${fmt(p.start)} (${p.weeks} sem.)"><span class="phase-emoji">${p.icon}</span></div>`).join("");
-    const legend=phases.map(p=>`<div class="phase-leg"><span class="phase-leg-dot" style="background:${p.color};"></span><b>${p.icon} ${esc(p.label)}</b> · ${fmt(p.start)}${p.weeks>1?" → "+fmt(p.end):""} <span class="phase-leg-w">(${p.weeks} sem.)</span></div>`).join("");
+    // détail des compteurs d'une phase : "❤️ 5 · 📤 3 · 🎤 1" (on masque les zéros)
+    const detail=p=>{
+      const parts=[];
+      if(p.counts.gardee) parts.push("❤️ "+p.counts.gardee);
+      if(p.counts.envoyee) parts.push("📤 "+p.counts.envoyee);
+      if(p.counts.entretien) parts.push("🎤 "+p.counts.entretien);
+      return parts.join(" · ");
+    };
+    const bar=phases.map(p=>`<div class="phase-seg" style="flex:0 0 ${Math.max(8,p.weeks/total*100)}%;background:${p.color};" title="${p.icon} ${p.label} — du ${fmt(p.start)}${p.weeks>1?" au "+fmt(p.end):""} (${p.weeks} sem.)&#10;${detail(p)}"><span class="phase-emoji">${p.icon}</span></div>`).join("");
+    const legend=phases.map(p=>`<div class="phase-leg"><span class="phase-leg-dot" style="background:${p.color};"></span><b>${p.icon} ${esc(p.label)}</b> · ${fmt(p.start)}${p.weeks>1?" → "+fmt(p.end):""} <span class="phase-leg-w">(${p.weeks} sem.)</span>${detail(p)?`<span class="phase-leg-c">${detail(p)}</span>`:""}</div>`).join("");
     return `<div class="phase-bar">${bar}</div><div class="phase-legend">${legend}</div>`;
   }
 
@@ -2023,7 +2086,7 @@
       <div class="bilan-block">
         <h3 class="bilan-h">📈 Évolution dans le temps</h3>
         <div class="evo-legend">
-          <span><i style="background:#a87ffb;"></i> Offres gardées</span>
+          <span><i style="background:#a87ffb;"></i> À postuler</span>
           <span><i style="background:#22d3ee;"></i> Candidatures envoyées</span>
           <span><i style="background:#fbbf24;"></i> Entretiens</span>
         </div>

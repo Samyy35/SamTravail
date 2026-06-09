@@ -280,6 +280,7 @@
   .pc-in{width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:var(--font);font-size:12.5px;margin-bottom:7px;}
   .pc-in:focus{outline:none;border-color:var(--accent);}
   .pc-title{font-weight:600;font-size:13.5px;}
+  .pc-desc{resize:vertical;line-height:1.5;font-family:var(--font);}
   .pc-row{display:flex;gap:7px;} .pc-row .pc-in{flex:1;}
   .pc-link{font-size:11.5px;color:var(--accent);text-decoration:none;}
   .btn-validate{width:100%;margin-top:6px;}
@@ -425,7 +426,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark">🧭</div>
-      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote <span style="opacity:.4;font-size:11px;">v7</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote <span style="opacity:.4;font-size:11px;">v8</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1232,7 +1233,7 @@
       <div class="c-meta">${matchBadge(o)}${newBadge}${addBadge}<span class="chip" style="color:${sec.c};border-color:${sec.c}66;">${sec.key}</span>${o.source?`<span class="chip">${esc(o.source)}</span>`:""}</div>
       <div class="c-title">${esc(o.titre)}</div>
       <div class="c-sub">${esc(o.entreprise)}</div>
-      <div class="c-meta">${o.lieu?`<span class="chip loc">📍 ${esc(o.lieu)}</span>`:""}${o.typeContrat?`<span class="chip">${esc(o.typeContrat)}</span>`:""}${o.salaire?`<span class="chip">💶 ${esc(o.salaire)}</span>`:""}</div>
+      <div class="c-meta">${o.lieu?`<span class="chip loc">📍 ${esc(o.lieu)}</span>`:""}${o.typeContrat?`<span class="chip">${esc(o.typeContrat)}</span>`:""}${o.experience?`<span class="chip">👤 ${esc(o.experience)}</span>`:""}${o.salaire?`<span class="chip">💶 ${esc(o.salaire)}</span>`:""}</div>
       <div class="c-desc">${esc(o.description)}${o.description&&o.description.length>=300?"…":""}</div>
       <div class="c-tags" id="tags-${o.id}">${renderTagsInline(o)}</div>
       <div class="c-actions">
@@ -1264,7 +1265,7 @@
   function openAddLinks(prefillUrl, prefillTitle){
     const origin=window.location.origin;
     // Le bookmarklet capture l'URL ET le titre de la page (depuis TON navigateur = pas de blocage)
-    const bookmarklet="javascript:(function(){var ms=document.getElementsByTagName('meta');function M(p){for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var d={t:'',e:'',l:'',c:''};try{var s=document.getElementsByTagName('script');for(var i=0;i<s.length;i++){if((s[i].type||'').indexOf('ld+json')<0)continue;var j=JSON.parse(s[i].textContent);var a=Array.isArray(j)?j:(j['@graph']?j['@graph']:[j]);for(var k=0;k<a.length;k++){var o=a[k];if(!o)continue;var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=o.title||o.name||'';var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||'';if(o.employmentType)d.c=''+o.employmentType;break;}}if(d.t)break;}}catch(e){}if(!d.t){var h1=document.querySelector('h1');d.t=M('og:title')||(h1&&(h1.innerText||h1.textContent)||'').trim()||document.title||'';}var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c);window.open(u,'_blank');})();";
+    const bookmarklet="javascript:(function(){var ms=document.getElementsByTagName('meta');function M(p){for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(RegExp(String.fromCharCode(92)+'s+','g'),' ').trim();}var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:''};try{var s=document.getElementsByTagName('script');for(var i=0;i<s.length;i++){if((s[i].type||'').indexOf('ld+json')<0)continue;var j=JSON.parse(s[i].textContent);var a=Array.isArray(j)?j:(j['@graph']?j['@graph']:[j]);for(var k=0;k<a.length;k++){var o=a[k];if(!o)continue;var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=o.title||o.name||'';var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||'';if(o.employmentType)d.c=''+o.employmentType;if(o.description)d.ds=strip(o.description).slice(0,500);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s) exp.'):'');}break;}}if(d.t)break;}}catch(e){}if(!d.t){var h1=document.querySelector('h1');d.t=M('og:title')||(h1&&(h1.innerText||h1.textContent)||'').trim()||document.title||'';}if(!d.ds)d.ds=(M('og:description')||M('description')||'').slice(0,500);var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x);window.open(u,'_blank');})();";
     const box=document.getElementById("modalBox");
     box.innerHTML=`
       <div class="modal-head"><h3>➕ Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>
@@ -1310,6 +1311,9 @@
         if(!offer.entreprise && pf.entreprise) offer.entreprise=pf.entreprise;
         if(!offer.lieu && pf.lieu) offer.lieu=pf.lieu;
         if(!offer.typeContrat && pf.typeContrat) offer.typeContrat=pf.typeContrat;
+        if(!offer.description && pf.description) offer.description=pf.description;
+        if(!offer.dateCreation && pf.dateCreation) offer.dateCreation=pf.dateCreation;
+        if(!offer.experience && pf.experience) offer.experience=pf.experience;
         // recalcule la qualité selon ce qu'on a au final
         if(offer.entreprise && offer.titre) quality="full";
         else if(offer.titre) quality= quality==="empty"?"partial":quality;
@@ -1338,6 +1342,8 @@
           <input class="pc-in" placeholder="Contrat (CDI...)" value="${esc(o.typeContrat)}" oninput="addLinksData[${i}].typeContrat=this.value" />
           <input class="pc-in" placeholder="Salaire" value="${esc(o.salaire)}" oninput="addLinksData[${i}].salaire=this.value" />
         </div>
+        <input class="pc-in" placeholder="Expérience (ex: 2 ans)" value="${esc(o.experience||"")}" oninput="addLinksData[${i}].experience=this.value" />
+        <textarea class="pc-in pc-desc" placeholder="Missions / description (optionnel)" oninput="addLinksData[${i}].description=this.value" rows="3">${esc(o.description||"")}</textarea>
         <a class="pc-link" href="${esc(o.lien)}" target="_blank" rel="noopener">🔗 voir l'offre</a>
       </div>`;
     }).join("")+`<button class="btn btn-validate" onclick="validateAddLinks()">✅ Ajouter ${addLinksData.length} offre(s) à « À postuler »</button>`;
@@ -1811,7 +1817,10 @@
         titre:params.get("addTitle")||"",
         entreprise:params.get("addEnt")||"",
         lieu:params.get("addLieu")||"",
-        typeContrat:mapEmp(params.get("addCt")||"")
+        typeContrat:mapEmp(params.get("addCt")||""),
+        description:params.get("addDesc")||"",
+        dateCreation:params.get("addDate")||"",
+        experience:params.get("addXp")||""
       };
       openAddLinks(addUrl);
       history.replaceState({},"",window.location.pathname);

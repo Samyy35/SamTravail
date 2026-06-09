@@ -438,6 +438,9 @@
   .pc-links a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
   .pc-section-h{font-size:12.5px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 9px;}
   .pc-notes{font-size:13px;color:var(--text-dim);line-height:1.55;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;white-space:pre-wrap;}
+  .pc-missing{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--text-dim);line-height:1.5;background:linear-gradient(135deg,var(--accent-soft),var(--purple-soft));border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin-top:16px;}
+  .pc-missing-ico{flex-shrink:0;font-size:15px;}
+  .pc-complete{font-size:12px;color:var(--green);font-weight:600;text-align:center;margin-top:16px;}
   @media(max-width:680px){
     .pipe-row{flex-direction:column;align-items:stretch;gap:9px;}
     .pipe-steps{width:100%;justify-content:space-between;}
@@ -590,7 +593,7 @@
   <div class="flow-strip">
     <button class="flow-step" onclick="setView('veille')"><span class="flow-num">1</span><span class="flow-txt"><b>Trouve</b> des offres</span></button>
     <span class="flow-arrow">→</span>
-    <button class="flow-step" onclick="setView('offres')"><span class="flow-num">2</span><span class="flow-txt"><b>Trie</b> d'un swipe</span></button>
+    <button class="flow-step" onclick="setView('veille')"><span class="flow-num">2</span><span class="flow-txt"><b>Trie</b> d'un swipe</span></button>
     <span class="flow-arrow">→</span>
     <button class="flow-step" onclick="setView('pipeline')"><span class="flow-num">3</span><span class="flow-txt"><b>Suis</b> tes candidatures</span></button>
   </div>
@@ -1107,6 +1110,13 @@
     await loadAll();renderRoadmap();renderCockpit();closeModal();
   }
 
+  // Une "offre gardée" réelle : a un objet offre, un id non-note, et un statut de conservation (pas passé/ignoré/note)
+  function isKeptOffer(s){
+    return s && s.offer && s.statut
+      && !["passe","ignore","note"].includes(s.statut)
+      && !String(s.offer.id||"").startsWith("__note_");
+  }
+
   // ===== COCKPIT DU JOUR =====
   function renderCockpit(){
     const now=new Date();now.setHours(0,0,0,0);
@@ -1121,7 +1131,7 @@
     const propositions=pipeline.filter(p=>p.statut==="Offre reçue").length;
     const items=[
       {n:aTrierApi,t:"à trier (recherche API)",cls:"blue",act:()=>setView('veille')},
-      {n:aTrierManuel,t:"à trier (ajout manuel)",cls:"blue",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
+      {n:aTrierManuel,t:"ajoutées par lien",cls:"blue",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
       {n:aPostuler,t:"à postuler",cls:"green",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
       {n:candidatures,t:"candidatures envoyées",cls:"purple",act:()=>setView('pipeline')},
       {n:entretiens_,t:"entretiens",cls:"orange",act:()=>setView('pipeline')},
@@ -1234,14 +1244,6 @@
   }
 
   // ===== MODE swipe / grid =====
-  // setMode conservé pour compat (le cockpit l'appelle) — bascule juste sur la bonne vue
-  function setMode(m){
-    viewMode=m;
-    if(m==="swipe") setView("veille");
-    else setView("offres");
-    renderVeille();
-  }
-
   // File de swipe = offres pas encore triées
   function matchEntreprise(o){
     if(!entrepriseFilter)return true;
@@ -1262,13 +1264,13 @@
   function renderVeille(){
     // compteurs grille
     const merged={};allOffers.forEach(o=>merged[o.id]=o);
-    Object.keys(statusMap).forEach(id=>{if(!merged[id]&&statusMap[id].offer)merged[id]=statusMap[id].offer;});
+    Object.keys(statusMap).forEach(id=>{if(!merged[id]&&statusMap[id].offer&&!id.startsWith("__note_"))merged[id]=statusMap[id].offer;});
     const list=Object.values(merged);
     const counts={all:list.length,super:0,apostuler:0,reflexion:0,postule:0};
     list.forEach(o=>{const s=statusMap[o.id]&&statusMap[o.id].statut;if(s&&counts[s]!==undefined)counts[s]++;});
     Object.keys(counts).forEach(k=>{const el=document.getElementById("vc-"+k);if(el)el.textContent=counts[k];});
     // badge "Mes offres" = nombre d'offres gardées (hors juste vues)
-    const nbOffres=Object.values(statusMap).filter(s=>s.statut&&s.statut!=="passe").length;
+    const nbOffres=Object.values(statusMap).filter(isKeptOffer).length;
     const nbEl=document.getElementById("nb-offres");if(nbEl)nbEl.textContent=nbOffres;
     // On rend les deux : le swipe (Recherche FT) et la grille (Mes offres)
     renderSwipe(); renderGrid();
@@ -1394,7 +1396,7 @@
 
   function renderGrid(){
     const merged={};allOffers.forEach(o=>merged[o.id]=o);
-    Object.keys(statusMap).forEach(id=>{if(!merged[id]&&statusMap[id].offer)merged[id]=statusMap[id].offer;});
+    Object.keys(statusMap).forEach(id=>{if(!merged[id]&&statusMap[id].offer&&!id.startsWith("__note_"))merged[id]=statusMap[id].offer;});
     let list=Object.values(merged);
     if(veilleFilter!=="all")list=list.filter(o=>statusMap[o.id]&&statusMap[o.id].statut===veilleFilter);
     list=list.filter(matchEntreprise);
@@ -1849,6 +1851,26 @@
     if(btn){btn.querySelector(".pipe-check-n").textContent=done+"/"+all;btn.classList.toggle("full",done===all);btn.classList.toggle("part",done>0&&done<all);btn.querySelector(".pipe-check-ico").textContent=done===all?"✅":"☑️";}
   }
 
+  // Indice discret : champs utiles encore vides sur une candidature
+  function pipeMissing(p){
+    const m=[];
+    if(!p.ville) m.push("le lieu");
+    if(!p.lien_offre) m.push("le lien de l'offre");
+    if(!p.contact) m.push("un contact");
+    if(!p.niveau_envie) m.push("ton niveau d'envie");
+    if(!p.source) m.push("la source");
+    if(!p.notes) m.push("des notes");
+    const chk=p.checklist||{};
+    if(!Object.keys(chk).some(k=>chk[k])) m.push("ta checklist d'actions");
+    return m;
+  }
+  function pipeMissingHTML(p){
+    const m=pipeMissing(p);
+    if(!m.length) return '<div class="pc-complete">✓ Fiche complète — rien à ajouter 👌</div>';
+    const liste=m.length===1?m[0]:m.slice(0,-1).join(", ")+" et "+m[m.length-1];
+    return `<div class="pc-missing"><span class="pc-missing-ico">💡</span><span>Pour une fiche plus solide, tu pourrais ajouter ${liste}.</span></div>`;
+  }
+
   // ===== FICHE RICHE d'une candidature (clic sur la ligne) =====
   function openPipeCard(id){
     const p=pipeline.find(x=>String(x.id)===String(id));if(!p)return;
@@ -1883,6 +1905,7 @@
         ${CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="pcchk-${i}" ${chk[it]?"checked":""} onchange="setPipeCheckItem('${p.id}','${esc(it)}',this.checked)"> ${esc(it)}</label>`).join("")}
       </div>
       ${p.notes?`<div class="pc-section-h">📝 Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
+      ${pipeMissingHTML(p)}
       <div class="modal-actions" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
         <button class="btn" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>✏️ Éditer</button>
@@ -2230,7 +2253,7 @@
   function renderBilan(){
     const c=document.getElementById("bilan-content");if(!c)return;
     reconcileActivity(false);
-    const totalSaved=Object.values(statusMap).filter(s=>s.statut&&s.statut!=="passe").length;
+    const totalSaved=Object.values(statusMap).filter(isKeptOffer).length;
     const envoyees=pipeline.length;
     if(!envoyees && !totalSaved){
       c.innerHTML='<div class="empty-cta"><div class="empty-ico">📊</div><div class="empty-h">Ton bilan se construit ici</div><div class="empty-p">Dès que tu gardes des offres et que tu postules, tu verras tes chiffres : taux de réponse, entretiens décrochés, et l\'avancement de tes campagnes.</div><div class="empty-actions"><button class="btn" onclick="setView(\'veille\')">Commencer</button></div></div>';
@@ -2249,7 +2272,7 @@
     if(withResp.length){const sum=withResp.reduce((a,p)=>a+Math.round((new Date(p.date_reponse)-new Date(p.date_envoi))/86400000),0);tempsMoyen=Math.round(sum/withResp.length)+" j";}
     // répartition par secteur (offres gardées)
     const bySector={};
-    Object.values(statusMap).forEach(s=>{if(s.offer&&s.statut!=="passe"){const k=detectSector(s.offer).key;bySector[k]=(bySector[k]||0)+1;}});
+    Object.values(statusMap).forEach(s=>{if(isKeptOffer(s)){const k=detectSector(s.offer).key;bySector[k]=(bySector[k]||0)+1;}});
     const secEntries=Object.entries(bySector).sort((a,b)=>b[1]-a[1]);
     const maxSec=Math.max(1,...secEntries.map(e=>e[1]));
 

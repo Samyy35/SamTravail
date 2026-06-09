@@ -409,10 +409,18 @@
   .pipe-m.warn{color:var(--orange);font-weight:700;}
   .pipe-m.link{color:var(--accent);text-decoration:none;}
   .pipe-m.link:hover{text-decoration:underline;}
-  .pipe-statut{flex-shrink:0;font-size:12.5px;font-weight:600;padding:7px 30px 7px 12px;border-radius:9px;border:1px solid;background:var(--surface);}
+  .pipe-steps{flex-shrink:0;display:flex;gap:5px;}
+  .pstep{width:34px;height:34px;border-radius:9px;border:1.5px solid;background:var(--surface);font-size:15px;cursor:pointer;display:grid;place-items:center;transition:transform .12s,background .15s,border-color .15s,box-shadow .15s;line-height:1;}
+  .pstep:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+  .pstep.on{color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18);}
+  .pstep.pop{animation:pstepPop .4s cubic-bezier(.2,.9,.3,1.4);}
+  @keyframes pstepPop{0%{transform:scale(1);}40%{transform:scale(1.45);}100%{transform:scale(1);}}
+  .pipe-row.flash{animation:rowFlash .5s ease;}
+  @keyframes rowFlash{0%{background:var(--surface);}30%{background:color-mix(in srgb,var(--flash) 22%,var(--surface));border-left-width:7px;}100%{background:var(--surface);}}
   @media(max-width:680px){
     .pipe-row{flex-direction:column;align-items:stretch;gap:9px;}
-    .pipe-statut{width:100%;}
+    .pipe-steps{width:100%;justify-content:space-between;}
+    .pstep{flex:1;}
     .pipe-toolbar{flex-direction:column;align-items:stretch;}
     .pipe-pills{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
     .pipe-pills::-webkit-scrollbar{display:none;}
@@ -936,17 +944,21 @@
     const list=carteOffers();
     const cnt=document.getElementById("carteCount");
     if(cnt)cnt.textContent="Localisation de "+list.length+" offre(s)…";
-    const pts=[];
-    for(const x of list){
+    // géocodage en parallèle (bien plus rapide qu'en série sur beaucoup d'offres)
+    const located=await Promise.all(list.map(async x=>{
       const o=x.o;let la=o.lat,lo=o.lon;
       if((!la||!lo)&&o.lieu){const g=await geocode(o.lieu);if(g){la=g.lat;lo=g.lon;}}
-      if(!la||!lo)continue;
+      return (la&&lo)?{x,la,lo}:null;
+    }));
+    const pts=[];
+    located.filter(Boolean).forEach(({x,la,lo})=>{
+      const o=x.o;
       const col=x.statut==="super"?"#f5a623":x.statut==="postule"?"#34c759":x.statut==="apostuler"?"#0071e3":"#9aa2b4";
       const m=L.marker([la,lo],{icon:pinIconC(col)}).addTo(carteMap);
       const badge=x.statut==="super"?"⭐ ":x.statut==="postule"?"✅ ":"";
       m.bindPopup('<b>'+badge+esc(o.titre||"")+'</b><br>'+esc(o.entreprise||"")+'<br><span style="color:#888">'+esc(o.lieu||"")+'</span>'+(o.lien?'<br><a href="'+esc(o.lien)+'" target="_blank" rel="noopener">voir l\'offre</a>':""));
       carteMarkers.push(m);pts.push([la,lo]);
-    }
+    });
     if(cnt)cnt.textContent=pts.length+" offre(s) sur la carte"+(list.length>pts.length?" ("+(list.length-pts.length)+" sans lieu)":"");
     setTimeout(()=>{try{carteMap.invalidateSize();if(pts.length===1)carteMap.setView(pts[0],10);else if(pts.length>1)carteMap.fitBounds(pts,{padding:[40,40],maxZoom:11});}catch(e){}},300);
   }
@@ -1780,17 +1792,32 @@
           ${p.lien_offre?`<a class="pipe-m link" href="${esc(p.lien_offre)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗 offre</a>`:""}
         </div>
       </div>
-      <select class="pipe-statut sel" onchange="changePipeStatut('${p.id}',this.value)" style="color:${col};border-color:${col}66;" onclick="event.stopPropagation()">${opts}</select>
+      <div class="pipe-steps" onclick="event.stopPropagation()">
+        ${KCOLS.map(c=>{const cc=pipeColor(c.key);const on=p.statut===c.key;const ic=(c.label.match(/^\S+/)||[""])[0];
+          return `<button class="pstep ${on?"on":""}" title="${esc(c.label)}" onclick="changePipeStatut('${p.id}','${c.key}',this)" style="${on?`background:${cc};border-color:${cc};`:`color:${cc};border-color:${cc}55;`}">${ic}</button>`;
+        }).join("")}
+      </div>
     </div>`;
   }
   // Faire évoluer une ligne via le dropdown (remplace le drag-and-drop)
-  async function changePipeStatut(id,col){
+  async function changePipeStatut(id,col,btn){
     const p=pipeline.find(x=>String(x.id)===String(id));if(!p||p.statut===col)return;
+    // mini-animation de confirmation sur la ligne (flash) avant re-render
+    if(btn){
+      const row=btn.closest(".pipe-row");
+      btn.classList.add("pop");
+      if(row){
+        const cc=pipeColor(col);
+        row.style.setProperty("--flash",cc);
+        row.classList.add("flash");
+      }
+    }
     p.statut=col;
     const patch={statut:col};
     if(col!=="Envoyé"&&!p.date_reponse){patch.date_reponse=new Date().toISOString().slice(0,10);p.date_reponse=patch.date_reponse;}
     if(sb)await sb.from("pipeline").update(patch).eq("id",id);
-    renderPipeline();renderCockpit();renderBilan();renderStatsBadges();
+    // laisse l'animation se jouer un court instant puis rafraîchit
+    setTimeout(()=>{renderPipeline();renderCockpit();renderBilan();renderStatsBadges();},260);
   }
 
   // ===== REVE =====
@@ -2288,9 +2315,9 @@
       };
       openAddLinks(addUrl);
       history.replaceState({},"",window.location.pathname);
-    }else{
-      doSearch();
     }
+    // NB : on ne lance plus la recherche API automatiquement à l'ouverture
+    // (économise les quotas) — l'écran "Trouver" invite à cliquer "Chercher".
   })();
   // map des types d'emploi schema.org -> libellé FR
   function mapEmp(t){

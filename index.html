@@ -1264,7 +1264,7 @@
   function openAddLinks(prefillUrl, prefillTitle){
     const origin=window.location.origin;
     // Le bookmarklet capture l'URL ET le titre de la page (depuis TON navigateur = pas de blocage)
-    const bookmarklet="javascript:(function(){var ms=document.getElementsByTagName('meta');function M(p){for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var d={t:'',e:'',l:'',c:''};try{var s=document.getElementsByTagName('script');for(var i=0;i<s.length;i++){if((s[i].type||'').indexOf('ld+json')<0)continue;var j=JSON.parse(s[i].textContent);var a=Array.isArray(j)?j:(j['@graph']?j['@graph']:[j]);for(var k=0;k<a.length;k++){var o=a[k];if(!o)continue;var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=o.title||o.name||'';var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||'';if(o.employmentType)d.c=''+o.employmentType;break;}}if(d.t)break;}}catch(e){}if(!d.t)d.t=M('og:title')||document.title||'';var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c);window.open(u,'_blank');})();";
+    const bookmarklet="javascript:(function(){var ms=document.getElementsByTagName('meta');function M(p){for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var d={t:'',e:'',l:'',c:''};try{var s=document.getElementsByTagName('script');for(var i=0;i<s.length;i++){if((s[i].type||'').indexOf('ld+json')<0)continue;var j=JSON.parse(s[i].textContent);var a=Array.isArray(j)?j:(j['@graph']?j['@graph']:[j]);for(var k=0;k<a.length;k++){var o=a[k];if(!o)continue;var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=o.title||o.name||'';var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||'';if(o.employmentType)d.c=''+o.employmentType;break;}}if(d.t)break;}}catch(e){}if(!d.t){var h1=document.querySelector('h1');d.t=M('og:title')||(h1&&(h1.innerText||h1.textContent)||'').trim()||document.title||'';}var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c);window.open(u,'_blank');})();";
     const box=document.getElementById("modalBox");
     box.innerHTML=`
       <div class="modal-head"><h3>➕ Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>
@@ -1745,9 +1745,9 @@
     const nom=userName?(" "+userName):"";
     document.getElementById("greet").textContent=(h<12?"Bonjour":h<18?"Bon après-midi":"Bonsoir")+nom+" 👋";
   }
-  async function loadProfil(){
+  async function loadProfil(skipAsk){
     if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur&&data.valeur.prenom)userName=data.valeur.prenom;}catch(e){}}
-    if(!userName){ askName(); }
+    if(!userName && !skipAsk){ askName(); }
     else initDate();
   }
   function askName(){
@@ -1796,10 +1796,12 @@
   }
   (async function init(){
     initDate();renderRoadmap();
-    await loadAll();loadNotes();loadStreak();loadTheme();loadProfil();refreshAll();
-    // Bookmarklet : si ?addUrl=... -> ouvre directement l'ajout par lien
     const params=new URLSearchParams(window.location.search);
     const addUrl=params.get("addUrl");
+    await loadAll();loadNotes();loadStreak();loadTheme();
+    await loadProfil(!!addUrl);  // si on arrive via bookmarklet, on ne demande pas le nom maintenant
+    refreshAll();
+    // Bookmarklet : si ?addUrl=... -> ouvre directement l'ajout par lien
     if(addUrl){
       window._prefill={
         titre:params.get("addTitle")||"",

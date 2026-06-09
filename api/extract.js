@@ -98,6 +98,18 @@ export default async function handler(req, res) {
     const siteName = og("site_name");
     if (siteName) result.source = clean(siteName);
 
+    // ---- déduire l'entreprise depuis le titre de page si absente ----
+    if (!result.entreprise) {
+      const raw = clean(titleTag(html));
+      let m = raw.match(/\bchez\s+([^|·\-–—]+)/i);
+      if (m) result.entreprise = clean(m[1]);
+      else {
+        const parts = raw.split(/\s[-–—|·]\s/).map((s) => s.trim()).filter(Boolean);
+        if (parts.length >= 3 && parts[1].length < 40 && !/jungle|indeed|linkedin|apec|hellowork|glassdoor/i.test(parts[1]))
+          result.entreprise = parts[1];
+      }
+    }
+
     // ---- normalisation ----
     result.titre = result.titre || "";
     result.entreprise = result.entreprise || "";

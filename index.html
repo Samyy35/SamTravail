@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sam'Travail — ta recherche d'emploi</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%230071e3%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23af52de%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20rx%3D%2724%27%20fill%3D%27url%28%23g%29%27%2F%3E%3Cpath%20d%3D%27M50%2016%20L64%2054%20L50%2046%20L36%2054%20Z%27%20fill%3D%27%23ffffff%27%2F%3E%3Cpath%20d%3D%27M50%2084%20L36%2054%20L50%2062%20L64%2054%20Z%27%20fill%3D%27%23ffffff%27%20fill-opacity%3D%270.5%27%2F%3E%3C%2Fsvg%3E">
+<meta name="theme-color" content="#0071e3">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -72,6 +74,16 @@
   .empty-h{font-family:var(--display);font-size:20px;font-weight:600;margin-bottom:8px;}
   .empty-p{font-size:14px;color:var(--text-dim);max-width:440px;margin:0 auto 20px;line-height:1.6;}
   .empty-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  /* Encart installation bookmarklet */
+  .bm-setup{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:linear-gradient(135deg,var(--accent-soft),var(--purple-soft));border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:16px;}
+  .bm-setup-txt{flex:1;min-width:200px;}
+  .bm-setup-h{font-weight:700;font-size:14px;margin-bottom:3px;}
+  .bm-setup-p{font-size:12.5px;color:var(--text-dim);line-height:1.5;}
+  .bm-setup .bookmarklet-btn{cursor:grab;}
+  .bm-setup-done{background:none;border:none;color:var(--text-dim);font-size:12px;cursor:pointer;font-family:var(--font);text-decoration:underline;white-space:nowrap;}
+  .bm-setup-done:hover{color:var(--text);}
+  /* stat live */
+  .stat-live{border-color:var(--accent);background:var(--accent-soft);}
   .brand h1{font-family:var(--display);font-size:27px;font-weight:600;letter-spacing:-.5px;}
   .brand .tag{color:var(--text-dim);font-size:13px;margin-top:-2px;}
   .greeting{text-align:right;}
@@ -143,6 +155,15 @@
   .nav-tab.active{color:#fff;background:var(--accent);box-shadow:0 4px 14px var(--glow);}
   .nav-tab .badge{background:rgba(255,255,255,.2);border-radius:999px;padding:0 7px;font-size:11px;font-weight:700;}
   .nav-tab:not(.active) .badge{background:var(--surface-3);}
+  .nav-more{position:relative;flex:1;display:flex;}
+  .nav-more-btn{width:100%;}
+  .more-chev{font-size:11px;opacity:.7;}
+  .nav-more-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;min-width:200px;z-index:30;display:none;flex-direction:column;gap:2px;}
+  .nav-more-menu.open{display:flex;}
+  .nav-more-menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;background:transparent;border:none;color:var(--text-dim);font-family:var(--font);font-size:13.5px;font-weight:600;padding:10px 12px;border-radius:8px;cursor:pointer;text-align:left;}
+  .nav-more-menu button:hover{background:var(--surface-2);color:var(--text);}
+  .nav-more-menu button.active{color:var(--accent);background:var(--accent-soft);}
+  .nav-more-menu .badge{background:var(--surface-3);border-radius:999px;padding:0 7px;font-size:11px;font-weight:700;}
 
   .view{display:none;animation:fade .3s;} .view.active{display:block;}
   @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
@@ -280,6 +301,7 @@
   .pc-in{width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:var(--font);font-size:12.5px;margin-bottom:7px;}
   .pc-in:focus{outline:none;border-color:var(--accent);}
   .pc-title{font-weight:600;font-size:13.5px;}
+  .pc-desc{resize:vertical;line-height:1.5;font-family:var(--font);}
   .pc-row{display:flex;gap:7px;} .pc-row .pc-in{flex:1;}
   .pc-link{font-size:11.5px;color:var(--accent);text-decoration:none;}
   .btn-validate{width:100%;margin-top:6px;}
@@ -349,6 +371,9 @@
   .chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:3px 9px;border-radius:999px;}
   .chip.loc{color:var(--text);} .chip.haute{color:var(--orange);border-color:var(--orange);} .chip.green{color:var(--green);border-color:var(--green);}
   .c-desc{font-size:12.5px;color:var(--text-dim);padding-left:7px;flex:1;}
+  .c-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .desc-more{margin:2px 0 0 7px;background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;font-family:var(--font);}
+  .desc-more:hover{text-decoration:underline;}
   .c-date{font-size:11px;color:var(--text-mute);padding-left:7px;}
   .c-actions{display:flex;gap:6px;flex-wrap:wrap;padding-left:7px;margin-top:3px;}
   .mini{flex:1;min-width:46px;font-size:14px;padding:7px 5px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;transition:.12s;font-family:var(--font);}
@@ -406,7 +431,17 @@
   .ci-chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:4px 9px;border-radius:8px;}
   .ci-na{font-size:11px;color:var(--text-mute);font-style:italic;}
   .grid-links{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
-  .grid-links a{flex:1;text-align:center;font-size:11.5px;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:7px;padding:6px 4px;transition:.12s;}
+  .grid-links a{flex:1;text-align:center;font-size:11.5px;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:7px;padding:6px 4px;transition:.12s;cursor:pointer;}
+  .offer-map{height:340px;border-radius:12px;overflow:hidden;margin-top:6px;border:1px solid var(--border);}
+  .carte-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+  .sel{font-family:var(--font);font-size:13px;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:7px 34px 7px 15px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e6e73' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;transition:.15s;}
+  .sel:hover{border-color:var(--border-light);}
+  .sel:focus{outline:none;border-color:var(--accent);}
+  .carte-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--text-dim);}
+  .carte-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .carte-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .carte-map{height:540px;border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);}
+  @media(max-width:640px){.carte-map{height:420px;}}
   .grid-links a:hover{border-color:var(--accent);color:var(--accent);}
 
   /* Mini-map interactive (Leaflet) */
@@ -418,6 +453,34 @@
   .leaflet-control-zoom a:hover{background:var(--surface-2)!important;}
 
   @media(max-width:600px){.grid{grid-template-columns:1fr;}.swipe-card-wrap{height:560px;}.kanban{grid-template-columns:repeat(5,minmax(180px,1fr));}}
+  /* ===== MOBILE ===== */
+  @media(max-width:680px){
+    .wrap{padding:16px 14px 80px;}
+    header{align-items:flex-start;}
+    .greeting{text-align:left;}
+    .theme-toggle{position:absolute;top:16px;right:14px;}
+    /* nav : défilement horizontal au lieu d'un pavé qui passe à la ligne */
+    .nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .nav::-webkit-scrollbar{display:none;}
+    .nav-tab{flex:0 0 auto;padding:10px 14px;}
+    .nav-more{flex:0 0 auto;}
+    .nav-more-menu{right:auto;left:0;}
+    /* outils empilés */
+    .sec-head,.add-bar{flex-direction:column;align-items:stretch;gap:10px;}
+    .segmented{display:flex;gap:8px;}
+    .segmented .btn{flex:1;}
+    .grid-toolbar{flex-direction:column;align-items:stretch;gap:10px;}
+    .group-by{justify-content:space-between;}
+    .carte-toolbar{gap:8px;}
+    .pills{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .pills::-webkit-scrollbar{display:none;}
+    .pill{flex:0 0 auto;}
+    /* cartes pleine largeur + kanban défilant */
+    .grid{grid-template-columns:1fr;}
+    .kanban{grid-template-columns:repeat(5,minmax(76vw,1fr));}
+    .stats-grid{grid-template-columns:repeat(2,1fr);}
+    .modal{width:94vw;max-height:88vh;}
+  }
   /* ===== Évolution & phases (Bilan) ===== */
   .evo-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--text-dim);margin-bottom:12px;}
   .evo-legend span{display:inline-flex;align-items:center;gap:6px;}
@@ -433,6 +496,16 @@
   .phase-leg b{color:var(--text);font-weight:600;}
   .phase-leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
   .phase-leg-w{color:var(--text-mute);}
+  /* ===== Historique candidatures (Bilan) ===== */
+  .hist-count{font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-dim);background:var(--surface-2);padding:2px 9px;border-radius:999px;margin-left:6px;}
+  .hist-wrap{overflow-x:auto;}
+  .hist-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .hist-table th{text-align:left;font-size:11px;font-weight:600;color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;padding:6px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .hist-table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .hist-table tr:last-child td{border-bottom:none;}
+  .hist-table tbody tr:hover{background:var(--surface-2);}
+  .hist-date{color:var(--text-dim);white-space:nowrap;font-size:12px;}
+  .hist-stat{font-size:11px;font-weight:600;padding:2px 9px;border:1px solid;border-radius:999px;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -440,7 +513,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark">🧭</div>
-      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote</div></div>
+      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote <span style="opacity:.4;font-size:11px;">v17</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -476,15 +549,24 @@
     <button class="flow-step" onclick="setView('pipeline')"><span class="flow-num">3</span><span class="flow-txt"><b>Suis</b> tes candidatures</span></button>
   </div>
 
+  <!-- ENCART INSTALLATION BOOKMARKLET (visible tant que pas installé) -->
+  <div id="bmSetup" class="bm-setup" style="display:none;"></div>
+
   <!-- NAV -->
   <div class="nav" id="nav">
-    <button class="nav-tab active" data-view="offres" onclick="setView('offres')">📥 Mes offres <span class="badge" id="nb-offres">0</span></button>
-    <button class="nav-tab" data-view="veille" onclick="setView('veille')">🔍 Trouver</button>
-    <button class="nav-tab" data-view="pipeline" onclick="setView('pipeline')">📋 Suivi <span class="badge" id="nb-pipeline">0</span></button>
-    <button class="nav-tab" data-view="reve" onclick="setView('reve')">🎯 Rêve <span class="badge" id="nb-reve">0</span></button>
-    <button class="nav-tab" data-view="reseau" onclick="setView('reseau')">🤝 Réseau <span class="badge" id="nb-reseau">0</span></button>
-    <button class="nav-tab" data-view="entretiens" onclick="setView('entretiens')">🎤 Entretiens <span class="badge" id="nb-entretiens">0</span></button>
-    <button class="nav-tab" data-view="bilan" onclick="setView('bilan')">📊 Bilan</button>
+    <button class="nav-tab active" data-view="offres" onclick="setView('offres')">Mes offres <span class="badge" id="nb-offres">0</span></button>
+    <button class="nav-tab" data-view="veille" onclick="setView('veille')">Trouver</button>
+    <button class="nav-tab" data-view="pipeline" onclick="setView('pipeline')">Suivi <span class="badge" id="nb-pipeline">0</span></button>
+    <button class="nav-tab" data-view="bilan" onclick="setView('bilan')">Bilan</button>
+    <button class="nav-tab" data-view="carte" onclick="setView('carte')">Carte</button>
+    <div class="nav-more">
+      <button class="nav-tab nav-more-btn" id="moreBtn" onclick="toggleMore(event)">Plus <span class="more-chev">▾</span></button>
+      <div class="nav-more-menu" id="moreMenu">
+        <button data-view="reve" onclick="setView('reve')">Entreprises rêve <span class="badge" id="nb-reve">0</span></button>
+        <button data-view="reseau" onclick="setView('reseau')">Réseau <span class="badge" id="nb-reseau">0</span></button>
+        <button data-view="entretiens" onclick="setView('entretiens')">Entretiens <span class="badge" id="nb-entretiens">0</span></button>
+      </div>
+    </div>
   </div>
 
   <!-- VIEW VEILLE -->
@@ -501,7 +583,7 @@
       <p class="hint">💡 <b>Virgule</b> = OU (plusieurs recherches). <b>Espace</b> = ET (tous les mots requis). Ex : <code>supply chain automobile, demand planning</code> → cherche (supply chain ET automobile) OU (demand planning). Le champ <b>Entreprise</b> filtre les résultats en direct.</p>
     </div>
     <div class="sec-head">
-      <div><h2>🔍 Trouver des offres</h2><div class="sub" id="veille-info">Cherche, puis swipe pour décider vite : ❤️ je garde · 🤔 plus tard · 🚫 non. Ce que tu gardes va dans « Mes offres ».</div></div>
+      <div><h2>Trouver des offres</h2><div class="sub" id="veille-info">Cherche, puis swipe pour décider vite : ❤️ je garde · 🤔 plus tard · 🚫 non. Ce que tu gardes va dans « Mes offres ».</div></div>
     </div>
     <div id="errorZone"></div>
     <div id="veille-swipe"></div>
@@ -510,7 +592,7 @@
   <!-- VIEW MES OFFRES (offres gardées + ajout par lien) -->
   <div class="view active" id="view-offres">
     <div class="sec-head">
-      <div><h2>📥 Mes offres</h2><div class="sub" id="offres-info">Tes offres gardées et ajoutées à la main — trie, groupe, suis.</div></div>
+      <div><h2>Mes offres</h2><div class="sub" id="offres-info">Tes offres gardées et ajoutées à la main — trie, groupe, suis.</div></div>
       <div class="segmented">
         <button class="btn ghost sm" onclick="openCriteres()">⚙️ Critères</button>
         <button class="btn" onclick="openAddLinks()">➕ Ajouter par lien</button>
@@ -525,13 +607,13 @@
     </div>
     <div class="grid-toolbar" id="grid-toolbar">
       <div class="group-by">
-        <span class="gb-label">Grouper par :</span>
-        <div id="grid-group" class="gp-row">
-          <span class="gp active" data-g="secteur" onclick="setGridGroup('secteur')">🏭 Secteur</span>
-          <span class="gp" data-g="date" onclick="setGridGroup('date')">📅 Date</span>
-          <span class="gp" data-g="entreprise" onclick="setGridGroup('entreprise')">🏢 Entreprise</span>
-          <span class="gp" data-g="lieu" onclick="setGridGroup('lieu')">📍 Lieu</span>
-        </div>
+        <label class="gb-label" for="gridGroupSel">Grouper par</label>
+        <select id="gridGroupSel" class="sel" onchange="setGridGroup(this.value)">
+          <option value="secteur">Secteur</option>
+          <option value="date">Date</option>
+          <option value="entreprise">Entreprise</option>
+          <option value="lieu">Lieu</option>
+        </select>
       </div>
       <button class="hide-seen-btn" id="hideSeenBtn" onclick="toggleHideSeen()">👁️ Cacher déjà triées</button>
     </div>
@@ -574,8 +656,28 @@
 
   <!-- VIEW BILAN (stats + campagnes) -->
   <div class="view" id="view-bilan">
-    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">📊 Bilan de ma recherche</h2><div class="sub">Tes chiffres et l'avancement de tes campagnes.</div></div><button class="btn sm ghost" onclick="exportCSV()">⬇️ Export CSV</button></div>
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Bilan de ma recherche</h2><div class="sub">Tes chiffres et l'avancement de tes campagnes.</div></div><button class="btn sm ghost" onclick="exportCSV()">⬇️ Export CSV</button></div>
     <div id="bilan-content"></div>
+  </div>
+
+  <!-- VIEW CARTE -->
+  <div class="view" id="view-carte">
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Carte des offres</h2><div class="sub" id="carteCount">Tes offres géolocalisées.</div></div></div>
+    <div class="carte-toolbar">
+      <div id="carte-pills" class="pills">
+        <span class="pill active" data-f="all" onclick="setCarteFilter('all')">Toutes</span>
+        <span class="pill" data-f="super" onclick="setCarteFilter('super')">⭐ Coups de cœur</span>
+        <span class="pill" data-f="apostuler" onclick="setCarteFilter('apostuler')">❤️ À postuler</span>
+        <span class="pill" data-f="postule" onclick="setCarteFilter('postule')">✅ Postulé</span>
+      </div>
+      <select id="carteSectorSel" class="sel" onchange="setCarteSector(this.value)"><option value="all">Tous les secteurs</option></select>
+    </div>
+    <div class="carte-legend">
+      <span><i style="background:#f5a623;"></i> Coup de cœur</span>
+      <span><i style="background:#0071e3;"></i> À postuler</span>
+      <span><i style="background:#34c759;"></i> Postulé</span>
+    </div>
+    <div id="carteMap" class="carte-map"></div>
   </div>
 </div>
 
@@ -703,6 +805,19 @@
   const MAP_STYLE="positron";
   let geoCache={};
   let mapInstances={}; // pour nettoyer les cartes Leaflet entre les slides
+  // Géocodage ville -> {lat,lon} (réutilisable, avec cache)
+  async function geocode(lieu){
+    if(!lieu)return null;
+    const key=lieu.toLowerCase();
+    if(geoCache[key])return geoCache[key];
+    try{
+      const q=lieu.replace(/[()]/g," ").trim();
+      const r=await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(q)+"&type=city&filter=countrycode:fr,be,ch,lu&format=json&limit=1&apiKey="+GEOAPIFY_KEY);
+      const d=await r.json();
+      if(d.results&&d.results[0]){geoCache[key]={lat:d.results[0].lat,lon:d.results[0].lon};return geoCache[key];}
+    }catch(e){}
+    return null;
+  }
   // Placeholder : un conteneur qui recevra la carte interactive
   function miniMapHtml(o){
     if(!o.lieu && !o.lat) return "";
@@ -744,6 +859,79 @@
       // recalcule la taille après affichage (Leaflet a besoin que le conteneur soit visible)
       setTimeout(()=>{try{map.invalidateSize();}catch(e){}},200);
     }catch(e){ box.innerHTML='<div class="mini-map-loading">📍 '+esc(lieu||"")+'</div>'; }
+  }
+
+  function tileUrl(){return "https://maps.geoapify.com/v1/tile/"+MAP_STYLE+"/{z}/{x}/{y}.png?apiKey="+GEOAPIFY_KEY;}
+  function pinIcon(){return L.divIcon({className:"job-pin",html:'<div class="job-pin-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]});}
+  function pinIconC(c){return L.divIcon({className:"job-pin",html:'<div class="job-pin-dot" style="background:'+c+';box-shadow:0 0 0 2px '+c+',0 2px 6px rgba(0,0,0,.4);"></div>',iconSize:[18,18],iconAnchor:[9,9]});}
+
+  // ===== APERÇU CARTE D'UNE OFFRE (clic) =====
+  async function openOfferMap(o){
+    if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3>📍 ${esc(o.titre||"Offre")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="modal-sub">${esc(o.entreprise||"")}${o.lieu?" · "+esc(o.lieu):""}</div>
+      <div id="offerMap" class="offer-map"><div class="mini-map-loading">Chargement de la carte…</div></div>`;
+    document.getElementById("modalBg").classList.add("open");
+    let la=o.lat,lo=o.lon;
+    if((!la||!lo)&&o.lieu){const g=await geocode(o.lieu);if(g){la=g.lat;lo=g.lon;}}
+    const mb=document.getElementById("offerMap");if(!mb)return;
+    if(!la||!lo){
+      const gm="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(o.lieu||"");
+      mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gm+'" target="_blank" rel="noopener">📍 Lieu non localisable — voir sur Google Maps</a>';return;
+    }
+    mb.innerHTML="";
+    try{
+      const map=L.map(mb,{scrollWheelZoom:true,attributionControl:false}).setView([la,lo],11);
+      L.tileLayer(tileUrl(),{maxZoom:18}).addTo(map);
+      L.marker([la,lo],{icon:pinIcon()}).addTo(map);
+      setTimeout(()=>{try{map.invalidateSize();}catch(e){}},250);
+    }catch(e){}
+  }
+
+  // ===== CARTE GÉNÉRALE (toutes les offres) =====
+  let carteMap=null,carteMarkers=[],carteFilter="all",carteSector="all";
+  function setCarteFilter(f){carteFilter=f;document.querySelectorAll("#carte-pills .pill").forEach(p=>p.classList.toggle("active",p.dataset.f===f));renderCarteMap();}
+  function setCarteSector(v){carteSector=v;renderCarteMap();}
+  function carteOffers(){
+    let list=Object.values(statusMap).filter(s=>s.offer&&s.statut&&s.statut!=="passe"&&s.statut!=="ignore").map(s=>({o:s.offer,statut:s.statut}));
+    if(carteFilter==="super")list=list.filter(x=>x.statut==="super");
+    else if(carteFilter==="apostuler")list=list.filter(x=>x.statut==="apostuler"||x.statut==="super");
+    else if(carteFilter==="postule")list=list.filter(x=>x.statut==="postule");
+    if(carteSector!=="all")list=list.filter(x=>detectSector(x.o).key===carteSector);
+    return list;
+  }
+  async function renderCarteMap(){
+    const box=document.getElementById("carteMap");if(!box||typeof L==="undefined")return;
+    // remplit le filtre secteur une fois
+    const sel=document.getElementById("carteSectorSel");
+    if(sel && !sel.dataset.filled){
+      const secs=[...new Set(Object.values(statusMap).filter(s=>s.offer).map(s=>detectSector(s.o||s.offer).key))];
+      sel.innerHTML='<option value="all">Tous les secteurs</option>'+secs.map(k=>`<option value="${esc(k)}">${esc(k)}</option>`).join("");
+      sel.dataset.filled="1";
+    }
+    if(!carteMap){
+      carteMap=L.map(box,{scrollWheelZoom:true,attributionControl:false}).setView([46.6,2.4],5);
+      L.tileLayer(tileUrl(),{maxZoom:18}).addTo(carteMap);
+    } else { carteMarkers.forEach(m=>{try{carteMap.removeLayer(m);}catch(e){}}); }
+    carteMarkers=[];
+    setTimeout(()=>{try{carteMap.invalidateSize();}catch(e){}},250);
+    const list=carteOffers();
+    const cnt=document.getElementById("carteCount");
+    if(cnt)cnt.textContent="Localisation de "+list.length+" offre(s)…";
+    const pts=[];
+    for(const x of list){
+      const o=x.o;let la=o.lat,lo=o.lon;
+      if((!la||!lo)&&o.lieu){const g=await geocode(o.lieu);if(g){la=g.lat;lo=g.lon;}}
+      if(!la||!lo)continue;
+      const col=x.statut==="super"?"#f5a623":x.statut==="postule"?"#34c759":x.statut==="apostuler"?"#0071e3":"#9aa2b4";
+      const m=L.marker([la,lo],{icon:pinIconC(col)}).addTo(carteMap);
+      const badge=x.statut==="super"?"⭐ ":x.statut==="postule"?"✅ ":"";
+      m.bindPopup('<b>'+badge+esc(o.titre||"")+'</b><br>'+esc(o.entreprise||"")+'<br><span style="color:#888">'+esc(o.lieu||"")+'</span>'+(o.lien?'<br><a href="'+esc(o.lien)+'" target="_blank" rel="noopener">voir l\'offre</a>':""));
+      carteMarkers.push(m);pts.push([la,lo]);
+    }
+    if(cnt)cnt.textContent=pts.length+" offre(s) sur la carte"+(list.length>pts.length?" ("+(list.length-pts.length)+" sans lieu)":"");
+    setTimeout(()=>{try{carteMap.invalidateSize();if(pts.length===1)carteMap.setView(pts[0],10);else if(pts.length>1)carteMap.fitBounds(pts,{padding:[40,40],maxZoom:11});}catch(e){}},300);
   }
 
   // Cache des infos entreprise déjà récupérées (évite de refaire l'appel)
@@ -893,12 +1081,19 @@
 
   // ===== NAV =====
   function setView(v){
-    document.querySelectorAll(".nav-tab").forEach(t=>t.classList.toggle("active",t.dataset.view===v));
+    document.querySelectorAll("[data-view]").forEach(t=>t.classList.toggle("active",t.dataset.view===v));
     document.querySelectorAll(".view").forEach(el=>el.classList.toggle("active",el.id==="view-"+v));
-    // amène la barre d'onglets en haut de l'écran -> le contenu de l'onglet est visible juste en dessous
+    const moreViews=["reve","reseau","entretiens"];
+    const mb=document.getElementById("moreBtn");if(mb)mb.classList.toggle("active",moreViews.indexOf(v)>=0);
+    closeMore();
     const nav=document.getElementById("nav");
     if(nav){const y=nav.getBoundingClientRect().top+window.pageYOffset-12;window.scrollTo({top:y,behavior:"smooth"});}
+    if(v==="carte"){setTimeout(renderCarteMap,100);}
+    if(v==="bilan"){renderBilan();}
   }
+  function toggleMore(e){if(e)e.stopPropagation();const m=document.getElementById("moreMenu");if(m)m.classList.toggle("open");}
+  function closeMore(){const m=document.getElementById("moreMenu");if(m)m.classList.remove("open");}
+  document.addEventListener("click",(e)=>{const nm=document.querySelector(".nav-more");if(nm&&!nm.contains(e.target))closeMore();});
 
   // ===== SUPABASE LOAD =====
   async function loadAll(){
@@ -1114,7 +1309,7 @@
 
   // ===== GRILLE =====
   function setVeilleFilter(f){veilleFilter=f;document.querySelectorAll("#veille-pills .pill").forEach(p=>p.classList.toggle("active",p.dataset.f===f));renderGrid();}
-  function setGridGroup(g){gridGroupBy=g;document.querySelectorAll("#grid-group .gp").forEach(p=>p.classList.toggle("active",p.dataset.g===g));renderGrid();}
+  function setGridGroup(g){gridGroupBy=g;renderGrid();}
   function toggleHideSeen(){hideSeen=!hideSeen;document.getElementById("hideSeenBtn").classList.toggle("active",hideSeen);renderGrid();}
 
   // Détermine la clé de groupe d'une offre selon le mode choisi
@@ -1239,6 +1434,11 @@
     document.getElementById("modalBg").classList.add("open");
   }
 
+  function toggleDesc(id,btn){
+    const el=document.getElementById("desc-"+id);if(!el)return;
+    const open=el.classList.toggle("clamp")===false;
+    btn.textContent=open?"voir moins":"voir plus";
+  }
   function gridCard(o){
     const st=statusMap[o.id]?statusMap[o.id].statut:null;
     const sec=detectSector(o);
@@ -1249,8 +1449,8 @@
       <div class="c-meta">${matchBadge(o)}${newBadge}${addBadge}<span class="chip" style="color:${sec.c};border-color:${sec.c}66;">${sec.key}</span>${o.source?`<span class="chip">${esc(o.source)}</span>`:""}</div>
       <div class="c-title">${esc(o.titre)}</div>
       <div class="c-sub">${esc(o.entreprise)}</div>
-      <div class="c-meta">${o.lieu?`<span class="chip loc">📍 ${esc(o.lieu)}</span>`:""}${o.typeContrat?`<span class="chip">${esc(o.typeContrat)}</span>`:""}${o.salaire?`<span class="chip">💶 ${esc(o.salaire)}</span>`:""}</div>
-      <div class="c-desc">${esc(o.description)}${o.description&&o.description.length>=300?"…":""}</div>
+      <div class="c-meta">${o.lieu?`<span class="chip loc">📍 ${esc(o.lieu)}</span>`:""}${o.typeContrat?`<span class="chip">${esc(o.typeContrat)}</span>`:""}${o.experience?`<span class="chip">👤 ${esc(o.experience)}</span>`:""}${o.salaire?`<span class="chip">💶 ${esc(o.salaire)}</span>`:""}</div>
+      ${o.description?`<div class="c-desc clamp" id="desc-${o.id}">${esc(o.description)}</div>${o.description.length>180?`<button class="desc-more" onclick="toggleDesc('${o.id}',this)">voir plus</button>`:""}`:""}
       <div class="c-tags" id="tags-${o.id}">${renderTagsInline(o)}</div>
       <div class="c-actions">
         <button class="mini ${st==="super"?"a-super":""}" onclick='markOffer(${oData},"super")' title="Coup de cœur">⭐</button>
@@ -1263,6 +1463,7 @@
       ${(st==="apostuler"||st==="super")?`<button class="btn sm" style="margin-left:7px;width:calc(100% - 7px);" onclick='markAsApplied(${oData})'>✉️ J'ai postulé → Pipeline</button>`:""}
       <div class="grid-links" style="padding-left:7px;">
         <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Offre</a>
+        ${(o.lieu||o.lat)?`<a href="#" onclick='openOfferMap(${oData});return false;'>📍 Carte</a>`:""}
         <a href="${companyLinks(o.entreprise).wiki}" target="_blank" rel="noopener">📖 Wiki</a>
         <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener">⭐ Avis</a>
         <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 CA</a>
@@ -1278,10 +1479,30 @@
 
   // ===== AJOUT D'OFFRES PAR LIEN =====
   let addLinksData=[]; // offres en cours de préparation
+  function renderBmSetup(){
+    const el=document.getElementById("bmSetup");if(!el)return;
+    let done=false;
+    try{done=localStorage.getItem("st_bm_done")==="1";}catch(e){}
+    // inutile sur mobile (le glisser-déposer ne marche pas)
+    if(done || window.innerWidth<768){el.style.display="none";return;}
+    el.style.display="flex";
+    el.innerHTML=`
+      <div class="bm-setup-txt">
+        <div class="bm-setup-h">🧭 Ajoute une offre en 1 clic depuis le web</div>
+        <div class="bm-setup-p">Glisse ce bouton dans ta barre de favoris (Ctrl+Maj+B). Ensuite, sur n'importe quelle offre (LinkedIn, WTTJ…), un clic dessus l'envoie ici, pré-remplie.</div>
+      </div>
+      <a class="bookmarklet-btn" href="${bookmarkletCode()}" onclick="return false;" draggable="true">🧭 Sam'Travail</a>
+      <button class="bm-setup-done" onclick="dismissBmSetup()">J'ai installé · masquer</button>`;
+  }
+  function dismissBmSetup(){try{localStorage.setItem("st_bm_done","1");}catch(e){}const el=document.getElementById("bmSetup");if(el)el.style.display="none";}
+  function bookmarkletCode(){
+    const origin=window.location.origin;
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}var LIM=5000;var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,LIM);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,LIM);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(d.ds.length<300){var sels=['[class*=description i]','[id*=description i]','[class*=job-description i]','[class*=offer-content i]','[class*=jobdesc i]','[class*=vacancy i]','article'];var best=d.ds;for(var q=0;q<sels.length;q++){var el=document.querySelector(sels[q]);if(el){var tx=(el.innerText||el.textContent||'').replace(W(),' ').trim();if(tx.length>best.length&&tx.length<12000)best=tx;}}if(best.length>d.ds.length)d.ds=best.slice(0,LIM);}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,LIM);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal);window.open(u,'_blank');})();";
+  }
   function openAddLinks(prefillUrl, prefillTitle){
     const origin=window.location.origin;
     // Le bookmarklet capture l'URL ET le titre de la page (depuis TON navigateur = pas de blocage)
-    const bookmarklet="javascript:(function(){var ms=document.getElementsByTagName('meta');function M(p){for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var d={t:'',e:'',l:'',c:''};try{var s=document.getElementsByTagName('script');for(var i=0;i<s.length;i++){if((s[i].type||'').indexOf('ld+json')<0)continue;var j=JSON.parse(s[i].textContent);var a=Array.isArray(j)?j:(j['@graph']?j['@graph']:[j]);for(var k=0;k<a.length;k++){var o=a[k];if(!o)continue;var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=o.title||o.name||'';var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||'';if(o.employmentType)d.c=''+o.employmentType;break;}}if(d.t)break;}}catch(e){}if(!d.t){var h1=document.querySelector('h1');d.t=M('og:title')||(h1&&(h1.innerText||h1.textContent)||'').trim()||document.title||'';}var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c);window.open(u,'_blank');})();";
+    const bookmarklet=bookmarkletCode();
     const box=document.getElementById("modalBox");
     box.innerHTML=`
       <div class="modal-head"><h3>➕ Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>
@@ -1292,7 +1513,7 @@
         <details class="bookmarklet-help" ${prefillUrl?"":"open"}><summary>🔖 Astuce : ajout en 1 clic depuis le web (recommandé)</summary>
           <p><b>Pourquoi ?</b> Certains sites (LinkedIn, Indeed) bloquent la récupération automatique. Le bookmarklet capture l'offre depuis <b>ton</b> navigateur, donc ça marche partout.</p>
           <p><b>Installation (une fois) :</b> affiche ta barre de favoris (Ctrl+Maj+B), puis <b>glisse</b> ce bouton dedans :</p>
-          <a class="bookmarklet-btn" href="${bookmarklet}" onclick="return false;">➕ Sam'Travail</a>
+          <a class="bookmarklet-btn" href="${bookmarklet}" onclick="return false;">🧭 Sam'Travail</a>
           <p class="bm-note">Ensuite, sur n'importe quelle offre sur le web → clique ce favori → l'offre s'ouvre ici, prête à ajouter. (Un clic direct ici ne fait rien, c'est normal : il faut le glisser dans les favoris.)</p>
         </details>
       </div>
@@ -1327,6 +1548,10 @@
         if(!offer.entreprise && pf.entreprise) offer.entreprise=pf.entreprise;
         if(!offer.lieu && pf.lieu) offer.lieu=pf.lieu;
         if(!offer.typeContrat && pf.typeContrat) offer.typeContrat=pf.typeContrat;
+        if(!offer.description && pf.description) offer.description=pf.description;
+        if(!offer.dateCreation && pf.dateCreation) offer.dateCreation=pf.dateCreation;
+        if(!offer.experience && pf.experience) offer.experience=pf.experience;
+        if(!offer.salaire && pf.salaire) offer.salaire=pf.salaire;
         // recalcule la qualité selon ce qu'on a au final
         if(offer.entreprise && offer.titre) quality="full";
         else if(offer.titre) quality= quality==="empty"?"partial":quality;
@@ -1355,6 +1580,8 @@
           <input class="pc-in" placeholder="Contrat (CDI...)" value="${esc(o.typeContrat)}" oninput="addLinksData[${i}].typeContrat=this.value" />
           <input class="pc-in" placeholder="Salaire" value="${esc(o.salaire)}" oninput="addLinksData[${i}].salaire=this.value" />
         </div>
+        <input class="pc-in" placeholder="Expérience (ex: 2 ans)" value="${esc(o.experience||"")}" oninput="addLinksData[${i}].experience=this.value" />
+        <textarea class="pc-in pc-desc" placeholder="Missions / description (optionnel)" oninput="addLinksData[${i}].description=this.value" rows="3">${esc(o.description||"")}</textarea>
         <a class="pc-link" href="${esc(o.lien)}" target="_blank" rel="noopener">🔗 voir l'offre</a>
       </div>`;
     }).join("")+`<button class="btn btn-validate" onclick="validateAddLinks()">✅ Ajouter ${addLinksData.length} offre(s) à « À postuler »</button>`;
@@ -1391,7 +1618,7 @@
     // on marque l'offre comme "postulé" dans la veille
     statusMap[o.id]={statut:"postule",offer:o};
     if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:"postule",offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
-    renderPipeline();renderVeille();renderCockpit();
+    renderPipeline();renderVeille();renderCockpit();renderBilan();
     alert("✅ Ajouté au Pipeline (statut Envoyé) !");
   }
   // ===== PIPELINE KANBAN =====
@@ -1507,7 +1734,7 @@
     const patch={statut:col};
     if(col!=="Envoyé"&&!p.date_reponse){patch.date_reponse=new Date().toISOString().slice(0,10);p.date_reponse=patch.date_reponse;}
     if(sb)await sb.from("pipeline").update(patch).eq("id",dragId);
-    renderPipeline();renderCockpit();
+    renderPipeline();renderCockpit();renderBilan();renderStatsBadges();
   }
 
   // ===== REVE =====
@@ -1663,7 +1890,6 @@
     const keptSet=["apostuler","super","reflexion","postule"];
     const pipeLiens=new Set(pipeline.map(p=>p.lien_offre).filter(Boolean));
     const entEntreprises=new Set(entretiens.map(e=>(e.entreprise||"").toLowerCase().trim()).filter(Boolean));
-    // GARDÉE (toute offre conservée), + ENVOYÉE si marquée "postulé" en grille sans passer par le pipeline
     Object.entries(statusMap).forEach(([id,s])=>{
       if(!s.statut||["passe","ignore","note"].includes(s.statut))return;
       const d=s.updated_at||(s.offer&&(s.offer.dateAjout||s.offer.dateCreation))||new Date().toISOString();
@@ -1673,7 +1899,6 @@
         if(!(lien&&pipeLiens.has(lien))) push("js_"+id,"envoyee",d);
       }
     });
-    // ENVOYÉE + ENTRETIEN depuis le pipeline (l'entretien évite le doublon avec la table entretiens)
     pipeline.forEach(p=>{
       push("pipe_"+p.id,"envoyee",p.date_envoi||new Date().toISOString());
       if(["Entretien","Offre reçue"].includes(p.statut)){
@@ -1681,19 +1906,17 @@
         if(!entEntreprises.has(ent)) push("pipe_"+p.id,"entretien",p.date_reponse||p.date_envoi||new Date().toISOString());
       }
     });
-    // ENTRETIEN depuis la table entretiens (source canonique)
     entretiens.forEach(e=>{ if(e.date_entretien) push("ent_"+e.id,"entretien",e.date_entretien); });
     return rows;
   }
 
   // Fusionne les étapes manquantes dans le journal (et persiste si demandé).
-  // N'écrase jamais une date existante -> la trace se fige à la 1re observation.
   async function reconcileActivity(persist){
     const have=new Set(activityLog.map(a=>a.offer_id+"|"+a.etape));
     const missing=[];
     expectedActivity().forEach(r=>{ const k=r.offer_id+"|"+r.etape; if(!have.has(k)){ have.add(k); missing.push(r); } });
     if(!missing.length) return;
-    missing.forEach(r=>activityLog.push(r));   // maj locale immédiate (synchrone)
+    missing.forEach(r=>activityLog.push(r));
     if(persist && sb){ try{ await sb.from("activity_log").upsert(missing,{onConflict:"offer_id,etape"}); }catch(e){} }
   }
 
@@ -1758,6 +1981,41 @@
     const legend=phases.map(p=>`<div class="phase-leg"><span class="phase-leg-dot" style="background:${p.color};"></span><b>${p.icon} ${esc(p.label)}</b> · ${fmt(p.start)}${p.weeks>1?" → "+fmt(p.end):""} <span class="phase-leg-w">(${p.weeks} sem.)</span></div>`).join("");
     return `<div class="phase-bar">${bar}</div><div class="phase-legend">${legend}</div>`;
   }
+
+  // ===== HISTORIQUE all-time des candidatures (lit la table pipeline) =====
+  const HIST_STATUTS={
+    "Envoyé":{c:"var(--accent)",i:"📤"},
+    "Entretien":{c:"var(--purple)",i:"🎤"},
+    "Offre reçue":{c:"var(--green)",i:"🎉"},
+    "Refusé":{c:"var(--red)",i:"❌"},
+    "Non intéressé":{c:"var(--text-mute)",i:"💤"},
+  };
+  function historiquePostulesHTML(){
+    const list=pipeline.slice().sort((a,b)=>new Date(b.date_envoi||0)-new Date(a.date_envoi||0));
+    if(!list.length)return "";
+    const fmt=d=>d?new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"2-digit"}):"—";
+    const rows=list.map(p=>{
+      const st=HIST_STATUTS[p.statut]||{c:"var(--text-mute)",i:"•"};
+      const lien=p.lien_offre?`<a href="${esc(p.lien_offre)}" target="_blank" rel="noopener" class="rel-link">voir</a>`:"";
+      return `<tr>
+        <td class="hist-date">${fmt(p.date_envoi)}</td>
+        <td><b>${esc(p.entreprise||"—")}</b></td>
+        <td>${esc(p.poste||"—")}</td>
+        <td>${p.ville?esc(p.ville):"—"}</td>
+        <td><span class="hist-stat" style="color:${st.c};border-color:${st.c}66;">${st.i} ${esc(p.statut||"—")}</span></td>
+        <td>${lien}</td>
+      </tr>`;
+    }).join("");
+    return `
+      <div class="bilan-block">
+        <h3 class="bilan-h">📜 Historique des candidatures <span class="hist-count">${list.length} all-time</span></h3>
+        <div class="hist-wrap"><table class="hist-table">
+          <thead><tr><th>Envoi</th><th>Entreprise</th><th>Poste</th><th>Lieu</th><th>Statut</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+        <p class="bilan-note">Toutes les annonces auxquelles tu as postulé, depuis le début — peu importe leur statut actuel (entretien, refus…). ⬇️ Export CSV en haut de la page.</p>
+      </div>`;
+  }
   function evolutionBlockHTML(){
     const svg=buildEvolutionSVG();
     if(!svg)return `<div class="bilan-block"><h3 class="bilan-h">📈 Évolution dans le temps</h3><div class="empty">Le graphe se remplit dès tes premières actions (offres gardées, candidatures, entretiens).</div></div>`;
@@ -1782,7 +2040,7 @@
   // ===== BILAN (stats + funnel campagnes) =====
   function renderBilan(){
     const c=document.getElementById("bilan-content");if(!c)return;
-    reconcileActivity(false); // maj locale du journal avant de tracer (pas de write)
+    reconcileActivity(false);
     const totalSaved=Object.values(statusMap).filter(s=>s.statut&&s.statut!=="passe").length;
     const envoyees=pipeline.length;
     if(!envoyees && !totalSaved){
@@ -1792,6 +2050,7 @@
     const entretiens_=pipeline.filter(p=>p.statut==="Entretien").length;
     const offres_=pipeline.filter(p=>p.statut==="Offre reçue").length;
     const refus=pipeline.filter(p=>p.statut==="Refusé").length;
+    const enCours=pipeline.filter(p=>p.statut==="Envoyé"||p.statut==="Entretien").length;
     const reponses=pipeline.filter(p=>p.statut==="Entretien"||p.statut==="Offre reçue"||p.statut==="Refusé"||p.date_reponse).length;
     const tauxRep=envoyees?Math.round(reponses/envoyees*100):0;
     const tauxEnt=envoyees?Math.round(entretiens_/envoyees*100):0;
@@ -1818,15 +2077,15 @@
 
     c.innerHTML=`
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-n">${envoyees}</div><div class="stat-l">candidatures envoyées</div></div>
+        <div class="stat-card stat-live"><div class="stat-n">${enCours}</div><div class="stat-l">🔴 en cours (live)</div></div>
+        <div class="stat-card"><div class="stat-n">${envoyees}</div><div class="stat-l">candidatures au total</div></div>
         <div class="stat-card"><div class="stat-n">${tauxRep}%</div><div class="stat-l">taux de réponse</div></div>
         <div class="stat-card"><div class="stat-n">${tauxEnt}%</div><div class="stat-l">taux d'entretien</div></div>
-        <div class="stat-card"><div class="stat-n">${tempsMoyen}</div><div class="stat-l">délai moyen de réponse</div></div>
-        <div class="stat-card"><div class="stat-n">${entretiens_}</div><div class="stat-l">entretiens décrochés</div></div>
+        <div class="stat-card"><div class="stat-n">${entretiens_}</div><div class="stat-l">entretiens en cours</div></div>
         <div class="stat-card"><div class="stat-n">${offres_}</div><div class="stat-l">offres reçues 🎉</div></div>
+        <div class="stat-card"><div class="stat-n">${tempsMoyen}</div><div class="stat-l">délai moyen de réponse</div></div>
       </div>
 
-      ${evolutionBlockHTML()}
       <div class="bilan-block">
         <h3 class="bilan-h">🚀 Entonnoir de mes campagnes</h3>
         <div class="funnel">
@@ -1844,6 +2103,10 @@
       </div>
 
       ${refus?`<p class="bilan-note">📊 ${refus} refus — c'est normal, ça fait partie du jeu. Concentre-toi sur le taux d'entretien.</p>`:""}
+
+      ${evolutionBlockHTML()}
+
+      ${historiquePostulesHTML()}
     `;
   }
 
@@ -1889,7 +2152,10 @@
     document.getElementById("greet").textContent=(h<12?"Bonjour":h<18?"Bon après-midi":"Bonsoir")+nom+" 👋";
   }
   async function loadProfil(skipAsk){
-    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur&&data.valeur.prenom)userName=data.valeur.prenom;}catch(e){}}
+    // 1) cache local instantané (évite de redemander même si Supabase est lent/indispo)
+    try{const ls=localStorage.getItem("st_name");if(ls)userName=ls;}catch(e){}
+    // 2) sync Supabase (source de vérité multi-appareils)
+    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur&&data.valeur.prenom){userName=data.valeur.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}}catch(e){}}
     if(!userName && !skipAsk){ askName(); }
     else initDate();
   }
@@ -1906,6 +2172,7 @@
   async function saveName(){
     const v=(document.getElementById("nameInput").value||"").trim();
     userName=v||"";
+    try{localStorage.setItem("st_name",userName);}catch(e){}
     if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
     closeModal();initDate();
   }
@@ -1943,14 +2210,18 @@
     const addUrl=params.get("addUrl");
     await loadAll();await reconcileActivity(true);loadNotes();loadStreak();loadTheme();
     await loadProfil(!!addUrl);  // si on arrive via bookmarklet, on ne demande pas le nom maintenant
-    refreshAll();
+    refreshAll();renderBmSetup();
     // Bookmarklet : si ?addUrl=... -> ouvre directement l'ajout par lien
     if(addUrl){
       window._prefill={
         titre:params.get("addTitle")||"",
         entreprise:params.get("addEnt")||"",
         lieu:params.get("addLieu")||"",
-        typeContrat:mapEmp(params.get("addCt")||"")
+        typeContrat:mapEmp(params.get("addCt")||""),
+        description:params.get("addDesc")||"",
+        dateCreation:params.get("addDate")||"",
+        experience:params.get("addXp")||"",
+        salaire:params.get("addSal")||""
       };
       openAddLinks(addUrl);
       history.replaceState({},"",window.location.pathname);

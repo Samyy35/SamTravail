@@ -489,7 +489,10 @@
   .modal{background:var(--surface);border:1px solid var(--border-light);border-radius:18px;padding:24px;width:min(560px,93vw);max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
   .modal h3{font-family:var(--display);font-size:19px;margin-bottom:16px;}
   .modal .field{margin-bottom:13px;min-width:0;}
-  .modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:8px;}
+  .modal-actions{display:flex;flex-direction:row;flex-wrap:wrap;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;}
+  .modal-actions .btn.danger{margin-right:auto;}
+  /* pied de modale flottant : seulement la dernière barre d'actions */
+  .modal-actions:last-child{position:sticky;bottom:0;margin:16px -24px -24px;padding:14px 24px;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -6px 18px -8px var(--overlay);z-index:2;}
   .add-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap;}
 
   /* Infos société (fiche entreprise) */
@@ -842,6 +845,7 @@
   .star-btn:hover{transform:scale(1.12);}
   .star-clear{background:none;border:none;color:var(--text-mute);font-size:12px;font-family:var(--font);cursor:pointer;margin-left:8px;text-decoration:underline;}
   .star-clear:hover{color:var(--text-dim);}
+  .info-panel .ic{width:13px;height:13px;vertical-align:-.12em;color:var(--orange);}
 </style>
 </head>
 <body>
@@ -1218,7 +1222,7 @@
       <div class="crit-block"><div class="crit-label">${ic("minus")} Mots malus (−12 chacun)</div>
         <input class="crit-in" id="crit-malus" value="${esc(matchCriteria.motsMalus.join(", "))}" />
       </div>
-      <button class="btn btn-validate" onclick="saveCriteres()">${ic("save")}<span>Enregistrer mes critères</span></button>`;
+      <div class="modal-actions"><button class="btn btn-validate" onclick="saveCriteres()">${ic("save")}<span>Enregistrer mes critères</span></button></div>`;
     document.getElementById("modalBg").classList.add("open");
   }
   function setSecW(sec,n){ matchCriteria.secteurs[sec]=n; openCriteres(); }
@@ -1229,9 +1233,10 @@
     matchCriteria.contratPref=(document.getElementById("crit-contrat").value||"").trim();
     matchCriteria.motsBonus=splitC("crit-bonus");
     matchCriteria.motsMalus=splitC("crit-malus");
-    if(sb){try{await sb.from("parametres").upsert({cle:"matchCriteria",valeur:matchCriteria,updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
-    closeModal();
-    renderVeille();
+    let critErr=null;
+    if(sb){ const {error}=await sb.from("parametres").upsert({cle:"matchCriteria",valeur:matchCriteria,updated_at:new Date().toISOString()},{onConflict:"cle"}); critErr=error; }
+    closeModal(); renderVeille();
+    if(critErr) alert("Critères appliqués pour cette session, mais non sauvegardés en base :\n"+(critErr.message||critErr));
   }
 
   function companyWebsite(name){
@@ -1494,18 +1499,21 @@
       <div class="field"><label>Date</label><input id="ev-date" type="date" value="${ev?ev.date_event:""}" /></div>
       <div class="field"><label>Type</label><select id="ev-type">${types.map(t=>`<option ${ev&&ev.type===t?"selected":""}>${t}</option>`).join("")}</select></div>
       <div class="field"><label>Notes</label><textarea id="ev-notes">${ev?esc(ev.notes||""):""}</textarea></div>
-      <div class="modal-actions">${ev?`<button class="btn danger" onclick="delEvent('${ev.id}')">Supprimer</button>`:""}<button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveEvent('${ev?ev.id:""}')">Enregistrer</button></div>`;
+      <div class="modal-actions">${ev?`<button class="btn danger" onclick="delEvent('${ev.id}')" title="Supprimer" aria-label="Supprimer">${ic("ban")}</button>`:""}<button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveEvent('${ev?ev.id:""}')">Enregistrer</button></div>`;
     document.getElementById("modalBg").classList.add("open");
   }
   async function saveEvent(id){
     const obj={titre:document.getElementById("ev-titre").value,date_event:document.getElementById("ev-date").value,type:document.getElementById("ev-type").value,notes:document.getElementById("ev-notes").value};
     if(!obj.titre||!obj.date_event){alert("Titre et date obligatoires");return;}
-    if(sb){ if(id)await sb.from("evenements").update(obj).eq("id",id); else await sb.from("evenements").insert(obj); }
-    await loadAll();renderRoadmap();renderCockpit();closeModal();
+    if(sb){
+      const {error}= id ? await sb.from("evenements").update(obj).eq("id",id) : await sb.from("evenements").insert(obj);
+      if(error){ alert("Échec de l'enregistrement :\n"+(error.message||error)); return; }
+    }
+    closeModal(); await loadAll();renderRoadmap();renderCockpit();
   }
   async function delEvent(id){
-    if(sb)await sb.from("evenements").delete().eq("id",id);
-    await loadAll();renderRoadmap();renderCockpit();closeModal();
+    if(sb){ const {error}=await sb.from("evenements").delete().eq("id",id); if(error){ alert("Échec de la suppression :\n"+(error.message||error)); return; } }
+    closeModal(); await loadAll();renderRoadmap();renderCockpit();
   }
 
   // Une "offre gardée" réelle : a un objet offre, un id non-note, et un statut de conservation (pas passé/ignoré/note)
@@ -2089,7 +2097,7 @@
           <b>1.</b> Touche « Copier le code ».<br>
           <b>2.</b> Dans <b>Safari</b>, ajoute cette page aux favoris (Partager → Ajouter aux favoris).<br>
           <b>3.</b> Favoris (icône livre ouvert) → <b>Modifier</b> → ce favori → renomme « Sam'Travail » et <b>remplace son adresse</b> par le code collé.<br>
-          <b>⚠ Vérifie que l'adresse commence bien par <code>javascript:</code></b> — iOS l'efface parfois au collage, et sans ça rien ne se passe.<br>
+          <b>${ic("alert")} Vérifie que l'adresse commence bien par <code>javascript:</code></b> — iOS l'efface parfois au collage, et sans ça rien ne se passe.<br>
           <b>4. Pour l'utiliser :</b> sur une offre, touche la <b>barre d'adresse</b> en haut, tape « Sam » → touche le favori « Sam'Travail » dans les suggestions.<br>
           <span style="opacity:.75">Sur iPhone, le favori n'apparaît <b>pas</b> comme un bouton sur la page : c'est normal, on le déclenche toujours depuis la barre d'adresse.</span>
         </div>
@@ -2149,7 +2157,7 @@
         <div class="info-panel" id="info-brandbm">Même principe que le favori « offre », mais sur le site d'une entreprise.<br>
           <b>1.</b> Touche « Copier le code ».<br>
           <b>2.</b> Safari → ajoute la page aux favoris → <b>Modifier</b> → renomme « Sam'Marque » et <b>remplace l'adresse</b> par le code collé.<br>
-          <b>⚠ L'adresse doit commencer par <code>javascript:</code></b> (iOS l'enlève parfois).<br>
+          <b>${ic("alert")} L'adresse doit commencer par <code>javascript:</code></b> (iOS l'enlève parfois).<br>
           <b>3. Pour l'utiliser :</b> sur le site d'une boîte, touche la <b>barre d'adresse</b>, tape « Sam' » → touche « Sam'Marque ». La marque arrive ici, pré-remplie.<br>
           <span style="opacity:.75">Comme pour les offres : pas de bouton sur la page, on lance depuis la barre d'adresse.</span></div>
         <div class="bm-actions">
@@ -2279,7 +2287,7 @@
         </div>
         <a class="pc-link" href="${esc(o.lien)}" target="_blank" rel="noopener">${ic("doc")} voir l'offre</a>
       </div>`;
-    }).join("")+`<button class="btn btn-validate" onclick="validateAddLinks()">${ic("check")}<span>Ajouter ${addLinksData.length} offre(s) à mes offres à trier</span></button>`;
+    }).join("")+`<div class="modal-actions"><button class="btn btn-validate" onclick="validateAddLinks()">${ic("check")}<span>Ajouter ${addLinksData.length} offre(s) à mes offres à trier</span></button></div>`;
   }
 
   function removeLink(i){addLinksData.splice(i,1);renderLinksPreview();}
@@ -2764,7 +2772,6 @@
       <div class="pc-badges">
         ${e.secteur?`<span class="pc-badge">${ic("building")} ${esc(e.secteur)}</span>`:""}
         ${e.ville?`<span class="pc-badge">${ic("pin")} ${esc(e.ville)}</span>`:""}
-        ${e.priorite?`<span class="pc-badge">${esc(e.priorite)}</span>`:""}
         <span class="pc-badge">${ic("clock")} ${visiteLbl}</span>
       </div>
       <div class="reve-stars-row">${stars}<span class="reve-stars-lbl">${note?note+"/5":"pas encore notée"}</span></div>
@@ -2853,7 +2860,8 @@
     reve:{title:"Entreprise rêve",table:"entreprises_reve",fields:[
       {k:"entreprise",l:"Entreprise",t:"text"},{k:"site",l:"Site (carrières / officiel)",t:"text"},{k:"secteur",l:"Secteur",t:"text"},
       {k:"note",l:"Ma note",t:"stars"},
-      {k:"priorite",l:"Priorité",t:"select",opts:["Haute","Moyenne","Basse"]},{k:"ville",l:"Ville visée",t:"text"},
+      {k:"ville",l:"Ville visée",t:"text"},
+      {k:"statut",l:"Statut",t:"select",opts:["À explorer","À postuler","Postulé"]},
       {k:"source_info",l:"Source d'info",t:"text"},{k:"pourquoi",l:"Pourquoi cette boîte",t:"textarea"},{k:"notes",l:"Notes",t:"textarea"},
     ]},
     reseau:{title:"Contact",table:"reseau",fields:[
@@ -2888,7 +2896,7 @@
         CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="chk-${i}" ${chk[it]?"checked":""} /> ${esc(it)}</label>`).join("")+
         `</div></div>`;
     }
-    html+=`<div class="modal-actions">${editing.id?`<button class="btn danger" onclick="delFromModal()">Supprimer</button>`:""}<button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveModal()">Enregistrer</button></div>`;
+    html+=`<div class="modal-actions">${editing.id?`<button class="btn danger" onclick="delFromModal()" title="Supprimer" aria-label="Supprimer">${ic("ban")}</button>`:""}<button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveModal()">Enregistrer</button></div>`;
     box.innerHTML=html;
     document.getElementById("modalBg").classList.add("open");
   }
@@ -2925,10 +2933,14 @@
   async function delFromModal(){if(editing&&editing.id){await delRow(FORMS[editing.type].table,editing.id,true);closeModal();}}
   async function delRow(table,id,skipConfirm){
     if(!skipConfirm&&!confirm("Supprimer ?"))return;
-    if(sb)await sb.from(table).delete().eq("id",id);
+    if(sb){
+      const {error}=await sb.from(table).delete().eq("id",id);
+      if(error){ alert("Échec de la suppression :\n"+(error.message||error)); return; }
+    }
+    closeModal();              // ferme la fiche/le formulaire tout de suite
     await loadAll();refreshAll();
   }
-  document.getElementById("modalBg").addEventListener("click",e=>{if(e.target.id==="modalBg")closeModal();});
+  // (clic sur le fond ne ferme plus la modale : évite les pertes de saisie accidentelles — on ferme via ✕ ou Annuler)
 
   // ===== REFRESH =====
   // ===== JOURNAL D'ACTIVITÉ (trace dans le temps) =====
@@ -3248,7 +3260,7 @@
       <div class="modal-head"><h3>Bienvenue</h3></div>
       <p class="modal-sub">Ton espace pour piloter ta recherche d'emploi : trouve des offres, trie-les d'un swipe, et garde l'œil sur où tu en es. Comment tu t'appelles ?</p>
       <input class="crit-in" id="nameInput" placeholder="Ton prénom" onkeydown="if(event.key==='Enter')saveName()" autofocus />
-      <button class="btn btn-validate" style="margin-top:14px;" onclick="saveName()">C'est parti →</button>`;
+      <div class="modal-actions"><button class="btn btn-validate" onclick="saveName()">C'est parti →</button></div>`;
     document.getElementById("modalBg").classList.add("open");
     setTimeout(()=>{const el=document.getElementById("nameInput");if(el)el.focus();},100);
   }

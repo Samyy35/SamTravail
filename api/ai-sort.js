@@ -119,8 +119,50 @@ export default async function handler(req, res) {
   body = body || {};
   const text = ("" + (body.text || "")).slice(0, 6000);
   const url = "" + (body.url || "");
+  const mode = "" + (body.mode || "offer");
   if (!text.trim()) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
 
+  const clean = (v) => ("" + (v == null ? "" : v)).replace(/\s+/g, " ").trim().slice(0, 200);
+
+  // ----- MODE MARQUE : identifier une entreprise -----
+  if (mode === "brand") {
+    const SECTORS = "Automobile / Mobilité, Aéronautique / Spatial, Pharma / Santé, " +
+      "Nautisme / Naval, Luxe / Cosmétique, Agroalimentaire, Énergie, Défense, " +
+      "Transport / Logistique, Conseil / Tech, Industrie";
+    const sysB =
+      "Tu identifies une ENTREPRISE a partir d'un texte (nom, site, description). " +
+      "Reponds UNIQUEMENT par un objet JSON valide avec ces cles (chaine vide si absent) : " +
+      '{"entreprise":"","secteur":"","ville":"","description":""}. ' +
+      "'entreprise' = le nom courant de la marque (ex: 'BMW Group', pas la raison sociale complete). " +
+      "'secteur' DOIT etre EXACTEMENT l'un de : " + SECTORS + " — ou \"\" si aucun ne correspond. " +
+      "'ville' = ville du siege social si tu la connais, sinon \"\". " +
+      "'description' = une phrase courte (max 180 caracteres) de ce que fait l'entreprise.";
+    try {
+      const out = await callAI(base, key, model,
+        [{ role: "system", content: sysB },
+         { role: "user", content: "SITE: " + url + "\n\nTEXTE :\n" + text }], 300);
+      if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
+      let c = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
+        out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
+      c = ("" + c).replace(/```json|```/g, "").trim();
+      let d = {};
+      try { d = JSON.parse(c); } catch (e) {}
+      res.status(200).json({
+        ok: true,
+        brand: {
+          entreprise: clean(d.entreprise),
+          secteur: clean(d.secteur),
+          ville: clean(d.ville),
+          description: clean(d.description),
+        },
+      });
+    } catch (e) {
+      res.status(200).json({ ok: false, reason: "ai_error" });
+    }
+    return;
+  }
+
+  // ----- MODE OFFRE (defaut) -----
   const sys =
     "Tu extrais les informations d'une offre d'emploi a partir d'un texte brut " +
     "(souvent mal structure). Reponds UNIQUEMENT par un objet JSON valide, sans " +
@@ -142,7 +184,6 @@ export default async function handler(req, res) {
     content = ("" + content).replace(/```json|```/g, "").trim();
     let data = {};
     try { data = JSON.parse(content); } catch (e) {}
-    const clean = (v) => ("" + (v == null ? "" : v)).replace(/\s+/g, " ").trim().slice(0, 200);
     res.status(200).json({
       ok: true,
       offer: {

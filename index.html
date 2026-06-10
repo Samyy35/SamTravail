@@ -113,7 +113,8 @@
   .timeline-head:hover{background:var(--surface-2);}
   .tl-title{font-family:var(--display);font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1;min-width:0;}
   .tl-next{display:inline-flex;gap:7px;flex-wrap:wrap;}
-  .tl-mini{font-family:var(--font);font-size:11.5px;font-weight:500;background:var(--surface-2);padding:3px 10px;border-radius:999px;white-space:nowrap;}
+  .tl-mini{font-family:var(--font);font-size:11.5px;font-weight:500;background:var(--surface-2);padding:3px 10px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;}
+  .tl-mini .ic{width:13px;height:13px;}
   .tl-mini b{font-weight:700;}
   .tl-toggle{display:flex;align-items:center;gap:12px;}
   .tl-chevron{font-size:14px;color:var(--text-dim);transition:transform .25s;}
@@ -130,7 +131,8 @@
   .jalon{position:absolute;transform:translateX(-50%);width:124px;z-index:2;}
   .jalon-card{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;width:124px;text-align:center;cursor:pointer;transition:.15s;}
   .jalon-card:hover{border-color:currentColor;transform:translateY(-2px);}
-  .jalon-icon{font-size:17px;}
+  .jalon-icon{display:grid;place-items:center;}
+  .jalon-icon .ic{width:17px;height:17px;}
   .jalon-label{font-size:11px;font-weight:600;line-height:1.2;margin-top:3px;color:var(--text);}
   .jalon-date{font-size:10px;color:var(--text-dim);margin-top:2px;}
   .jalon-days{font-size:10.5px;font-weight:700;margin-top:1px;}
@@ -182,6 +184,7 @@
   .row{display:flex;gap:11px;flex-wrap:wrap;align-items:flex-end;}
   .field{flex:1;min-width:150px;} .field.wide{flex:2;}
   .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-weight:600;}
+  .field label .ic{width:14px;height:14px;vertical-align:-.13em;margin-right:4px;}
   .field input,.field select,.field textarea{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:11px 13px;border-radius:10px;font-size:14px;font-family:var(--font);outline:none;transition:.15s;}
   .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
   .field input::placeholder{color:var(--text-mute);}
@@ -213,12 +216,14 @@
   .new-chip{background:var(--green)!important;color:#fff!important;border-color:var(--green)!important;font-weight:700;}
   .add-chip{background:var(--purple)!important;color:#fff!important;border-color:var(--purple)!important;font-weight:600;}
   /* Badge score de match */
-  .match-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+  .match-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
+  .match-badge .ic{width:12px;height:12px;}
   .match-badge.m-high{background:var(--green);color:#fff;}
   .match-badge.m-mid{background:var(--orange);color:#fff;}
   .match-badge.m-low{background:var(--surface-3);color:var(--text-dim);}
   /* Modal critères */
   .crit-block{margin-bottom:16px;}
+  .crit-label .ic{width:14px;height:14px;vertical-align:-.13em;margin-right:5px;color:var(--text-mute);}
   .crit-label{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text);}
   .crit-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;}
   .crit-stars{display:flex;gap:4px;}
@@ -251,11 +256,13 @@
   .stat-n{font-family:var(--display);font-size:30px;font-weight:600;color:var(--text);}
   .stat-l{font-size:12px;color:var(--text-dim);margin-top:4px;}
   .bilan-block{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px;}
-  .bilan-h{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:14px;}
+  .bilan-h{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:9px;}
+  .bilan-h .ic{width:18px;height:18px;color:var(--accent);}
   .bilan-note{font-size:12px;color:var(--text-dim);margin-top:10px;}
   .funnel{display:flex;flex-direction:column;gap:9px;}
   .funnel-row{display:flex;align-items:center;gap:12px;}
-  .funnel-l{font-size:12.5px;width:110px;flex-shrink:0;color:var(--text);}
+  .funnel-l{font-size:12.5px;width:128px;flex-shrink:0;color:var(--text);display:inline-flex;align-items:center;gap:6px;}
+  .funnel-l .ic{width:14px;height:14px;color:var(--text-mute);}
   .funnel-bar-wrap{flex:1;background:var(--surface-2);border-radius:8px;overflow:hidden;}
   .funnel-bar{height:26px;border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:#fff;font-size:12px;font-weight:700;min-width:24px;transition:width .4s;}
   /* Checklist modal + carte */
@@ -275,6 +282,7 @@
   .compare-table th,.compare-table td{border:1px solid var(--border);padding:9px 11px;text-align:left;vertical-align:top;}
   .compare-table th{background:var(--surface-2);font-weight:600;}
   .compare-table .ct-label{background:var(--surface-2);font-weight:600;white-space:nowrap;}
+  .compare-table .ct-label .ic{width:13px;height:13px;vertical-align:-.12em;margin-right:3px;color:var(--text-mute);}
   /* Modal ajout par lien */
   .modal-sub{font-size:13px;color:var(--text-dim);margin:0 0 14px;line-height:1.5;}
   .links-area{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:var(--font);font-size:13px;resize:vertical;line-height:1.6;}
@@ -300,11 +308,13 @@
   .pc-row{display:flex;gap:7px;} .pc-row .pc-in{flex:1;}
   .pc-link{font-size:11.5px;color:var(--accent);text-decoration:none;}
   .btn-validate{width:100%;margin-top:6px;}
+  .btn-validate .ic{width:15px;height:15px;}
   .hint code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:11.5px;color:var(--text);}
 
   /* SEGMENTED toggle swipe/grille */
   .segmented{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:3px;}
-  .seg{padding:7px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--text-dim);cursor:pointer;transition:.15s;border:none;background:transparent;font-family:var(--font);}
+  .seg{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--text-dim);cursor:pointer;transition:.15s;border:none;background:transparent;font-family:var(--font);}
+  .seg .ic{width:15px;height:15px;}
   .seg.active{background:var(--accent);color:#fff;}
 
   /* PILLS */
@@ -330,10 +340,12 @@
   .swipe-card .company{font-size:16px;color:var(--accent);font-weight:600;margin-bottom:16px;}
   .swipe-card .facts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
   .fact{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:7px 12px;font-size:12.5px;display:flex;align-items:center;gap:6px;}
-  .fact .fl{color:var(--text-mute);} .fact .fv{color:var(--text);font-weight:600;}
+  .fact .fl{color:var(--text-mute);display:inline-flex;} .fact .fl .ic{width:14px;height:14px;} .fact .fv{color:var(--text);font-weight:600;}
   .swipe-card .desc{font-size:13.5px;color:var(--text-dim);line-height:1.6;flex:1;overflow-y:auto;padding-right:4px;}
   .swipe-card .links{display:flex;gap:9px;margin-top:14px;}
-  .swipe-card .links a{flex:1;text-align:center;padding:9px;border-radius:10px;border:1px solid var(--border-light);color:var(--text-dim);text-decoration:none;font-size:12.5px;font-weight:600;transition:.15s;}
+  .swipe-card .links a{flex:1;display:grid;place-items:center;padding:9px;border-radius:10px;border:1px solid var(--border);color:var(--text-mute);text-decoration:none;transition:.15s;}
+  .swipe-card .links a .ic{width:18px;height:18px;}
+  .swipe-card .links a:hover{border-color:var(--accent);color:var(--accent);}
   .swipe-card .links a:hover{border-color:var(--accent);color:var(--accent);}
   .swipe-badge{position:absolute;top:26px;font-family:var(--display);font-size:30px;font-weight:700;padding:6px 18px;border-radius:12px;border:3px solid;opacity:0;transition:opacity .15s;pointer-events:none;}
   .swipe-badge.like{right:24px;color:var(--green);border-color:var(--green);transform:rotate(12deg);}
@@ -341,12 +353,13 @@
   .swipe-badge.show{opacity:1;}
 
   .swipe-actions{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:22px;}
-  .sa{width:60px;height:60px;border-radius:50%;border:2px solid var(--border-light);background:var(--surface);display:grid;place-items:center;font-size:24px;cursor:pointer;transition:.18s;}
+  .sa{width:60px;height:60px;border-radius:50%;border:2px solid var(--border-light);background:var(--surface);display:grid;place-items:center;cursor:pointer;transition:.18s;color:var(--text-dim);}
+  .sa .ic{width:26px;height:26px;}
   .sa:hover{transform:scale(1.12);}
-  .sa.nope:hover{border-color:var(--red);background:var(--red-soft);}
-  .sa.later{width:50px;height:50px;font-size:20px;} .sa.later:hover{border-color:var(--cyan);background:var(--cyan-soft);}
-  .sa.like:hover{border-color:var(--green);background:var(--green-soft);}
-  .sa.super{width:54px;height:54px;font-size:22px;background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;} .sa.super:hover{box-shadow:0 0 24px rgba(251,191,36,.6);}
+  .sa.nope:hover{border-color:var(--red);background:var(--red-soft);color:var(--red);}
+  .sa.later{width:50px;height:50px;} .sa.later .ic{width:22px;height:22px;} .sa.later:hover{border-color:var(--cyan);background:var(--cyan-soft);color:var(--cyan);}
+  .sa.like:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);}
+  .sa.super{width:54px;height:54px;background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;color:#fff;} .sa.super .ic{width:24px;height:24px;} .sa.super:hover{box-shadow:0 0 24px rgba(224,150,30,.5);}
   .swipe-hint{font-size:12px;color:var(--text-mute);text-align:center;margin-top:14px;}
   .swipe-done{text-align:center;padding:60px 20px;}
   .swipe-done .big{font-family:var(--display);font-size:30px;font-weight:600;margin-bottom:10px;}
@@ -362,14 +375,17 @@
   .c-title{font-size:15.5px;font-weight:700;line-height:1.35;padding-left:7px;}
   .c-sub{font-size:13px;color:var(--accent);font-weight:600;padding-left:7px;}
   .c-meta{display:flex;flex-wrap:wrap;gap:6px;padding-left:7px;}
-  .chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:3px 9px;border-radius:999px;}
+  .chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:3px 9px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;}
+  .chip .ic{width:12px;height:12px;}
   .chip.loc{color:var(--text);} .chip.haute{color:var(--orange);border-color:var(--orange);} .chip.green{color:var(--green);border-color:var(--green);}
   .c-desc{font-size:12.5px;color:var(--text-dim);padding-left:7px;flex:1;}
   .c-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
   .desc-more{margin:2px 0 0 7px;background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;font-family:var(--font);}
   .desc-more:hover{text-decoration:underline;}
   .c-date{font-size:11px;color:var(--text-mute);padding-left:7px;}
-  .c-actions{display:flex;gap:6px;flex-wrap:wrap;padding-left:7px;margin-top:3px;}
+  .c-actions{display:flex;gap:6px;flex-wrap:wrap;padding-left:7px;margin-top:3px;align-items:center;}
+  .c-actions .btn .ic{width:14px;height:14px;}
+  .c-link .ic{width:13px;height:13px;vertical-align:-.12em;margin-right:4px;}
   .mini{flex:1;min-width:46px;font-size:14px;padding:7px 5px;border-radius:8px;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;transition:.12s;font-family:var(--font);}
   .mini:hover{border-color:var(--accent);transform:translateY(-1px);}
   .mini.a-super{background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;}
@@ -478,7 +494,8 @@
 
   /* Infos société (fiche entreprise) */
   .company-info{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
-  .ci-chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:4px 9px;border-radius:8px;}
+  .ci-chip{font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);padding:4px 9px;border-radius:8px;display:inline-flex;align-items:center;gap:4px;}
+  .ci-chip .ic{width:12px;height:12px;}
   .ci-na{font-size:11px;color:var(--text-mute);font-style:italic;}
   .grid-links{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
   .grid-links a{flex:1;text-align:center;font-size:11.5px;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:7px;padding:6px 4px;transition:.12s;cursor:pointer;}
@@ -540,7 +557,8 @@
   .phase-bar{display:flex;gap:4px;height:40px;border-radius:10px;overflow:hidden;margin-bottom:12px;}
   .phase-seg{display:flex;align-items:center;justify-content:center;min-width:30px;transition:.15s;}
   .phase-seg:hover{filter:brightness(1.08);}
-  .phase-emoji{font-size:16px;}
+  .phase-emoji{display:inline-flex;color:#fff;}
+  .phase-emoji .ic{width:15px;height:15px;}
   .phase-legend{display:flex;flex-direction:column;gap:6px;}
   .phase-leg{font-size:12.5px;color:var(--text-dim);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .phase-leg b{color:var(--text);font-weight:600;}
@@ -556,7 +574,8 @@
   .hist-table tr:last-child td{border-bottom:none;}
   .hist-table tbody tr:hover{background:var(--surface-2);}
   .hist-date{color:var(--text-dim);white-space:nowrap;font-size:12px;}
-  .hist-stat{font-size:11px;font-weight:600;padding:2px 9px;border:1px solid;border-radius:999px;white-space:nowrap;}
+  .hist-stat{font-size:11px;font-weight:600;padding:2px 9px;border:1px solid;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
+  .hist-stat .ic{width:12px;height:12px;}
   /* ===== GALERIE MARQUES (Mes marques) ===== */
   .reve-sizes{display:inline-flex;gap:3px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:3px;}
   .reve-size-btn{border:none;background:transparent;cursor:pointer;font-size:14px;padding:4px 9px;border-radius:6px;color:var(--text-dim);font-family:var(--font);}
@@ -618,7 +637,8 @@
   .api-body{padding:4px 14px 14px;}
   /* ===== En-tête de modale + croix de fermeture (toutes les fiches) ===== */
   .modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;}
-  .modal-head h3{margin-bottom:0;flex:1;min-width:0;}
+  .modal-head h3{margin-bottom:0;flex:1;min-width:0;display:flex;align-items:center;gap:9px;}
+  .modal-head h3 .ic{width:18px;height:18px;color:var(--accent);flex-shrink:0;}
   .x{flex-shrink:0;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);font-size:15px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:.15s;font-family:var(--font);padding:0;}
   .x:hover{background:var(--red-soft);border-color:var(--red);color:var(--red);transform:rotate(90deg);}
   /* ===== Suivi : mode gérer / suppression multiple ===== */
@@ -634,7 +654,9 @@
   /* ===== Classement à l'ajout par lien ===== */
   .pc-interet{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:4px 0 8px;}
   .pc-interet-l{font-size:12px;color:var(--text-dim);font-weight:600;}
-  .pc-int{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:.13s;font-family:var(--font);}
+  .pc-int{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:.13s;font-family:var(--font);display:inline-flex;align-items:center;gap:5px;}
+  .pc-int .ic{width:13px;height:13px;}
+  .pc-link .ic{width:13px;height:13px;vertical-align:-.12em;margin-right:3px;}
   .pc-int:hover{border-color:var(--accent);color:var(--text);}
   .pc-int.on.super{background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;color:#fff;}
   .pc-int.on.apostuler{background:var(--green);border-color:var(--green);color:#fff;}
@@ -642,6 +664,7 @@
   /* ===== Accueil : bouton recherche (remplace le bandeau 3 étapes) ===== */
   .home-cta{display:flex;justify-content:center;margin-bottom:20px;}
   .home-search-btn{font-size:14.5px;padding:13px 26px;border-radius:999px;box-shadow:0 4px 16px var(--glow);}
+  .home-search-btn .ic{width:17px;height:17px;}
   /* ===== Trouver : vue Liste simple ===== */
   .find-list{display:flex;flex-direction:column;gap:8px;}
   .find-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:11px;padding:11px 14px;transition:.12s;}
@@ -751,6 +774,66 @@
   /* timeline */
   .tl-title .ic{width:17px;height:17px;color:var(--accent);}
   .tl-toggle .btn .ic{width:14px;height:14px;}
+  /* ===== Mes marques : icônes ===== */
+  .rsort .ic{width:14px;height:14px;vertical-align:-.12em;}
+  .reve-size-btn{display:grid;place-items:center;}
+  .reve-size-btn .ic{width:16px;height:16px;}
+  .reve-visite{display:inline-flex;align-items:center;gap:4px;}
+  .reve-visite .ic{width:12px;height:12px;}
+  .reve-off .ic{width:12px;height:12px;vertical-align:-.1em;}
+  .reve-off .dot{margin:0 4px;color:var(--text-mute);}
+  .brand-off-stat{display:inline-flex;align-items:center;gap:5px;}
+  .brand-off-stat .ic{width:14px;height:14px;}
+  .empty-ico .ic{width:30px;height:30px;}
+  /* fiche marque : lien principal pleine largeur, autres en icônes carrées */
+  .pc-links a.full{flex:0 0 100%;gap:7px;font-size:13px;font-weight:600;}
+  .pc-links a.full .ic{width:16px;height:16px;}
+  /* ===== Passe finale : icônes diverses ===== */
+  .relances-head{display:flex;align-items:center;gap:8px;}
+  .relances-head .ic{width:17px;height:17px;color:var(--orange);}
+  .rel-done .ic{width:15px;height:15px;}
+  .tag-chip .ic{width:11px;height:11px;vertical-align:-.1em;margin-right:2px;}
+  .q-chip{display:inline-flex;align-items:center;gap:3px;}
+  .q-chip .ic{width:11px;height:11px;}
+  .pc-section-h{display:flex;align-items:center;gap:7px;}
+  .pc-section-h .ic{width:14px;height:14px;color:var(--text-mute);}
+  .pc-missing-ico{flex-shrink:0;display:inline-flex;color:var(--accent);}
+  .pc-missing-ico .ic{width:15px;height:15px;}
+  .pc-complete{display:flex;align-items:center;justify-content:center;gap:6px;}
+  .pc-complete .ic{width:14px;height:14px;}
+  .api-title .ic{width:15px;height:15px;color:var(--text-mute);}
+  .error-box .ic{width:15px;height:15px;vertical-align:-.15em;margin-right:4px;}
+  .setup-box .ic{width:15px;height:15px;vertical-align:-.15em;margin-right:4px;}
+  .bookmarklet-btn .ic{width:14px;height:14px;vertical-align:-.13em;margin-right:5px;}
+  .mini-map-loading .ic{width:13px;height:13px;vertical-align:-.12em;margin-right:3px;}
+  .brand-chip .ic{width:12px;height:12px;}
+  /* ===== PASSE MOBILE (consolidée, en fin de feuille pour gagner la cascade) ===== */
+  @media(max-width:680px){
+    /* Toutes les rangées de filtres défilent horizontalement au lieu de passer à la ligne */
+    .pills,.pipe-pills,.reve-sortpills{
+      display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;scrollbar-width:none;
+    }
+    .pills::-webkit-scrollbar,.pipe-pills::-webkit-scrollbar,.reve-sortpills::-webkit-scrollbar{display:none;}
+    .pill,.pipe-pill,.rsort{flex:0 0 auto;}
+    /* indice de défilement : léger fondu à droite */
+    .pills,.pipe-pills{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 16px),transparent);}
+
+    /* Mes marques : pills qui défilent + boutons de taille fixes à droite */
+    .reve-toolbar{flex-wrap:nowrap;align-items:center;gap:10px;}
+    .reve-sortpills{flex:1;min-width:0;}
+    .reve-sizes{flex:0 0 auto;}
+
+    /* Formulaire de recherche : champs empilés pleine largeur, bouton plein */
+    .panel .row{flex-direction:column;align-items:stretch;gap:10px;}
+    .panel .row .field,.panel .row .field.wide{flex:1 1 auto;min-width:0;width:100%;}
+    .panel .row .field[style*="flex:0"]{flex:1 1 auto!important;}
+    #searchBtn{width:100%;}
+
+    /* Liste (Trouver) : boutons d'action répartis */
+    .find-acts{justify-content:space-between;width:100%;}
+    .find-acts .act{flex:1;}
+  }
 </style>
 </head>
 <body>
@@ -772,10 +855,7 @@
 
   <!-- COCKPIT DU JOUR -->
   <div class="cockpit">
-    <div class="cockpit-title">Aujourd'hui
-      <button class="info-btn" data-info="cockpit" onclick="toggleInfo('cockpit',this)" aria-label="En savoir plus"><i data-ic="info"></i></button>
-    </div>
-    <div class="info-panel" id="info-cockpit">Chaque tuile suit une étape de ta recherche : les offres à trier, celles prêtes à postuler, tes candidatures envoyées, les entretiens, les propositions reçues, et les marques à revisiter. Touche une tuile pour aller à l'écran correspondant.</div>
+    <div class="cockpit-title">Aujourd'hui</div>
     <div class="todo-grid" id="cockpit"></div>
   </div>
 
@@ -790,7 +870,7 @@
 
   <!-- ORIENTATION 3 étapes -->
   <div class="home-cta">
-    <button class="btn home-search-btn" onclick="setView('veille')">🔍 Chercher de nouvelles offres</button>
+    <button class="btn home-search-btn" onclick="setView('veille')"><i data-ic="search"></i> Chercher de nouvelles offres</button>
   </div>
 
   <!-- ENCART INSTALLATION BOOKMARKLET (visible tant que pas installé) -->
@@ -804,9 +884,9 @@
     <div class="nav-more">
       <button class="nav-tab nav-more-btn" id="moreBtn" onclick="toggleMore(event)">Plus <span class="more-chev">▾</span></button>
       <div class="nav-more-menu" id="moreMenu">
-        <button data-view="veille" onclick="setView('veille')">🔍 Cherche offres</button>
-        <button data-view="bilan" onclick="setView('bilan')">📊 Statistiques</button>
-        <button data-view="carte" onclick="setView('carte')">🗺 Carte</button>
+        <button data-view="veille" onclick="setView('veille')"><i data-ic="search"></i> Cherche offres</button>
+        <button data-view="bilan" onclick="setView('bilan')"><i data-ic="chart"></i> Statistiques</button>
+        <button data-view="carte" onclick="setView('carte')"><i data-ic="pin"></i> Carte</button>
         <button data-view="reseau" onclick="setView('reseau')">Réseau <span class="badge" id="nb-reseau">0</span></button>
         <button data-view="entretiens" onclick="setView('entretiens')">Entretiens <span class="badge" id="nb-entretiens">0</span></button>
       </div>
@@ -835,11 +915,11 @@
       </div>
     </div>
     <div class="sec-head">
-      <div><h2>Cherche des offres</h2><div class="sub" id="veille-info">Cherche, puis trie : ❤️ je garde · 🤔 plus tard · 🚫 non. Ce que tu gardes va dans « Offres à trier ».</div></div>
+      <div><h2>Cherche des offres</h2><div class="sub" id="veille-info">Cherche, puis trie chaque offre. Ce que tu gardes va dans « Offres à trier ».</div></div>
       <div class="segmented" id="findModeSeg">
-        <button class="seg active" data-m="swipe" onclick="setFindMode('swipe')">🃏 Swipe</button>
-        <button class="seg" data-m="liste" onclick="setFindMode('liste')">📋 Liste</button>
-        <button class="seg" data-m="carte" onclick="setFindMode('carte')">🗺 Carte</button>
+        <button class="seg active" data-m="swipe" onclick="setFindMode('swipe')"><i data-ic="layers"></i> Swipe</button>
+        <button class="seg" data-m="liste" onclick="setFindMode('liste')"><i data-ic="list"></i> Liste</button>
+        <button class="seg" data-m="carte" onclick="setFindMode('carte')"><i data-ic="pin"></i> Carte</button>
       </div>
     </div>
     <div id="errorZone"></div>
@@ -900,17 +980,17 @@
     <div id="reveBmSetup" class="bm-setup" style="display:none;"></div>
     <div class="reve-toolbar">
       <div class="reve-sortpills" id="reveSortPills">
-        <button class="rsort active" data-s="note" onclick="setReveSort('note')">⭐ Ma note</button>
-        <button class="rsort" data-s="populaires" onclick="setReveSort('populaires')">🔥 Plus visitées</button>
-        <button class="rsort" data-s="offres" onclick="setReveSort('offres')">📨 Offres</button>
-        <button class="rsort" data-s="ancienne" onclick="setReveSort('ancienne')">💤 À revisiter</button>
-        <button class="rsort" data-s="secteur" onclick="setReveSort('secteur')">🏭 Secteur</button>
-        <button class="rsort" data-s="nom" onclick="setReveSort('nom')">🔤 Nom</button>
+        <button class="rsort active" data-s="note" onclick="setReveSort('note')"><i data-ic="star"></i> Ma note</button>
+        <button class="rsort" data-s="populaires" onclick="setReveSort('populaires')"><i data-ic="eye"></i> Plus visitées</button>
+        <button class="rsort" data-s="offres" onclick="setReveSort('offres')"><i data-ic="send"></i> Offres</button>
+        <button class="rsort" data-s="ancienne" onclick="setReveSort('ancienne')"><i data-ic="clock"></i> À revisiter</button>
+        <button class="rsort" data-s="secteur" onclick="setReveSort('secteur')"><i data-ic="building"></i> Secteur</button>
+        <button class="rsort" data-s="nom" onclick="setReveSort('nom')">A→Z</button>
       </div>
       <div class="reve-sizes">
-        <button class="reve-size-btn" data-size="S" onclick="setReveSize('S')" title="Petites">▫</button>
-        <button class="reve-size-btn active" data-size="M" onclick="setReveSize('M')" title="Moyennes">◻</button>
-        <button class="reve-size-btn" data-size="L" onclick="setReveSize('L')" title="Grandes">⬜</button>
+        <button class="reve-size-btn" data-size="S" onclick="setReveSize('S')" title="Petites"><i data-ic="gridS"></i></button>
+        <button class="reve-size-btn active" data-size="M" onclick="setReveSize('M')" title="Moyennes"><i data-ic="gridM"></i></button>
+        <button class="reve-size-btn" data-size="L" onclick="setReveSize('L')" title="Grandes"><i data-ic="gridL"></i></button>
       </div>
     </div>
     <div id="reve-content"></div>
@@ -931,7 +1011,7 @@
 
   <!-- VIEW BILAN (stats + campagnes) -->
   <div class="view" id="view-bilan">
-    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Statistiques de ma recherche</h2><div class="sub">Tes chiffres et l'avancement de tes campagnes.</div></div><button class="btn sm ghost" onclick="exportCSV()">⬇️ Export CSV</button></div>
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Statistiques de ma recherche</h2><div class="sub">Tes chiffres et l'avancement de tes campagnes.</div></div><button class="btn sm ghost" onclick="exportCSV()"><i data-ic="download"></i> Export CSV</button></div>
     <div id="bilan-content"></div>
   </div>
 
@@ -941,9 +1021,9 @@
     <div class="carte-toolbar">
       <div id="carte-pills" class="pills">
         <span class="pill active" data-f="all" onclick="setCarteFilter('all')">Toutes</span>
-        <span class="pill" data-f="super" onclick="setCarteFilter('super')">⭐ Coups de cœur</span>
-        <span class="pill" data-f="apostuler" onclick="setCarteFilter('apostuler')">❤️ À postuler</span>
-        <span class="pill" data-f="postule" onclick="setCarteFilter('postule')">✅ Déjà postulé</span>
+        <span class="pill" data-f="super" onclick="setCarteFilter('super')"><i data-ic="star"></i> Coups de cœur</span>
+        <span class="pill" data-f="apostuler" onclick="setCarteFilter('apostuler')"><i data-ic="heart"></i> À postuler</span>
+        <span class="pill" data-f="postule" onclick="setCarteFilter('postule')"><i data-ic="send"></i> Déjà postulé</span>
       </div>
       <select id="carteSectorSel" class="sel" onchange="setCarteSector(this.value)"><option value="all">Tous les secteurs</option></select>
     </div>
@@ -993,7 +1073,21 @@
     checklist:'<path d="M3.5 5.5h7M3.5 10h7M3.5 14.5h5"/><path d="M13.2 13.2l1.6 1.6 2.8-3.2"/>',
     alert:'<path d="M10 3.2l7.5 13H2.5z"/><path d="M10 8.3v4M10 14.4v.1"/>',
     minus:'<circle cx="10" cy="10" r="7.3"/><path d="M6.5 10h7"/>',
-    pencil:'<path d="M4 16l.9-3.4 7.7-7.7 2.5 2.5-7.7 7.7zM12.6 4.9l2.5 2.5"/>'
+    pencil:'<path d="M4 16l.9-3.4 7.7-7.7 2.5 2.5-7.7 7.7zM12.6 4.9l2.5 2.5"/>',
+    gridS:'<rect x="3" y="3" width="4.2" height="4.2" rx="1"/><rect x="8" y="3" width="4.2" height="4.2" rx="1"/><rect x="13" y="3" width="4.2" height="4.2" rx="1"/><rect x="3" y="8" width="4.2" height="4.2" rx="1"/><rect x="8" y="8" width="4.2" height="4.2" rx="1"/><rect x="13" y="8" width="4.2" height="4.2" rx="1"/>',
+    gridM:'<rect x="3" y="3" width="6" height="6" rx="1.2"/><rect x="11" y="3" width="6" height="6" rx="1.2"/><rect x="3" y="11" width="6" height="6" rx="1.2"/><rect x="11" y="11" width="6" height="6" rx="1.2"/>',
+    gridL:'<rect x="3.5" y="3.5" width="13" height="13" rx="2"/>',
+    layers:'<path d="M10 3l7 4-7 4-7-4z"/><path d="M3 11l7 4 7-4M3 14.5l7 4 7-4"/>',
+    list:'<path d="M6.5 5.5h10M6.5 10h10M6.5 14.5h10M3.3 5.5h.01M3.3 10h.01M3.3 14.5h.01"/>',
+    funnel:'<path d="M3 4.5h14l-5.2 6.2V16l-3.6 1.5v-6.8z"/>',
+    trend:'<path d="M3 13.5l4-4 3 2.5 5.5-6M17 6h-3.5M17 6v3.5"/>',
+    target:'<circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3.4"/><path d="M10 .8v2.4M10 16.8v2.4M.8 10h2.4M16.8 10h2.4"/>',
+    gear:'<circle cx="10" cy="10" r="2.6"/><path d="M10 2.5v2M10 15.5v2M4.6 4.6l1.4 1.4M14 14l1.4 1.4M2.5 10h2M15.5 10h2M4.6 15.4L6 14M14 6l1.4-1.4"/>',
+    history:'<path d="M3.5 10a6.5 6.5 0 11 2 4.7M3.5 10V6.2M3.5 10h3.6M10 7v3.2l2.3 1.4"/>',
+    download:'<path d="M10 3v9M6.3 8.5L10 12l3.7-3.5M4 14.5v1.5a1 1 0 001 1h10a1 1 0 001-1v-1.5"/>',
+    save:'<path d="M4.5 3.5h9l3 3v10a1 1 0 01-1 1h-12a1 1 0 01-1-1v-12a1 1 0 011-1z"/><path d="M6.5 3.5v4h6M7 16.5v-4.5h6v4.5"/>',
+    bell:'<path d="M6 8a4 4 0 018 0c0 4 1.5 5 1.5 5h-11S6 12 6 8zM8.3 16a1.8 1.8 0 003.4 0"/>',
+    tag:'<path d="M3.5 9.5V4a.5.5 0 01.5-.5h5.5l7 7-6 6-7-7z"/><circle cx="6.8" cy="6.8" r="1"/>'
   };
   // étape du Suivi -> icône
   const KICON={"Envoyé":"send","Entretien":"mic","Offre reçue":"trophy","Refusé":"ban","Non intéressé":"minus"};
@@ -1075,37 +1169,37 @@
     const s=matchScore(o);
     const cls=s>=75?"m-high":s>=55?"m-mid":"m-low";
     const lbl=s>=75?"fort":s>=55?"moyen":"faible";
-    return '<span class="match-badge '+cls+'" title="Score de match (modifie tes critères avec ⚙️)">🎯 '+s+' · '+lbl+'</span>';
+    return '<span class="match-badge '+cls+'" title="Score de match (réglable dans Critères)">'+ic("target")+' '+s+' · '+lbl+'</span>';
   }
 
   function openCriteres(){
     const secKeys=SECTORS.map(s=>s.key).concat(["Autre"]);
     const box=document.getElementById("modalBox");
     box.innerHTML=`
-      <div class="modal-head"><h3>⚙️ Mes critères de match</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">Règle l'importance de chaque critère. Le score 🎯 de chaque offre se recalcule automatiquement et les meilleures remontent.</p>
-      <div class="crit-block"><div class="crit-label">🏭 Secteurs (priorité 0 à 3)</div>
+      <div class="modal-head"><h3>${ic("gear")} Mes critères de match</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Règle l'importance de chaque critère. Le score de match de chaque offre se recalcule automatiquement et les meilleures remontent.</p>
+      <div class="crit-block"><div class="crit-label">${ic("building")} Secteurs (priorité 0 à 3)</div>
         ${secKeys.map(k=>`<div class="crit-row"><span>${esc(k)}</span><div class="crit-stars" data-sec="${esc(k)}">
           ${[0,1,2,3].map(n=>`<span class="star ${(matchCriteria.secteurs[k]||0)>=n&&n>0?'on':''} ${n===0?'zero':''}" onclick="setSecW('${esc(k)}',${n})">${n===0?'∅':'★'}</span>`).join("")}
         </div></div>`).join("")}
       </div>
-      <div class="crit-block"><div class="crit-label">📍 Lieux préférés (+15)</div>
+      <div class="crit-block"><div class="crit-label">${ic("pin")} Lieux préférés (+15)</div>
         <input class="crit-in" id="crit-lieux" value="${esc(matchCriteria.lieuxPref.join(", "))}" />
         <div class="crit-hint">Villes, régions ou n° de département, séparés par virgule.</div>
       </div>
-      <div class="crit-block"><div class="crit-label">🚫 Lieux à éviter (−20)</div>
+      <div class="crit-block"><div class="crit-label">${ic("ban")} Lieux à éviter (−20)</div>
         <input class="crit-in" id="crit-exclus" value="${esc(matchCriteria.lieuxExclus.join(", "))}" />
       </div>
-      <div class="crit-block"><div class="crit-label">📄 Contrat préféré (+10)</div>
+      <div class="crit-block"><div class="crit-label">${ic("doc")} Contrat préféré (+10)</div>
         <input class="crit-in" id="crit-contrat" value="${esc(matchCriteria.contratPref)}" placeholder="CDI" />
       </div>
-      <div class="crit-block"><div class="crit-label">✅ Mots bonus (+4 chacun)</div>
+      <div class="crit-block"><div class="crit-label">${ic("check")} Mots bonus (+4 chacun)</div>
         <input class="crit-in" id="crit-bonus" value="${esc(matchCriteria.motsBonus.join(", "))}" />
       </div>
-      <div class="crit-block"><div class="crit-label">⛔ Mots malus (−12 chacun)</div>
+      <div class="crit-block"><div class="crit-label">${ic("minus")} Mots malus (−12 chacun)</div>
         <input class="crit-in" id="crit-malus" value="${esc(matchCriteria.motsMalus.join(", "))}" />
       </div>
-      <button class="btn btn-validate" onclick="saveCriteres()">💾 Enregistrer mes critères</button>`;
+      <button class="btn btn-validate" onclick="saveCriteres()">${ic("save")}<span>Enregistrer mes critères</span></button>`;
     document.getElementById("modalBg").classList.add("open");
   }
   function setSecW(sec,n){ matchCriteria.secteurs[sec]=n; openCriteres(); }
@@ -1156,7 +1250,7 @@
   function miniMapHtml(o){
     if(!o.lieu && !o.lat) return "";
     const ville=esc(o.lieu||"Lieu");
-    return '<div class="mini-map-box" id="map-'+o.id+'"><div class="mini-map-loading">📍 '+ville+' — chargement de la carte…</div></div>';
+    return '<div class="mini-map-box" id="map-'+o.id+'"><div class="mini-map-loading">'+ville+' — chargement de la carte…</div></div>';
   }
   // Après rendu : géocode si besoin puis monte la carte Leaflet interactive
   async function loadMapInto(offerId, lieu, lat, lon){
@@ -1178,7 +1272,7 @@
     }
     if(!la||!lo){
       const gmaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(lieu||"");
-      box.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gmaps+'" target="_blank" rel="noopener">📍 '+esc(lieu||"")+' — voir sur Google Maps</a>';
+      box.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gmaps+'" target="_blank" rel="noopener">'+ic("pin")+' '+esc(lieu||"")+' — voir sur Google Maps</a>';
       return;
     }
     // Monte la carte Leaflet
@@ -1192,7 +1286,7 @@
       mapInstances[offerId]=map;
       // recalcule la taille après affichage (Leaflet a besoin que le conteneur soit visible)
       setTimeout(()=>{try{map.invalidateSize();}catch(e){}},200);
-    }catch(e){ box.innerHTML='<div class="mini-map-loading">📍 '+esc(lieu||"")+'</div>'; }
+    }catch(e){ box.innerHTML='<div class="mini-map-loading">'+esc(lieu||"")+'</div>'; }
   }
 
   function tileUrl(){return "https://maps.geoapify.com/v1/tile/"+MAP_STYLE+"/{z}/{x}/{y}.png?apiKey="+GEOAPIFY_KEY;}
@@ -1203,7 +1297,7 @@
   async function openOfferMap(o){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
     const box=document.getElementById("modalBox");
-    box.innerHTML=`<div class="modal-head"><h3>📍 ${esc(o.titre||"Offre")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+    box.innerHTML=`<div class="modal-head"><h3>${ic("pin")} ${esc(o.titre||"Offre")}</h3><button class="x" onclick="closeModal()">✕</button></div>
       <div class="modal-sub">${esc(o.entreprise||"")}${o.lieu?" · "+esc(o.lieu):""}</div>
       <div id="offerMap" class="offer-map"><div class="mini-map-loading">Chargement de la carte…</div></div>`;
     document.getElementById("modalBg").classList.add("open");
@@ -1212,7 +1306,7 @@
     const mb=document.getElementById("offerMap");if(!mb)return;
     if(!la||!lo){
       const gm="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(o.lieu||"");
-      mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gm+'" target="_blank" rel="noopener">📍 Lieu non localisable — voir sur Google Maps</a>';return;
+      mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gm+'" target="_blank" rel="noopener">'+ic("pin")+' Lieu non localisable — voir sur Google Maps</a>';return;
     }
     mb.innerHTML="";
     try{
@@ -1264,7 +1358,7 @@
       const o=x.o;
       const col=x.statut==="super"?"#f5a623":x.statut==="postule"?"#34c759":x.statut==="apostuler"?"#0071e3":"#9aa2b4";
       const m=L.marker([la,lo],{icon:pinIconC(col)}).addTo(carteMap);
-      const badge=x.statut==="super"?"⭐ ":x.statut==="postule"?"✅ ":"";
+      const badge=x.statut==="super"?"★ ":"";
       m.bindPopup('<b>'+badge+esc(o.titre||"")+'</b><br>'+esc(o.entreprise||"")+'<br><span style="color:#888">'+esc(o.lieu||"")+'</span>'+(o.lien?'<br><a href="'+esc(o.lien)+'" target="_blank" rel="noopener">voir l\'offre</a>':""));
       carteMarkers.push(m);pts.push([la,lo]);
     });
@@ -1291,22 +1385,22 @@
     if(!el)return;
     if(!data){el.innerHTML='<span class="ci-na">Infos société non trouvées dans l\'annuaire officiel</span>';return;}
     const bits=[];
-    if(data.effectif&&data.effectif!=="Non renseigné")bits.push(`<span class="ci-chip">👥 ${esc(data.effectif)}</span>`);
-    if(data.ville_siege)bits.push(`<span class="ci-chip">🏛 Siège : ${esc(data.ville_siege)}</span>`);
-    if(data.activite)bits.push(`<span class="ci-chip">🏭 ${esc(data.activite)}</span>`);
-    if(data.date_creation)bits.push(`<span class="ci-chip">📅 Créée en ${esc((data.date_creation||"").slice(0,4))}</span>`);
+    if(data.effectif&&data.effectif!=="Non renseigné")bits.push(`<span class="ci-chip">${ic("building")} ${esc(data.effectif)}</span>`);
+    if(data.ville_siege)bits.push(`<span class="ci-chip">${ic("pin")} Siège : ${esc(data.ville_siege)}</span>`);
+    if(data.activite)bits.push(`<span class="ci-chip">${ic("layers")} ${esc(data.activite)}</span>`);
+    if(data.date_creation)bits.push(`<span class="ci-chip">${ic("calendar")} Créée en ${esc((data.date_creation||"").slice(0,4))}</span>`);
     el.innerHTML=bits.length?bits.join(""):'<span class="ci-na">Pas de détails société publics</span>';
   }
 
   // ===== ROADMAP =====
   // Échéances fixes (parcours) — non modifiables
   const DEADLINES=[
-    {icon:"📝",label:"Rendu mémoire",date:"2026-06-22",fixed:true},
-    {icon:"📋",label:"Rapport stage",date:"2026-07-01",fixed:true},
-    {icon:"💼",label:"Fin stage GSK",date:"2026-07-16",fixed:true},
-    {icon:"🎓",label:"Diplôme IÉSEG",date:"2026-10-01",fixed:true},
+    {icon:"book",label:"Rendu mémoire",date:"2026-06-22",fixed:true},
+    {icon:"doc",label:"Rapport stage",date:"2026-07-01",fixed:true},
+    {icon:"building",label:"Fin stage GSK",date:"2026-07-16",fixed:true},
+    {icon:"trophy",label:"Diplôme IÉSEG",date:"2026-10-01",fixed:true},
   ];
-  const EVENT_ICONS={Entretien:"🎤",Deadline:"⏰",Relance:"🔔",Perso:"🏖",Autre:"📌"};
+  const EVENT_ICONS={Entretien:"mic",Deadline:"alert",Relance:"bell",Perso:"calendar",Autre:"pin"};
   const EVENT_COLORS={Entretien:"var(--purple)",Deadline:"var(--orange)",Relance:"var(--cyan)",Perso:"var(--pink)",Autre:"var(--accent)"};
 
   function toggleTimeline(){
@@ -1316,7 +1410,7 @@
   function renderRoadmap(){
     const now=new Date();now.setHours(0,0,0,0);
     const fixed=DEADLINES.map(d=>({...d,id:null,color:"var(--green)"}));
-    const perso=evenements.map(e=>({icon:EVENT_ICONS[e.type]||"📌",label:e.titre,date:e.date_event,id:e.id,fixed:false,color:EVENT_COLORS[e.type]||"var(--accent)"}));
+    const perso=evenements.map(e=>({icon:EVENT_ICONS[e.type]||"pin",label:e.titre,date:e.date_event,id:e.id,fixed:false,color:EVENT_COLORS[e.type]||"var(--accent)"}));
     const all=[...fixed,...perso]
       .filter(d=>Math.round((new Date(d.date)-now)/86400000)>=-7)
       .sort((a,b)=>new Date(a.date)-new Date(b.date));
@@ -1328,7 +1422,7 @@
       if(upcoming.length){
         nextEl.innerHTML=upcoming.map(d=>{
           const dd=Math.round((new Date(d.date)-now)/86400000);
-          return `<span class="tl-mini" style="color:${d.color};">${d.icon} ${esc(d.label)} <b>${dd===0?"auj.":"J-"+dd}</b></span>`;
+          return `<span class="tl-mini" style="color:${d.color};">${ic(d.icon)} ${esc(d.label)} <b>${dd===0?"auj.":"J-"+dd}</b></span>`;
         }).join("");
       } else nextEl.innerHTML='<span class="tl-mini">Rien à venir</span>';
     }
@@ -1354,7 +1448,7 @@
       const onclick=d.id?`onclick="openEventMenu('${d.id}')"`:"";
       return `<div class="jalon ${updown} ${past?'past':''} ${d.fixed?'fixed':''}" style="left:${x}%;color:${d.color};">
         <div class="jalon-card" ${onclick}>
-          <div class="jalon-icon">${d.icon}</div>
+          <div class="jalon-icon">${ic(d.icon)}</div>
           <div class="jalon-label">${esc(d.label)}</div>
           <div class="jalon-date">${ds}</div>
           <div class="jalon-days" style="color:${d.color};">${daysStr}</div>
@@ -1414,23 +1508,17 @@
   // ===== COCKPIT DU JOUR =====
   function renderCockpit(){
     const now=new Date();now.setHours(0,0,0,0);
-    // À trier — API : offres trouvées par la recherche, pas encore swipées
-    const aTrierApi=swipeQueue.length;
-    // À trier — manuel/lien : offres ajoutées à la main (id "manual_"), pas encore envoyées
-    const aTrierManuel=Object.values(statusMap).filter(s=>s.offer&&String(s.offer.id||"").startsWith("manual_")&&["apostuler","super","reflexion"].includes(s.statut)).length;
     // À postuler : tout ce qui est gardé prêt à candidater (coup de cœur + à postuler)
     const aPostuler=Object.values(statusMap).filter(s=>s.statut==="apostuler"||s.statut==="super").length;
     const candidatures=pipeline.length;
     const entretiens_=pipeline.filter(p=>p.statut==="Entretien").length;
     const propositions=pipeline.filter(p=>p.statut==="Offre reçue").length;
+    // 4 tuiles : l'entonnoir essentiel, sans doublon
     const items=[
-      {n:aTrierApi,t:"à trier (recherche)",ic:"search",act:()=>setView('veille')},
-      {n:aTrierManuel,t:"ajoutées par lien",ic:"inbox",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
       {n:aPostuler,t:"à postuler",ic:"heart",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
-      {n:candidatures,t:"candidatures envoyées",ic:"send",act:()=>setView('pipeline')},
+      {n:candidatures,t:"candidatures",ic:"send",act:()=>setView('pipeline')},
       {n:entretiens_,t:"entretiens",ic:"mic",act:()=>setView('pipeline')},
-      {n:propositions,t:"propositions reçues",ic:"trophy",act:()=>setView('pipeline')},
-      {n:brandsToRevisit(),t:"marques à revisiter",ic:"bookmark",act:()=>{setView('reve');setReveSort('ancienne');}},
+      {n:propositions,t:"propositions",ic:"trophy",act:()=>setView('pipeline')},
     ];
     document.getElementById("cockpit").innerHTML=items.map((it,i)=>
       `<div class="todo ${it.n===0?'zero':''} ${it.n>0?'active':''}" onclick="cockpitAct(${i})"><div class="todo-ic">${ic(it.ic)}</div><div class="todo-tx"><div class="n">${it.n}</div><div class="t">${it.t}</div></div></div>`
@@ -1531,10 +1619,10 @@
       if(totalAdz) srcParts.push("Adzuna ~"+totalAdz);
       const nbNew=nouvelles.length;
       document.getElementById("veille-info").textContent=allOffers.length+" offres"+(nbNew?" ("+nbNew+" nouvelles)":"")+(srcParts.length?" · "+srcParts.join(" · "):"")+" · swipe pour trier";
-      if(ftError) document.getElementById("errorZone").innerHTML='<div class="error-box">⚠️ '+ftError+'</div>';
+      if(ftError) document.getElementById("errorZone").innerHTML='<div class="error-box">'+ic('alert')+' '+ftError+'</div>';
       rebuildSwipeQueue(); renderVeille(); renderCockpit();
     }catch(e){
-      document.getElementById("errorZone").innerHTML='<div class="error-box">⚠️ '+e.message+'</div>';
+      document.getElementById("errorZone").innerHTML='<div class="error-box">'+ic('alert')+' '+e.message+'</div>';
       document.getElementById("veille-swipe").innerHTML='<div class="empty">Impossible de charger. Vérifie la config API dans Vercel.</div>';
     }finally{btn.disabled=false;btn.textContent="Chercher";}
   }
@@ -1596,7 +1684,7 @@
     const c=document.getElementById("veille-liste");
     const list=findList();
     if(!allOffers.length){c.innerHTML='<div class="empty">Lance une recherche pour voir des offres.</div>';return;}
-    if(!list.length){c.innerHTML='<div class="swipe-done"><div class="big">🎉 Tout est trié !</div><p class="info">Retrouve tes choix dans « Offres à trier ».</p><button class="btn" onclick="setView(\'offres\')">Voir mes offres</button></div>';return;}
+    if(!list.length){c.innerHTML='<div class="swipe-done"><div class="big">Tout est trié</div><p class="info">Retrouve tes choix dans « Offres à trier ».</p><button class="btn" onclick="setView(\'offres\')">Voir mes offres</button></div>';return;}
     c.innerHTML=`<div class="info" style="margin-bottom:12px;">${list.length} offre(s) à trier — clique une action sur chaque ligne.</div>`+
       `<div class="find-list">`+list.map(o=>{
         const sec=detectSector(o);
@@ -1604,14 +1692,14 @@
         return `<div class="find-row" style="border-left-color:${sec.c};">
           <div class="find-main">
             <div class="find-top">${matchBadge(o)}${brandTag(o.entreprise)}<span class="find-poste">${esc(o.titre||"—")}</span></div>
-            <div class="find-sub">${esc(o.entreprise||"")}${o.lieu?` · 📍 ${esc(o.lieu)}`:""}${o.typeContrat?` · ${esc(o.typeContrat)}`:""}${o.salaire?` · 💶 ${esc(o.salaire)}`:""}</div>
+            <div class="find-sub">${esc(o.entreprise||"")}${o.lieu?` · ${esc(o.lieu)}`:""}${o.typeContrat?` · ${esc(o.typeContrat)}`:""}${o.salaire?` · ${esc(o.salaire)}`:""}</div>
           </div>
           <div class="find-acts">
-            <button class="mini" onclick='markOffer(${oData},"super")' title="Coup de cœur">⭐</button>
-            <button class="mini" onclick='markOffer(${oData},"apostuler")' title="À postuler">❤️</button>
-            <button class="mini" onclick='markOffer(${oData},"reflexion")' title="Plus tard">🤔</button>
-            <button class="mini" onclick='markOffer(${oData},"ignore")' title="Passer">🚫</button>
-            <a class="mini find-link" href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre">🔗</a>
+            <button class="act" onclick='markOffer(${oData},"super")' title="Coup de cœur">${ic("star")}</button>
+            <button class="act" onclick='markOffer(${oData},"apostuler")' title="À postuler">${ic("heart")}</button>
+            <button class="act" onclick='markOffer(${oData},"reflexion")' title="Plus tard">${ic("clock")}</button>
+            <button class="act" onclick='markOffer(${oData},"ignore")' title="Passer">${ic("ban")}</button>
+            <a class="act find-link" href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre">${ic("doc")}</a>
           </div>
         </div>`;
       }).join("")+`</div>`;
@@ -1641,7 +1729,7 @@
       const sec=detectSector(o);
       const m=L.marker([la,lo],{icon:pinIconC(sec.c)}).addTo(findMap);
       const oData=esc(JSON.stringify(o)).replace(/'/g,"&#39;");
-      m.bindPopup('<b>'+esc(o.titre||"")+'</b><br>'+esc(o.entreprise||"")+'<br><span style="color:#888">'+esc(o.lieu||"")+'</span><br><button onclick=\'markOffer('+oData+',"apostuler");\' style="margin-top:5px;cursor:pointer;">❤️ Garder</button> <button onclick=\'markOffer('+oData+',"super");\' style="cursor:pointer;">⭐</button>'+(o.lien?'<br><a href="'+esc(o.lien)+'" target="_blank" rel="noopener">voir l\'offre</a>':""));
+      m.bindPopup('<b>'+esc(o.titre||"")+'</b><br>'+esc(o.entreprise||"")+'<br><span style="color:#888">'+esc(o.lieu||"")+'</span><br><button onclick=\'markOffer('+oData+',"apostuler");\' style="margin-top:5px;cursor:pointer;">À postuler</button> <button onclick=\'markOffer('+oData+',"super");\' style="cursor:pointer;">Coup de cœur</button>'+(o.lien?'<br><a href="'+esc(o.lien)+'" target="_blank" rel="noopener">voir l\'offre</a>':""));
       findMarkers.push(m);pts.push([la,lo]);
     });
     if(info)info.textContent=pts.length+" offre(s) sur la carte"+(list.length>pts.length?" ("+(list.length-pts.length)+" sans lieu)":"")+" — clique un point pour garder.";
@@ -1653,7 +1741,7 @@
     const c=document.getElementById("veille-swipe");
     if(!allOffers.length){c.innerHTML='<div class="empty">Lance une recherche pour commencer à trier.</div>';return;}
     if(swipeIndex>=swipeQueue.length){
-      c.innerHTML=`<div class="swipe-done"><div class="big">🎉 Tout est trié !</div><p class="info">Tu as passé en revue les ${swipeQueue.length} offres. Retrouve tes coups de cœur dans « Offres à trier ».</p><button class="btn" onclick="setView('offres')">Voir mes offres</button></div>`;
+      c.innerHTML=`<div class="swipe-done"><div class="big">Tout est trié</div><p class="info">Tu as passé en revue les ${swipeQueue.length} offres. Retrouve tes coups de cœur dans « Offres à trier ».</p><button class="btn" onclick="setView('offres')">Voir mes offres</button></div>`;
       return;
     }
     const o=swipeQueue[swipeIndex];
@@ -1675,31 +1763,31 @@
             <h3>${esc(o.titre)}</h3>
             <div class="company">${esc(o.entreprise)}</div>
             <div class="facts">
-              ${o.lieu?`<div class="fact"><span class="fl">📍</span><span class="fv">${esc(o.lieu)}</span></div>`:""}
-              ${o.typeContrat?`<div class="fact"><span class="fl">📄</span><span class="fv">${esc(o.typeContrat)}</span></div>`:""}
-              ${o.experience?`<div class="fact"><span class="fl">⏱</span><span class="fv">${esc(o.experience)}</span></div>`:""}
-              ${o.salaire?`<div class="fact"><span class="fl">💶</span><span class="fv">${esc(o.salaire)}</span></div>`:""}
+              ${o.lieu?`<div class="fact"><span class="fl">${ic("pin")}</span><span class="fv">${esc(o.lieu)}</span></div>`:""}
+              ${o.typeContrat?`<div class="fact"><span class="fl">${ic("doc")}</span><span class="fv">${esc(o.typeContrat)}</span></div>`:""}
+              ${o.experience?`<div class="fact"><span class="fl">${ic("clock")}</span><span class="fv">${esc(o.experience)}</span></div>`:""}
+              ${o.salaire?`<div class="fact"><span class="fl">${ic("chart")}</span><span class="fv">${esc(o.salaire)}</span></div>`:""}
             </div>
             <div class="desc">${esc(o.description)||"Pas de description fournie."}${o.description&&o.description.length>=300?"…":""}</div>
             ${miniMapHtml(o)}
             ${dateStr?`<div class="c-date" style="padding-left:0;margin-top:10px;">Publié le ${dateStr}</div>`:""}
             <div class="company-info" id="ci-${o.id}"><span class="ci-na">Chargement infos société…</span></div>
             <div class="links">
-              <a href="${esc(o.lien)}" target="_blank" rel="noopener">📋 Offre</a>
-              <a href="${companyLinks(o.entreprise).site}" target="_blank" rel="noopener">🏢 Site</a>
-              <a href="${companyLinks(o.entreprise).wiki}" target="_blank" rel="noopener">📖 Wiki</a>
-              <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener">⭐ Avis</a>
-              <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener">📊 CA</a>
+              <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Offre">${ic("doc")}</a>
+              <a href="${companyLinks(o.entreprise).site}" target="_blank" rel="noopener" title="Site">${ic("building")}</a>
+              <a href="${companyLinks(o.entreprise).wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
+              <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
+              <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener" title="CA">${ic("chart")}</a>
             </div>
           </div>
         </div>
         <div class="swipe-actions">
-          <div class="sa nope" title="Passer (←)" onclick="swipeAction('ignore')">🚫</div>
-          <div class="sa later" title="Plus tard (↓)" onclick="swipeAction('reflexion')">🤔</div>
-          <div class="sa like" title="À postuler (→)" onclick="swipeAction('apostuler')">❤️</div>
-          <div class="sa super" title="Coup de cœur (↑)" onclick="swipeAction('super')">⭐</div>
+          <div class="sa nope" title="Passer (←)" onclick="swipeAction('ignore')">${ic("ban")}</div>
+          <div class="sa later" title="Plus tard (↓)" onclick="swipeAction('reflexion')">${ic("clock")}</div>
+          <div class="sa like" title="À postuler (→)" onclick="swipeAction('apostuler')">${ic("heart")}</div>
+          <div class="sa super" title="Coup de cœur (↑)" onclick="swipeAction('super')">${ic("star")}</div>
         </div>
-        <div class="swipe-hint">⌨️ Raccourcis : ← passer · → garder · ↑ coup de cœur · ↓ plus tard</div>
+        <div class="swipe-hint">Raccourcis clavier : ← passer · → garder · ↑ coup de cœur · ↓ plus tard</div>
       </div>`;
     // charge les infos société en asynchrone (sans bloquer l'affichage)
     loadCompanyInto("ci-"+o.id, o.entreprise);
@@ -1754,7 +1842,7 @@
     }
     if(gridGroupBy==="marque"){
       const b=followedBrand(o.entreprise);
-      return b?("⭐ "+(o.entreprise||"Marque")):"Autres entreprises";
+      return b?("★ "+(o.entreprise||"Marque")):"Autres entreprises";
     }
     if(gridGroupBy==="date"){
       if(!o.dateCreation) return "Sans date";
@@ -1797,7 +1885,7 @@
 
     const c=document.getElementById("veille-grid");
     if(!workList.length && !apiList.length){
-      c.innerHTML='<div class="empty-cta"><div class="empty-ico">📥</div><div class="empty-h">'+(hideSeen?"Tout est trié !":"Pas encore d\'offres ici")+'</div><div class="empty-p">'+(hideSeen?"Plus rien à trier dans ce filtre.":"Lance une recherche (onglet Plus → Cherche offres) ou ajoute une offre par lien.")+'</div><div class="empty-actions"><button class="btn" onclick="setView(\'veille\')">🔍 Cherche offres</button><button class="btn ghost" onclick="openAddLinks()">➕ Ajouter par lien</button></div></div>';return;}
+      c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("inbox")+'</div><div class="empty-h">'+(hideSeen?"Tout est trié !":"Pas encore d\'offres ici")+'</div><div class="empty-p">'+(hideSeen?"Plus rien à trier dans ce filtre.":"Lance une recherche (onglet Plus → Cherche offres) ou ajoute une offre par lien.")+'</div><div class="empty-actions"><button class="btn" onclick="setView(\'veille\')">'+ic("search")+'<span>Cherche offres</span></button><button class="btn ghost" onclick="openAddLinks()">'+ic("plus")+'<span>Ajouter par lien</span></button></div></div>';return;}
 
     // rend une liste groupée -> HTML (réutilisable pour workList et apiList)
     const renderGroups=(arr)=>{
@@ -1823,13 +1911,13 @@
     let html="";
     // 1) offres de travail (manuelles + catégorisées) — visibles directement
     if(workList.length) html+=renderGroups(workList);
-    else if(apiList.length) html+='<div class="empty" style="padding:24px;">Rien de gardé pour l\'instant. Déplie les résultats de recherche ci-dessous pour trier 👇</div>';
+    else if(apiList.length) html+='<div class="empty" style="padding:24px;">Rien de gardé pour l\'instant. Déplie les résultats de recherche ci-dessous pour trier.</div>';
     // 2) flot API brut — replié par défaut
     if(apiList.length){
       const newApi=apiList.filter(o=>o.isNew).length;
       html+=`<div class="api-section ${apiOpen?"open":""}">
         <div class="api-head" onclick="toggleApiSection()">
-          <span class="api-title">🔍 Résultats de recherche <span class="gg-count">${apiList.length}</span>${newApi?`<span class="gg-new">${newApi} nouv.</span>`:""}</span>
+          <span class="api-title">${ic("search")} Résultats de recherche <span class="gg-count">${apiList.length}</span>${newApi?`<span class="gg-new">${newApi} nouv.</span>`:""}</span>
           <span class="api-hint">${apiOpen?"replier":"déplier pour trier"} <span class="api-chevron">▾</span></span>
         </div>
         ${apiOpen?`<div class="api-body">${renderGroups(apiList)}</div>`:""}
@@ -1841,7 +1929,7 @@
   function offerOf(id){ return (statusMap[id]&&statusMap[id].offer) || allOffers.find(o=>o.id===id); }
   function renderTagsInline(o){
     const tags=o.tags||[];
-    return tags.map(t=>`<span class="tag-chip" onclick="removeTag('${o.id}','${esc(t)}')" title="Cliquer pour retirer">🏷️ ${esc(t)} ✕</span>`).join("")
+    return tags.map(t=>`<span class="tag-chip" onclick="removeTag('${o.id}','${esc(t)}')" title="Cliquer pour retirer">${ic("tag")} ${esc(t)} ✕</span>`).join("")
       +`<span class="tag-add" onclick="addTag('${o.id}')">+ tag</span>`;
   }
   async function persistOffer(o){
@@ -1876,28 +1964,28 @@
     if(!bar){bar=document.createElement("div");bar.id="compareBar";bar.className="compare-bar";document.body.appendChild(bar);}
     if(!compareIds.length){bar.style.display="none";return;}
     bar.style.display="flex";
-    bar.innerHTML=`<span>⚖️ ${compareIds.length} offre(s) sélectionnée(s)</span>
+    bar.innerHTML=`<span>${ic("scale")} ${compareIds.length} offre(s) sélectionnée(s)</span>
       <button class="btn sm" onclick="openCompare()">Comparer</button>
       <button class="btn ghost sm" onclick="compareIds=[];renderGrid();renderCompareBar();">Annuler</button>`;
   }
   function openCompare(){
     const offers=compareIds.map(offerOf).filter(Boolean);
-    if(offers.length<2){alert("Sélectionne au moins 2 offres (bouton ⚖️ sur les cartes).");return;}
+    if(offers.length<2){alert("Sélectionne au moins 2 offres (bouton comparer sur les cartes).");return;}
     const rows=[
-      ["🎯 Match",o=>matchScore(o)+"/100"],
-      ["🏭 Secteur",o=>detectSector(o).key],
-      ["🏢 Entreprise",o=>o.entreprise||"—"],
-      ["📍 Lieu",o=>o.lieu||"—"],
-      ["📄 Contrat",o=>o.typeContrat||"—"],
-      ["💶 Salaire",o=>o.salaire||"—"],
-      ["🔗 Source",o=>o.source||"—"],
+      [ic("target")+" Match",o=>matchScore(o)+"/100"],
+      [ic("building")+" Secteur",o=>detectSector(o).key],
+      [ic("building")+" Entreprise",o=>o.entreprise||"—"],
+      [ic("pin")+" Lieu",o=>o.lieu||"—"],
+      [ic("doc")+" Contrat",o=>o.typeContrat||"—"],
+      [ic("chart")+" Salaire",o=>o.salaire||"—"],
+      [ic("link")+" Source",o=>o.source||"—"],
     ];
     const box=document.getElementById("modalBox");
-    box.innerHTML=`<div class="modal-head"><h3>⚖️ Comparateur d'offres</h3><button class="x" onclick="closeModal()">✕</button></div>
+    box.innerHTML=`<div class="modal-head"><h3>${ic("scale")} Comparateur d'offres</h3><button class="x" onclick="closeModal()">✕</button></div>
       <div class="compare-table-wrap"><table class="compare-table">
         <tr><th></th>${offers.map(o=>`<th>${esc(o.titre||"—")}</th>`).join("")}</tr>
         ${rows.map(([l,fn])=>`<tr><td class="ct-label">${l}</td>${offers.map(o=>`<td>${esc(String(fn(o)))}</td>`).join("")}</tr>`).join("")}
-        <tr><td class="ct-label">📋</td>${offers.map(o=>`<td><a href="${esc(o.lien)}" target="_blank" rel="noopener" class="rel-link">voir</a></td>`).join("")}</tr>
+        <tr><td class="ct-label">${ic("doc")} Offre</td>${offers.map(o=>`<td><a href="${esc(o.lien)}" target="_blank" rel="noopener" class="rel-link">voir</a></td>`).join("")}</tr>
       </table></div>`;
     document.getElementById("modalBg").classList.add("open");
   }
@@ -2018,7 +2106,7 @@
       // repli : champ temporaire + execCommand (anciens iOS)
       try{const ta=document.createElement("textarea");ta.value=code;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.focus();ta.select();ok=document.execCommand("copy");document.body.removeChild(ta);}catch(e2){}
     }
-    if(btn){ btn.textContent=ok?"✅ Code copié !":"⚠️ Copie manuelle"; setTimeout(()=>{btn.textContent="📋 Copier le code";},2200); }
+    if(btn){ btn.innerHTML=(ok?ic("check"):ic("alert"))+"<span>"+(ok?"Code copié !":"Copie manuelle")+"</span>"; setTimeout(()=>{btn.innerHTML=ic("doc")+"<span>Copier le code</span>";},2200); }
     if(!ok){ prompt("Copie ce code à la main :", code); }
   }
   function dismissBmSetup(){try{localStorage.setItem("st_bm_done","1");}catch(e){}const el=document.getElementById("bmSetup");if(el)el.style.display="none";}
@@ -2027,25 +2115,42 @@
     const el=document.getElementById("reveBmSetup");if(!el)return;
     let done=false; try{done=localStorage.getItem("st_brand_bm_done")==="1";}catch(e){}
     if(done){el.style.display="none";return;}
-    el.style.display="flex";
+    el.style.display="block";
     const isMobile=window.innerWidth<768;
     if(isMobile){
-      el.innerHTML=`<div class="bm-setup-txt"><div class="bm-setup-h">⭐ Capture une marque en 1 tap</div>
-        <div class="bm-setup-p">Comme le favori offre, mais pour les <b>entreprises</b> : sur le site carrières d'une boîte (dans Safari), il l'ajoute ici avec son logo. Touche pour copier le code, puis crée un favori comme expliqué pour les offres.</div></div>
-        <div class="bm-mobile-actions"><button class="bookmarklet-btn" id="copyBrandBmBtn" onclick="copyBrandBookmarklet()">📋 Copier le code « marque »</button>
-        <button class="bm-setup-done" onclick="dismissReveBm()">Plus tard · masquer</button></div>`;
+      el.innerHTML=`
+        <div class="bm-row">
+          <div class="bm-ico">${ic("bookmark")}</div>
+          <div class="bm-txt"><div class="bm-h">Capturer une marque en 1 tap</div>
+            <div class="bm-sub">Sur le site d'une entreprise, ajoute-la ici avec son logo.</div></div>
+          <button class="info-btn" data-info="brandbm" onclick="toggleInfo('brandbm',this)" aria-label="Comment faire"><i data-ic="info"></i></button>
+        </div>
+        <div class="info-panel" id="info-brandbm">Comme le favori « offre », mais pour les entreprises. Touche « Copier le code », puis crée un favori Safari et remplace son adresse par le code (même méthode que pour les offres).</div>
+        <div class="bm-actions">
+          <button class="btn primary sm" id="copyBrandBmBtn" onclick="copyBrandBookmarklet()">${ic("doc")}<span>Copier le code</span></button>
+          <button class="bm-dismiss" onclick="dismissReveBm()">Masquer</button>
+        </div>`;
     } else {
-      el.innerHTML=`<div class="bm-setup-txt"><div class="bm-setup-h">⭐ Capture une marque en 1 clic</div>
-        <div class="bm-setup-p">Glisse ce 2e favori dans ta barre. Sur le site d'une entreprise (page carrières, accueil…), un clic l'ajoute ici avec son logo, prête à noter.</div></div>
-        <a class="bookmarklet-btn" href="${brandBookmarkletCode()}" onclick="return false;" draggable="true">⭐ Sam'Marque</a>
-        <button class="bm-setup-done" onclick="dismissReveBm()">J'ai installé · masquer</button>`;
+      el.innerHTML=`
+        <div class="bm-row">
+          <div class="bm-ico">${ic("bookmark")}</div>
+          <div class="bm-txt"><div class="bm-h">Capturer une marque en 1 clic</div>
+            <div class="bm-sub">Glisse ce 2e favori, puis clique-le sur le site d'une boîte.</div></div>
+          <button class="info-btn" data-info="brandbm" onclick="toggleInfo('brandbm',this)" aria-label="Comment faire"><i data-ic="info"></i></button>
+        </div>
+        <div class="info-panel" id="info-brandbm">Sur le site d'une entreprise (page carrières, accueil…), un clic ajoute la marque ici avec son logo, prête à noter.</div>
+        <div class="bm-actions">
+          <a class="btn primary sm" href="${brandBookmarkletCode()}" onclick="return false;" draggable="true" style="cursor:grab;">${ic("bookmark")}<span>Sam'Marque</span></a>
+          <button class="bm-dismiss" onclick="dismissReveBm()">J'ai installé · masquer</button>
+        </div>`;
     }
+    hydrateIcons(el);
   }
   function dismissReveBm(){try{localStorage.setItem("st_brand_bm_done","1");}catch(e){}const el=document.getElementById("reveBmSetup");if(el)el.style.display="none";}
   async function copyBrandBookmarklet(){
     const code=brandBookmarkletCode();const btn=document.getElementById("copyBrandBmBtn");let ok=false;
     try{await navigator.clipboard.writeText(code);ok=true;}catch(e){try{const ta=document.createElement("textarea");ta.value=code;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();ok=document.execCommand("copy");document.body.removeChild(ta);}catch(e2){}}
-    if(btn){btn.textContent=ok?"✅ Code copié !":"⚠️ Copie manuelle";setTimeout(()=>{btn.textContent="📋 Copier le code « marque »";},2200);}
+    if(btn){btn.innerHTML=(ok?ic("check"):ic("alert"))+"<span>"+(ok?"Code copié !":"Copie manuelle")+"</span>";setTimeout(()=>{btn.innerHTML=ic("doc")+"<span>Copier le code</span>";},2200);}
     if(!ok)prompt("Copie ce code :",code);
   }
   function bookmarkletCode(){
@@ -2058,15 +2163,15 @@
     const bookmarklet=bookmarkletCode();
     const box=document.getElementById("modalBox");
     box.innerHTML=`
-      <div class="modal-head"><h3>➕ Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="modal-head"><h3>${ic("plus")} Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>
       <p class="modal-sub">Colle un ou plusieurs liens d'offres (un par ligne). L'app récupère les infos, tu vérifies, puis tout part dans <b>À postuler</b>.</p>
       <textarea id="linksInput" class="links-area" rows="5" placeholder="https://www.welcometothejungle.com/fr/companies/.../jobs/...&#10;https://www.apec.fr/candidat/recherche-emploi.../detail-offre/...&#10;https://carrieres.exemple.fr/offre/...">${prefillUrl?esc(prefillUrl):""}</textarea>
       <div class="modal-actions">
-        <button class="btn" id="fetchLinksBtn" onclick="fetchLinkInfos()">🔎 Récupérer les infos</button>
-        <details class="bookmarklet-help" ${prefillUrl?"":"open"}><summary>🔖 Astuce : ajout en 1 clic depuis le web (recommandé)</summary>
+        <button class="btn" id="fetchLinksBtn" onclick="fetchLinkInfos()">${ic("search")}<span>Récupérer les infos</span></button>
+        <details class="bookmarklet-help" ${prefillUrl?"":"open"}><summary>${ic("info")} Astuce : ajout en 1 clic depuis le web (recommandé)</summary>
           <p><b>Pourquoi ?</b> Certains sites (LinkedIn, Indeed) bloquent la récupération automatique. Le bookmarklet capture l'offre depuis <b>ton</b> navigateur, donc ça marche partout.</p>
           <p><b>Installation (une fois) :</b> affiche ta barre de favoris (Ctrl+Maj+B), puis <b>glisse</b> ce bouton dedans :</p>
-          <a class="bookmarklet-btn" href="${bookmarklet}" onclick="return false;">🧭 Sam'Travail</a>
+          <a class="bookmarklet-btn" href="${bookmarklet}" onclick="return false;">${ic("link")} Sam'Travail</a>
           <p class="bm-note">Ensuite, sur n'importe quelle offre sur le web → clique ce favori → l'offre s'ouvre ici, prête à ajouter. (Un clic direct ici ne fait rien, c'est normal : il faut le glisser dans les favoris.)</p>
         </details>
       </div>
@@ -2118,7 +2223,7 @@
     // trie la preview : meilleures offres (score) en haut
     addLinksData.sort((a,b)=>matchScore(b)-matchScore(a));
     window._prefill=null;
-    btn.disabled=false;btn.textContent="🔎 Récupérer les infos";
+    btn.disabled=false;btn.innerHTML=ic("search")+"<span>Récupérer les infos</span>";
     renderLinksPreview();
   }
 
@@ -2126,7 +2231,7 @@
     const prev=document.getElementById("linksPreview");
     if(!addLinksData.length){prev.innerHTML="";return;}
     prev.innerHTML='<div class="preview-head">Vérifie et corrige si besoin :</div>'+addLinksData.map((o,i)=>{
-      const q=o._quality==="full"?'<span class="q-chip q-full">✓ bien récupéré</span>':o._quality==="partial"?'<span class="q-chip q-partial">⚠ partiel</span>':'<span class="q-chip q-empty">✗ à compléter</span>';
+      const q=o._quality==="full"?'<span class="q-chip q-full">'+ic("check")+' bien récupéré</span>':o._quality==="partial"?'<span class="q-chip q-partial">'+ic("alert")+' partiel</span>':'<span class="q-chip q-empty">'+ic("ban")+' à compléter</span>';
       return `<div class="preview-card">
         <div class="pc-top">${q}${matchBadge(o)}<span class="pc-src">${esc(o.source||"")}</span><button class="pc-del" onclick="removeLink(${i})" title="Retirer">✕</button></div>
         <input class="pc-in pc-title" placeholder="Titre du poste" value="${esc(o.titre)}" oninput="addLinksData[${i}].titre=this.value" />
@@ -2142,13 +2247,13 @@
         <textarea class="pc-in pc-desc" placeholder="Missions / description (optionnel)" oninput="addLinksData[${i}].description=this.value" rows="3">${esc(o.description||"")}</textarea>
         <div class="pc-interet">
           <span class="pc-interet-l">Classer :</span>
-          <button class="pc-int ${o._interet==="super"?"on super":""}" onclick="setLinkInteret(${i},'super')">⭐ Coup de cœur</button>
-          <button class="pc-int ${o._interet==="apostuler"?"on apostuler":""}" onclick="setLinkInteret(${i},'apostuler')">❤️ À postuler</button>
-          <button class="pc-int ${o._interet==="reflexion"?"on reflexion":""}" onclick="setLinkInteret(${i},'reflexion')">🤔 Plus tard</button>
+          <button class="pc-int ${o._interet==="super"?"on super":""}" onclick="setLinkInteret(${i},'super')">${ic("star")} Coup de cœur</button>
+          <button class="pc-int ${o._interet==="apostuler"?"on apostuler":""}" onclick="setLinkInteret(${i},'apostuler')">${ic("heart")} À postuler</button>
+          <button class="pc-int ${o._interet==="reflexion"?"on reflexion":""}" onclick="setLinkInteret(${i},'reflexion')">${ic("clock")} Plus tard</button>
         </div>
-        <a class="pc-link" href="${esc(o.lien)}" target="_blank" rel="noopener">🔗 voir l'offre</a>
+        <a class="pc-link" href="${esc(o.lien)}" target="_blank" rel="noopener">${ic("doc")} voir l'offre</a>
       </div>`;
-    }).join("")+`<button class="btn btn-validate" onclick="validateAddLinks()">✅ Ajouter ${addLinksData.length} offre(s) à mes offres à trier</button>`;
+    }).join("")+`<button class="btn btn-validate" onclick="validateAddLinks()">${ic("check")}<span>Ajouter ${addLinksData.length} offre(s) à mes offres à trier</span></button>`;
   }
 
   function removeLink(i){addLinksData.splice(i,1);renderLinksPreview();}
@@ -2187,7 +2292,7 @@
     statusMap[o.id]={statut:"postule",offer:o};
     if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:"postule",offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
     renderPipeline();renderVeille();renderCockpit();renderBilan();
-    alert("✅ Ajouté au Suivi (statut Envoyée) !");
+    alert("Ajouté au Suivi (statut Envoyée).");
   }
   // ===== PIPELINE KANBAN =====
   const KCOLS=[
@@ -2223,14 +2328,14 @@
     due.forEach(p=>{ const k=weekLabel(p.date_envoi); (waves[k]=waves[k]||[]).push(p); });
     const keys=Object.keys(waves).sort((a,b)=>new Date(waves[a][0].date_envoi)-new Date(waves[b][0].date_envoi));
     panel.innerHTML=`<div class="relances-box">
-      <div class="relances-head">🔔 ${due.length} candidature(s) à relancer <span class="rel-sub">groupées par vague d'envoi</span></div>
+      <div class="relances-head">${ic("bell")} ${due.length} candidature(s) à relancer <span class="rel-sub">groupées par vague d'envoi</span></div>
       ${keys.map(k=>{
         const items=waves[k];
         const ids=items.map(p=>p.id).join(",");
         return `<div class="rel-wave">
           <div class="rel-wave-head">
             <span class="rel-wave-title">${esc(k)} · ${items.length}</span>
-            <button class="btn sm" onclick="relancerVague('${ids}')">✅ Tout marquer relancé</button>
+            <button class="btn sm" onclick="relancerVague('${ids}')">${ic("check")}<span>Tout marquer relancé</span></button>
           </div>
           ${items.map(p=>{
             const d=Math.round((Date.now()-new Date(p.date_relance||p.date_envoi))/86400000);
@@ -2238,7 +2343,7 @@
               <span class="rel-item-info"><b>${esc(p.entreprise||"—")}</b> · ${esc(p.poste||"")} <span class="rel-days">J+${d}</span></span>
               <span class="rel-item-actions">
                 ${p.lien_offre?`<a href="${esc(p.lien_offre)}" target="_blank" rel="noopener" class="rel-link">offre</a>`:""}
-                <button class="rel-done" onclick="relancerUn('${p.id}')" title="Marquer relancé">✅</button>
+                <button class="rel-done" onclick="relancerUn('${p.id}')" title="Marquer relancé">${ic("check")}</button>
               </span>
             </div>`;
           }).join("")}
@@ -2283,7 +2388,7 @@
   function renderPipeline(){
     renderRelances();
     const c=document.getElementById("pipeline-content");
-    if(!pipeline.length){c.innerHTML='<div class="empty-cta"><div class="empty-ico">📋</div><div class="empty-h">Aucune candidature suivie</div><div class="empty-p">Quand tu postules à une offre gardée, elle arrive ici. Tu suis alors les relances, entretiens et réponses.</div><div class="empty-actions"><button class="btn" onclick="setView(\'offres\')">Voir mes offres</button></div></div>';renderStatsBadges();return;}
+    if(!pipeline.length){c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("send")+'</div><div class="empty-h">Aucune candidature suivie</div><div class="empty-p">Quand tu postules à une offre gardée, elle arrive ici. Tu suis alors les relances, entretiens et réponses.</div><div class="empty-actions"><button class="btn" onclick="setView(\'offres\')">Voir mes offres</button></div></div>';renderStatsBadges();return;}
 
     // compteurs par statut (barre de filtres + vue d'ensemble)
     const counts={}; KCOLS.forEach(col=>counts[col.key]=0);
@@ -2378,7 +2483,7 @@
     const done=Object.keys(p.checklist).filter(k=>p.checklist[k]).length, all=CHECKLIST_ITEMS.length;
     const wrap=document.getElementById("pchk-"+id);
     const btn=wrap&&wrap.parentElement.querySelector(".pipe-check");
-    if(btn){btn.querySelector(".pipe-check-n").textContent=done+"/"+all;btn.classList.toggle("full",done===all);btn.classList.toggle("part",done>0&&done<all);btn.querySelector(".pipe-check-ico").textContent=done===all?"✅":"☑️";}
+    if(btn){btn.querySelector(".pipe-check-n").textContent=done+"/"+all;btn.classList.toggle("full",done===all);btn.classList.toggle("part",done>0&&done<all);btn.querySelector(".pipe-check-ico").innerHTML=ic(done===all?"check":"checklist");}
   }
 
   // Indice discret : champs utiles encore vides sur une candidature
@@ -2396,9 +2501,9 @@
   }
   function pipeMissingHTML(p){
     const m=pipeMissing(p);
-    if(!m.length) return '<div class="pc-complete">✓ Fiche complète — rien à ajouter 👌</div>';
+    if(!m.length) return '<div class="pc-complete">'+ic("check")+' Fiche complète — rien à ajouter</div>';
     const liste=m.length===1?m[0]:m.slice(0,-1).join(", ")+" et "+m[m.length-1];
-    return `<div class="pc-missing"><span class="pc-missing-ico">💡</span><span>Pour une fiche plus solide, tu pourrais ajouter ${liste}.</span></div>`;
+    return `<div class="pc-missing"><span class="pc-missing-ico">${ic("info")}</span><span>Pour une fiche plus solide, tu pourrais ajouter ${liste}.</span></div>`;
   }
 
   // ===== FICHE RICHE d'une candidature (clic sur la ligne) =====
@@ -2431,15 +2536,15 @@
         <a href="${cl.societe}" target="_blank" rel="noopener" title="CA">${ic("chart")}</a>
         <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
       </div>
-      <div class="pc-section-h">✅ Actions</div>
+      <div class="pc-section-h">${ic("checklist")} Actions</div>
       <div class="modal-checklist">
         ${CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="pcchk-${i}" ${chk[it]?"checked":""} onchange="setPipeCheckItem('${p.id}','${esc(it)}',this.checked)"> ${esc(it)}</label>`).join("")}
       </div>
-      ${p.notes?`<div class="pc-section-h">📝 Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
+      ${p.notes?`<div class="pc-section-h">${ic("pencil")} Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
       ${pipeMissingHTML(p)}
       <div class="modal-actions" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
-        <button class="btn" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>✏️ Éditer</button>
+        <button class="btn" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>${ic("pencil")}<span>Éditer</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
     // monte la mini-carte interactive (même logique que les offres)
@@ -2447,7 +2552,7 @@
       const mb=document.getElementById("pcMap");if(!mb)return;
       let la=null,lo=null;
       if(p.ville){const g=await geocode(p.ville);if(g){la=g.lat;lo=g.lon;}}
-      if(!la||!lo){mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gmaps+'" target="_blank" rel="noopener">📍 '+esc(p.ville||p.entreprise||"")+' — voir sur Google Maps</a>';return;}
+      if(!la||!lo){mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gmaps+'" target="_blank" rel="noopener">'+ic("pin")+' '+esc(p.ville||p.entreprise||"")+' — voir sur Google Maps</a>';return;}
       mb.innerHTML="";
       try{const map=L.map(mb,{scrollWheelZoom:true,attributionControl:false}).setView([la,lo],11);L.tileLayer(tileUrl(),{maxZoom:18}).addTo(map);L.marker([la,lo],{icon:pinIconC(col.startsWith("var")?"#0071e3":col)}).addTo(map);setTimeout(()=>{try{map.invalidateSize();}catch(e){}},250);}catch(e){}
     })();
@@ -2501,9 +2606,9 @@
     const byStat={};
     pipe.forEach(p=>{byStat[p.statut]=(byStat[p.statut]||0)+1;});
     const bits=[];
-    if(kept.length) bits.push("❤️ "+kept.length+" gardée"+(kept.length>1?"s":""));
-    Object.entries(byStat).forEach(([k,n])=>{const ic=(KCOLS.find(c=>c.key===k)||{label:k}).label.match(/^\S+/)||["•"];bits.push(ic[0]+" "+n);});
-    return bits.join(" · ");
+    if(kept.length) bits.push(ic("heart")+" "+kept.length);
+    Object.entries(byStat).forEach(([k,n])=>{bits.push(ic(KICON[k]||"minus")+" "+n);});
+    return bits.join('<span class="dot">·</span>');
   }
   // une entreprise (par son nom) est-elle une marque suivie ? renvoie l'objet marque ou null
   function followedBrand(entreprise){
@@ -2516,7 +2621,7 @@
     const b=followedBrand(entreprise);
     if(!b)return "";
     const note=b.note?(" "+b.note+"/5"):"";
-    return `<span class="chip brand-chip" title="Marque que tu suis" onclick='event.stopPropagation();openBrandCard("${b.id}")'>⭐ Marque${esc(note)}</span>`;
+    return `<span class="chip brand-chip" title="Marque que tu suis" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("bookmark")} Marque${esc(note)}</span>`;
   }
   // seuil "très visité" (relatif au max) pour le badge 🔥 (J)
   function reveMaxVisits(){ return Math.max(0,...reve.map(e=>e.nb_visites||0)); }
@@ -2550,7 +2655,7 @@
   function maybeNudgeBrand(o){
     if(!o||!o.entreprise)return;
     if(followedBrand(o.entreprise))return;
-    showToast(`Ajouter <b>${esc(o.entreprise)}</b> à tes marques ?`,"⭐ Ajouter",()=>{
+    showToast(`Ajouter <b>${esc(o.entreprise)}</b> à tes marques ?`,"Ajouter",()=>{
       openModal("reve",{entreprise:o.entreprise});
     });
   }
@@ -2574,7 +2679,7 @@
   // ===== REVE =====
   function renderReve(){
     const c=document.getElementById("reve-content");
-    if(!reve.length){c.innerHTML='<div class="empty-cta"><div class="empty-ico">⭐</div><div class="empty-h">Aucune marque suivie</div><div class="empty-p">Ajoute les entreprises qui te font rêver, note-les, et garde un œil sur celles à revisiter. Le favori « marque » (en haut) les capture en 1 clic.</div><div class="empty-actions"><button class="btn" onclick="openModal(\'reve\')">+ Ajouter une marque</button></div></div>';return;}
+    if(!reve.length){c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("bookmark")+'</div><div class="empty-h">Aucune marque suivie</div><div class="empty-p">Ajoute les entreprises qui te font rêver, note-les, et garde un œil sur celles à revisiter. Le favori « marque » (en haut) les capture en 1 clic.</div><div class="empty-actions"><button class="btn" onclick="openModal(\'reve\')">+ Ajouter une marque</button></div></div>';return;}
     const now=Date.now();
     const daysSince=e=>e.derniere_visite?Math.floor((now-new Date(e.derniere_visite))/86400000):null;
     const sorted=reve.slice().sort((a,b)=>{
@@ -2603,7 +2708,7 @@
         ${e.secteur?`<div class="reve-sector">${esc(e.secteur)}</div>`:""}
         <div class="reve-stars" title="Ta note">${stars}</div>
         <div class="reve-foot">
-          <span class="reve-visite ${stale?"stale":""}" title="Dernière visite depuis l'app">${hot?"🔥 ":"🕒 "}${visiteLbl}${nv?` · ${nv} visite${nv>1?"s":""}`:""}</span>
+          <span class="reve-visite ${stale?"stale":""}" title="Dernière visite depuis l'app">${hot?ic("eye"):ic("clock")} ${visiteLbl}${nv?` · ${nv}`:""}</span>
           ${summary?`<span class="reve-off" title="Offres liées">${summary}</span>`:""}
         </div>
       </div>`;
@@ -2624,34 +2729,34 @@
     const ds=e.derniere_visite?Math.floor((Date.now()-new Date(e.derniere_visite))/86400000):null;
     const visiteLbl=ds===null?"jamais visitée ici":ds===0?"aujourd'hui":ds===1?"hier":"il y a "+ds+" jours";
     const offLines=[
-      ...kept.map(o=>({label:"❤️ Gardée",titre:o.titre,lien:o.lien})),
-      ...pipe.map(p=>({label:(KCOLS.find(c=>c.key===p.statut)||{label:p.statut}).label,titre:p.poste,lien:p.lien_offre})),
+      ...kept.map(o=>({ico:"heart",label:"Gardée",titre:o.titre,lien:o.lien})),
+      ...pipe.map(p=>({ico:KICON[p.statut]||"minus",label:kLabel((KCOLS.find(c=>c.key===p.statut)||{label:p.statut}).label),titre:p.poste,lien:p.lien_offre})),
     ];
     const box=document.getElementById("modalBox");
     box.innerHTML=`
       <div class="modal-head"><h3 style="display:flex;align-items:center;gap:11px;">${logo?`<img src="${logo}" style="width:32px;height:32px;border-radius:7px;" onerror="this.style.display='none'">`:""}${esc(e.entreprise||"Marque")}</h3><button class="x" onclick="closeModal()">✕</button></div>
       <div class="pc-badges">
-        ${e.secteur?`<span class="pc-badge">🏭 ${esc(e.secteur)}</span>`:""}
-        ${e.ville?`<span class="pc-badge">📍 ${esc(e.ville)}</span>`:""}
+        ${e.secteur?`<span class="pc-badge">${ic("building")} ${esc(e.secteur)}</span>`:""}
+        ${e.ville?`<span class="pc-badge">${ic("pin")} ${esc(e.ville)}</span>`:""}
         ${e.priorite?`<span class="pc-badge">${esc(e.priorite)}</span>`:""}
-        <span class="pc-badge">🕒 ${visiteLbl}</span>
+        <span class="pc-badge">${ic("clock")} ${visiteLbl}</span>
       </div>
       <div class="reve-stars-row">${stars}<span class="reve-stars-lbl">${note?note+"/5":"pas encore notée"}</span></div>
       <div class="pc-links">
-        <a href="#" onclick="searchBrandOffers('${esc((e.entreprise||"").replace(/'/g,"\\'"))}');return false;" style="background:var(--accent-soft);color:var(--accent);border-color:var(--accent);">🔍 Chercher ses offres</a>
-        <a href="#" onclick="visitBrand('${e.id}','${esc(site)}');return false;">🏢 Site${dom?" ("+esc(dom)+")":""}</a>
-        <a href="${cl.wiki}" target="_blank" rel="noopener">📖 Wiki</a>
-        <a href="${gmaps}" target="_blank" rel="noopener">🗺 Maps</a>
-        <a href="${cl.avis}" target="_blank" rel="noopener">⭐ Avis</a>
-        <a href="${cl.societe}" target="_blank" rel="noopener">📊 CA</a>
+        <a href="#" class="full" onclick="searchBrandOffers('${esc((e.entreprise||"").replace(/'/g,"\\'"))}');return false;" style="background:var(--accent-soft);color:var(--accent);border-color:var(--accent);">${ic("search")} Chercher ses offres</a>
+        <a href="#" onclick="visitBrand('${e.id}','${esc(site)}');return false;" title="Site${dom?" ("+esc(dom)+")":""}">${ic("building")}</a>
+        <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
+        <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
+        <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
+        <a href="${cl.societe}" target="_blank" rel="noopener" title="CA">${ic("chart")}</a>
       </div>
-      ${e.pourquoi?`<div class="pc-section-h">💭 Pourquoi cette boîte</div><div class="pc-notes">${esc(e.pourquoi)}</div>`:""}
-      <div class="pc-section-h">📨 Offres liées ${offLines.length?`(${offLines.length})`:""}</div>
-      ${offLines.length?`<div class="brand-offers">${offLines.map(o=>`<div class="brand-off-row"><span class="brand-off-stat">${esc(o.label)}</span><span class="brand-off-titre">${esc(o.titre||"—")}</span>${o.lien?`<a href="${esc(o.lien)}" target="_blank" rel="noopener" class="rel-link">voir</a>`:""}</div>`).join("")}</div>`:'<div class="brand-off-empty">Aucune offre liée pour l\'instant. Quand tu garderas ou postuleras à une offre de cette boîte, elle apparaîtra ici.</div>'}
+      ${e.pourquoi?`<div class="pc-section-h">Pourquoi cette boîte</div><div class="pc-notes">${esc(e.pourquoi)}</div>`:""}
+      <div class="pc-section-h">Offres liées ${offLines.length?`(${offLines.length})`:""}</div>
+      ${offLines.length?`<div class="brand-offers">${offLines.map(o=>`<div class="brand-off-row"><span class="brand-off-stat">${ic(o.ico)} ${esc(o.label)}</span><span class="brand-off-titre">${esc(o.titre||"—")}</span>${o.lien?`<a href="${esc(o.lien)}" target="_blank" rel="noopener" class="rel-link">voir</a>`:""}</div>`).join("")}</div>`:'<div class="brand-off-empty">Aucune offre liée pour l\'instant. Quand tu garderas ou postuleras à une offre de cette boîte, elle apparaîtra ici.</div>'}
       <div class="modal-actions" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn danger" onclick="delRow('entreprises_reve','${e.id}')">Supprimer</button>
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
-        <button class="btn" onclick='openModal("reve",${esc(JSON.stringify(e))})'>✏️ Éditer</button>
+        <button class="btn" onclick='openModal("reve",${esc(JSON.stringify(e))})'>${ic("pencil")}<span>Éditer</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
   }
@@ -2659,28 +2764,28 @@
   // ===== RESEAU =====
   function renderReseau(){
     const c=document.getElementById("reseau-content");
-    if(!reseau.length){c.innerHTML='<div class="empty">Aucun contact.</div>';return;}
+    if(!reseau.length){c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("building")+'</div><div class="empty-h">Aucun contact</div><div class="empty-p">Note ici les personnes rencontrées et tes échanges LinkedIn.</div><div class="empty-actions"><button class="btn" onclick="openModal(\'reseau\')">+ Contact</button></div></div>';return;}
     c.innerHTML='<div class="grid">'+reseau.map(r=>`<div class="card"><div class="card-bar" style="background:var(--cyan)"></div>
       <div class="c-title">${esc(r.prenom||"")} ${esc(r.nom||"")}</div>
       <div class="c-sub">${esc(r.entreprise||"")}${r.poste?" · "+esc(r.poste):""}</div>
-      <div class="c-meta"><span class="chip">${esc(r.statut)}</span>${r.dernier_contact?`<span class="chip">${new Date(r.dernier_contact).toLocaleDateString("fr-FR")}</span>`:""}</div>
+      <div class="c-meta"><span class="chip">${esc(r.statut)}</span>${r.dernier_contact?`<span class="chip">${ic("calendar")} ${new Date(r.dernier_contact).toLocaleDateString("fr-FR")}</span>`:""}</div>
       ${r.notes?`<div class="c-desc">${esc(r.notes)}</div>`:""}
-      <div class="c-actions">${r.lien_linkedin?`<a class="c-link" style="flex:1;margin-left:7px;" href="${esc(r.lien_linkedin)}" target="_blank">LinkedIn</a>`:""}<button class="btn ghost sm" onclick='openModal("reseau",${esc(JSON.stringify(r))})'>Éditer</button><button class="btn danger sm" onclick="delRow('reseau','${r.id}')">✕</button></div></div>`).join("")+'</div>';
+      <div class="c-actions">${r.lien_linkedin?`<a class="c-link" style="flex:1;margin-left:7px;" href="${esc(r.lien_linkedin)}" target="_blank">${ic("link")} LinkedIn</a>`:""}<button class="btn quiet sm" onclick='openModal("reseau",${esc(JSON.stringify(r))})'>${ic("pencil")}<span>Éditer</span></button><button class="btn danger sm" title="Supprimer" onclick="delRow('reseau','${r.id}')">${ic("ban")}</button></div></div>`).join("")+'</div>';
   }
 
   // ===== ENTRETIENS =====
   function renderEntretiens(){
     const c=document.getElementById("entretiens-content");
-    if(!entretiens.length){c.innerHTML='<div class="empty">Aucun entretien planifié.</div>';return;}
+    if(!entretiens.length){c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("mic")+'</div><div class="empty-h">Aucun entretien planifié</div><div class="empty-p">Prépare et suis tes entretiens : questions, atouts, dates.</div><div class="empty-actions"><button class="btn" onclick="openModal(\'entretiens\')">+ Entretien</button></div></div>';return;}
     const now=new Date();now.setHours(0,0,0,0);
     c.innerHTML='<div class="grid">'+entretiens.map(en=>{
       const dt=en.date_entretien?new Date(en.date_entretien):null,past=dt&&dt<now;
       return `<div class="card"><div class="card-bar" style="background:${past?"var(--text-mute)":"var(--purple)"}"></div>
       <div class="c-title">${esc(en.poste||"—")}</div><div class="c-sub">${esc(en.entreprise)}</div>
-      <div class="c-meta">${dt?`<span class="chip ${past?"":"haute"}">📅 ${dt.toLocaleDateString("fr-FR")}</span>`:""}${en.type_entretien?`<span class="chip">${esc(en.type_entretien)}</span>`:""}${en.personnes?`<span class="chip">${esc(en.personnes)}</span>`:""}</div>
+      <div class="c-meta">${dt?`<span class="chip ${past?"":"haute"}">${ic("calendar")} ${dt.toLocaleDateString("fr-FR")}</span>`:""}${en.type_entretien?`<span class="chip">${ic("mic")} ${esc(en.type_entretien)}</span>`:""}${en.personnes?`<span class="chip">${esc(en.personnes)}</span>`:""}</div>
       ${en.questions?`<div class="c-desc"><b>Questions :</b> ${esc(en.questions)}</div>`:""}
       ${en.points_forts?`<div class="c-desc"><b>Mes atouts :</b> ${esc(en.points_forts)}</div>`:""}
-      <div class="c-actions"><button class="btn ghost sm" style="flex:1" onclick='openModal("entretiens",${esc(JSON.stringify(en))})'>Éditer</button><button class="btn danger sm" onclick="delRow('entretiens','${en.id}')">✕</button></div></div>`;
+      <div class="c-actions"><button class="btn quiet sm" style="flex:1" onclick='openModal("entretiens",${esc(JSON.stringify(en))})'>${ic("pencil")}<span>Éditer</span></button><button class="btn danger sm" title="Supprimer" onclick="delRow('entretiens','${en.id}')">${ic("ban")}</button></div></div>`;
     }).join("")+'</div>';
   }
 
@@ -2753,7 +2858,7 @@
     // Checklist (pipeline uniquement)
     if(type==="pipeline"){
       const chk=(row&&row.checklist)||{};
-      html+=`<div class="field"><label>✅ Checklist de candidature</label><div class="modal-checklist">`+
+      html+=`<div class="field"><label>${ic("checklist")} Checklist de candidature</label><div class="modal-checklist">`+
         CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="chk-${i}" ${chk[it]?"checked":""} /> ${esc(it)}</label>`).join("")+
         `</div></div>`;
     }
@@ -2815,9 +2920,9 @@
 
   // ===== GRAPH ÉVOLUTION + PHASES =====
   const ACT_META={
-    gardee:{label:"À postuler",icon:"❤️",color:"#a87ffb"},
-    envoyee:{label:"Candidatures envoyées",icon:"📤",color:"#22d3ee"},
-    entretien:{label:"Entretiens",icon:"🎤",color:"#fbbf24"},
+    gardee:{label:"À postuler",ico:"heart",color:"#a87ffb"},
+    envoyee:{label:"Candidatures envoyées",ico:"send",color:"#22d3ee"},
+    entretien:{label:"Entretiens",ico:"mic",color:"#fbbf24"},
   };
   function buildEvolutionSVG(){
     const log=activityLog.filter(a=>ACT_META[a.etape]&&a.ts);
@@ -2878,13 +2983,13 @@
     // détail des compteurs d'une phase : "❤️ 5 · 📤 3 · 🎤 1" (on masque les zéros)
     const detail=p=>{
       const parts=[];
-      if(p.counts.gardee) parts.push("❤️ "+p.counts.gardee);
-      if(p.counts.envoyee) parts.push("📤 "+p.counts.envoyee);
-      if(p.counts.entretien) parts.push("🎤 "+p.counts.entretien);
+      if(p.counts.gardee) parts.push(p.counts.gardee+" à postuler");
+      if(p.counts.envoyee) parts.push(p.counts.envoyee+" envoyées");
+      if(p.counts.entretien) parts.push(p.counts.entretien+" entretiens");
       return parts.join(" · ");
     };
-    const bar=phases.map(p=>`<div class="phase-seg" style="flex:0 0 ${Math.max(8,p.weeks/total*100)}%;background:${p.color};" title="${p.icon} ${p.label} — du ${fmt(p.start)}${p.weeks>1?" au "+fmt(p.end):""} (${p.weeks} sem.)&#10;${detail(p)}"><span class="phase-emoji">${p.icon}</span></div>`).join("");
-    const legend=phases.map(p=>`<div class="phase-leg"><span class="phase-leg-dot" style="background:${p.color};"></span><b>${p.icon} ${esc(p.label)}</b> · ${fmt(p.start)}${p.weeks>1?" → "+fmt(p.end):""} <span class="phase-leg-w">(${p.weeks} sem.)</span>${detail(p)?`<span class="phase-leg-c">${detail(p)}</span>`:""}</div>`).join("");
+    const bar=phases.map(p=>`<div class="phase-seg" style="flex:0 0 ${Math.max(8,p.weeks/total*100)}%;background:${p.color};" title="${p.label} — du ${fmt(p.start)}${p.weeks>1?" au "+fmt(p.end):""} (${p.weeks} sem.)&#10;${detail(p)}"><span class="phase-emoji">${ic(p.ico)}</span></div>`).join("");
+    const legend=phases.map(p=>`<div class="phase-leg"><span class="phase-leg-dot" style="background:${p.color};"></span><b>${esc(p.label)}</b> · ${fmt(p.start)}${p.weeks>1?" → "+fmt(p.end):""} <span class="phase-leg-w">(${p.weeks} sem.)</span>${detail(p)?`<span class="phase-leg-c">${detail(p)}</span>`:""}</div>`).join("");
     return `<div class="phase-bar">${bar}</div><div class="phase-legend">${legend}</div>`;
   }
 
@@ -2899,7 +3004,7 @@
     const topVisites=reve.slice().filter(e=>(e.nb_visites||0)>0).sort((a,b)=>(b.nb_visites||0)-(a.nb_visites||0)).slice(0,3);
     return `
       <div class="bilan-block">
-        <h3 class="bilan-h">⭐ Mes marques</h3>
+        <h3 class="bilan-h">${ic("bookmark")} Mes marques</h3>
         <div class="stats-grid" style="margin-bottom:14px;">
           <div class="stat-card"><div class="stat-n">${reve.length}</div><div class="stat-l">marques suivies</div></div>
           <div class="stat-card"><div class="stat-n">${notees}</div><div class="stat-l">coups de cœur (≥4★)</div></div>
@@ -2908,50 +3013,50 @@
         </div>
         ${withOffers.length?`<div class="pc-section-h" style="margin-top:4px;">Marques les plus actives</div>
           <div class="funnel">${withOffers.map(x=>{const max=withOffers[0].n||1;return `<div class="funnel-row"><span class="funnel-l">${esc(x.e.entreprise||"—")}</span><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.max(8,x.n/max*100)}%;background:var(--purple);">${x.n}</div></div></div>`;}).join("")}</div>`:""}
-        ${topVisites.length?`<p class="bilan-note">🔥 Les plus consultées : ${topVisites.map(e=>esc(e.entreprise)+" ("+(e.nb_visites||0)+")").join(" · ")}</p>`:""}
+        ${topVisites.length?`<p class="bilan-note">Les plus consultées : ${topVisites.map(e=>esc(e.entreprise)+" ("+(e.nb_visites||0)+")").join(" · ")}</p>`:""}
       </div>`;
   }
 
   // ===== HISTORIQUE all-time des candidatures (lit la table pipeline) =====
   const HIST_STATUTS={
-    "Envoyé":{c:"var(--accent)",i:"📤"},
-    "Entretien":{c:"var(--purple)",i:"🎤"},
-    "Offre reçue":{c:"var(--green)",i:"🎉"},
-    "Refusé":{c:"var(--red)",i:"❌"},
-    "Non intéressé":{c:"var(--text-mute)",i:"💤"},
+    "Envoyé":{c:"var(--accent)",ico:"send"},
+    "Entretien":{c:"var(--purple)",ico:"mic"},
+    "Offre reçue":{c:"var(--green)",ico:"trophy"},
+    "Refusé":{c:"var(--red)",ico:"ban"},
+    "Non intéressé":{c:"var(--text-mute)",ico:"minus"},
   };
   function historiquePostulesHTML(){
     const list=pipeline.slice().sort((a,b)=>new Date(b.date_envoi||0)-new Date(a.date_envoi||0));
     if(!list.length)return "";
     const fmt=d=>d?new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"2-digit"}):"—";
     const rows=list.map(p=>{
-      const st=HIST_STATUTS[p.statut]||{c:"var(--text-mute)",i:"•"};
+      const st=HIST_STATUTS[p.statut]||{c:"var(--text-mute)",ico:"minus"};
       const lien=p.lien_offre?`<a href="${esc(p.lien_offre)}" target="_blank" rel="noopener" class="rel-link">voir</a>`:"";
       return `<tr>
         <td class="hist-date">${fmt(p.date_envoi)}</td>
         <td><b>${esc(p.entreprise||"—")}</b></td>
         <td>${esc(p.poste||"—")}</td>
         <td>${p.ville?esc(p.ville):"—"}</td>
-        <td><span class="hist-stat" style="color:${st.c};border-color:${st.c}66;">${st.i} ${esc(p.statut||"—")}</span></td>
+        <td><span class="hist-stat" style="color:${st.c};border-color:${st.c}66;">${ic(st.ico)} ${esc(kLabel(p.statut)||p.statut||"—")}</span></td>
         <td>${lien}</td>
       </tr>`;
     }).join("");
     return `
       <div class="bilan-block">
-        <h3 class="bilan-h">📜 Historique des candidatures <span class="hist-count">${list.length} all-time</span></h3>
+        <h3 class="bilan-h">${ic("history")} Historique des candidatures <span class="hist-count">${list.length} all-time</span></h3>
         <div class="hist-wrap"><table class="hist-table">
           <thead><tr><th>Envoi</th><th>Entreprise</th><th>Poste</th><th>Lieu</th><th>Statut</th><th></th></tr></thead>
           <tbody>${rows}</tbody>
         </table></div>
-        <p class="bilan-note">Toutes les annonces auxquelles tu as postulé, depuis le début — peu importe leur statut actuel (entretien, refus…). ⬇️ Export CSV en haut de la page.</p>
+        <p class="bilan-note">Toutes les annonces auxquelles tu as postulé, depuis le début — peu importe leur statut actuel (entretien, refus…). Export CSV disponible en haut de la page.</p>
       </div>`;
   }
   function evolutionBlockHTML(){
     const svg=buildEvolutionSVG();
-    if(!svg)return `<div class="bilan-block"><h3 class="bilan-h">📈 Évolution dans le temps</h3><div class="empty">Le graphe se remplit dès tes premières actions (offres gardées, candidatures, entretiens).</div></div>`;
+    if(!svg)return `<div class="bilan-block"><h3 class="bilan-h">${ic("trend")} Évolution dans le temps</h3><div class="empty">Le graphe se remplit dès tes premières actions (offres gardées, candidatures, entretiens).</div></div>`;
     return `
       <div class="bilan-block">
-        <h3 class="bilan-h">📈 Évolution dans le temps</h3>
+        <h3 class="bilan-h">${ic("trend")} Évolution dans le temps</h3>
         <div class="evo-legend">
           <span><i style="background:#a87ffb;"></i> À postuler</span>
           <span><i style="background:#22d3ee;"></i> Candidatures envoyées</span>
@@ -2961,7 +3066,7 @@
         <p class="bilan-note">Courbes cumulées : chaque offre est comptée une fois par étape franchie. La date d'une étape se fige à sa 1re observation.</p>
       </div>
       <div class="bilan-block">
-        <h3 class="bilan-h">🧭 Mes phases de travail</h3>
+        <h3 class="bilan-h">${ic("layers")} Mes phases de travail</h3>
         ${phasesHTML()||'<div class="empty">Pas encore assez d\'activité pour détecter des phases.</div>'}
         <p class="bilan-note">Chaque semaine est classée selon ton activité dominante, puis les semaines voisines de même type sont regroupées en phases.</p>
       </div>`;
@@ -2974,7 +3079,7 @@
     const totalSaved=Object.values(statusMap).filter(isKeptOffer).length;
     const envoyees=pipeline.length;
     if(!envoyees && !totalSaved){
-      c.innerHTML='<div class="empty-cta"><div class="empty-ico">📊</div><div class="empty-h">Ton bilan se construit ici</div><div class="empty-p">Dès que tu gardes des offres et que tu postules, tu verras tes chiffres : taux de réponse, entretiens décrochés, et l\'avancement de tes campagnes.</div><div class="empty-actions"><button class="btn" onclick="setView(\'veille\')">Commencer</button></div></div>';
+      c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("chart")+'</div><div class="empty-h">Ton bilan se construit ici</div><div class="empty-p">Dès que tu gardes des offres et que tu postules, tu verras tes chiffres : taux de réponse, entretiens décrochés, et l\'avancement de tes campagnes.</div><div class="empty-actions"><button class="btn" onclick="setView(\'veille\')">Commencer</button></div></div>';
       return;
     }
     const entretiens_=pipeline.filter(p=>p.statut==="Entretien").length;
@@ -2998,30 +3103,30 @@
     const nbTriage=Object.values(statusMap).filter(isToTriage).length; // super+apostuler+reflexion
     const nbCoeur=Object.values(statusMap).filter(s=>s.statut==="super"||s.statut==="apostuler").length; // prêtes à postuler
     const funnel=[
-      {l:"📥 À trier",n:nbTriage,c:"var(--purple)"},
-      {l:"❤️ À postuler",n:nbCoeur,c:"var(--accent)"},
-      {l:"📤 Candidatures",n:envoyees,c:"var(--cyan)"},
-      {l:"🎤 Entretiens",n:entretiens_,c:"var(--gold)"},
-      {l:"🎉 Offres reçues",n:offres_,c:"var(--green)"},
+      {l:"À trier",ico:"inbox",n:nbTriage,c:"var(--purple)"},
+      {l:"À postuler",ico:"heart",n:nbCoeur,c:"var(--accent)"},
+      {l:"Candidatures",ico:"send",n:envoyees,c:"var(--cyan)"},
+      {l:"Entretiens",ico:"mic",n:entretiens_,c:"var(--gold)"},
+      {l:"Offres reçues",ico:"trophy",n:offres_,c:"var(--green)"},
     ];
     const maxF=Math.max(1,...funnel.map(f=>f.n));
 
     c.innerHTML=`
       <div class="stats-grid">
-        <div class="stat-card stat-live"><div class="stat-n">${enCours}</div><div class="stat-l">🔴 en cours (live)</div></div>
+        <div class="stat-card stat-live"><div class="stat-n">${enCours}</div><div class="stat-l">en cours</div></div>
         <div class="stat-card"><div class="stat-n">${envoyees}</div><div class="stat-l">candidatures au total</div></div>
         <div class="stat-card"><div class="stat-n">${tauxRep}%</div><div class="stat-l">taux de réponse</div></div>
         <div class="stat-card"><div class="stat-n">${tauxEnt}%</div><div class="stat-l">taux d'entretien</div></div>
         <div class="stat-card"><div class="stat-n">${entretiens_}</div><div class="stat-l">entretiens en cours</div></div>
-        <div class="stat-card"><div class="stat-n">${offres_}</div><div class="stat-l">offres reçues 🎉</div></div>
+        <div class="stat-card"><div class="stat-n">${offres_}</div><div class="stat-l">offres reçues</div></div>
         <div class="stat-card"><div class="stat-n">${tempsMoyen}</div><div class="stat-l">délai moyen de réponse</div></div>
       </div>
 
       <div class="bilan-block">
-        <h3 class="bilan-h">🚀 Entonnoir de mes campagnes</h3>
+        <h3 class="bilan-h">${ic("funnel")} Entonnoir de mes campagnes</h3>
         <div class="funnel">
           ${funnel.map(f=>`<div class="funnel-row">
-            <span class="funnel-l">${f.l}</span>
+            <span class="funnel-l">${ic(f.ico)} ${f.l}</span>
             <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.max(6,f.n/maxF*100)}%;background:${f.c};">${f.n}</div></div>
           </div>`).join("")}
         </div>
@@ -3029,11 +3134,11 @@
       </div>
 
       <div class="bilan-block">
-        <h3 class="bilan-h">🏭 Répartition par secteur</h3>
+        <h3 class="bilan-h">${ic("building")} Répartition par secteur</h3>
         ${secEntries.length?`<div class="funnel">${secEntries.map(([k,n])=>{const col=(SECTORS.find(s=>s.key===k)||{}).c||"#9aa2b4";return `<div class="funnel-row"><span class="funnel-l">${esc(k)}</span><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.max(6,n/maxSec*100)}%;background:${col};">${n}</div></div></div>`;}).join("")}</div>`:'<div class="empty">Pas encore d\'offres gardées.</div>'}
       </div>
 
-      ${refus?`<p class="bilan-note">📊 ${refus} refus — c'est normal, ça fait partie du jeu. Concentre-toi sur le taux d'entretien.</p>`:""}
+      ${refus?`<p class="bilan-note">${refus} refus — c'est normal, ça fait partie du jeu. Concentre-toi sur le taux d'entretien.</p>`:""}
 
       ${evolutionBlockHTML()}
 
@@ -3059,7 +3164,7 @@
   function refreshAll(){renderStatsBadges();renderPipeline();renderReve();renderReseau();renderEntretiens();renderVeille();renderCockpit();renderBilan();}
 
   // ===== INIT =====
-  if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box">⚙️ <b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
+  if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box"><b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
   let userName="";
   // ===== THÈME clair / sombre =====
   let theme="light";
@@ -3095,7 +3200,7 @@
   function askName(){
     const box=document.getElementById("modalBox");
     box.innerHTML=`
-      <div class="modal-head"><h3>👋 Bienvenue</h3></div>
+      <div class="modal-head"><h3>Bienvenue</h3></div>
       <p class="modal-sub">Ton espace pour piloter ta recherche d'emploi : trouve des offres, trie-les d'un swipe, et garde l'œil sur où tu en es. Comment tu t'appelles ?</p>
       <input class="crit-in" id="nameInput" placeholder="Ton prénom" onkeydown="if(event.key==='Enter')saveName()" autofocus />
       <button class="btn btn-validate" style="margin-top:14px;" onclick="saveName()">C'est parti →</button>`;

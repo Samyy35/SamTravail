@@ -493,6 +493,8 @@
   .modal-actions .btn.danger{margin-right:auto;}
   /* pied de modale flottant : seulement la dernière barre d'actions */
   .modal-actions:last-child{position:sticky;bottom:0;margin:16px -24px -24px;padding:14px 24px;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -6px 18px -8px var(--overlay);z-index:2;}
+  /* fiches en lecture (marque, candidature) : pied normal, on lit tout en scrollant */
+  .modal-actions.flow-foot:last-child{position:static;box-shadow:none;}
   .add-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap;}
 
   /* Infos société (fiche entreprise) */
@@ -789,7 +791,11 @@
   .brand-off-stat .ic{width:14px;height:14px;}
   .empty-ico .ic{width:30px;height:30px;}
   /* fiche marque : lien principal pleine largeur, autres en icônes carrées */
-  .pc-links a.full{flex:0 0 100%;gap:7px;font-size:13px;font-weight:600;}
+  .pc-links a.full{flex:0 0 100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:600;}
+  .pc-links a.site-link{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 14px var(--glow);}
+  .pc-links a.site-link:hover{filter:brightness(1.05);color:#fff;}
+  .pc-links a.site-link .ic{width:16px;height:16px;}
+  .pc-links a.site-link .site-dom{opacity:.85;font-weight:500;}
   .pc-links a.full .ic{width:16px;height:16px;}
   /* ===== Passe finale : icônes diverses ===== */
   .relances-head{display:flex;align-items:center;gap:8px;}
@@ -2576,7 +2582,7 @@
       </div>
       ${p.notes?`<div class="pc-section-h">${ic("pencil")} Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
       ${pipeMissingHTML(p)}
-      <div class="modal-actions" style="flex-direction:row;justify-content:flex-end;">
+      <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
         <button class="btn" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>${ic("pencil")}<span>Éditer</span></button>
       </div>`;
@@ -2776,8 +2782,8 @@
       </div>
       <div class="reve-stars-row">${stars}<span class="reve-stars-lbl">${note?note+"/5":"pas encore notée"}</span></div>
       <div class="pc-links">
+        <a href="#" class="full site-link" onclick="visitBrand('${e.id}','${esc(site)}');return false;">${ic("building")} Voir le site${dom?` · <span class="site-dom">${esc(dom)}</span>`:""}</a>
         <a href="#" class="full" onclick="searchBrandOffers('${esc((e.entreprise||"").replace(/'/g,"\\'"))}');return false;" style="background:var(--accent-soft);color:var(--accent);border-color:var(--accent);">${ic("search")} Chercher ses offres</a>
-        <a href="#" onclick="visitBrand('${e.id}','${esc(site)}');return false;" title="Site${dom?" ("+esc(dom)+")":""}">${ic("building")}</a>
         <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
         <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
         <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
@@ -2786,7 +2792,7 @@
       ${e.pourquoi?`<div class="pc-section-h">Pourquoi cette boîte</div><div class="pc-notes">${esc(e.pourquoi)}</div>`:""}
       <div class="pc-section-h">Offres liées ${offLines.length?`(${offLines.length})`:""}</div>
       ${offLines.length?`<div class="brand-offers">${offLines.map(o=>`<div class="brand-off-row"><span class="brand-off-stat">${ic(o.ico)} ${esc(o.label)}</span><span class="brand-off-titre">${esc(o.titre||"—")}</span>${o.lien?`<a href="${esc(o.lien)}" target="_blank" rel="noopener" class="rel-link">voir</a>`:""}</div>`).join("")}</div>`:'<div class="brand-off-empty">Aucune offre liée pour l\'instant. Quand tu garderas ou postuleras à une offre de cette boîte, elle apparaîtra ici.</div>'}
-      <div class="modal-actions" style="flex-direction:row;justify-content:flex-end;">
+      <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn danger" onclick="delRow('entreprises_reve','${e.id}')">Supprimer</button>
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
         <button class="btn" onclick='openModal("reve",${esc(JSON.stringify(e))})'>${ic("pencil")}<span>Éditer</span></button>

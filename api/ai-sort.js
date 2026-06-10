@@ -162,6 +162,56 @@ export default async function handler(req, res) {
     return;
   }
 
+  // ----- MODE BROUILLON : rédige un court message (relance, etc.) -----
+  if (mode === "draft") {
+    const kind = "" + (body.kind || "relance");
+    const ctx = body.context || {};
+    let sysD, usr;
+    if (kind === "relance") {
+      sysD = "Tu rediges un court message de RELANCE de candidature en francais, professionnel, " +
+        "courtois et concis (5 a 7 phrases maximum). Va a l'essentiel : rappeler la candidature, " +
+        "reaffirmer la motivation, rester disponible. Termine par une formule de politesse. " +
+        "Signe avec le prenom fourni s'il est donne. Si un profil/CV du candidat est fourni, tu " +
+        "peux integrer UNE reference pertinente et naturelle (une competence ou une experience), " +
+        "sans tout recopier. Reponds UNIQUEMENT par le texte du message, sans commentaire ni JSON.";
+      usr = "Entreprise: " + (ctx.entreprise || "") + "\nPoste: " + (ctx.poste || "") +
+        "\nCandidature envoyee il y a: " + (ctx.jours || "?") + " jours\nPrenom (signature): " + (ctx.prenom || "") +
+        (ctx.intro ? ("\n\nProfil du candidat: " + ("" + ctx.intro).slice(0, 600)) : "") +
+        (ctx.cv ? ("\n\nCV (extrait): " + ("" + ctx.cv).slice(0, 1500)) : "");
+    } else if (kind === "accroche") {
+      sysD = "Tu adaptes l'ACCROCHE ORIGINALE du candidat (fournie) pour la cibler sur l'offre. " +
+        "REGLE ESSENTIELLE : reste TRES proche de l'original — meme longueur (a une phrase pres), " +
+        "meme ton, meme style, meme structure. Ne pars pas trop loin : reformule legerement et " +
+        "ajuste seulement 1 ou 2 elements pour coller a ce poste / cette entreprise. " +
+        "N'ajoute pas de paragraphe, pas de 'Madame, Monsieur', pas de signature. " +
+        "Si aucune accroche originale n'est fournie, redige alors une accroche courte (4 a 6 phrases) " +
+        "a partir du CV. Reponds uniquement par le texte de l'accroche adaptee.";
+      usr = "Poste: " + (ctx.poste || "") + "\nEntreprise: " + (ctx.entreprise || "") +
+        "\nLieu: " + (ctx.lieu || "") +
+        (ctx.offre ? ("\n\nDetails de l'offre: " + ("" + ctx.offre).slice(0, 1500)) : "") +
+        (ctx.intro ? ("\n\nACCROCHE ORIGINALE A ADAPTER (garde sa longueur et son style):\n" + ("" + ctx.intro).slice(0, 800)) : "") +
+        (ctx.cv ? ("\n\nCV (extrait, pour le contexte uniquement): " + ("" + ctx.cv).slice(0, 1800)) : "");
+    } else {
+    try {
+      const r = await fetch(base + "/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
+        body: JSON.stringify({ model: model, temperature: 0.4, max_tokens: 450,
+          messages: [{ role: "system", content: sysD }, { role: "user", content: usr }] }),
+      });
+      const raw = await r.text();
+      let parsed = null; try { parsed = JSON.parse(raw); } catch (e) {}
+      if (!r.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: r.status }); return; }
+      let txt = (parsed && parsed.choices && parsed.choices[0] && parsed.choices[0].message &&
+        parsed.choices[0].message.content) || "";
+      txt = ("" + txt).trim();
+      res.status(200).json({ ok: !!txt, text: txt.slice(0, 1500) });
+    } catch (e) {
+      res.status(200).json({ ok: false, reason: "ai_error" });
+    }
+    return;
+  }
+
   // ----- MODE OFFRE (defaut) -----
   const sys =
     "Tu extrais les informations d'une offre d'emploi a partir d'un texte brut " +
@@ -172,6 +222,9 @@ export default async function handler(req, res) {
     "'typeContrat' doit valoir l'un de : CDI, CDD, Alternance, Stage, Interim, Freelance, " +
     "'Temps partiel', 'Temps plein', Saisonnier — ou \"\" si indetermine. " +
     "'salaire' = la remuneration telle qu'ecrite. 'experience' = l'experience demandee. " +
+    "Si le 'titre' fourni est absent, vide ou manifestement faux (ex: 'security check', " +
+    "'verification', 'just a moment', 'captcha'), DEDUIS l'intitule reel du poste a partir " +
+    "de la description et du contexte. " +
     "N'invente jamais une valeur absente.";
 
   try {

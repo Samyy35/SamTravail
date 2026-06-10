@@ -120,7 +120,8 @@ module.exports = async function handler(req, res) {
   const text = ("" + (body.text || "")).slice(0, 6000);
   const url = "" + (body.url || "");
   const mode = "" + (body.mode || "offer");
-  if (!text.trim()) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
+  // le mode "draft" travaille à partir de "context", pas de "text"
+  if (mode !== "draft" && !text.trim()) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
 
   const clean = (v) => ("" + (v == null ? "" : v)).replace(/\s+/g, " ").trim().slice(0, 200);
 
@@ -179,17 +180,26 @@ module.exports = async function handler(req, res) {
         (ctx.intro ? ("\n\nProfil du candidat: " + ("" + ctx.intro).slice(0, 600)) : "") +
         (ctx.cv ? ("\n\nCV (extrait): " + ("" + ctx.cv).slice(0, 1500)) : "");
     } else if (kind === "accroche") {
-      sysD = "Tu adaptes l'ACCROCHE ORIGINALE du candidat (fournie) pour la cibler sur l'offre. " +
-        "REGLE ESSENTIELLE : reste TRES proche de l'original — meme longueur (a une phrase pres), " +
-        "meme ton, meme style, meme structure. Ne pars pas trop loin : reformule legerement et " +
-        "ajuste seulement 1 ou 2 elements pour coller a ce poste / cette entreprise. " +
-        "N'ajoute pas de paragraphe, pas de 'Madame, Monsieur', pas de signature. " +
-        "Si aucune accroche originale n'est fournie, redige alors une accroche courte (4 a 6 phrases) " +
-        "a partir du CV. Reponds uniquement par le texte de l'accroche adaptee.";
+      sysD = "Tu adaptes l'ACCROCHE ORIGINALE du candidat pour la cibler sur une offre d'emploi. " +
+        "OBJECTIF : que le resultat semble ecrit par le candidat lui-meme, pas par une IA.\n" +
+        "REGLES STRICTES :\n" +
+        "1. Garde la longueur de l'original (a une phrase pres), sa structure, son rythme et son vocabulaire. " +
+        "Reprends ses tournures telles quelles quand elles restent pertinentes : ne reformule que le strict necessaire.\n" +
+        "2. Adapte 1 ou 2 elements MAXIMUM au contexte de l'annonce : le poste vise, et un point concret de " +
+        "l'offre ou de l'entreprise (secteur, produit, lieu) qui fait echo au parcours du candidat.\n" +
+        "3. INTERDIT (vocabulaire artificiel) : 'dynamique', 'passionne par', 'relever des defis', 'fort de', " +
+        "'doté de', 'mettre a profit', 'pleinement', 'au sein de votre structure', superlatifs, " +
+        "enumerations de qualites, phrases creuses de motivation generique.\n" +
+        "4. Phrases simples et directes, ton sobre. Pas de tirets longs, pas de listes, pas d'emphase. " +
+        "Une imperfection legere (phrase courte, formulation simple) vaut mieux qu'un texte trop lisse.\n" +
+        "5. N'invente AUCUN fait : utilise uniquement le parcours fourni (accroche + CV).\n" +
+        "6. Pas de 'Madame, Monsieur', pas de signature, pas de commentaire. " +
+        "Reponds uniquement par le texte de l'accroche.\n" +
+        "Si aucune accroche originale n'est fournie, redige 4 a 6 phrases sobres a partir du CV, memes regles.";
       usr = "Poste: " + (ctx.poste || "") + "\nEntreprise: " + (ctx.entreprise || "") +
         "\nLieu: " + (ctx.lieu || "") +
         (ctx.offre ? ("\n\nDetails de l'offre: " + ("" + ctx.offre).slice(0, 1500)) : "") +
-        (ctx.intro ? ("\n\nACCROCHE ORIGINALE A ADAPTER (garde sa longueur et son style):\n" + ("" + ctx.intro).slice(0, 800)) : "") +
+        (ctx.intro ? ("\n\nACCROCHE ORIGINALE A ADAPTER (garde sa longueur, son style et ses tournures):\n" + ("" + ctx.intro).slice(0, 800)) : "") +
         (ctx.cv ? ("\n\nCV (extrait, pour le contexte uniquement): " + ("" + ctx.cv).slice(0, 1800)) : "");
     } else {
       sysD = "Tu rediges un court texte professionnel en francais, clair et concis. Reponds uniquement par le texte.";

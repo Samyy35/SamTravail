@@ -858,6 +858,15 @@
   .reve-search .ic{width:16px;height:16px;color:var(--text-mute);flex-shrink:0;}
   .reve-search input{flex:1;border:none;background:transparent;outline:none;padding:11px 0;font-size:14px;color:var(--text);font-family:var(--font);}
   .reve-search input::placeholder{color:var(--text-mute);}
+  /* ===== Brouillon de relance ===== */
+  .draft-status{font-size:12.5px;color:var(--text-dim);margin:2px 0 10px;display:flex;align-items:center;gap:6px;}
+  .draft-status .ic{width:14px;height:14px;color:var(--accent);}
+  .draft-area{width:100%;border:1px solid var(--border);border-radius:11px;background:var(--surface-2);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.55;padding:12px 13px;resize:vertical;box-sizing:border-box;}
+  .draft-area:focus{outline:none;border-color:var(--accent);}
+  .prof-lab{display:block;font-size:12.5px;font-weight:700;color:var(--text);margin:14px 0 6px;}
+  .prof-hint{font-weight:500;color:var(--text-mute);}
+  .prof-import{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;}
+  .lettre-warn{font-size:12.5px;background:var(--accent-soft);color:var(--text);border-radius:9px;padding:9px 11px;margin:6px 0 2px;}
 </style>
 </head>
 <body>
@@ -909,6 +918,7 @@
       <button class="nav-tab nav-more-btn" id="moreBtn" onclick="toggleMore(event)">Plus <span class="more-chev">▾</span></button>
       <div class="nav-more-menu" id="moreMenu">
         <button data-view="veille" onclick="setView('veille')"><i data-ic="search"></i> Cherche offres</button>
+        <button onclick="openProfil()"><i data-ic="user"></i> Mon profil</button>
         <button data-view="bilan" onclick="setView('bilan')"><i data-ic="chart"></i> Statistiques</button>
         <button data-view="carte" onclick="setView('carte')"><i data-ic="pin"></i> Carte</button>
         <button data-view="reseau" onclick="setView('reseau')">Réseau <span class="badge" id="nb-reseau">0</span></button>
@@ -1065,6 +1075,7 @@
 <script>
   // ===== ICÔNES (trait fin, style SF Symbols, héritent de currentColor) =====
   const ICONS={
+    user:'<circle cx="10" cy="6.6" r="3.2"/><path d="M4.4 16.6c0-3 2.5-5.2 5.6-5.2s5.6 2.2 5.6 5.2"/>',
     star:'<path d="M10 2.5l2.35 4.76 5.25.76-3.8 3.7.9 5.23L10 14.98l-4.7 2.47.9-5.23-3.8-3.7 5.25-.76z"/>',
     heart:'<path d="M10 17s-6.2-3.9-6.2-8.3A3.5 3.5 0 0110 6.2a3.5 3.5 0 016.2 2.5C16.2 13.1 10 17 10 17z"/>',
     clock:'<circle cx="10" cy="10" r="7.3"/><path d="M10 5.8V10l3 1.8"/>',
@@ -2272,7 +2283,7 @@
       // Repli IA gratuite (optionnel) : si l'extraction reste pauvre, on demande à /api/ai-sort de trier le texte
       // Garde de confiance : on n'appelle l'IA que si un champ-clé manque OU si le titre est douteux
       if((!offer.entreprise || !offer.titre || badTitle(offer.titre)) && (offer.description || offer.titre)){
-        const aj = await aiSort({url:offer.lien, text:((offer.titre||"")+"\n"+(offer.description||"")).slice(0,6000)});
+        const aj = await aiSort({url:offer.lien, text:("Titre suppose: "+(offer.titre||"")+"\nEntreprise: "+(offer.entreprise||"")+"\nLieu: "+(offer.lieu||"")+"\n\nDescription:\n"+(offer.description||"")).slice(0,6000)});
         if(aj && aj.offer){ const a=aj.offer;   // fusion NON-destructive : ne remplit que le vide / corrige le douteux
           if(a.titre && (!offer.titre||badTitle(offer.titre))) offer.titre=a.titre;
           if(a.entreprise && !offer.entreprise) offer.entreprise=a.entreprise;
@@ -2373,6 +2384,41 @@
   ];
   // ===== RELANCES groupées par campagne (vague) =====
   const RELANCE_DELAI=10; // jours après envoi (ou dernière relance) avant de relancer
+  // ===== Brouillon de relance (modèle déterministe + amélioration IA optionnelle) =====
+  function relanceTemplate(p,jours){
+    const ent=p.entreprise||"l'entreprise"; const poste=p.poste||"le poste";
+    const sig=userName||"[Ton prénom]";
+    const quand=jours?("envoyée il y a "+jours+" jours"):"envoyée récemment";
+    return "Objet : Suivi de ma candidature – "+poste+" chez "+ent+"\n\n"
+      +"Bonjour,\n\n"
+      +"Je me permets de revenir vers vous concernant ma candidature au poste de "+poste+" au sein de "+ent+" ("+quand+").\n\n"
+      +"Toujours très motivé par cette opportunité, je reste à votre disposition pour échanger et vous apporter tout complément d'information utile.\n\n"
+      +"Dans l'attente de votre retour, je vous remercie de l'attention portée à ma candidature.\n\n"
+      +"Bien cordialement,\n"+sig;
+  }
+  async function draftRelance(id){
+    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p)return;
+    const jours=Math.round((Date.now()-new Date(p.date_relance||p.date_envoi))/86400000);
+    const tpl=relanceTemplate(p,jours);
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("bell")} Brouillon de relance</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="draft-status" id="draftStatus">${AI_ASSIST?"Amélioration par IA en cours…":"Modèle prêt — édite-le si besoin."}</div>
+      <textarea id="draftText" class="draft-area" rows="12">${esc(tpl)}</textarea>
+      <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button><button class="btn" id="draftCopyBtn" onclick="copyDraft()">${ic("link")}<span>Copier</span></button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+    if(AI_ASSIST){
+      const aj=await aiSort({mode:"draft",kind:"relance",context:{entreprise:p.entreprise||"",poste:p.poste||"",jours:jours,prenom:userName||"",intro:(userIntro||"").slice(0,600),cv:(userCV||"").slice(0,2000)}}, 12000);
+      const ta=document.getElementById("draftText"), st=document.getElementById("draftStatus");
+      if(aj && aj.text){ if(ta)ta.value=aj.text; if(st)st.innerHTML=ic("check")+" Proposé par IA — édite-le librement."; }
+      else if(st){ st.textContent="Modèle prêt — édite-le si besoin (IA indisponible)."; }
+    }
+  }
+  async function copyDraft(){
+    const ta=document.getElementById("draftText"); if(!ta)return;
+    let ok=false;
+    try{ await navigator.clipboard.writeText(ta.value); ok=true; }catch(e){ try{ ta.select(); document.execCommand("copy"); ok=true; }catch(e2){} }
+    const b=document.getElementById("draftCopyBtn"); if(b) b.innerHTML=(ok?ic("check"):ic("alert"))+"<span>"+(ok?"Copié !":"Copie manuelle")+"</span>";
+  }
   function relanceDue(p){
     if(p.statut!=="Envoyé") return false;
     const ref=p.date_relance||p.date_envoi;
@@ -2412,6 +2458,7 @@
               <span class="rel-item-info"><b>${esc(p.entreprise||"—")}</b> · ${esc(p.poste||"")} <span class="rel-days">J+${d}</span></span>
               <span class="rel-item-actions">
                 ${p.lien_offre?`<a href="${esc(p.lien_offre)}" target="_blank" rel="noopener" class="rel-link">offre</a>`:""}
+                <button class="rel-done" onclick="draftRelance('${p.id}')" title="Brouillon de relance">${ic("pencil")}</button>
                 <button class="rel-done" onclick="relancerUn('${p.id}')" title="Marquer relancé">${ic("check")}</button>
               </span>
             </div>`;
@@ -2576,6 +2623,80 @@
   }
 
   // ===== FICHE RICHE d'une candidature (clic sur la ligne) =====
+  // ===== Candidature sur mesure (accroche IA + CV téléchargeable, lié à l'annonce) =====
+  async function saveLettres(){
+    if(sb){try{await sb.from("parametres").upsert({cle:"lettres",valeur:lettres,updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
+  }
+  function lettreFor(id){ const l=lettres[String(id)]; return (l&&l.texte)?l.texte:""; }
+  function downloadDoc(filename, titre, accroche, cvText){
+    const nl2br=(t)=>esc(t).replace(/\n/g,"<br>");
+    const html="<html><head><meta charset='utf-8'></head>"
+      +"<body style=\"font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.45;color:#222;\">"
+      +"<h2 style='margin:0 0 6px;'>"+esc(titre)+"</h2>"
+      +"<h3 style='margin:14px 0 4px;color:#1a6fff;'>Accroche</h3>"
+      +"<p style='margin:0;'>"+nl2br(accroche)+"</p>"
+      +(cvText?("<h3 style='margin:18px 0 4px;color:#1a6fff;'>CV</h3><div>"+nl2br(cvText)+"</div>"):"")
+      +"</body></html>";
+    const blob=new Blob(["\ufeff",html],{type:"application/msword"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },600);
+  }
+  function openLettre(id){
+    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p)return;
+    const existing=lettreFor(id);
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("sparkle")} Candidature sur mesure</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">${esc(p.poste||"")} · ${esc(p.entreprise||"")} — l'IA rédige une accroche personnalisée à partir de ton profil/CV. Tu édites, puis tu télécharges un CV/lettre lié à cette annonce.</p>
+      ${(userCV||userIntro)?"":'<p class="lettre-warn">Astuce : renseigne ton <b>profil</b> (intro + CV) pour une accroche bien plus pertinente.</p>'}
+      <label class="prof-lab">Détails de l'offre <span class="prof-hint">— optionnel, colle le texte de l'annonce pour affiner</span></label>
+      <textarea class="draft-area" id="lettreOffre" rows="3" placeholder="(optionnel) colle ici des extraits de l'offre"></textarea>
+      <div class="prof-import" style="margin:12px 0 4px;">
+        <button class="btn sm" id="lettreGenBtn" onclick="genLettre('${p.id}')">${ic("sparkle")}<span>${existing?"Régénérer":"Générer l'accroche"}</span></button>
+        <span class="draft-status" id="lettreStatus"></span>
+      </div>
+      <label class="prof-lab">Accroche <span class="prof-hint">— édite librement</span></label>
+      <textarea class="draft-area" id="lettreText" rows="8" placeholder="Clique sur « Générer l'accroche »…">${esc(existing)}</textarea>
+      <div class="modal-actions">
+        <button class="btn danger" onclick="closeModal()">Fermer</button>
+        <button class="btn ghost" id="lettreCopyBtn" onclick="copyLettre()">${ic("link")}<span>Copier</span></button>
+        <button class="btn ghost" onclick="dlLettre('${p.id}')">${ic("download")}<span>Télécharger CV</span></button>
+        <button class="btn btn-validate" onclick="saveLettre('${p.id}')">${ic("check")}<span>Enregistrer</span></button>
+      </div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  async function genLettre(id){
+    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p)return;
+    const st=document.getElementById("lettreStatus"), ta=document.getElementById("lettreText");
+    const offre=((document.getElementById("lettreOffre")||{}).value)||"";
+    if(!AI_ASSIST){ if(st)st.textContent="IA désactivée."; return; }
+    if(st)st.textContent="Rédaction par l'IA…";
+    const aj=await aiSort({mode:"draft",kind:"accroche",context:{poste:p.poste||"",entreprise:p.entreprise||"",lieu:p.ville||"",offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 15000);
+    if(aj && aj.text){ if(ta)ta.value=aj.text; if(st)st.innerHTML=ic("check")+" Proposé par IA — édite librement."; }
+    else if(st){ st.textContent="IA indisponible — écris ton accroche à la main."; }
+  }
+  async function saveLettre(id){
+    const ta=document.getElementById("lettreText"); const txt=ta?(ta.value||"").trim():"";
+    lettres[String(id)]={texte:txt, updated_at:new Date().toISOString()};
+    await saveLettres();
+    const st=document.getElementById("lettreStatus"); if(st)st.innerHTML=ic("check")+" Enregistré pour cette annonce — retrouvable dans la fiche.";
+  }
+  async function dlLettre(id){
+    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p)return;
+    const ta=document.getElementById("lettreText"); const txt=ta?(ta.value||"").trim():lettreFor(id);
+    lettres[String(id)]={texte:txt, updated_at:new Date().toISOString()}; await saveLettres();
+    const safe=(s)=>(s||"").toString().replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,40);
+    downloadDoc("CV_"+safe(p.entreprise)+"_"+safe(p.poste)+".doc", (userName||"")+(p.poste?(" — "+p.poste):""), txt, userCV||"");
+    const st=document.getElementById("lettreStatus"); if(st)st.innerHTML=ic("check")+" CV téléchargé + enregistré pour cette annonce.";
+  }
+  async function copyLettre(){
+    const ta=document.getElementById("lettreText"); if(!ta)return;
+    let ok=false;
+    try{ await navigator.clipboard.writeText(ta.value); ok=true; }catch(e){ try{ ta.select(); document.execCommand("copy"); ok=true; }catch(e2){} }
+    const b=document.getElementById("lettreCopyBtn"); if(b)b.innerHTML=(ok?ic("check"):ic("alert"))+"<span>"+(ok?"Copié !":"Copie manuelle")+"</span>";
+  }
+
   function openPipeCard(id){
     const p=pipeline.find(x=>String(x.id)===String(id));if(!p)return;
     const col=pipeColor(p.statut);
@@ -2610,9 +2731,11 @@
         ${CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="pcchk-${i}" ${chk[it]?"checked":""} onchange="setPipeCheckItem('${p.id}','${esc(it)}',this.checked)"> ${esc(it)}</label>`).join("")}
       </div>
       ${p.notes?`<div class="pc-section-h">${ic("pencil")} Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
+      ${lettreFor(p.id)?`<div class="pc-section-h">${ic("sparkle")} Candidature sur mesure</div><div class="pc-notes" style="white-space:pre-wrap;">${esc(lettreFor(p.id)).slice(0,300)}${lettreFor(p.id).length>300?"…":""}</div>`:""}
       ${pipeMissingHTML(p)}
       <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
+        <button class="btn ghost" onclick="openLettre('${p.id}')">${ic("sparkle")}<span>${lettreFor(p.id)?"CV sur mesure":"Accroche sur mesure"}</span></button>
         <button class="btn" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>${ic("pencil")}<span>Éditer</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
@@ -3264,7 +3387,8 @@
 
   // ===== INIT =====
   if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box"><b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
-  let userName="";
+  let userName="", userIntro="", userCV="";
+  let lettres={};
   // ===== THÈME clair / sombre =====
   let theme="light";
   function applyTheme(){
@@ -3292,7 +3416,8 @@
     // 1) cache local instantané (évite de redemander même si Supabase est lent/indispo)
     try{const ls=localStorage.getItem("st_name");if(ls)userName=ls;}catch(e){}
     // 2) sync Supabase (source de vérité multi-appareils)
-    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur&&data.valeur.prenom){userName=data.valeur.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}}catch(e){}}
+    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur){const v=data.valeur;if(v.prenom){userName=v.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}userIntro=v.intro||"";userCV=v.cv||"";}}catch(e){}
+      try{const {data:dl}=await sb.from("parametres").select("valeur").eq("cle","lettres").maybeSingle();if(dl&&dl.valeur)lettres=dl.valeur;}catch(e){}}
     if(!userName && !skipAsk){ askName(); }
     else initDate();
   }
@@ -3310,8 +3435,70 @@
     const v=(document.getElementById("nameInput").value||"").trim();
     userName=v||"";
     try{localStorage.setItem("st_name",userName);}catch(e){}
-    if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
+    await saveProfilData();
     closeModal();initDate();
+  }
+  // ===== Mon profil (intro + CV) : nourrit l'IA pour personnaliser les messages =====
+  async function saveProfilData(){
+    if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName,intro:userIntro,cv:userCV},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
+  }
+  function openProfil(){
+    closeMore&&closeMore();
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("user")} Mon profil</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Ces infos servent à personnaliser les messages générés par l'IA (relances, et bientôt accroches de candidature). Rien n'est obligatoire.</p>
+      <label class="prof-lab">Prénom</label>
+      <input class="crit-in" id="profPrenom" value="${esc(userName)}" placeholder="Ton prénom" />
+      <label class="prof-lab">Accroche / intro <span class="prof-hint">— 2-3 phrases : qui tu es, ce que tu cherches</span></label>
+      <textarea class="draft-area" id="profIntro" rows="4" placeholder="Ex : Diplômé d'un master supply chain, je cherche un poste opérationnel en milieu industriel près du littoral. Rigoureux, orienté data et terrain.">${esc(userIntro)}</textarea>
+      <label class="prof-lab">CV (texte) <span class="prof-hint">— colle ton CV, ou importe un PDF / .txt</span></label>
+      <textarea class="draft-area" id="profCv" rows="7" placeholder="Colle ici le contenu de ton CV : expériences, compétences, formations.">${esc(userCV)}</textarea>
+      <div class="prof-import">
+        <label class="btn ghost sm" for="cvFile">${ic("download")}<span>Importer un PDF / .txt</span></label>
+        <input type="file" id="cvFile" accept=".pdf,.txt,text/plain,application/pdf" style="display:none" onchange="importCvFile(this)" />
+        <span class="draft-status" id="cvStatus"></span>
+      </div>
+      <div class="modal-actions"><button class="btn danger" onclick="closeModal()">Annuler</button><button class="btn btn-validate" onclick="saveProfil()">${ic("check")}<span>Enregistrer</span></button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  async function saveProfil(){
+    const gp=id=>{const e=document.getElementById(id);return e?(e.value||"").trim():"";};
+    userName=gp("profPrenom"); userIntro=gp("profIntro"); userCV=gp("profCv").slice(0,8000);
+    try{localStorage.setItem("st_name",userName);}catch(e){}
+    await saveProfilData();
+    closeModal(); initDate();
+  }
+  function loadPdfJs(){
+    return new Promise((resolve,reject)=>{
+      if(window.pdfjsLib){resolve(window.pdfjsLib);return;}
+      const V="3.11.174", s=document.createElement("script");
+      s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/"+V+"/pdf.min.js";
+      s.onload=()=>{try{window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/"+V+"/pdf.worker.min.js";}catch(e){}resolve(window.pdfjsLib);};
+      s.onerror=()=>reject(new Error("pdfjs"));
+      document.head.appendChild(s);
+    });
+  }
+  async function extractPdfText(file){
+    const lib=await loadPdfJs();
+    const buf=await file.arrayBuffer();
+    const pdf=await lib.getDocument({data:buf}).promise;
+    let out=""; const max=Math.min(pdf.numPages,8);
+    for(let i=1;i<=max;i++){const page=await pdf.getPage(i);const tc=await page.getTextContent();out+=tc.items.map(it=>it.str).join(" ")+"\n";}
+    return out.trim();
+  }
+  async function importCvFile(input){
+    const f=input.files&&input.files[0]; if(!f)return;
+    const ta=document.getElementById("profCv"), st=document.getElementById("cvStatus");
+    if(st)st.textContent="Lecture du fichier…";
+    try{
+      let txt="";
+      if(/\.pdf$/i.test(f.name)||f.type==="application/pdf"){ txt=await extractPdfText(f); }
+      else { txt=await f.text(); }
+      txt=(txt||"").replace(/\s+/g," ").trim();
+      if(!txt){ if(st)st.textContent="Aucun texte extrait — colle ton CV manuellement."; return; }
+      if(ta) ta.value=txt.slice(0,6000);
+      if(st)st.textContent="✓ CV importé — vérifie / ajuste si besoin.";
+    }catch(e){ if(st)st.textContent="Lecture impossible (PDF protégé ou format non géré). Colle ton CV manuellement."; }
   }
 
   // ===== STREAK (visite quotidienne) =====
@@ -3445,11 +3632,11 @@
   // ===== Assistant IA — modulaire & repli transparent =====
   // Mets AI_ASSIST=false pour désactiver complètement l'IA (l'app retombe en 100% déterministe, sans rien casser).
   const AI_ASSIST = true;
-  async function aiSort(payload){
+  async function aiSort(payload, timeoutMs){
     if(!AI_ASSIST) return null;                 // interrupteur
     try{
       const ctrl = (typeof AbortController!=="undefined") ? new AbortController() : null;
-      const to = ctrl ? setTimeout(()=>{try{ctrl.abort();}catch(e){}}, 7000) : null; // timeout 7s
+      const to = ctrl ? setTimeout(()=>{try{ctrl.abort();}catch(e){}}, timeoutMs||7000) : null; // timeout (défaut 7s)
       const r = await fetch("/api/ai-sort",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:ctrl?ctrl.signal:undefined});
       if(to) clearTimeout(to);
       const j = await r.json();

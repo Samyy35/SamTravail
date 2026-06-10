@@ -881,7 +881,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v22</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v23</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -2671,7 +2671,11 @@
   function buildLettrePrompt(){
     const c=_lettreCtx||{};
     const offre=((document.getElementById("lettreOffre")||{}).value)||c.desc||"";
-    let p="Adapte mon accroche de candidature ci-dessous pour l'offre suivante. Reste TRÈS proche de l'original : même longueur (à une phrase près), même ton, même style — ajuste seulement 1 ou 2 éléments pour coller au poste. Pas de \"Madame, Monsieur\", pas de signature. Réponds uniquement par le texte de l'accroche.\n";
+    let p="Adapte mon accroche de candidature ci-dessous pour l'offre suivante. Objectif : que le résultat semble écrit par moi, pas par une IA.\n"
+      +"Règles : garde la longueur de l'original (à une phrase près), sa structure, son rythme et mes tournures — ne reformule que le strict nécessaire. "
+      +"Adapte 1 ou 2 éléments maximum au contexte de l'annonce (le poste, et un point concret de l'offre ou de l'entreprise qui fait écho à mon parcours). "
+      +"Interdit : vocabulaire artificiel (dynamique, passionné par, relever des défis, fort de, mettre à profit), superlatifs, énumérations de qualités, phrases creuses. "
+      +"Phrases simples et directes, ton sobre, pas de tirets longs ni de listes. N'invente aucun fait. Pas de \"Madame, Monsieur\", pas de signature. Réponds uniquement par le texte de l'accroche.\n";
     p+="\nPOSTE : "+(c.poste||"")+"\nENTREPRISE : "+(c.entreprise||"");
     if(c.lieu) p+="\nLIEU : "+c.lieu;
     if(offre) p+="\n\nDÉTAILS DE L'OFFRE :\n"+offre.slice(0,1500);

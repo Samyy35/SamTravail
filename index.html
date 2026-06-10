@@ -2269,6 +2269,22 @@
       if(!offer.salaire && offer.description) offer.salaire=inferSalaire(offer.description);
       if(!offer.typeContrat && offer.description) offer.typeContrat=inferContrat(offer.description);
       if(offer.titre && badTitle(offer.titre)) offer.titre="";
+      // Repli IA gratuite (optionnel) : si l'extraction reste pauvre, on demande à /api/ai-sort de trier le texte
+      if((!offer.entreprise || !offer.titre) && (offer.description || offer.titre)){
+        try{
+          const air=await fetch("/api/ai-sort",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:offer.lien,text:((offer.titre||"")+"\n"+(offer.description||"")).slice(0,6000)})});
+          const aj=await air.json();
+          if(aj && aj.ok && aj.offer){ const a=aj.offer;
+            if(a.titre && (!offer.titre||badTitle(offer.titre))) offer.titre=a.titre;
+            if(a.entreprise && !offer.entreprise) offer.entreprise=a.entreprise;
+            if(a.lieu && !offer.lieu) offer.lieu=a.lieu;
+            if(a.typeContrat && !offer.typeContrat) offer.typeContrat=a.typeContrat;
+            if(a.salaire && !offer.salaire) offer.salaire=a.salaire;
+            if(a.experience && !offer.experience) offer.experience=a.experience;
+            if(offer.entreprise && offer.titre) quality="full";
+          }
+        }catch(e){}
+      }
       offer._quality=quality;
       // suggestion de niveau d'intérêt selon le score de match (modifiable)
       const sc=matchScore(offer);

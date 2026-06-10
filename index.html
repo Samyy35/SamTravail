@@ -385,6 +385,7 @@
   .desc-more:hover{text-decoration:underline;}
   .swipe-card .desc.clamp{flex:0 0 auto;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
   .ocard-prep{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .lk-lbl{font-size:11.5px;font-weight:650;margin-left:5px;}
   .ocard-prep .btn{flex:1 1 auto;justify-content:center;}
   .c-date{font-size:11px;color:var(--text-mute);padding-left:7px;}
   .c-actions{display:flex;gap:6px;flex-wrap:wrap;padding-left:7px;margin-top:3px;align-items:center;}
@@ -874,6 +875,8 @@
   .prof-import{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;}
   .lettre-warn{font-size:12.5px;background:var(--accent-soft);color:var(--text);border-radius:9px;padding:9px 11px;margin:6px 0 2px;}
   .link-btn{background:none;border:none;color:var(--accent);font-weight:700;font-size:inherit;cursor:pointer;padding:0;font-family:var(--font);text-decoration:underline;}
+  .vers-btn{background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px 11px;font-size:12px;font-weight:700;color:var(--text-dim);cursor:pointer;font-family:var(--font);margin-left:4px;}
+  .vers-btn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
 </style>
 </head>
 <body>
@@ -881,7 +884,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v23</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v26</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1270,9 +1273,6 @@
     if(critErr) alert("Critères appliqués pour cette session, mais non sauvegardés en base :\n"+(critErr.message||critErr));
   }
 
-  function companyWebsite(name){
-    return "https://www.google.com/search?q="+encodeURIComponent((name||"")+" entreprise site officiel");
-  }
   function companyLinks(name){
     const n=encodeURIComponent(name||"");
     return {
@@ -1834,9 +1834,6 @@
             <div class="links">
               <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Offre">${ic("doc")}</a>
               <a href="${companyLinks(o.entreprise).site}" target="_blank" rel="noopener" title="Site">${ic("building")}</a>
-              <a href="${companyLinks(o.entreprise).wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
-              <a href="${companyLinks(o.entreprise).avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
-              <a href="${companyLinks(o.entreprise).societe}" target="_blank" rel="noopener" title="CA">${ic("chart")}</a>
             </div>
           </div>
         </div>
@@ -2088,11 +2085,8 @@
       </div>
       ${kept?`<div class="ocard-prep"><button class="btn ghost sm" onclick='openLettre(${oData})'>${ic("sparkle")}<span>${lettreFor(o.lien||o.id)?"CV sur mesure":"Accroche sur mesure"}</span></button><button class="btn primary sm" onclick='markAsApplied(${oData})'>${ic("mail")}<span>J'ai postulé → Suivi</span></button></div>`:""}
       <div class="ocard-links">
-        <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre">${ic("doc")}</a>
-        ${(o.lieu||o.lat)?`<a href="#" onclick='openOfferMap(${oData});return false;' title="Carte">${ic("pin")}</a>`:""}
-        <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
-        <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
-        <a href="${cl.societe}" target="_blank" rel="noopener" title="Chiffre d'affaires">${ic("chart")}</a>
+        <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre">${ic("doc")}<span class="lk-lbl">Offre</span></a>
+        ${(o.lieu||o.lat)?`<a href="#" onclick='openOfferMap(${oData});return false;' title="Carte">${ic("pin")}<span class="lk-lbl">Carte</span></a>`:""}
       </div>
     </div>`;
   }
@@ -2288,7 +2282,7 @@
       if(!offer.salaire && offer.description) offer.salaire=inferSalaire(offer.description);
       if(!offer.typeContrat && offer.description) offer.typeContrat=inferContrat(offer.description);
       if(offer.titre && badTitle(offer.titre)) offer.titre="";
-      if(offer.titre) offer.titre=shortenTitle(offer.titre);
+      if(offer.titre) offer.titre=tidyTitle(offer.titre, offer.entreprise);
       offer._quality=quality;
       // suggestion de niveau d'intérêt selon le score de match (modifiable)
       const sc=matchScore(offer);
@@ -2666,16 +2660,22 @@
     document.body.appendChild(a); a.click();
     setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },600);
   }
-  let _lettreCtx=null;
+  let _lettreCtx=null, _lettreVers=null;
+  function pickVers(i){
+    if(!_lettreVers||!_lettreVers[i])return;
+    const ta=document.getElementById("lettreText"); if(ta)ta.value=_lettreVers[i];
+    const b0=document.getElementById("versB0"), b1=document.getElementById("versB1");
+    if(b0)b0.classList.toggle("on",i===0); if(b1)b1.classList.toggle("on",i===1);
+  }
   // Prompt prêt à copier pour une IA externe (ChatGPT, app Gemini...) si l'IA intégrée est KO
   function buildLettrePrompt(){
     const c=_lettreCtx||{};
     const offre=((document.getElementById("lettreOffre")||{}).value)||c.desc||"";
     let p="Adapte mon accroche de candidature ci-dessous pour l'offre suivante. Objectif : que le résultat semble écrit par moi, pas par une IA.\n"
-      +"Règles : garde la longueur de l'original (à une phrase près), sa structure, son rythme et mes tournures — ne reformule que le strict nécessaire. "
-      +"Adapte 1 ou 2 éléments maximum au contexte de l'annonce (le poste, et un point concret de l'offre ou de l'entreprise qui fait écho à mon parcours). "
+      +"Règles : garde la longueur de l'original (à une phrase près), sa structure, son rythme et mes tournures. "
+      +"Mais adapte réellement le contenu à l'annonce : cite le nom de l'entreprise, l'intitulé du poste, évoque le secteur quand c'est pertinent, et ajuste les compétences/qualités mises en avant à ce que demande l'offre (en t'appuyant uniquement sur mon parcours réel). L'accroche doit sembler écrite pour cette annonce. "
       +"Interdit : vocabulaire artificiel (dynamique, passionné par, relever des défis, fort de, mettre à profit), superlatifs, énumérations de qualités, phrases creuses. "
-      +"Phrases simples et directes, ton sobre, pas de tirets longs ni de listes. N'invente aucun fait. Pas de \"Madame, Monsieur\", pas de signature. Réponds uniquement par le texte de l'accroche.\n";
+      +"Phrases simples et directes, ton sobre, pas de tirets longs ni de listes. N'invente aucun fait. Pas de \"Madame, Monsieur\", pas de signature. Donne-moi DEUX versions séparées par une ligne --- : la première très proche de mon originale (changements minimaux), la seconde plus adaptée à l'annonce (compétences ajustées à l'offre, secteur évoqué) mais toujours dans mon style et ma longueur.\n";
     p+="\nPOSTE : "+(c.poste||"")+"\nENTREPRISE : "+(c.entreprise||"");
     if(c.lieu) p+="\nLIEU : "+c.lieu;
     if(offre) p+="\n\nDÉTAILS DE L'OFFRE :\n"+offre.slice(0,1500);
@@ -2696,6 +2696,7 @@
   function openLettre(o){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
     if(!o)return;
+    _lettreVers=null;
     _lettreCtx={key:lettreKey(o), poste:(o.poste||o.titre||""), entreprise:(o.entreprise||""), lieu:(o.lieu||o.ville||""), desc:(o.description||"")};
     const c=_lettreCtx, existing=lettreFor(c.key);
     const box=document.getElementById("modalBox");
@@ -2725,8 +2726,18 @@
     const offre=((document.getElementById("lettreOffre")||{}).value)||c.desc||"";
     if(!AI_ASSIST){ if(st)st.textContent="IA désactivée."; return; }
     if(st)st.textContent="Rédaction par l'IA…";
-    const aj=await aiSort({mode:"draft",kind:"accroche",context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 15000);
-    if(aj && aj.text){ if(ta)ta.value=aj.text; if(st)st.innerHTML=ic("check")+" Proposé par IA — édite librement."; }
+    const aj=await aiSort({mode:"draft",kind:"accroche",context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 20000);
+    if(aj && aj.text){
+      const parts=aj.text.split(/\n\s*-{3,}\s*\n/).map(x=>x.trim()).filter(Boolean);
+      if(parts.length>=2){
+        _lettreVers=[parts[0],parts[1]];
+        if(ta)ta.value=parts[0];
+        if(st)st.innerHTML=ic("check")+' Deux propositions : <button class="vers-btn on" id="versB0" onclick="pickVers(0)">Proche de l\u2019originale</button> <button class="vers-btn" id="versB1" onclick="pickVers(1)">Plus adaptée</button>';
+      } else {
+        if(ta)ta.value=aj.text;
+        if(st)st.innerHTML=ic("check")+" Proposé par IA — édite librement.";
+      }
+    }
     else if(st){
       let r="";
       if(aj===null) r="réseau / délai dépassé";
@@ -3611,7 +3622,7 @@
     refreshAll();renderBmSetup();
     // Bookmarklet : si ?addUrl=... -> ouvre directement l'ajout par lien
     if(addUrl){
-      var _ttl=params.get("addTitle")||""; if(badTitle(_ttl))_ttl="";
+      var _ttl=params.get("addTitle")||""; if(badTitle(_ttl))_ttl=""; else _ttl=tidyTitle(_ttl, params.get("addEnt")||"");
       var _dsc=params.get("addDesc")||"";
       var _ctr=mapEmp(params.get("addCt")||""); if(!_ctr)_ctr=inferContrat(_dsc);
       var _sl=params.get("addSal")||""; if(!_sl)_sl=inferSalaire(_dsc);
@@ -3660,8 +3671,33 @@
     return m[t.toUpperCase()]||t;
   }
   // Titre poubelle (page de vérif anti-bot) -> à ignorer
-  function badTitle(t){t=(''+(t||'')).toLowerCase();return /security check|v[ée]rification de s[ée]curit|verify you are human|just a moment|are you a robot|captcha|cloudflare|attention required|acc[èe]s refus|checking your browser/.test(t);}
+  function badTitle(t){t=(''+(t||'')).toLowerCase().trim();
+    if(/security check|v[ée]rification de s[ée]curit|verify you are human|just a moment|are you a robot|captcha|cloudflare|attention required|acc[èe]s refus|checking your browser/.test(t))return true;
+    // titres de pages de liste / accueil (pas une offre)
+    if(/^(offres? d.emploi|emplois?|jobs?|carri[èe]res?|careers?|recrutement|r[ée]sultats?|votre recherche|rechercher|trouvez|accueil)\b/.test(t)&&t.length<60)return true;
+    if(/(d[ée]couvrez (nos|toutes nos) offres|toutes nos offres|rechercher un emploi|r[ée]sultats de recherche|s.identifier|se connecter)/.test(t))return true;
+    return false;}
   // Raccourcit un titre trop long (souvent "Poste - Entreprise - Ville | Site") sans le vider
+  // Nettoie un intitulé : coupe les suffixes "- Entreprise - Ville | site-emploi", "chez X", préfixe "Offre d'emploi :"
+  function tidyTitle(t,ent){
+    t=(''+(t||'')).replace(/\s+/g,' ').trim(); if(!t)return '';
+    t=t.replace(/^offre d.emploi\s*[:\-–—]\s*/i,'');
+    var BOARD=/\b(indeed|linkedin|glassdoor|welcome to the jungle|hellowork|apec|france ?travail|p[oô]le emploi|monster|jobteaser|meteojob|cadremploi|jobi?joba|emploi|recrute(ment|nt)?|carri[èe]res?|jobs?\b)/i;
+    var entLow=(''+(ent||'')).toLowerCase().slice(0,10);
+    var parts=t.split(/\s+[|•·–—]\s+|\s-\s/);
+    if(parts.length>1){
+      var keep=[parts[0]];
+      for(var i=1;i<parts.length;i++){
+        var p=parts[i].trim(); var pl=p.toLowerCase();
+        if(BOARD.test(p))break;
+        if(entLow&&entLow.length>2&&pl.indexOf(entLow)>=0)break;
+        keep.push(p);
+      }
+      t=keep.join(' - ');
+    }
+    t=t.replace(/\s+chez\s+[A-ZÀ-Ÿ][^,;|]{1,40}$/,'').trim();
+    return shortenTitle(t);
+  }
   function shortenTitle(t){t=(''+(t||'')).replace(/\s+/g,' ').trim();if(t.length<=90)return t;var seps=[' | ',' – ',' — ',' • ',' · ',' / ',' - '];var cut=t.length;for(var i=0;i<seps.length;i++){var p=t.indexOf(seps[i]);if(p>3&&p<cut)cut=p;}var x=t.slice(0,cut).trim();if(x.length>90)x=x.slice(0,90).trim()+'…';return x;}
   // Déduire le type de contrat depuis la description
   function inferContrat(t){t=' '+(''+(t||'')).toLowerCase()+' ';

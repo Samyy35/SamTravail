@@ -2088,8 +2088,10 @@
           Le partage iOS ne marche pas pour les web-apps — on passe par un favori Safari.<br>
           <b>1.</b> Touche « Copier le code ».<br>
           <b>2.</b> Dans <b>Safari</b>, ajoute cette page aux favoris (Partager → Ajouter aux favoris).<br>
-          <b>3.</b> Favoris → <b>Modifier</b> ce favori → renomme « Sam'Travail » et <b>remplace son adresse</b> par le code copié.<br>
-          <b>4.</b> Sur une offre, ouvre tes favoris → tape « Sam'Travail » → elle arrive ici, pré-remplie.
+          <b>3.</b> Favoris (icône livre ouvert) → <b>Modifier</b> → ce favori → renomme « Sam'Travail » et <b>remplace son adresse</b> par le code collé.<br>
+          <b>⚠ Vérifie que l'adresse commence bien par <code>javascript:</code></b> — iOS l'efface parfois au collage, et sans ça rien ne se passe.<br>
+          <b>4. Pour l'utiliser :</b> sur une offre, touche la <b>barre d'adresse</b> en haut, tape « Sam » → touche le favori « Sam'Travail » dans les suggestions.<br>
+          <span style="opacity:.75">Sur iPhone, le favori n'apparaît <b>pas</b> comme un bouton sur la page : c'est normal, on le déclenche toujours depuis la barre d'adresse.</span>
         </div>
         <div class="bm-actions">
           <button class="btn primary sm" id="copyBmBtn" onclick="copyBookmarklet()">${ic("doc")}<span>Copier le code</span></button>
@@ -2144,7 +2146,12 @@
             <div class="bm-sub">Sur le site d'une entreprise, ajoute-la ici avec son logo.</div></div>
           <button class="info-btn" data-info="brandbm" onclick="toggleInfo('brandbm',this)" aria-label="Comment faire"><i data-ic="info"></i></button>
         </div>
-        <div class="info-panel" id="info-brandbm">Comme le favori « offre », mais pour les entreprises. Touche « Copier le code », puis crée un favori Safari et remplace son adresse par le code (même méthode que pour les offres).</div>
+        <div class="info-panel" id="info-brandbm">Même principe que le favori « offre », mais sur le site d'une entreprise.<br>
+          <b>1.</b> Touche « Copier le code ».<br>
+          <b>2.</b> Safari → ajoute la page aux favoris → <b>Modifier</b> → renomme « Sam'Marque » et <b>remplace l'adresse</b> par le code collé.<br>
+          <b>⚠ L'adresse doit commencer par <code>javascript:</code></b> (iOS l'enlève parfois).<br>
+          <b>3. Pour l'utiliser :</b> sur le site d'une boîte, touche la <b>barre d'adresse</b>, tape « Sam' » → touche « Sam'Marque ». La marque arrive ici, pré-remplie.<br>
+          <span style="opacity:.75">Comme pour les offres : pas de bouton sur la page, on lance depuis la barre d'adresse.</span></div>
         <div class="bm-actions">
           <button class="btn primary sm" id="copyBrandBmBtn" onclick="copyBrandBookmarklet()">${ic("doc")}<span>Copier le code</span></button>
           <button class="bm-dismiss" onclick="dismissReveBm()">Masquer</button>
@@ -2867,7 +2874,7 @@
     if(typeof row==="string"){try{row=JSON.parse(row);}catch(e){row=null;}}
     const f=FORMS[type];editing={type,id:row?row.id:null};
     const box=document.getElementById("modalBox");
-    let html=`<h3>${row?"Éditer":"Ajouter"} — ${f.title}</h3>`+f.fields.map(fl=>{
+    const isEdit=!!(row&&row.id); let html=`<h3>${isEdit?"Éditer":"Ajouter"} — ${f.title}</h3>`+f.fields.map(fl=>{
       const v=row?(row[fl.k]??""):"";
       if(fl.t==="select")return `<div class="field"><label>${fl.l}</label><select id="m-${fl.k}">${fl.opts.map(o=>`<option ${o===v?"selected":""}>${o}</option>`).join("")}</select></div>`;
       if(fl.t==="textarea")return `<div class="field"><label>${fl.l}</label><textarea id="m-${fl.k}">${esc(v)}</textarea></div>`;
@@ -2899,7 +2906,20 @@
       const chk={};CHECKLIST_ITEMS.forEach((it,i)=>{const el=document.getElementById("chk-"+i);if(el&&el.checked)chk[it]=true;});
       obj.checklist=chk;
     }
-    if(sb){if(editing.id)await sb.from(f.table).update(obj).eq("id",editing.id);else await sb.from(f.table).insert(obj);}
+    if(!sb){ alert("Pas de connexion à la base — rien n'a été enregistré. Vérifie ta config Supabase."); return; }
+    let res;
+    try{
+      res = editing.id ? await sb.from(f.table).update(obj).eq("id",editing.id)
+                       : await sb.from(f.table).insert(obj);
+    }catch(e){ res={error:e}; }
+    if(res && res.error){
+      const msg=res.error.message||(""+res.error);
+      let hint="";
+      if(/row-level security|RLS|policy/i.test(msg)) hint="\n\n→ La sécurité (RLS) de la table « "+f.table+" » bloque l'écriture. Désactive la RLS sur cette table dans Supabase, ou ajoute une policy d'écriture.";
+      else if(/column .* does not exist|could not find|schema cache/i.test(msg)) hint="\n\n→ Une colonne manque dans la table « "+f.table+" ». Lance les ALTER TABLE en attente dans Supabase.";
+      alert("Échec de l'enregistrement :\n"+msg+hint);
+      return; // on ne ferme pas : la saisie reste
+    }
     await loadAll();refreshAll();closeModal();
   }
   async function delFromModal(){if(editing&&editing.id){await delRow(FORMS[editing.type].table,editing.id,true);closeModal();}}

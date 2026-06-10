@@ -834,6 +834,14 @@
     .find-acts{justify-content:space-between;width:100%;}
     .find-acts .act{flex:1;}
   }
+  /* ===== Note en étoiles (modale) ===== */
+  .star-input{display:flex;align-items:center;gap:4px;}
+  .star-btn{background:none;border:none;cursor:pointer;color:var(--border-light);padding:3px;display:inline-flex;transition:.12s;}
+  .star-btn .ic{width:30px;height:30px;}
+  .star-btn.on{color:var(--gold);}
+  .star-btn:hover{transform:scale(1.12);}
+  .star-clear{background:none;border:none;color:var(--text-mute);font-size:12px;font-family:var(--font);cursor:pointer;margin-left:8px;text-decoration:underline;}
+  .star-clear:hover{color:var(--text-dim);}
 </style>
 </head>
 <body>
@@ -841,7 +849,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag">Ta recherche d'emploi, en mode pilote <span style="opacity:.4;font-size:11px;">v17</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v17</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1125,14 +1133,25 @@
 
   // ===== SECTEURS (couleur + détection) =====
   const SECTORS=[
-    {key:"Automobile",kw:["automobile","auto","stellantis","renault","peugeot","valeo","faurecia","forvia"],c:"#5b8def"},
-    {key:"Aéronautique",kw:["aéronau","aviation","airbus","safran","thales","dassault","spatial"],c:"#22d3ee"},
-    {key:"Pharma / Santé",kw:["pharma","santé","vaccin","gsk","sanofi","médical","biotech","laborat"],c:"#22c55e"},
-    {key:"Nautisme",kw:["nautisme","bateau","beneteau","naval","marine","voile"],c:"#a87ffb"},
-    {key:"Luxe / Cosmétique",kw:["luxe","cosmét","l'oréal","lvmh","parfum"],c:"#f472b6"},
-    {key:"Agroalimentaire",kw:["agroaliment","danone","nestlé","food","alimentaire"],c:"#fbbf24"},
-    {key:"Industrie",kw:["industrie","usine","production","manufactur"],c:"#f59e0b"},
+    {key:"Automobile / Mobilité",kw:["automobile","automotive"," auto ","mobilit","stellantis","renault","peugeot","citroën","valeo","faurecia","forvia","bmw","mercedes","volkswagen","audi","porsche","toyota","tesla","michelin","bosch"],c:"#5b8def"},
+    {key:"Aéronautique / Spatial",kw:["aéronau","aeronau","aviation","aircraft","airbus","safran","thales","dassault","spatial","space","ariane"],c:"#22d3ee"},
+    {key:"Pharma / Santé",kw:["pharma","santé","health","vaccin","gsk","sanofi","médical","medical","biotech","laborat"],c:"#22c55e"},
+    {key:"Nautisme / Naval",kw:["nautisme","bateau","beneteau","naval","marine","maritime","voile","shipyard","chantier"],c:"#a87ffb"},
+    {key:"Luxe / Cosmétique",kw:["luxe","luxury","cosmét","cosmetic","l'oréal","loreal","lvmh","kering","hermès","chanel","parfum"],c:"#f472b6"},
+    {key:"Agroalimentaire",kw:["agroaliment","danone","nestlé","nestle","food","alimentaire","brasserie","laiterie"],c:"#fbbf24"},
+    {key:"Énergie",kw:["énergie","energie","energy","edf","engie","totalenergies","nucléaire","renouvelable","éolien","solaire"],c:"#16a34a"},
+    {key:"Défense",kw:["défense","defense","defence","armement","mbda","naval group","knds","nexter"],c:"#64748b"},
+    {key:"Transport / Logistique",kw:["transport","logistique","logistics","supply chain","fret","sncf","geodis","dhl","kuehne"],c:"#0ea5e9"},
+    {key:"Conseil / Tech",kw:["conseil","consulting","capgemini","accenture","sopra","software","saas","digital","tech "],c:"#6c5cff"},
+    {key:"Industrie",kw:["industrie","industry","usine","production","manufactur","schneider","saint-gobain","arcelor"],c:"#f59e0b"},
   ];
+  // Nettoie un nom de marque issu du bookmarklet : retire les mentions carrières/jobs et les suffixes
+  function cleanBrandName(raw){
+    let n=(""+(raw||"")).split(/[|\u2013\u2014:\u2022\u00b7]/)[0].trim();
+    n=n.replace(/\b(careers?|carri[e\u00e8]res?|jobs?|emplois?|recrutement|recruitment|talents?|talent\s+acquisition|hiring|nous\s+rejoindre|join\s+us|work\s+with\s+us|offres?\s+d['\u2019]emploi)\b/ig," ");
+    n=n.replace(/\s{2,}/g," ").replace(/[\s\-\u2013\u2014\u2022\u00b7]+$/,"").trim();
+    return n.slice(0,60);
+  }
   function detectSector(o){
     const t=((o.titre||"")+" "+(o.entreprise||"")+" "+(o.description||"")+" "+(o.rome||"")).toLowerCase();
     for(const s of SECTORS){ if(s.kw.some(k=>t.includes(k))) return s; }
@@ -2669,7 +2688,7 @@
   // bookmarklet "marque" : capture nom + site de la page courante -> ?addBrand=...
   function brandBookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var name=M('og:site_name')||document.title||location.hostname;name=(''+name).split(/[|\-–—:]/)[0].trim().slice(0,60);var site=location.origin;var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site);window.open(u,'_blank');})();";
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var raw=M('og:site_name')||M('application-name')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var site=location.origin;var desc=(M('og:description')||M('description')||'').slice(0,300);var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc);window.open(u,'_blank');})();";
   }
   // tri de la galerie
   let reveSort="note", reveSize="M";
@@ -2826,9 +2845,8 @@
     ]},
     reve:{title:"Entreprise rêve",table:"entreprises_reve",fields:[
       {k:"entreprise",l:"Entreprise",t:"text"},{k:"site",l:"Site (carrières / officiel)",t:"text"},{k:"secteur",l:"Secteur",t:"text"},
-      {k:"note",l:"Ma note (0 à 5)",t:"number"},
+      {k:"note",l:"Ma note",t:"stars"},
       {k:"priorite",l:"Priorité",t:"select",opts:["Haute","Moyenne","Basse"]},{k:"ville",l:"Ville visée",t:"text"},
-      {k:"statut",l:"Statut",t:"select",opts:["À explorer","À postuler","Postulé"]},
       {k:"source_info",l:"Source d'info",t:"text"},{k:"pourquoi",l:"Pourquoi cette boîte",t:"textarea"},{k:"notes",l:"Notes",t:"textarea"},
     ]},
     reseau:{title:"Contact",table:"reseau",fields:[
@@ -2853,6 +2871,7 @@
       const v=row?(row[fl.k]??""):"";
       if(fl.t==="select")return `<div class="field"><label>${fl.l}</label><select id="m-${fl.k}">${fl.opts.map(o=>`<option ${o===v?"selected":""}>${o}</option>`).join("")}</select></div>`;
       if(fl.t==="textarea")return `<div class="field"><label>${fl.l}</label><textarea id="m-${fl.k}">${esc(v)}</textarea></div>`;
+      if(fl.t==="stars"){const cur=parseInt(v)||0;return `<div class="field"><label>${fl.l}</label><div class="star-input" id="stars-${fl.k}">${[1,2,3,4,5].map(n=>`<button type="button" class="star-btn ${cur>=n?"on":""}" data-n="${n}" onclick="setModalStars('${fl.k}',${n})" aria-label="${n} sur 5">${ic("star")}</button>`).join("")}<button type="button" class="star-clear" onclick="setModalStars('${fl.k}',0)" title="Effacer">Effacer</button></div><input type="hidden" id="m-${fl.k}" value="${cur||""}"></div>`;}
       return `<div class="field"><label>${fl.l}</label><input id="m-${fl.k}" type="${fl.t}" value="${esc(v)}" /></div>`;
     }).join("");
     // Checklist (pipeline uniquement)
@@ -2867,9 +2886,15 @@
     document.getElementById("modalBg").classList.add("open");
   }
   function closeModal(){document.getElementById("modalBg").classList.remove("open");editing=null;}
+  // note en étoiles : maj de la valeur cachée + visuel
+  function setModalStars(k,n){
+    const inp=document.getElementById("m-"+k); if(inp)inp.value=n?n:"";
+    const box=document.getElementById("stars-"+k); if(!box)return;
+    box.querySelectorAll(".star-btn").forEach(b=>b.classList.toggle("on",parseInt(b.dataset.n)<=n));
+  }
   async function saveModal(){
     const f=FORMS[editing.type],obj={};
-    f.fields.forEach(fl=>{const el=document.getElementById("m-"+fl.k);let val=el.value;if(fl.t==="number")val=val?parseInt(val):null;if(val==="")val=null;obj[fl.k]=val;});
+    f.fields.forEach(fl=>{const el=document.getElementById("m-"+fl.k);let val=el.value;if(fl.t==="number"||fl.t==="stars")val=val?parseInt(val):null;if(val==="")val=null;obj[fl.k]=val;});
     if(editing.type==="pipeline"){
       const chk={};CHECKLIST_ITEMS.forEach((it,i)=>{const el=document.getElementById("chk-"+i);if(el&&el.checked)chk[it]=true;});
       obj.checklist=chk;
@@ -3276,10 +3301,12 @@
       history.replaceState({},"",window.location.pathname);
     } else if(params.get("addBrand")){
       // bookmarklet "marque" : pré-remplit le formulaire entreprise
-      const nom=params.get("addBrand")||"", site=params.get("brandSite")||"";
+      const nomRaw=params.get("addBrand")||"", site=params.get("brandSite")||"", descB=params.get("brandDesc")||"";
+      const nom=cleanBrandName(nomRaw);
       history.replaceState({},"",window.location.pathname);
       setView("reve");
-      openModal("reve",{entreprise:nom,site:site});
+      const sec=detectSector({entreprise:nom,description:site+" "+descB});
+      openModal("reve",{entreprise:nom,site:site,secteur:sec.key==="Autre"?"":sec.key});
     }
     // NB : on ne lance plus la recherche API automatiquement à l'ouverture
     // (économise les quotas) — l'écran "Trouver" invite à cliquer "Chercher".

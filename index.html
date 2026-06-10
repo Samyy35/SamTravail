@@ -380,6 +380,7 @@
   .chip.loc{color:var(--text);} .chip.haute{color:var(--orange);border-color:var(--orange);} .chip.green{color:var(--green);border-color:var(--green);}
   .c-desc{font-size:12.5px;color:var(--text-dim);padding-left:7px;flex:1;}
   .c-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .ocard-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
   .desc-more{margin:2px 0 0 7px;background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;font-family:var(--font);}
   .desc-more:hover{text-decoration:underline;}
   .swipe-card .desc.clamp{flex:0 0 auto;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
@@ -865,12 +866,14 @@
   /* ===== Brouillon de relance ===== */
   .draft-status{font-size:12.5px;color:var(--text-dim);margin:2px 0 10px;display:flex;align-items:center;gap:6px;}
   .draft-status .ic{width:14px;height:14px;color:var(--accent);}
+  .spinner.sp-s{width:13px;height:13px;border-width:2px;display:inline-block;vertical-align:-2px;margin-right:2px;}
   .draft-area{width:100%;border:1px solid var(--border);border-radius:11px;background:var(--surface-2);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.55;padding:12px 13px;resize:vertical;box-sizing:border-box;}
   .draft-area:focus{outline:none;border-color:var(--accent);}
   .prof-lab{display:block;font-size:12.5px;font-weight:700;color:var(--text);margin:14px 0 6px;}
   .prof-hint{font-weight:500;color:var(--text-mute);}
   .prof-import{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;}
   .lettre-warn{font-size:12.5px;background:var(--accent-soft);color:var(--text);border-radius:9px;padding:9px 11px;margin:6px 0 2px;}
+  .link-btn{background:none;border:none;color:var(--accent);font-weight:700;font-size:inherit;cursor:pointer;padding:0;font-family:var(--font);text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -878,7 +881,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v20</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v22</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -2238,7 +2241,7 @@
           <p class="bm-note">Ensuite, sur n'importe quelle offre sur le web → clique ce favori → l'offre s'ouvre ici, prête à ajouter. (Un clic direct ici ne fait rien, c'est normal : il faut le glisser dans les favoris.)</p>
         </details>
       </div>
-      <div id="linksPreview"></div>`;
+      <div class="draft-status" id="aiEnrichStatus" style="display:none;"></div><div id="linksPreview"></div>`;
     document.getElementById("modalBg").classList.add("open");
     if(prefillUrl){ setTimeout(fetchLinkInfos,300); }
   }
@@ -2250,6 +2253,7 @@
     const btn=document.getElementById("fetchLinksBtn");btn.disabled=true;btn.textContent="...";
     const prev=document.getElementById("linksPreview");
     prev.innerHTML='<div class="loading"><div class="spinner"></div>Récupération de '+urls.length+' offre(s)…</div>';
+    var _st=document.getElementById("aiEnrichStatus"); if(_st)_st.style.display="none";
     addLinksData=[];
     for(const url of urls){
       let offer={lien:url,source:hostOf(url),titre:"",entreprise:"",lieu:"",typeContrat:"",salaire:"",description:""};
@@ -2284,20 +2288,6 @@
       if(!offer.salaire && offer.description) offer.salaire=inferSalaire(offer.description);
       if(!offer.typeContrat && offer.description) offer.typeContrat=inferContrat(offer.description);
       if(offer.titre && badTitle(offer.titre)) offer.titre="";
-      // Repli IA gratuite (optionnel) : si l'extraction reste pauvre, on demande à /api/ai-sort de trier le texte
-      // Garde de confiance : on n'appelle l'IA que si un champ-clé manque OU si le titre est douteux
-      if((!offer.entreprise || !offer.titre || badTitle(offer.titre)) && (offer.description || offer.titre)){
-        const aj = await aiSort({url:offer.lien, text:("Titre suppose: "+(offer.titre||"")+"\nEntreprise: "+(offer.entreprise||"")+"\nLieu: "+(offer.lieu||"")+"\n\nDescription:\n"+(offer.description||"")).slice(0,6000)});
-        if(aj && aj.offer){ const a=aj.offer;   // fusion NON-destructive : ne remplit que le vide / corrige le douteux
-          if(a.titre && (!offer.titre||badTitle(offer.titre))) offer.titre=a.titre;
-          if(a.entreprise && !offer.entreprise) offer.entreprise=a.entreprise;
-          if(a.lieu && !offer.lieu) offer.lieu=a.lieu;
-          if(a.typeContrat && !offer.typeContrat) offer.typeContrat=a.typeContrat;
-          if(a.salaire && !offer.salaire) offer.salaire=a.salaire;
-          if(a.experience && !offer.experience) offer.experience=a.experience;
-          if(offer.entreprise && offer.titre) quality="full";
-        }
-      }
       if(offer.titre) offer.titre=shortenTitle(offer.titre);
       offer._quality=quality;
       // suggestion de niveau d'intérêt selon le score de match (modifiable)
@@ -2310,6 +2300,33 @@
     window._prefill=null;
     btn.disabled=false;btn.innerHTML=ic("search")+"<span>Récupérer les infos</span>";
     renderLinksPreview();
+    aiEnrichLinks(); // IA en arrière-plan : ne bloque jamais l'affichage
+  }
+  // Enrichissement IA non bloquant : complète les trous APRÈS affichage, sans écraser tes saisies
+  async function aiEnrichLinks(){
+    if(!AI_ASSIST) return;
+    const todo=addLinksData.map((o,i)=>({o,i})).filter(x=>(!x.o.entreprise||!x.o.titre)&&(x.o.description||x.o.titre));
+    if(!todo.length) return;
+    const stEl=document.getElementById("aiEnrichStatus");
+    if(stEl){stEl.style.display="";stEl.innerHTML='<span class="spinner sp-s"></span> L\'IA complète les champs manquants en arrière-plan…';}
+    let touched=0;
+    for(const {o,i} of todo){
+      const aj=await aiSort({url:o.lien, text:("Titre suppose: "+(o.titre||"")+"\nEntreprise: "+(o.entreprise||"")+"\nLieu: "+(o.lieu||"")+"\n\nDescription:\n"+(o.description||"")).slice(0,6000)});
+      if(!(aj&&aj.offer)) continue;
+      const a=aj.offer, cur=addLinksData[i]; if(!cur) continue;
+      // ne remplit QUE ce qui est encore vide (tes saisies manuelles sont prioritaires)
+      if(a.titre && (!cur.titre||badTitle(cur.titre))){cur.titre=shortenTitle(a.titre);touched++;}
+      if(a.entreprise && !cur.entreprise){cur.entreprise=a.entreprise;touched++;}
+      if(a.lieu && !cur.lieu){cur.lieu=a.lieu;touched++;}
+      if(a.typeContrat && !cur.typeContrat){cur.typeContrat=a.typeContrat;touched++;}
+      if(a.salaire && !cur.salaire){cur.salaire=a.salaire;touched++;}
+      if(a.experience && !cur.experience){cur.experience=a.experience;touched++;}
+    }
+    // re-rend seulement si tu n'es pas en train de taper dans la preview
+    const prev=document.getElementById("linksPreview");
+    if(touched && prev && !prev.contains(document.activeElement)) renderLinksPreview();
+    const st2=document.getElementById("aiEnrichStatus");
+    if(st2){ st2.innerHTML=touched?ic("check")+" IA : "+touched+" champ(s) complété(s).":""; if(!touched)st2.style.display="none"; setTimeout(()=>{try{st2.style.display="none";}catch(e){}},6000); }
   }
 
   function renderLinksPreview(){
@@ -2650,6 +2667,28 @@
     setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },600);
   }
   let _lettreCtx=null;
+  // Prompt prêt à copier pour une IA externe (ChatGPT, app Gemini...) si l'IA intégrée est KO
+  function buildLettrePrompt(){
+    const c=_lettreCtx||{};
+    const offre=((document.getElementById("lettreOffre")||{}).value)||c.desc||"";
+    let p="Adapte mon accroche de candidature ci-dessous pour l'offre suivante. Reste TRÈS proche de l'original : même longueur (à une phrase près), même ton, même style — ajuste seulement 1 ou 2 éléments pour coller au poste. Pas de \"Madame, Monsieur\", pas de signature. Réponds uniquement par le texte de l'accroche.\n";
+    p+="\nPOSTE : "+(c.poste||"")+"\nENTREPRISE : "+(c.entreprise||"");
+    if(c.lieu) p+="\nLIEU : "+c.lieu;
+    if(offre) p+="\n\nDÉTAILS DE L'OFFRE :\n"+offre.slice(0,1500);
+    if(userIntro) p+="\n\nMON ACCROCHE ORIGINALE (à adapter) :\n"+userIntro.slice(0,800);
+    else p+="\n\n(Je n'ai pas d'accroche existante : rédige une accroche courte de 4 à 6 phrases à partir de mon CV.)";
+    if(userCV) p+="\n\nMON CV (extrait) :\n"+userCV.slice(0,2000);
+    return p;
+  }
+  async function copyLettrePrompt(){
+    const txt=buildLettrePrompt();
+    let ok=false;
+    try{ await navigator.clipboard.writeText(txt); ok=true; }catch(e){
+      try{ const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); ok=true; }catch(e2){}
+    }
+    const st=document.getElementById("lettreStatus");
+    if(st)st.innerHTML=ok?(ic("check")+" Prompt copié — colle-le dans ChatGPT / Gemini, puis recopie l'accroche ici."):"Copie impossible.";
+  }
   function openLettre(o){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
     if(!o)return;
@@ -2663,7 +2702,8 @@
       <textarea class="draft-area" id="lettreOffre" rows="3" placeholder="(optionnel) extraits de l'offre">${esc((c.desc||"").slice(0,2000))}</textarea>
       <div class="prof-import" style="margin:12px 0 4px;">
         <button class="btn sm" id="lettreGenBtn" onclick="genLettre()">${ic("sparkle")}<span>${existing?"Régénérer":"Générer l'accroche"}</span></button>
-        <span class="draft-status" id="lettreStatus"></span>
+        <button class="btn ghost sm" onclick="copyLettrePrompt()" title="Copier un prompt prêt pour ChatGPT / Gemini">${ic("link")}<span>Prompt externe</span></button>
+        <span class="draft-status" id="lettreStatus" style="flex-basis:100%;"></span>
       </div>
       <label class="prof-lab">Accroche <span class="prof-hint">— édite librement</span></label>
       <textarea class="draft-area" id="lettreText" rows="8" placeholder="Clique sur « Générer l'accroche »…">${esc(existing)}</textarea>
@@ -2689,7 +2729,7 @@
       else if(aj.offer) r="api/ai-sort.js pas à jour (redéploie-le)";
       else if(aj.reason==="no_key") r="clé serveur absente";
       else if(aj.reason) r=aj.reason+(aj.status?(" "+aj.status):"");
-      st.textContent="IA indisponible"+(r?(" — "+r):"")+". Tu peux écrire l'accroche à la main.";
+      st.innerHTML="IA indisponible"+(r?(" — "+esc(r)):"")+'. <button class="link-btn" onclick="copyLettrePrompt()">Copier le prompt</button> pour une IA externe (ChatGPT, Gemini…), puis colle le résultat ici.';
     }
   }
   async function saveLettre(){
@@ -3590,15 +3630,18 @@
       history.replaceState({},"",window.location.pathname);
       setView("reve");
       const sec=detectSector({entreprise:nom,description:site+" "+descB});
-      let secteur=sec.key==="Autre"?"":sec.key, ville="";
-      // Enrichissement IA (mode marque) : secteur / ville / nom plus fiables ; repli sur la détection locale
-      const aj = await aiSort({mode:"brand", url:site, text:(nom+"\n"+descB).slice(0,4000)});
-      if(aj && aj.brand){ const b=aj.brand;       // fusion non-destructive (secteur local conservé si l'IA ne trouve pas)
-        if(b.entreprise && b.entreprise.length<=60) nom=b.entreprise;
-        if(b.secteur) secteur=b.secteur;
-        if(b.ville) ville=b.ville;
-      }
-      openModal("reve",{entreprise:nom,site:site,secteur:secteur,ville:ville});
+      let secteur=sec.key==="Autre"?"":sec.key;
+      openModal("reve",{entreprise:nom,site:site,secteur:secteur,ville:""});
+      // Enrichissement IA en ARRIÈRE-PLAN : complète le formulaire ouvert sans le bloquer
+      (async()=>{
+        const aj=await aiSort({mode:"brand", url:site, text:(nom+"\n"+descB).slice(0,4000)});
+        if(!(aj&&aj.brand)) return;
+        const b=aj.brand, g=id=>document.getElementById(id);
+        const fE=g("m-entreprise"), fS=g("m-secteur"), fV=g("m-ville");
+        if(b.entreprise && b.entreprise.length<=60 && fE && fE.value===nom) fE.value=b.entreprise;
+        if(b.secteur && fS && (!fS.value||fS.value===secteur)){ for(const op of fS.options){ if(op.value===b.secteur||op.text===b.secteur){fS.value=op.value;break;} } }
+        if(b.ville && fV && !fV.value) fV.value=b.ville;
+      })();
     }
     // NB : on ne lance plus la recherche API automatiquement à l'ouverture
     // (économise les quotas) — l'écran "Trouver" invite à cliquer "Chercher".

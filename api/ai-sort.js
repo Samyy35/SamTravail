@@ -74,7 +74,7 @@ async function callAI(base, key, model, messages, maxTokens) {
   return { status: r.status, ok: r.ok, raw: raw, parsed: parsed };
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const key = process.env.AI_KEY;
   const base = (process.env.AI_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/$/, "");
   const model = process.env.AI_MODEL || "llama-3.3-70b-versatile";
@@ -192,6 +192,9 @@ export default async function handler(req, res) {
         (ctx.intro ? ("\n\nACCROCHE ORIGINALE A ADAPTER (garde sa longueur et son style):\n" + ("" + ctx.intro).slice(0, 800)) : "") +
         (ctx.cv ? ("\n\nCV (extrait, pour le contexte uniquement): " + ("" + ctx.cv).slice(0, 1800)) : "");
     } else {
+      sysD = "Tu rediges un court texte professionnel en francais, clair et concis. Reponds uniquement par le texte.";
+      usr = JSON.stringify(ctx);
+    }
     try {
       const r = await fetch(base + "/chat/completions", {
         method: "POST",

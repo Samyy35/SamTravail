@@ -2270,20 +2270,18 @@
       if(!offer.typeContrat && offer.description) offer.typeContrat=inferContrat(offer.description);
       if(offer.titre && badTitle(offer.titre)) offer.titre="";
       // Repli IA gratuite (optionnel) : si l'extraction reste pauvre, on demande à /api/ai-sort de trier le texte
-      if((!offer.entreprise || !offer.titre) && (offer.description || offer.titre)){
-        try{
-          const air=await fetch("/api/ai-sort",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:offer.lien,text:((offer.titre||"")+"\n"+(offer.description||"")).slice(0,6000)})});
-          const aj=await air.json();
-          if(aj && aj.ok && aj.offer){ const a=aj.offer;
-            if(a.titre && (!offer.titre||badTitle(offer.titre))) offer.titre=a.titre;
-            if(a.entreprise && !offer.entreprise) offer.entreprise=a.entreprise;
-            if(a.lieu && !offer.lieu) offer.lieu=a.lieu;
-            if(a.typeContrat && !offer.typeContrat) offer.typeContrat=a.typeContrat;
-            if(a.salaire && !offer.salaire) offer.salaire=a.salaire;
-            if(a.experience && !offer.experience) offer.experience=a.experience;
-            if(offer.entreprise && offer.titre) quality="full";
-          }
-        }catch(e){}
+      // Garde de confiance : on n'appelle l'IA que si un champ-clé manque OU si le titre est douteux
+      if((!offer.entreprise || !offer.titre || badTitle(offer.titre)) && (offer.description || offer.titre)){
+        const aj = await aiSort({url:offer.lien, text:((offer.titre||"")+"\n"+(offer.description||"")).slice(0,6000)});
+        if(aj && aj.offer){ const a=aj.offer;   // fusion NON-destructive : ne remplit que le vide / corrige le douteux
+          if(a.titre && (!offer.titre||badTitle(offer.titre))) offer.titre=a.titre;
+          if(a.entreprise && !offer.entreprise) offer.entreprise=a.entreprise;
+          if(a.lieu && !offer.lieu) offer.lieu=a.lieu;
+          if(a.typeContrat && !offer.typeContrat) offer.typeContrat=a.typeContrat;
+          if(a.salaire && !offer.salaire) offer.salaire=a.salaire;
+          if(a.experience && !offer.experience) offer.experience=a.experience;
+          if(offer.entreprise && offer.titre) quality="full";
+        }
       }
       offer._quality=quality;
       // suggestion de niveau d'intérêt selon le score de match (modifiable)
@@ -3382,11 +3380,19 @@
     } else if(params.get("addBrand")){
       // bookmarklet "marque" : pré-remplit le formulaire entreprise
       const nomRaw=params.get("addBrand")||"", site=params.get("brandSite")||"", descB=params.get("brandDesc")||"";
-      const nom=cleanBrandName(nomRaw);
+      let nom=cleanBrandName(nomRaw);
       history.replaceState({},"",window.location.pathname);
       setView("reve");
       const sec=detectSector({entreprise:nom,description:site+" "+descB});
-      openModal("reve",{entreprise:nom,site:site,secteur:sec.key==="Autre"?"":sec.key});
+      let secteur=sec.key==="Autre"?"":sec.key, ville="";
+      // Enrichissement IA (mode marque) : secteur / ville / nom plus fiables ; repli sur la détection locale
+      const aj = await aiSort({mode:"brand", url:site, text:(nom+"\n"+descB).slice(0,4000)});
+      if(aj && aj.brand){ const b=aj.brand;       // fusion non-destructive (secteur local conservé si l'IA ne trouve pas)
+        if(b.entreprise && b.entreprise.length<=60) nom=b.entreprise;
+        if(b.secteur) secteur=b.secteur;
+        if(b.ville) ville=b.ville;
+      }
+      openModal("reve",{entreprise:nom,site:site,secteur:secteur,ville:ville});
     }
     // NB : on ne lance plus la recherche API automatiquement à l'ouverture
     // (économise les quotas) — l'écran "Trouver" invite à cliquer "Chercher".
@@ -3435,6 +3441,20 @@
     var m2=t.match(/(\d{2,3}\s?[kK]\s?(?:-|à|–|et)\s?\d{2,3}\s?[kK])/);
     if(m2)return (m2[1]+' €').replace(/\s+/g,' ').trim();
     return '';
+  }
+  // ===== Assistant IA — modulaire & repli transparent =====
+  // Mets AI_ASSIST=false pour désactiver complètement l'IA (l'app retombe en 100% déterministe, sans rien casser).
+  const AI_ASSIST = true;
+  async function aiSort(payload){
+    if(!AI_ASSIST) return null;                 // interrupteur
+    try{
+      const ctrl = (typeof AbortController!=="undefined") ? new AbortController() : null;
+      const to = ctrl ? setTimeout(()=>{try{ctrl.abort();}catch(e){}}, 7000) : null; // timeout 7s
+      const r = await fetch("/api/ai-sort",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:ctrl?ctrl.signal:undefined});
+      if(to) clearTimeout(to);
+      const j = await r.json();
+      return (j && j.ok) ? j : null;            // tout échec/refus -> null -> repli déterministe
+    }catch(e){ return null; }
   }
 </script>
 </body>

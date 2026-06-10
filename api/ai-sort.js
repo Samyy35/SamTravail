@@ -35,6 +35,17 @@
 //  (Vercel ne les prend pas en compte tant que tu n'as pas redeploye).
 // =============================================================
 
+// Regles de style communes a toutes les redactions IA (relance, accroche, etc.)
+const STYLE_RULES =
+  "STYLE OBLIGATOIRE — le texte doit sembler ecrit par le candidat lui-meme, pas par une IA :\n" +
+  "- Phrases simples et directes, ton sobre et professionnel.\n" +
+  "- INTERDIT : 'dynamique', 'passionne par', 'relever des defis', 'fort de', 'doté de', " +
+  "'mettre a profit', 'pleinement', 'au sein de votre structure', 'n'hesitez pas', " +
+  "superlatifs, enumerations de qualites, formules creuses de motivation generique.\n" +
+  "- Pas de tirets longs, pas de listes a puces, pas d'emphase, pas d'emojis.\n" +
+  "- Une legere imperfection (phrase courte, formulation simple) vaut mieux qu'un texte trop lisse.\n" +
+  "- N'invente AUCUN fait : utilise uniquement les informations fournies.\n";
+
 function diagnose(status, errMsg) {
   const m = ("" + (errMsg || "")).toLowerCase();
   if (status === 0) return "Erreur reseau : l'endpoint n'a pas pu etre joint.";
@@ -174,12 +185,14 @@ module.exports = async function handler(req, res) {
     const ctx = body.context || {};
     let sysD, usr;
     if (kind === "relance") {
-      sysD = "Tu rediges un court message de RELANCE de candidature en francais, professionnel, " +
-        "courtois et concis (5 a 7 phrases maximum). Va a l'essentiel : rappeler la candidature, " +
-        "reaffirmer la motivation, rester disponible. Termine par une formule de politesse. " +
-        "Signe avec le prenom fourni s'il est donne. Si un profil/CV du candidat est fourni, tu " +
-        "peux integrer UNE reference pertinente et naturelle (une competence ou une experience), " +
-        "sans tout recopier. Reponds UNIQUEMENT par le texte du message, sans commentaire ni JSON.";
+      sysD = "Tu rediges un court message de RELANCE de candidature en francais (5 a 7 phrases " +
+        "maximum, objet inclus). Va a l'essentiel : rappeler la candidature (poste + date), " +
+        "redire l'interet pour le poste avec des mots simples, rester disponible. " +
+        "Cite le nom de l'entreprise et l'intitule du poste. Si un profil/CV est fourni, integre " +
+        "UNE reference concrete et naturelle (une competence ou une experience reelle), sans tout recopier. " +
+        "Termine par une formule de politesse courte et signe avec le prenom fourni.\n" +
+        STYLE_RULES +
+        "Format : commence par 'Objet : ...' puis le message. Reponds UNIQUEMENT par le texte, sans commentaire ni JSON.";
       usr = "Entreprise: " + (ctx.entreprise || "") + "\nPoste: " + (ctx.poste || "") +
         "\nCandidature envoyee il y a: " + (ctx.jours || "?") + " jours\nPrenom (signature): " + (ctx.prenom || "") +
         (ctx.intro ? ("\n\nProfil du candidat: " + ("" + ctx.intro).slice(0, 600)) : "") +
@@ -189,25 +202,28 @@ module.exports = async function handler(req, res) {
         "OBJECTIF : que le resultat semble ecrit par le candidat lui-meme, pas par une IA.\n" +
         "REGLES STRICTES :\n" +
         "1. Garde la longueur de l'original (a une phrase pres), sa structure, son rythme et son vocabulaire. " +
-        "Reprends ses tournures telles quelles quand elles restent pertinentes : ne reformule que le strict necessaire.\n" +
-        "2. Adapte 1 ou 2 elements MAXIMUM au contexte de l'annonce : le poste vise, et un point concret de " +
-        "l'offre ou de l'entreprise (secteur, produit, lieu) qui fait echo au parcours du candidat.\n" +
-        "3. INTERDIT (vocabulaire artificiel) : 'dynamique', 'passionne par', 'relever des defis', 'fort de', " +
-        "'doté de', 'mettre a profit', 'pleinement', 'au sein de votre structure', superlatifs, " +
-        "enumerations de qualites, phrases creuses de motivation generique.\n" +
-        "4. Phrases simples et directes, ton sobre. Pas de tirets longs, pas de listes, pas d'emphase. " +
-        "Une imperfection legere (phrase courte, formulation simple) vaut mieux qu'un texte trop lisse.\n" +
-        "5. N'invente AUCUN fait : utilise uniquement le parcours fourni (accroche + CV).\n" +
-        "6. Pas de 'Madame, Monsieur', pas de signature, pas de commentaire. " +
-        "Reponds uniquement par le texte de l'accroche.\n" +
-        "Si aucune accroche originale n'est fournie, redige 4 a 6 phrases sobres a partir du CV, memes regles.";
+        "Reprends ses tournures telles quelles quand elles restent pertinentes.\n" +
+        "2. ADAPTE REELLEMENT le contenu a l'annonce : cite le NOM DE L'ENTREPRISE, l'INTITULE DU POSTE, " +
+        "et evoque le secteur/l'industrie quand c'est pertinent. Ajuste les competences et qualites mises " +
+        "en avant pour qu'elles repondent a ce que demande l'offre (en t'appuyant uniquement sur le parcours " +
+        "reel du candidat). L'accroche doit donner l'impression d'avoir ete ecrite POUR cette annonce, " +
+        "pas juste retouchee d'un mot ou deux.\n" +
+        "3. " + STYLE_RULES +
+        "4. Pas de 'Madame, Monsieur', pas de signature, pas de commentaire.\n" +
+        "FORMAT DE SORTIE OBLIGATOIRE : DEUX versions de l'accroche, separees par une ligne contenant " +
+        "uniquement trois tirets (---).\n" +
+        "Version 1 (avant le ---) : TRES PROCHE de l'original — changements minimaux, juste le poste/l'entreprise integres.\n" +
+        "Version 2 (apres le ---) : PLUS ADAPTEE a l'annonce — competences et qualites ajustees a l'offre, " +
+        "secteur evoque, mais toujours le meme style et la meme longueur.\n" +
+        "Aucun titre, aucune etiquette, aucun commentaire : juste version 1, la ligne ---, version 2.\n" +
+        "Si aucune accroche originale n'est fournie, redige 4 a 6 phrases sobres a partir du CV, memes regles, meme format a deux versions.";
       usr = "Poste: " + (ctx.poste || "") + "\nEntreprise: " + (ctx.entreprise || "") +
         "\nLieu: " + (ctx.lieu || "") +
         (ctx.offre ? ("\n\nDetails de l'offre: " + ("" + ctx.offre).slice(0, 1500)) : "") +
         (ctx.intro ? ("\n\nACCROCHE ORIGINALE A ADAPTER (garde sa longueur, son style et ses tournures):\n" + ("" + ctx.intro).slice(0, 800)) : "") +
         (ctx.cv ? ("\n\nCV (extrait, pour le contexte uniquement): " + ("" + ctx.cv).slice(0, 1800)) : "");
     } else {
-      sysD = "Tu rediges un court texte professionnel en francais, clair et concis. Reponds uniquement par le texte.";
+      sysD = "Tu rediges un court texte professionnel en francais, clair et concis.\n" + STYLE_RULES + "Reponds uniquement par le texte.";
       usr = JSON.stringify(ctx);
     }
     try {

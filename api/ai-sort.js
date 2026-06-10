@@ -56,17 +56,22 @@ function diagnose(status, errMsg) {
   return "Reponse inattendue du fournisseur (voir 'detail').";
 }
 
-async function callAI(base, key, model, messages, maxTokens) {
+async function callAI(base, key, model, messages, maxTokens, opts) {
+  opts = opts || {};
+  const payload = {
+    model: model,
+    temperature: (opts.temperature != null ? opts.temperature : 0),
+    max_tokens: maxTokens,
+    messages: messages,
+  };
+  if (opts.json !== false) payload.response_format = { type: "json_object" };
+  // Gemini 2.5 est un modele "reflechissant" : sa reflexion consomme le max_tokens
+  // et peut tronquer la reponse. On la desactive pour ces taches simples.
+  if (base.indexOf("generativelanguage") >= 0) payload.reasoning_effort = "none";
   const r = await fetch(base + "/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
-    body: JSON.stringify({
-      model: model,
-      temperature: 0,
-      max_tokens: maxTokens,
-      response_format: { type: "json_object" },
-      messages: messages,
-    }),
+    body: JSON.stringify(payload),
   });
   const raw = await r.text();
   let parsed = null;
@@ -90,7 +95,7 @@ module.exports = async function handler(req, res) {
     }
     try {
       const out = await callAI(base, key, model,
-        [{ role: "user", content: 'Reponds en JSON: {"ping":"ok"}' }], 20);
+        [{ role: "user", content: 'Reponds en JSON: {"ping":"ok"}' }], 60);
       const errMsg = (out.parsed && out.parsed.error &&
         (out.parsed.error.message || out.parsed.error.status || out.parsed.error.code)) || "";
       res.status(200).json({
@@ -141,7 +146,7 @@ module.exports = async function handler(req, res) {
     try {
       const out = await callAI(base, key, model,
         [{ role: "system", content: sysB },
-         { role: "user", content: "SITE: " + url + "\n\nTEXTE :\n" + text }], 300);
+         { role: "user", content: "SITE: " + url + "\n\nTEXTE :\n" + text }], 800);
       if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
       let c = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
         out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
@@ -206,19 +211,14 @@ module.exports = async function handler(req, res) {
       usr = JSON.stringify(ctx);
     }
     try {
-      const r = await fetch(base + "/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: "Bearer " + key },
-        body: JSON.stringify({ model: model, temperature: 0.4, max_tokens: 450,
-          messages: [{ role: "system", content: sysD }, { role: "user", content: usr }] }),
-      });
-      const raw = await r.text();
-      let parsed = null; try { parsed = JSON.parse(raw); } catch (e) {}
-      if (!r.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: r.status }); return; }
-      let txt = (parsed && parsed.choices && parsed.choices[0] && parsed.choices[0].message &&
-        parsed.choices[0].message.content) || "";
+      const out = await callAI(base, key, model,
+        [{ role: "system", content: sysD }, { role: "user", content: usr }],
+        1500, { json: false, temperature: 0.4 });
+      if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
+      let txt = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
+        out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
       txt = ("" + txt).trim();
-      res.status(200).json({ ok: !!txt, text: txt.slice(0, 1500) });
+      res.status(200).json({ ok: !!txt, text: txt.slice(0, 1800) });
     } catch (e) {
       res.status(200).json({ ok: false, reason: "ai_error" });
     }
@@ -243,7 +243,7 @@ module.exports = async function handler(req, res) {
   try {
     const out = await callAI(base, key, model,
       [{ role: "system", content: sys },
-       { role: "user", content: "URL: " + url + "\n\nTEXTE DE L'OFFRE :\n" + text }], 400);
+       { role: "user", content: "URL: " + url + "\n\nTEXTE DE L'OFFRE :\n" + text }], 900);
     if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
     let content = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
       out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";

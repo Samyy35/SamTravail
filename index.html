@@ -382,6 +382,9 @@
   .c-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
   .desc-more{margin:2px 0 0 7px;background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;font-family:var(--font);}
   .desc-more:hover{text-decoration:underline;}
+  .swipe-card .desc.clamp{flex:0 0 auto;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;}
+  .ocard-prep{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .ocard-prep .btn{flex:1 1 auto;justify-content:center;}
   .c-date{font-size:11px;color:var(--text-mute);padding-left:7px;}
   .c-actions{display:flex;gap:6px;flex-wrap:wrap;padding-left:7px;margin-top:3px;align-items:center;}
   .c-actions .btn .ic{width:14px;height:14px;}
@@ -492,7 +495,8 @@
   .modal-actions{display:flex;flex-direction:row;flex-wrap:wrap;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;}
   .modal-actions .btn.danger{margin-right:auto;}
   /* pied de modale flottant : seulement la dernière barre d'actions */
-  .modal-actions:last-child{position:sticky;bottom:0;margin:16px -24px -24px;padding:14px 24px;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -6px 18px -8px var(--overlay);z-index:2;}
+  .modal{scroll-padding-bottom:96px;}
+  .modal-actions:last-child{position:sticky;bottom:-24px;margin:16px -24px -24px;padding:14px 24px;background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -6px 18px -8px var(--overlay);z-index:2;}
   /* fiches en lecture (marque, candidature) : pied normal, on lit tout en scrollant */
   .modal-actions.flow-foot:last-child{position:static;box-shadow:none;}
   .add-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap;}
@@ -874,7 +878,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v17</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v19</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1820,7 +1824,7 @@
               ${o.experience?`<div class="fact"><span class="fl">${ic("clock")}</span><span class="fv">${esc(o.experience)}</span></div>`:""}
               ${o.salaire?`<div class="fact"><span class="fl">${ic("chart")}</span><span class="fv">${esc(o.salaire)}</span></div>`:""}
             </div>
-            <div class="desc">${esc(o.description)||"Pas de description fournie."}${o.description&&o.description.length>=300?"…":""}</div>
+            <div class="desc clamp" id="desc-sw-${o.id}">${esc(o.description)||"Pas de description fournie."}</div>${o.description&&o.description.length>200?`<button class="desc-more" onclick="toggleDesc('sw-${o.id}',this)">voir plus</button>`:""}
             ${miniMapHtml(o)}
             ${dateStr?`<div class="c-date" style="padding-left:0;margin-top:10px;">Publié le ${dateStr}</div>`:""}
             <div class="company-info" id="ci-${o.id}"><span class="ci-na">Chargement infos société…</span></div>
@@ -2079,7 +2083,7 @@
           <button class="act ${compareIds.includes(o.id)?"on":""}" onclick='toggleCompare("${o.id}")' title="Comparer">${ic("scale")}</button>
         </div>
       </div>
-      ${kept?`<button class="btn primary sm ocard-apply" onclick='markAsApplied(${oData})'>${ic("mail")}<span>J'ai postulé → Suivi</span></button>`:""}
+      ${kept?`<div class="ocard-prep"><button class="btn ghost sm" onclick='openLettre(${oData})'>${ic("sparkle")}<span>${lettreFor(o.lien||o.id)?"CV sur mesure":"Accroche sur mesure"}</span></button><button class="btn primary sm" onclick='markAsApplied(${oData})'>${ic("mail")}<span>J'ai postulé → Suivi</span></button></div>`:""}
       <div class="ocard-links">
         <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre">${ic("doc")}</a>
         ${(o.lieu||o.lat)?`<a href="#" onclick='openOfferMap(${oData});return false;' title="Carte">${ic("pin")}</a>`:""}
@@ -2627,7 +2631,8 @@
   async function saveLettres(){
     if(sb){try{await sb.from("parametres").upsert({cle:"lettres",valeur:lettres,updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
   }
-  function lettreFor(id){ const l=lettres[String(id)]; return (l&&l.texte)?l.texte:""; }
+  function lettreKey(o){ return String((o&&(o.lien||o.lien_offre||o.id))||""); }
+  function lettreFor(key){ const l=lettres[String(key)]; return (l&&l.texte)?l.texte:""; }
   function downloadDoc(filename, titre, accroche, cvText){
     const nl2br=(t)=>esc(t).replace(/\n/g,"<br>");
     const html="<html><head><meta charset='utf-8'></head>"
@@ -2643,17 +2648,20 @@
     document.body.appendChild(a); a.click();
     setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },600);
   }
-  function openLettre(id){
-    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p)return;
-    const existing=lettreFor(id);
+  let _lettreCtx=null;
+  function openLettre(o){
+    if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
+    if(!o)return;
+    _lettreCtx={key:lettreKey(o), poste:(o.poste||o.titre||""), entreprise:(o.entreprise||""), lieu:(o.lieu||o.ville||""), desc:(o.description||"")};
+    const c=_lettreCtx, existing=lettreFor(c.key);
     const box=document.getElementById("modalBox");
     box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("sparkle")} Candidature sur mesure</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">${esc(p.poste||"")} · ${esc(p.entreprise||"")} — l'IA rédige une accroche personnalisée à partir de ton profil/CV. Tu édites, puis tu télécharges un CV/lettre lié à cette annonce.</p>
+      <p class="modal-sub">${esc(c.poste)} · ${esc(c.entreprise)} — l'IA part de ton accroche (Mon profil) et l'adapte à cette offre. Tu édites, puis tu télécharges un CV lié à l'annonce.</p>
       ${(userCV||userIntro)?"":'<p class="lettre-warn">Astuce : renseigne ton <b>profil</b> (intro + CV) pour une accroche bien plus pertinente.</p>'}
-      <label class="prof-lab">Détails de l'offre <span class="prof-hint">— optionnel, colle le texte de l'annonce pour affiner</span></label>
-      <textarea class="draft-area" id="lettreOffre" rows="3" placeholder="(optionnel) colle ici des extraits de l'offre"></textarea>
+      <label class="prof-lab">Détails de l'offre <span class="prof-hint">— pré-rempli depuis l'annonce, ajuste si besoin</span></label>
+      <textarea class="draft-area" id="lettreOffre" rows="3" placeholder="(optionnel) extraits de l'offre">${esc((c.desc||"").slice(0,2000))}</textarea>
       <div class="prof-import" style="margin:12px 0 4px;">
-        <button class="btn sm" id="lettreGenBtn" onclick="genLettre('${p.id}')">${ic("sparkle")}<span>${existing?"Régénérer":"Générer l'accroche"}</span></button>
+        <button class="btn sm" id="lettreGenBtn" onclick="genLettre()">${ic("sparkle")}<span>${existing?"Régénérer":"Générer l'accroche"}</span></button>
         <span class="draft-status" id="lettreStatus"></span>
       </div>
       <label class="prof-lab">Accroche <span class="prof-hint">— édite librement</span></label>
@@ -2661,34 +2669,37 @@
       <div class="modal-actions">
         <button class="btn danger" onclick="closeModal()">Fermer</button>
         <button class="btn ghost" id="lettreCopyBtn" onclick="copyLettre()">${ic("link")}<span>Copier</span></button>
-        <button class="btn ghost" onclick="dlLettre('${p.id}')">${ic("download")}<span>Télécharger CV</span></button>
-        <button class="btn btn-validate" onclick="saveLettre('${p.id}')">${ic("check")}<span>Enregistrer</span></button>
+        <button class="btn ghost" onclick="dlLettre()">${ic("download")}<span>Télécharger CV</span></button>
+        <button class="btn btn-validate" onclick="saveLettre()">${ic("check")}<span>Enregistrer</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
   }
-  async function genLettre(id){
-    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p)return;
+  async function genLettre(){
+    const c=_lettreCtx; if(!c)return;
     const st=document.getElementById("lettreStatus"), ta=document.getElementById("lettreText");
-    const offre=((document.getElementById("lettreOffre")||{}).value)||"";
+    const offre=((document.getElementById("lettreOffre")||{}).value)||c.desc||"";
     if(!AI_ASSIST){ if(st)st.textContent="IA désactivée."; return; }
     if(st)st.textContent="Rédaction par l'IA…";
-    const aj=await aiSort({mode:"draft",kind:"accroche",context:{poste:p.poste||"",entreprise:p.entreprise||"",lieu:p.ville||"",offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 15000);
+    const aj=await aiSort({mode:"draft",kind:"accroche",context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 15000);
     if(aj && aj.text){ if(ta)ta.value=aj.text; if(st)st.innerHTML=ic("check")+" Proposé par IA — édite librement."; }
     else if(st){ st.textContent="IA indisponible — écris ton accroche à la main."; }
   }
-  async function saveLettre(id){
+  async function saveLettre(){
+    const c=_lettreCtx; if(!c)return;
     const ta=document.getElementById("lettreText"); const txt=ta?(ta.value||"").trim():"";
-    lettres[String(id)]={texte:txt, updated_at:new Date().toISOString()};
+    lettres[c.key]={texte:txt, updated_at:new Date().toISOString()};
     await saveLettres();
-    const st=document.getElementById("lettreStatus"); if(st)st.innerHTML=ic("check")+" Enregistré pour cette annonce — retrouvable dans la fiche.";
+    const st=document.getElementById("lettreStatus"); if(st)st.innerHTML=ic("check")+" Enregistré — retrouvable sur l'offre et dans le suivi.";
+    try{renderVeille&&renderVeille();}catch(e){}
   }
-  async function dlLettre(id){
-    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p)return;
-    const ta=document.getElementById("lettreText"); const txt=ta?(ta.value||"").trim():lettreFor(id);
-    lettres[String(id)]={texte:txt, updated_at:new Date().toISOString()}; await saveLettres();
+  async function dlLettre(){
+    const c=_lettreCtx; if(!c)return;
+    const ta=document.getElementById("lettreText"); const txt=ta?(ta.value||"").trim():lettreFor(c.key);
+    lettres[c.key]={texte:txt, updated_at:new Date().toISOString()}; await saveLettres();
     const safe=(s)=>(s||"").toString().replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,40);
-    downloadDoc("CV_"+safe(p.entreprise)+"_"+safe(p.poste)+".doc", (userName||"")+(p.poste?(" — "+p.poste):""), txt, userCV||"");
-    const st=document.getElementById("lettreStatus"); if(st)st.innerHTML=ic("check")+" CV téléchargé + enregistré pour cette annonce.";
+    downloadDoc("CV_"+safe(c.entreprise)+"_"+safe(c.poste)+".doc", (userName||"")+(c.poste?(" — "+c.poste):""), txt, userCV||"");
+    const st=document.getElementById("lettreStatus"); if(st)st.innerHTML=ic("check")+" CV téléchargé + enregistré.";
+    try{renderVeille&&renderVeille();}catch(e){}
   }
   async function copyLettre(){
     const ta=document.getElementById("lettreText"); if(!ta)return;
@@ -2731,11 +2742,11 @@
         ${CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="pcchk-${i}" ${chk[it]?"checked":""} onchange="setPipeCheckItem('${p.id}','${esc(it)}',this.checked)"> ${esc(it)}</label>`).join("")}
       </div>
       ${p.notes?`<div class="pc-section-h">${ic("pencil")} Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
-      ${lettreFor(p.id)?`<div class="pc-section-h">${ic("sparkle")} Candidature sur mesure</div><div class="pc-notes" style="white-space:pre-wrap;">${esc(lettreFor(p.id)).slice(0,300)}${lettreFor(p.id).length>300?"…":""}</div>`:""}
+      ${lettreFor(p.lien_offre||p.id)?`<div class="pc-section-h">${ic("sparkle")} Candidature sur mesure</div><div class="pc-notes" style="white-space:pre-wrap;">${esc(lettreFor(p.lien_offre||p.id)).slice(0,300)}${lettreFor(p.lien_offre||p.id).length>300?"…":""}</div>`:""}
       ${pipeMissingHTML(p)}
       <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
-        <button class="btn ghost" onclick="openLettre('${p.id}')">${ic("sparkle")}<span>${lettreFor(p.id)?"CV sur mesure":"Accroche sur mesure"}</span></button>
+        ${lettreFor(p.lien_offre||p.id)?`<button class="btn ghost" onclick='openLettre(${esc(JSON.stringify(p))})'>${ic("sparkle")}<span>CV sur mesure</span></button>`:""}
         <button class="btn" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>${ic("pencil")}<span>Éditer</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");

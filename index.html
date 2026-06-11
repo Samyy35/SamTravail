@@ -381,6 +381,8 @@
   .c-desc{font-size:12.5px;color:var(--text-dim);padding-left:7px;flex:1;}
   .c-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
   .ocard-desc.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .ocard-desc.open,.swipe-card .desc.open{max-height:240px;overflow-y:auto;padding-right:6px;border-bottom:1px dashed var(--border);border-radius:0 0 6px 6px;}
+  .c-desc.open{max-height:200px;overflow-y:auto;padding-right:6px;}
   .desc-more{margin:2px 0 0 7px;background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;padding:0;font-family:var(--font);}
   .desc-more:hover{text-decoration:underline;}
   .swipe-card .desc.clamp{flex:0 0 auto;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
@@ -877,6 +879,33 @@
   .link-btn{background:none;border:none;color:var(--accent);font-weight:700;font-size:inherit;cursor:pointer;padding:0;font-family:var(--font);text-decoration:underline;}
   .vers-btn{background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px 11px;font-size:12px;font-weight:700;color:var(--text-dim);cursor:pointer;font-family:var(--font);margin-left:4px;}
   .vers-btn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
+  /* ===== Flash central (confirmation rapide au milieu de l'écran) ===== */
+  .flash-center{position:fixed;inset:0;display:grid;place-items:center;z-index:80;pointer-events:none;}
+  .flash-card{display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border-light);border-radius:20px;padding:22px 30px;box-shadow:var(--shadow-lg);animation:flashPop .32s cubic-bezier(.2,.9,.3,1.3),flashOut .25s ease .95s forwards;}
+  .flash-ico{width:46px;height:46px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;animation:flashTick .4s cubic-bezier(.2,.9,.3,1.6) .1s backwards;}
+  .flash-ico .ic{width:24px;height:24px;}
+  .flash-ico.info{background:var(--accent);}
+  .flash-msg{font-family:var(--display);font-size:15.5px;font-weight:650;color:var(--text);text-align:center;}
+  @keyframes flashPop{from{transform:scale(.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+  @keyframes flashTick{from{transform:scale(0) rotate(-30deg);}to{transform:scale(1) rotate(0);}}
+  @keyframes flashOut{to{transform:scale(.92);opacity:0;}}
+  /* logo entreprise dans la fiche candidature */
+  .pc-logo{width:46px;height:46px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);display:grid;place-items:center;font-family:var(--display);font-size:20px;font-weight:650;color:var(--text-dim);overflow:hidden;flex-shrink:0;}
+  .pc-logo img{width:100%;height:100%;object-fit:contain;padding:6px;}
+  /* ===== Fiche offre : titre cliquable + description complète ===== */
+  .ocard-tt{cursor:pointer;}
+  .ocard-tt:hover .ocard-title{color:var(--accent);}
+  .find-main{cursor:pointer;}
+  .oc-desc-full{max-height:320px;overflow-y:auto;}
+  /* ===== Mode compact (Offres à trier) ===== */
+  #veille-grid.compact .ocard-desc,#veille-grid.compact .desc-more,#veille-grid.compact .c-tags,#veille-grid.compact .ocard-links,#veille-grid.compact .ocard-prep{display:none;}
+  #veille-grid.compact .ocard{padding:11px 13px;gap:7px;}
+  #veille-grid.compact .ocard-title{-webkit-line-clamp:1;}
+  #veille-grid.compact .ocard-meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  #veille-grid.compact .grid{gap:9px;}
+  #veille-grid.compact .ocard-score{width:32px;height:32px;font-size:12px;border-radius:9px;}
+  #veille-grid.compact .act{width:32px;height:32px;border-radius:8px;}
+  #veille-grid.compact .act .ic{width:16px;height:16px;}
 </style>
 </head>
 <body>
@@ -884,7 +913,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v26</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v31</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -998,7 +1027,10 @@
           <option value="marque">Marque suivie</option>
         </select>
       </div>
-      <button class="hide-seen-btn" id="hideSeenBtn" onclick="toggleHideSeen()"><i data-ic="eye"></i><span>Cacher déjà triées</span></button>
+      <div style="display:flex;gap:8px;">
+        <button class="hide-seen-btn" id="densityBtn" onclick="toggleDensity()" title="Cartes compactes : 2× plus d'offres par écran"><i data-ic="gridS"></i><span>Confort</span></button>
+        <button class="hide-seen-btn" id="hideSeenBtn" onclick="toggleHideSeen()"><i data-ic="eye"></i><span>Cacher déjà triées</span></button>
+      </div>
     </div>
     <div id="veille-grid"></div>
   </div>
@@ -1749,7 +1781,7 @@
         const sec=detectSector(o);
         const oData=esc(JSON.stringify(o));
         return `<div class="find-row" style="border-left-color:${sec.c};">
-          <div class="find-main">
+          <div class="find-main" onclick='openOfferCard(${oData})' title="Voir la fiche complète">
             <div class="find-top">${matchBadge(o)}${brandTag(o.entreprise)}<span class="find-poste">${esc(o.titre||"—")}</span></div>
             <div class="find-sub">${esc(o.entreprise||"")}${o.lieu?` · ${esc(o.lieu)}`:""}${o.typeContrat?` · ${esc(o.typeContrat)}`:""}${o.salaire?` · ${esc(o.salaire)}`:""}</div>
           </div>
@@ -1827,7 +1859,7 @@
               ${o.experience?`<div class="fact"><span class="fl">${ic("clock")}</span><span class="fv">${esc(o.experience)}</span></div>`:""}
               ${o.salaire?`<div class="fact"><span class="fl">${ic("chart")}</span><span class="fv">${esc(o.salaire)}</span></div>`:""}
             </div>
-            <div class="desc clamp" id="desc-sw-${o.id}">${esc(o.description)||"Pas de description fournie."}</div>${o.description&&o.description.length>200?`<button class="desc-more" onclick="toggleDesc('sw-${o.id}',this)">voir plus</button>`:""}
+            <div class="desc clamp" id="desc-sw-${o.id}">${esc(o.description)||"Pas de description fournie."}</div>${o.description&&o.description.length>200?`<button class="desc-more" data-more="sw-${o.id}" onclick="toggleDesc('sw-${o.id}',this)">voir plus</button>`:""}
             ${miniMapHtml(o)}
             ${dateStr?`<div class="c-date" style="padding-left:0;margin-top:10px;">Publié le ${dateStr}</div>`:""}
             <div class="company-info" id="ci-${o.id}"><span class="ci-na">Chargement infos société…</span></div>
@@ -1838,6 +1870,7 @@
           </div>
         </div>
         <div class="swipe-actions">
+          ${swipeIndex>0?`<div class="sa later" title="Annuler le dernier tri" onclick="swipeUndo()" style="width:46px;height:46px;">${ic("history")}</div>`:""}
           <div class="sa nope" title="Passer (←)" onclick="swipeAction('ignore')">${ic("ban")}</div>
           <div class="sa later" title="Plus tard (↓)" onclick="swipeAction('reflexion')">${ic("clock")}</div>
           <div class="sa like" title="À postuler (→)" onclick="swipeAction('apostuler')">${ic("heart")}</div>
@@ -1871,6 +1904,14 @@
     setTimeout(()=>{renderSwipe();renderCockpit();renderStatsBadges();},340);
   }
 
+  // Annule le dernier swipe : revient en arrière d'une carte et efface son tri
+  async function swipeUndo(){
+    if(swipeIndex<=0)return;
+    swipeIndex--;
+    const o=swipeQueue[swipeIndex];
+    if(o){ delete statusMap[o.id]; if(sb){try{await sb.from("job_status").delete().eq("offer_id",o.id);}catch(e){}} }
+    renderSwipe();renderCockpit();renderStatsBadges();
+  }
   // clavier
   document.addEventListener("keydown",(e)=>{
     if(findMode!=="swipe"||!document.getElementById("view-veille").classList.contains("active"))return;
@@ -1980,6 +2021,7 @@
       </div>`;
     }
     c.innerHTML=html;
+    applyDensity();
   }
   // ===== TAGS =====
   function offerOf(id){ return (statusMap[id]&&statusMap[id].offer) || allOffers.find(o=>o.id===id); }
@@ -2049,7 +2091,14 @@
   function toggleDesc(id,btn){
     const el=document.getElementById("desc-"+id);if(!el)return;
     const open=el.classList.toggle("clamp")===false;
-    btn.textContent=open?"voir moins":"voir plus";
+    el.classList.toggle("open",open);
+    if(!btn)btn=el.parentElement?el.parentElement.querySelector('[data-more="'+id+'"]'):null;
+    if(btn)btn.textContent=open?"voir moins":"voir plus";
+    if(open){ el.scrollTop=0; el.onclick=()=>toggleDesc(id,btn); el.style.cursor="pointer"; el.title="Toucher pour replier"; }
+    else{
+      el.onclick=null; el.style.cursor=""; el.title="";
+      const card=el.closest(".ocard,.swipe-card"); if(card&&card.scrollIntoView)card.scrollIntoView({block:"nearest",behavior:"smooth"});
+    }
   }
   function gridCard(o){
     const st=statusMap[o.id]?statusMap[o.id].statut:null;
@@ -2066,13 +2115,13 @@
     return `<div class="ocard ${st?'is-'+st:''}">
       <div class="ocard-head">
         <div class="ocard-score ${scClass}" title="Correspondance ${sc}%">${sc}</div>
-        <div class="ocard-tt">
+        <div class="ocard-tt" onclick='openOfferCard(${oData})' title="Voir la fiche complète">
           <div class="ocard-title">${esc(o.titre||"—")}</div>
-          <div class="ocard-co">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='openBrandCard("${b.id}")'>${ic("star")}</span>`:""}${o.isNew&&!st?'<span class="ocard-new">Nouveau</span>':""}</div>
+          <div class="ocard-co">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}${o.isNew&&!st?'<span class="ocard-new">Nouveau</span>':""}</div>
         </div>
       </div>
       ${meta?`<div class="ocard-meta">${meta}</div>`:""}
-      ${o.description?`<div class="ocard-desc clamp" id="desc-${o.id}">${esc(o.description)}</div>${o.description.length>180?`<button class="desc-more" onclick="toggleDesc('${o.id}',this)">voir plus</button>`:""}`:""}
+      ${o.description?`<div class="ocard-desc clamp" id="desc-${o.id}">${esc(o.description)}</div>${o.description.length>180?`<button class="desc-more" data-more="${o.id}" onclick="toggleDesc('${o.id}',this)">voir plus</button>`:""}`:""}
       <div class="c-tags" id="tags-${o.id}">${renderTagsInline(o)}</div>
       <div class="ocard-foot">
         <div class="ocard-acts">
@@ -2379,7 +2428,8 @@
   // Appelé quand tu cliques "J'ai postulé" depuis la liste à postuler -> crée l'entrée Pipeline
   async function markAsApplied(o){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
-    if(pipeline.some(p=>p.lien_offre===o.lien)){alert("Déjà dans ton pipeline.");return;}
+    if(pipeline.some(p=>p.lien_offre===o.lien)){flashCenter("Déjà dans ton suivi","info");return;}
+    const prevStatut=(statusMap[o.id]&&statusMap[o.id].statut)||"apostuler";
     const priority=statusMap[o.id]&&statusMap[o.id].statut==="super";
     const row={entreprise:o.entreprise,poste:o.titre,ville:o.lieu,source:o.source||"France Travail",lien_offre:o.lien,statut:"Envoyé",niveau_envie:priority?5:3,date_envoi:new Date().toISOString().slice(0,10)};
     if(sb){const {data}=await sb.from("pipeline").insert(row).select();if(data)pipeline.unshift(data[0]);}
@@ -2387,8 +2437,10 @@
     // on marque l'offre comme "postulé" dans la veille
     statusMap[o.id]={statut:"postule",offer:o};
     if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:"postule",offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
+    _lastApplied={rowId:(pipeline[0]&&pipeline[0].id), offerId:o.id, offer:o, prevStatut:prevStatut};
     renderPipeline();renderVeille();renderCockpit();renderBilan();
-    alert("Ajouté au Suivi (statut Envoyée).");
+    flashCenter("Ajouté au Suivi 🎉");
+    showToast("Candidature ajoutée au suivi.","Annuler",undoApply);
   }
   // ===== PIPELINE KANBAN =====
   const KCOLS=[
@@ -2760,8 +2812,23 @@
     const ta=document.getElementById("lettreText"); const txt=ta?(ta.value||"").trim():lettreFor(c.key);
     lettres[c.key]={texte:txt, updated_at:new Date().toISOString()}; await saveLettres();
     const safe=(s)=>(s||"").toString().replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,40);
+    const st=document.getElementById("lettreStatus");
+    const dx=await loadCvDocx();
+    if(dx&&dx.b64){
+      try{
+        if(st)st.textContent="Assemblage du CV Word…";
+        const blob=await buildDocxWithAccroche(dx.b64, "Accroche — "+(c.poste||"")+(c.entreprise?(" · "+c.entreprise):""), txt);
+        const url=URL.createObjectURL(blob); const a=document.createElement("a");
+        a.href=url; a.download="CV_"+safe(c.entreprise)+"_"+safe(c.poste)+".docx";
+        document.body.appendChild(a); a.click();
+        setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){} a.remove();},600);
+        if(st)st.innerHTML=ic("check")+" CV Word téléchargé (mise en page d'origine + accroche en page suivante).";
+        try{renderVeille&&renderVeille();}catch(e){}
+        return;
+      }catch(e){ if(st)st.textContent="Assemblage Word impossible — repli sur le format simple."; }
+    }
     downloadDoc("CV_"+safe(c.entreprise)+"_"+safe(c.poste)+".doc", (userName||"")+(c.poste?(" — "+c.poste):""), txt, userCV||"");
-    const st=document.getElementById("lettreStatus"); if(st)st.innerHTML=ic("check")+" CV téléchargé + enregistré.";
+    if(st)st.innerHTML=ic("check")+" CV téléchargé + enregistré. <span style='opacity:.75'>(Astuce : importe ton CV Word dans Mon profil pour garder ta mise en page.)</span>";
     try{renderVeille&&renderVeille();}catch(e){}
   }
   async function copyLettre(){
@@ -2781,7 +2848,7 @@
     const statutLabel=kLabel((KCOLS.find(c=>c.key===p.statut)||{}).label||"")||p.statut||"—";
     const box=document.getElementById("modalBox");
     box.innerHTML=`
-      <div class="modal-head"><h3>${esc(p.poste||"Candidature")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;">${(()=>{const b=followedBrand(p.entreprise);const lg=b?brandLogo(b):"";const ini=esc((p.entreprise||p.poste||"?").slice(0,1).toUpperCase());return `<span class="pc-logo">${lg?`<img src="${lg}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${ini}';">`:ini}</span>`;})()}<span>${esc(p.poste||"Candidature")}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
       <div class="pc-company">${esc(p.entreprise||"")}</div>
       <div class="pc-badges">
         <span class="pc-badge" style="background:${col}1a;color:${col};border-color:${col}55;">${esc(statutLabel)}</span>
@@ -2805,7 +2872,7 @@
         ${CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="pcchk-${i}" ${chk[it]?"checked":""} onchange="setPipeCheckItem('${p.id}','${esc(it)}',this.checked)"> ${esc(it)}</label>`).join("")}
       </div>
       ${p.notes?`<div class="pc-section-h">${ic("pencil")} Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
-      ${lettreFor(p.lien_offre||p.id)?`<div class="pc-section-h">${ic("sparkle")} Candidature sur mesure</div><div class="pc-notes" style="white-space:pre-wrap;">${esc(lettreFor(p.lien_offre||p.id)).slice(0,300)}${lettreFor(p.lien_offre||p.id).length>300?"…":""}</div>`:""}
+      ${lettreFor(p.lien_offre||p.id)?`<div class="pc-section-h">${ic("sparkle")} Candidature sur mesure</div><div class="pc-notes" style="white-space:pre-wrap;">${esc(lettreFor(p.lien_offre||p.id))}</div>`:""}
       ${pipeMissingHTML(p)}
       <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
@@ -2917,6 +2984,25 @@
     clearTimeout(_toastTimer);_toastTimer=setTimeout(hideToast,7000);
   }
   function hideToast(){const t=document.getElementById("toast");if(t)t.classList.remove("show");}
+  // Confirmation animée au centre de l'écran (1,2 s) — remplace les alert()
+  function flashCenter(msg,kind){
+    const old=document.getElementById("flashCenter"); if(old)old.remove();
+    const d=document.createElement("div"); d.id="flashCenter"; d.className="flash-center";
+    d.innerHTML=`<div class="flash-card"><div class="flash-ico ${kind==="info"?"info":""}">${ic(kind==="info"?"info":"check")}</div><div class="flash-msg">${msg}</div></div>`;
+    document.body.appendChild(d);
+    setTimeout(()=>{try{d.remove();}catch(e){}},1350);
+  }
+  // Annulation du dernier "J'ai postulé" (retour en arrière)
+  let _lastApplied=null;
+  async function undoApply(){
+    const u=_lastApplied; if(!u)return; _lastApplied=null;
+    pipeline=pipeline.filter(p=>String(p.id)!==String(u.rowId));
+    if(sb && !String(u.rowId).startsWith("local-")){try{await sb.from("pipeline").delete().eq("id",u.rowId);}catch(e){}}
+    statusMap[u.offerId]={statut:u.prevStatut,offer:u.offer};
+    if(sb){try{await sb.from("job_status").upsert({offer_id:u.offerId,statut:u.prevStatut,offer_data:u.offer,updated_at:new Date().toISOString()},{onConflict:"offer_id"});}catch(e){}}
+    renderPipeline();renderVeille();renderCockpit();renderBilan();
+    flashCenter("Annulé — l'offre est de retour dans tes offres à trier","info");
+  }
   // propose d'ajouter une boîte aux marques si pas déjà suivie (appelé après "garder")
   function maybeNudgeBrand(o){
     if(!o||!o.entreprise)return;
@@ -3007,7 +3093,7 @@
     ];
     const box=document.getElementById("modalBox");
     box.innerHTML=`
-      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:11px;">${logo?`<img src="${logo}" style="width:32px;height:32px;border-radius:7px;" onerror="this.style.display='none'">`:""}${esc(e.entreprise||"Marque")}</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:11px;">${logo?`<img src="${logo}" style="width:44px;height:44px;border-radius:10px;" onerror="this.style.display='none'">`:""}${esc(e.entreprise||"Marque")}</h3><button class="x" onclick="closeModal()">✕</button></div>
       <div class="pc-badges">
         ${e.secteur?`<span class="pc-badge">${ic("building")} ${esc(e.secteur)}</span>`:""}
         ${e.ville?`<span class="pc-badge">${ic("pin")} ${esc(e.ville)}</span>`:""}
@@ -3017,6 +3103,7 @@
       <div class="pc-links">
         <a href="#" class="full site-link" onclick="visitBrand('${e.id}','${esc(site)}');return false;">${ic("building")} Voir le site${dom?` · <span class="site-dom">${esc(dom)}</span>`:""}</a>
         <a href="#" class="full" onclick="searchBrandOffers('${esc((e.entreprise||"").replace(/'/g,"\\'"))}');return false;" style="background:var(--accent-soft);color:var(--accent);border-color:var(--accent);">${ic("search")} Chercher ses offres</a>
+        <a href="#" class="full" onclick="openSpontanee('${e.id}');return false;" style="background:var(--purple-soft);color:var(--purple);border-color:var(--purple);">${ic("mail")} Candidature spontanée</a>
         <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
         <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
         <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
@@ -3031,6 +3118,155 @@
         <button class="btn" onclick='openModal("reve",${esc(JSON.stringify(e))})'>${ic("pencil")}<span>Éditer</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
+  }
+
+  // ===== FICHE OFFRE COMPLÈTE (tap sur le titre d'une carte) =====
+  function openOfferCard(o){
+    if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
+    if(!o)return;
+    const st=statusMap[o.id]?statusMap[o.id].statut:null;
+    const sec=detectSector(o), sc=matchScore(o);
+    const b=followedBrand(o.entreprise), lg=b?brandLogo(b):"";
+    const ini=esc((o.entreprise||o.titre||"?").slice(0,1).toUpperCase());
+    const cl=companyLinks(o.entreprise);
+    const gmaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(o.lieu||o.entreprise||"");
+    const dateStr=o.dateCreation?new Date(o.dateCreation).toLocaleDateString("fr-FR"):"";
+    const oData=esc(JSON.stringify(o));
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`
+      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;"><span class="pc-logo">${lg?`<img src="${lg}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${ini}';">`:ini}</span><span>${esc(o.titre||"Offre")}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="pc-company">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${b.id}")' style="cursor:pointer;">${ic("star")}</span>`:""}</div>
+      <div class="pc-badges">
+        <span class="pc-badge" title="Score de match">${ic("target")} ${sc}/100</span>
+        <span class="pc-badge" style="color:${sec.c};border-color:${sec.c}55;">${esc(sec.key)}</span>
+        ${o.lieu?`<span class="pc-badge">${ic("pin")} ${esc(o.lieu)}</span>`:""}
+        ${o.typeContrat?`<span class="pc-badge">${ic("doc")} ${esc(o.typeContrat)}</span>`:""}
+        ${o.salaire?`<span class="pc-badge">${ic("chart")} ${esc(o.salaire)}</span>`:""}
+        ${o.experience?`<span class="pc-badge">${ic("clock")} ${esc(o.experience)}</span>`:""}
+        ${dateStr?`<span class="pc-badge">${ic("calendar")} ${dateStr}</span>`:""}
+      </div>
+      <div class="pc-section-h">${ic("checklist")} Trier cette offre</div>
+      <div class="ocard-acts" style="margin-bottom:4px;">
+        <button class="act ${st==="super"?"on super":""}" onclick='markOfferFromCard(${oData},"super")' title="Coup de cœur">${ic("star")}</button>
+        <button class="act ${st==="apostuler"?"on apostuler":""}" onclick='markOfferFromCard(${oData},"apostuler")' title="À postuler">${ic("heart")}</button>
+        <button class="act ${st==="reflexion"?"on reflexion":""}" onclick='markOfferFromCard(${oData},"reflexion")' title="Plus tard">${ic("clock")}</button>
+        <button class="act ${st==="ignore"?"on ignore":""}" onclick='markOfferFromCard(${oData},"ignore")' title="Passer">${ic("ban")}</button>
+        <button class="btn ghost sm" style="margin-left:6px;" onclick='openLettre(${oData})'>${ic("sparkle")}<span>${lettreFor(o.lien||o.id)?"CV sur mesure":"Accroche"}</span></button>
+        <button class="btn primary sm" onclick='closeModal();markAsApplied(${oData})'>${ic("mail")}<span>J'ai postulé</span></button>
+      </div>
+      ${o.description?`<div class="pc-section-h">${ic("doc")} Description</div><div class="pc-notes oc-desc-full" style="white-space:pre-wrap;">${esc(o.description)}</div>`:""}
+      ${(o.lieu||o.lat)?`<div id="ocMap" class="offer-map" style="height:220px;margin-top:14px;"><div class="mini-map-loading">Chargement de la carte…</div></div>`:""}
+      <div class="company-info" id="ci-oc-${o.id}"><span class="ci-na">Chargement infos société…</span></div>
+      <div class="pc-links">
+        <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre" class="full site-link">${ic("doc")} Voir l'annonce complète</a>
+        <a href="${cl.site}" target="_blank" rel="noopener" title="Site">${ic("building")}</a>
+        <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
+        <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
+        <a href="${cl.societe}" target="_blank" rel="noopener" title="Chiffre d'affaires">${ic("chart")}</a>
+        <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
+      </div>
+      <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
+        <button class="btn ghost" onclick="closeModal()">Fermer</button>
+      </div>`;
+    document.getElementById("modalBg").classList.add("open");
+    loadCompanyInto("ci-oc-"+o.id, o.entreprise);
+    (async()=>{
+      const mb=document.getElementById("ocMap");if(!mb||typeof L==="undefined")return;
+      let la=o.lat,lo=o.lon;
+      if((!la||!lo)&&o.lieu){const g=await geocode(o.lieu);if(g){la=g.lat;lo=g.lon;}}
+      if(!la||!lo){mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gmaps+'" target="_blank" rel="noopener">'+ic("pin")+' '+esc(o.lieu||"")+' — voir sur Google Maps</a>';return;}
+      mb.innerHTML="";
+      try{const map=L.map(mb,{scrollWheelZoom:true,attributionControl:false}).setView([la,lo],9);L.tileLayer(tileUrl(),{maxZoom:18}).addTo(map);L.marker([la,lo],{icon:pinIcon()}).addTo(map);setTimeout(()=>{try{map.invalidateSize();}catch(e){}},250);}catch(e){}
+    })();
+  }
+  // Tri depuis la fiche : applique, ferme, confirme d'un flash
+  const TRI_LABELS={super:"Coup de cœur ⭐",apostuler:"À postuler ❤️",reflexion:"Plus tard 🕐",ignore:"Passée"};
+  async function markOfferFromCard(o,statut){
+    if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
+    const cur=statusMap[o.id]?statusMap[o.id].statut:null;
+    await markOffer(o,statut);
+    closeModal();
+    if(cur!==statut) flashCenter(TRI_LABELS[statut]||"Triée");
+    else flashCenter("Tri retiré","info");
+  }
+
+  // ===== DENSITÉ de la grille (confort / compact) =====
+  let gridDensity="confort";
+  try{const _gd=localStorage.getItem("st_density");if(_gd)gridDensity=_gd;}catch(e){}
+  function toggleDensity(){
+    gridDensity=gridDensity==="compact"?"confort":"compact";
+    try{localStorage.setItem("st_density",gridDensity);}catch(e){}
+    applyDensity();
+  }
+  function applyDensity(){
+    const g=document.getElementById("veille-grid");
+    if(g)g.classList.toggle("compact",gridDensity==="compact");
+    const btn=document.getElementById("densityBtn");
+    if(btn){btn.classList.toggle("on",gridDensity==="compact");const sp=btn.querySelector("span");if(sp)sp.textContent=gridDensity==="compact"?"Compact":"Confort";}
+  }
+
+  // ===== CANDIDATURE SPONTANÉE (depuis une fiche marque) =====
+  function spontKey(e){ return "spont_"+e.id; }
+  function spontaneeTemplate(e){
+    const ent=e.entreprise||"votre entreprise"; const sig=userName||"[Ton prénom]";
+    const why=e.pourquoi?(" — "+(""+e.pourquoi).split(/[.\n]/)[0].trim().toLowerCase()):"";
+    const profil=userIntro?userIntro.split(/(?<=\.)\s/)[0]:"Diplômé d'un master supply chain, je cherche un poste opérationnel (approvisionnement, planification, gestion de stocks).";
+    return "Objet : Candidature spontanée – supply chain – "+sig+"\n\n"
+      +"Bonjour,\n\n"
+      +"Je me permets de vous contacter car "+ent+" fait partie des entreprises où je souhaiterais travailler"+why+".\n\n"
+      +profil+"\n\n"
+      +"Si un besoin existe ou se profile dans ce domaine, je serais heureux d'échanger avec vous. Vous trouverez mon CV en pièce jointe.\n\n"
+      +"Bien cordialement,\n"+sig;
+  }
+  let _spontId=null;
+  function openSpontanee(id){
+    const e=reve.find(x=>String(x.id)===String(id)); if(!e)return;
+    _spontId=id;
+    const existing=lettreFor(spontKey(e));
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("mail")} Candidature spontanée</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">${esc(e.entreprise||"")} — mail prêt à copier dans ta messagerie (joins ton CV).${e.pourquoi?" L'IA s'appuie sur tes notes « pourquoi cette boîte » pour un mail crédible.":""}</p>
+      <div class="draft-status" id="spontStatus"></div>
+      <textarea id="spontText" class="draft-area" rows="13">${esc(existing||spontaneeTemplate(e))}</textarea>
+      <div class="prof-import" style="margin:10px 0 0;">
+        <button class="btn sm" id="spontGenBtn" onclick="genSpontanee()">${ic("sparkle")}<span>${existing?"Régénérer (IA)":"Améliorer avec l'IA"}</span></button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn danger" onclick="closeModal()">Fermer</button>
+        <button class="btn ghost" id="spontCopyBtn" onclick="copySpontanee()">${ic("link")}<span>Copier</span></button>
+        <button class="btn btn-validate" onclick="saveSpontanee()">${ic("check")}<span>Enregistrer</span></button>
+      </div>`;
+    document.getElementById("modalBg").classList.add("open");
+    if(!existing) genSpontanee(); // pas de version sauvegardée -> l'IA améliore direct (non bloquant, le modèle est déjà affiché)
+  }
+  async function genSpontanee(){
+    const e=reve.find(x=>String(x.id)===String(_spontId)); if(!e)return;
+    const st=document.getElementById("spontStatus"), ta=document.getElementById("spontText");
+    if(!AI_ASSIST){ if(st)st.textContent="Modèle prêt — édite-le librement."; return; }
+    if(st)st.innerHTML='<span class="spinner sp-s"></span> Rédaction par l\u2019IA…';
+    const aj=await aiSort({mode:"draft",kind:"spontanee",context:{
+      entreprise:e.entreprise||"",secteur:e.secteur||"",ville:e.ville||"",
+      pourquoi:(e.pourquoi||"").slice(0,600),prenom:userName||"",
+      intro:(userIntro||"").slice(0,700),cv:(userCV||"").slice(0,2000)}}, 18000);
+    if(aj&&aj.text){ if(ta)ta.value=aj.text; if(st)st.innerHTML=ic("check")+" Proposé par IA — édite librement avant d'envoyer."; }
+    else if(st){
+      let r=""; if(aj===null)r="réseau / délai dépassé"; else if(aj&&aj.reason)r=aj.reason+(aj.status?(" "+aj.status):"");
+      st.textContent="IA indisponible"+(r?(" — "+r):"")+". Le modèle ci-dessous reste utilisable.";
+    }
+  }
+  async function saveSpontanee(){
+    const e=reve.find(x=>String(x.id)===String(_spontId)); if(!e)return;
+    const ta=document.getElementById("spontText");
+    lettres[spontKey(e)]={texte:ta?(ta.value||"").trim():"",updated_at:new Date().toISOString()};
+    await saveLettres();
+    const st=document.getElementById("spontStatus"); if(st)st.innerHTML=ic("check")+" Enregistré — retrouvable depuis la fiche de "+esc(e.entreprise||"la marque")+".";
+  }
+  async function copySpontanee(){
+    const ta=document.getElementById("spontText"); if(!ta)return;
+    let ok=false;
+    try{ await navigator.clipboard.writeText(ta.value); ok=true; }catch(e){ try{ ta.select(); document.execCommand("copy"); ok=true; }catch(e2){} }
+    const b=document.getElementById("spontCopyBtn"); if(b)b.innerHTML=(ok?ic("check"):ic("alert"))+"<span>"+(ok?"Copié !":"Copie manuelle")+"</span>";
+    if(ok) saveSpontanee(); // copie = on enregistre aussi (zéro perte)
   }
 
   // ===== RESEAU =====
@@ -3516,6 +3752,61 @@
   async function saveProfilData(){
     if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName,intro:userIntro,cv:userCV},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
   }
+  // ===== CV Word (.docx) : conservé tel quel, accroche ajoutée en page suivante =====
+  let userCvDocx; // undefined = pas encore chargé ; null = aucun ; {name,b64}
+  function loadJSZip(){
+    return new Promise((resolve,reject)=>{
+      if(window.JSZip){resolve(window.JSZip);return;}
+      const sc=document.createElement("script");
+      sc.src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+      sc.onload=()=>resolve(window.JSZip); sc.onerror=()=>reject(new Error("jszip"));
+      document.head.appendChild(sc);
+    });
+  }
+  async function loadCvDocx(){
+    if(userCvDocx!==undefined) return userCvDocx;
+    userCvDocx=null;
+    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","cvdocx").maybeSingle();if(data&&data.valeur&&data.valeur.b64)userCvDocx=data.valeur;}catch(e){}}
+    return userCvDocx;
+  }
+  async function saveCvDocx(obj){
+    userCvDocx=obj||null;
+    if(sb){try{await sb.from("parametres").upsert({cle:"cvdocx",valeur:obj||{},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
+  }
+  function b64ToU8(b64){const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;}
+  function bufToB64(buf){const u=new Uint8Array(buf);let bin="";const CH=0x8000;for(let i=0;i<u.length;i+=CH){bin+=String.fromCharCode.apply(null,u.subarray(i,i+CH));}return btoa(bin);}
+  function xmlEsc(t){return (''+t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;");}
+  function docxTextFromXml(xml){
+    return xml.replace(/<w:p[ >]/g,"\n<w:p ").replace(/<[^>]+>/g," ")
+      .replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&apos;/g,"'")
+      .split("\n").map(l=>l.replace(/\s+/g," ").trim()).filter(Boolean).join("\n");
+  }
+  async function extractDocx(file){
+    const JZ=await loadJSZip();
+    const buf=await file.arrayBuffer();
+    const zip=await JZ.loadAsync(buf);
+    const docFile=zip.file("word/document.xml");
+    if(!docFile) throw new Error("docx invalide");
+    const xml=await docFile.async("string");
+    return {b64:bufToB64(buf), text:docxTextFromXml(xml)};
+  }
+  // Construit un nouveau .docx = CV original intact + saut de page + accroche
+  async function buildDocxWithAccroche(b64, heading, accroche){
+    const JZ=await loadJSZip();
+    const zip=await JZ.loadAsync(b64ToU8(b64));
+    const path="word/document.xml";
+    let xml=await zip.file(path).async("string");
+    const paras=(''+accroche).split(/\n+/).map(t=>t.trim()).filter(Boolean)
+      .map(t=>'<w:p><w:r><w:t xml:space="preserve">'+xmlEsc(t)+'</w:t></w:r></w:p>').join('');
+    const add='<w:p><w:r><w:br w:type="page"/></w:r></w:p>'
+      +'<w:p><w:pPr><w:spacing w:after="160"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="28"/></w:rPr><w:t xml:space="preserve">'+xmlEsc(heading)+'</w:t></w:r></w:p>'
+      +paras;
+    const iSect=xml.lastIndexOf("<w:sectPr");
+    if(iSect>=0) xml=xml.slice(0,iSect)+add+xml.slice(iSect);
+    else xml=xml.replace("</w:body>",add+"</w:body>");
+    zip.file(path,xml);
+    return await zip.generateAsync({type:"blob",compression:"DEFLATE",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+  }
   function openProfil(){
     closeMore&&closeMore();
     const box=document.getElementById("modalBox");
@@ -3527,13 +3818,16 @@
       <textarea class="draft-area" id="profIntro" rows="4" placeholder="Ex : Diplômé d'un master supply chain, je cherche un poste opérationnel en milieu industriel près du littoral. Rigoureux, orienté data et terrain.">${esc(userIntro)}</textarea>
       <label class="prof-lab">CV (texte) <span class="prof-hint">— colle ton CV, ou importe un PDF / .txt</span></label>
       <textarea class="draft-area" id="profCv" rows="7" placeholder="Colle ici le contenu de ton CV : expériences, compétences, formations.">${esc(userCV)}</textarea>
+      <div class="draft-status" id="cvDocxInfo"></div>
       <div class="prof-import">
-        <label class="btn ghost sm" for="cvFile">${ic("download")}<span>Importer un PDF / .txt</span></label>
-        <input type="file" id="cvFile" accept=".pdf,.txt,text/plain,application/pdf" style="display:none" onchange="importCvFile(this)" />
+        <label class="btn ghost sm" for="cvFile">${ic("download")}<span>Importer (.docx / PDF / .txt)</span></label>
+        <input type="file" id="cvFile" accept=".docx,.pdf,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,text/plain" style="display:none" onchange="importCvFile(this)" />
+        <button class="btn ghost sm" onclick="aiProfilFill()" title="Pré-remplir prénom et accroche depuis le CV">${ic("sparkle")}<span>Analyser mon CV</span></button>
         <span class="draft-status" id="cvStatus"></span>
       </div>
       <div class="modal-actions"><button class="btn danger" onclick="closeModal()">Annuler</button><button class="btn btn-validate" onclick="saveProfil()">${ic("check")}<span>Enregistrer</span></button></div>`;
     document.getElementById("modalBg").classList.add("open");
+    loadCvDocx().then(d=>{const di=document.getElementById("cvDocxInfo");if(di&&d&&d.name)di.innerHTML=ic("check")+" CV Word enregistré : <b>"+esc(d.name)+"</b> — mise en page conservée au téléchargement.";});
   }
   async function saveProfil(){
     const gp=id=>{const e=document.getElementById(id);return e?(e.value||"").trim():"";};
@@ -3566,13 +3860,38 @@
     if(st)st.textContent="Lecture du fichier…";
     try{
       let txt="";
-      if(/\.pdf$/i.test(f.name)||f.type==="application/pdf"){ txt=await extractPdfText(f); }
+      if(/\.docx$/i.test(f.name)){
+        const r=await extractDocx(f);
+        txt=r.text;
+        await saveCvDocx({name:f.name,b64:r.b64});
+        const di=document.getElementById("cvDocxInfo");
+        if(di)di.innerHTML=ic("check")+" CV Word enregistré : <b>"+esc(f.name)+"</b> — sa mise en page sera conservée au téléchargement.";
+      }
+      else if(/\.pdf$/i.test(f.name)||f.type==="application/pdf"){ txt=await extractPdfText(f); }
       else { txt=await f.text(); }
-      txt=(txt||"").replace(/\s+/g," ").trim();
+      txt=(txt||"").replace(/[ \t]+/g," ").trim();
       if(!txt){ if(st)st.textContent="Aucun texte extrait — colle ton CV manuellement."; return; }
       if(ta) ta.value=txt.slice(0,6000);
       if(st)st.textContent="✓ CV importé — vérifie / ajuste si besoin.";
-    }catch(e){ if(st)st.textContent="Lecture impossible (PDF protégé ou format non géré). Colle ton CV manuellement."; }
+      aiProfilFill(); // remplissage auto (prénom + accroche) en arrière-plan
+    }catch(e){ if(st)st.textContent="Lecture impossible (fichier protégé ou format non géré). Colle ton CV manuellement."; }
+  }
+  // Remplissage auto du profil depuis le CV (comme sur les sites d'embauche) — ne remplit que le vide
+  async function aiProfilFill(){
+    if(!AI_ASSIST) return;
+    const ta=document.getElementById("profCv"); const cv=ta?(ta.value||"").trim():"";
+    if(!cv) return;
+    const st=document.getElementById("cvStatus");
+    const pn=document.getElementById("profPrenom"), it=document.getElementById("profIntro");
+    const needP=pn&&!pn.value.trim(), needI=it&&!it.value.trim();
+    if(!needP&&!needI) return;
+    if(st)st.textContent="Analyse du CV pour pré-remplir le profil…";
+    const aj=await aiSort({mode:"profil",text:cv.slice(0,6000)},15000);
+    if(aj&&aj.profil){
+      if(needP&&aj.profil.prenom&&pn&&!pn.value.trim())pn.value=aj.profil.prenom;
+      if(needI&&aj.profil.intro&&it&&!it.value.trim())it.value=aj.profil.intro;
+      if(st)st.innerHTML=ic("check")+" Profil pré-rempli depuis le CV — relis et ajuste.";
+    } else if(st){ st.textContent="✓ CV importé. (Pré-remplissage IA indisponible.)"; }
   }
 
   // ===== STREAK (visite quotidienne) =====
@@ -3619,7 +3938,7 @@
     }
     await loadAll();await reconcileActivity(true);loadNotes();loadStreak();loadTheme();
     await loadProfil(!!addUrl);  // si on arrive via bookmarklet, on ne demande pas le nom maintenant
-    refreshAll();renderBmSetup();
+    refreshAll();renderBmSetup();applyDensity();
     // Bookmarklet : si ?addUrl=... -> ouvre directement l'ajout par lien
     if(addUrl){
       var _ttl=params.get("addTitle")||""; if(badTitle(_ttl))_ttl=""; else _ttl=tidyTitle(_ttl, params.get("addEnt")||"");

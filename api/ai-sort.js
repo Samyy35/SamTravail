@@ -197,6 +197,28 @@ module.exports = async function handler(req, res) {
         "\nCandidature envoyee il y a: " + (ctx.jours || "?") + " jours\nPrenom (signature): " + (ctx.prenom || "") +
         (ctx.intro ? ("\n\nProfil du candidat: " + ("" + ctx.intro).slice(0, 600)) : "") +
         (ctx.cv ? ("\n\nCV (extrait): " + ("" + ctx.cv).slice(0, 1500)) : "");
+    } else if (kind === "spontanee") {
+      sysD = "Tu rediges un EMAIL de CANDIDATURE SPONTANEE en francais (8 a 12 phrases maximum, " +
+        "objet inclus). Le candidat n'a pas d'offre precise : il propose son profil a une entreprise " +
+        "qu'il a choisie.\n" +
+        "Structure : 'Objet : Candidature spontanee – ...' puis 'Bonjour,' puis le message.\n" +
+        "Contenu obligatoire :\n" +
+        "1. Pourquoi CETTE entreprise precisement — cite son nom ; si des raisons personnelles du " +
+        "candidat sont fournies (champ POURQUOI), appuie-toi dessus en les reformulant sobrement, " +
+        "c'est ce qui rend le mail credible. Sinon utilise le secteur/l'activite.\n" +
+        "2. Qui est le candidat et ce qu'il vise, a partir de son profil/CV : UNE ou DEUX references " +
+        "concretes maximum (formation, experience, competence), pas un recital.\n" +
+        "3. Le type de poste recherche, et une invitation simple a echanger si un besoin existe ou se profile.\n" +
+        "Termine par une formule de politesse courte et signe avec le prenom fourni.\n" +
+        STYLE_RULES +
+        "Reponds UNIQUEMENT par le texte du mail, sans commentaire ni JSON.";
+      usr = "Entreprise: " + (ctx.entreprise || "") +
+        (ctx.secteur ? ("\nSecteur: " + ctx.secteur) : "") +
+        (ctx.ville ? ("\nVille: " + ctx.ville) : "") +
+        (ctx.pourquoi ? ("\n\nPOURQUOI cette entreprise (notes personnelles du candidat, a reformuler sobrement):\n" + ("" + ctx.pourquoi).slice(0, 600)) : "") +
+        "\n\nPrenom: " + (ctx.prenom || "") +
+        (ctx.intro ? ("\n\nPROFIL du candidat:\n" + ("" + ctx.intro).slice(0, 700)) : "") +
+        (ctx.cv ? ("\n\nCV (extrait): " + ("" + ctx.cv).slice(0, 1800)) : "");
     } else if (kind === "accroche") {
       sysD = "Tu adaptes l'ACCROCHE ORIGINALE du candidat pour la cibler sur une offre d'emploi. " +
         "OBJECTIF : que le resultat semble ecrit par le candidat lui-meme, pas par une IA.\n" +
@@ -238,6 +260,32 @@ module.exports = async function handler(req, res) {
     } catch (e) {
       res.status(200).json({ ok: false, reason: "ai_error" });
     }
+    return;
+  }
+
+  // ----- MODE PROFIL : pre-remplir le profil depuis le texte du CV -----
+  if (mode === "profil") {
+    const sysP =
+      "On te donne le TEXTE BRUT du CV d'un candidat. Reponds UNIQUEMENT par un objet JSON valide : " +
+      '{"prenom":"","intro":""}. ' +
+      "'prenom' = le prenom du candidat tel qu'il apparait dans le CV (chaine vide si introuvable). " +
+      "'intro' = une accroche de profil de 3 a 4 phrases, a la premiere personne, basee UNIQUEMENT " +
+      "sur les faits du CV (formation, experiences, competences), qui dit qui il est et ce qu'il vise.\n" +
+      STYLE_RULES;
+    try {
+      const out = await callAI(base, key, model,
+        [{ role: "system", content: sysP },
+         { role: "user", content: "CV :\n" + text }], 900);
+      if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
+      let c = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
+        out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
+      c = ("" + c).replace(/```json|```/g, "").trim();
+      let d = {}; try { d = JSON.parse(c); } catch (e) {}
+      res.status(200).json({ ok: true, profil: {
+        prenom: clean(d.prenom).slice(0, 40),
+        intro: ("" + (d.intro || "")).replace(/\s+/g, " ").trim().slice(0, 900),
+      }});
+    } catch (e) { res.status(200).json({ ok: false, reason: "ai_error" }); }
     return;
   }
 

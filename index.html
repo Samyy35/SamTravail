@@ -1109,7 +1109,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v48</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v49</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -3663,9 +3663,22 @@
     // garde-fou : on rejette une réponse vide / trop courte / qui ressemble à une lettre
     if(!txt||txt.length<80||/madame|monsieur|cordialement|candidature spontan|veuillez agréer/i.test(txt)) return;
     o.descriptionFmt=txt;
-    try{ if(typeof persistOffer==="function" && statusMap[o.id]) persistOffer(o); }catch(e){}
+    await saveDescriptionFmt(o);   // persistance permanente -> plus jamais d'appel IA pour cette offre
     const el=document.getElementById(targetId);
     if(el){ el.innerHTML=formatDescription(txt); el.classList.add("ai-formatted"); }
+  }
+  // Enregistre DURABLEMENT la description formatée (Supabase job_status.offer_data) + met à jour les copies mémoire.
+  // Ainsi, au prochain chargement, o.descriptionFmt est déjà là et l'IA n'est jamais rappelée.
+  async function saveDescriptionFmt(o){
+    if(!o||o.id==null) return;
+    // 1) copie en mémoire dans allOffers (réutilisée sans rechargement)
+    const ao=allOffers.find(x=>String(x.id)===String(o.id)); if(ao)ao.descriptionFmt=o.descriptionFmt;
+    // 2) si l'offre est gardée / postulée -> on persiste en base (le champ voyage dans offer_data)
+    const cur=statusMap[o.id];
+    if(cur){
+      if(cur.offer){ cur.offer.descriptionFmt=o.descriptionFmt; } else { cur.offer=o; }
+      if(sb){ try{ await sb.from("job_status").upsert({offer_id:o.id,statut:cur.statut,offer_data:cur.offer,updated_at:new Date().toISOString()},{onConflict:"offer_id"}); }catch(e){} }
+    }
   }
   // Retrouve l'offre d'origine (riche) liée à une candidature du Suivi
   function pipeOffer(p){

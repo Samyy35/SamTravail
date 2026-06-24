@@ -647,6 +647,17 @@
   .sp-go{margin-left:auto;color:var(--accent);font-weight:600;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
   .sp-go .ic{width:12px;height:12px;}
   .prof-settings{display:flex;gap:9px;flex-wrap:wrap;margin:4px 0 8px;}
+  .prof-toggle{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--text);cursor:pointer;margin:6px 0 2px;line-height:1.4;}
+  .prof-toggle input{width:16px;height:16px;margin-top:2px;accent-color:var(--accent);flex-shrink:0;}
+  .prof-toggle small{display:block;color:var(--text-mute);font-size:11.5px;}
+  /* Écran de confirmation dans la pop-up de capture (bookmarklet) */
+  .capture-done{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:var(--bg);padding:20px;}
+  .capture-done .cd-card{background:var(--surface);border:1px solid var(--border-light);border-radius:18px;box-shadow:var(--shadow-lg);padding:28px 26px;text-align:center;max-width:340px;width:100%;}
+  .capture-done .cd-ico{width:52px;height:52px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;margin:0 auto 14px;}
+  .capture-done .cd-ico .ic{width:28px;height:28px;}
+  .capture-done .cd-h{font-family:var(--display);font-size:19px;font-weight:650;margin-bottom:8px;}
+  .capture-done .cd-p{font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:16px;}
+  .capture-done .btn{width:100%;justify-content:center;}
   .carte-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
   .sel{font-family:var(--font);font-size:13px;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:7px 34px 7px 15px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e6e73' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;transition:.15s;}
   .sel:hover{border-color:var(--border-light);}
@@ -1103,7 +1114,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v50</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v51</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -2730,8 +2741,37 @@
   function closeDupModal(){_dupQueue=[];finishAddLinks();}
   function finishAddLinks(){
     addLinksData=[];closeModal();
-    if(window._captureMode){ flashCenter("Offre ajout\u00e9e \u2713"); setTimeout(()=>{try{window.close();}catch(e){}},900); return; }
+    if(window._captureMode){
+      flashCenter("Offre ajout\u00e9e \u2713");
+      if(getCaptureAutoClose()){
+        setTimeout(captureClose,600);            // tentative de fermeture auto
+        setTimeout(()=>showCaptureDone(true),1200); // repli si le navigateur a refus\u00e9
+      } else {
+        showCaptureDone(false);
+      }
+      return;
+    }
     setView("offres");setVeilleFilter("all");renderVeille();renderCockpit();renderStatsBadges();flashCenter("Offres enregistr\u00e9es");
+  }
+  // Pr\u00e9f\u00e9rence : fermer auto la fen\u00eatre du favori apr\u00e8s ajout (ON par d\u00e9faut), stock\u00e9e en local
+  function getCaptureAutoClose(){ try{ return localStorage.getItem("st_captureClose")!=="0"; }catch(e){ return true; } }
+  function setCaptureAutoClose(on){ try{ localStorage.setItem("st_captureClose",on?"1":"0"); }catch(e){} }
+  // Fermeture robuste (avec le contournement window.open('','_self') pour les navigateurs r\u00e9calcitrants)
+  function captureClose(){
+    try{ window.close(); }catch(e){}
+    try{ window.open("","_self"); window.close(); }catch(e){}
+  }
+  // \u00c9cran de confirmation dans la pop-up : se ferme tout seul si possible, sinon bouton \u00ab Fermer \u00bb (1 clic = fiable)
+  function showCaptureDone(autoTried){
+    let el=document.getElementById("captureDone");
+    if(!el){ el=document.createElement("div"); el.id="captureDone"; document.body.appendChild(el); }
+    el.className="capture-done";
+    el.innerHTML=`<div class="cd-card">
+      <div class="cd-ico">${ic("check")}</div>
+      <div class="cd-h">Offre ajout\u00e9e \u2713</div>
+      <div class="cd-p">${autoTried?"Ton navigateur n'a pas autoris\u00e9 la fermeture auto. Clique pour fermer cette fen\u00eatre :":"Tu peux fermer cette fen\u00eatre."}</div>
+      <button class="btn primary" onclick="captureClose()">${ic("ban")}<span>Fermer la fen\u00eatre</span></button>
+    </div>`;
   }
 
   // Appelé quand tu cliques "J'ai postulé" depuis la liste à postuler -> crée l'entrée Pipeline
@@ -4449,6 +4489,7 @@
         <button class="btn ghost sm" onclick="closeModal();openCriteres();">${ic("sliders")}<span>Critères de matching</span></button>
         <button class="btn ghost sm" onclick="exportCSV()">${ic("download")}<span>Export CSV (sauvegarde)</span></button>
       </div>
+      <label class="prof-toggle"><input type="checkbox" id="capCloseToggle" ${getCaptureAutoClose()?"checked":""} onchange="setCaptureAutoClose(this.checked)"><span>Fermer automatiquement la fenêtre du favori après l'ajout d'une offre <small>(évite d'accumuler les onglets)</small></span></label>
       <div class="modal-actions"><button class="btn danger" onclick="closeModal()">Annuler</button><button class="btn btn-validate" onclick="saveProfil()">${ic("check")}<span>Enregistrer</span></button></div>`;
     document.getElementById("modalBg").classList.add("open");
     loadCvDocx().then(d=>{const di=document.getElementById("cvDocxInfo");if(di&&d&&d.name)di.innerHTML=ic("check")+" CV Word enregistré : <b>"+esc(d.name)+"</b> — mise en page conservée au téléchargement.";});

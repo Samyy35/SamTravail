@@ -658,6 +658,7 @@
   .capture-done .cd-h{font-family:var(--display);font-size:19px;font-weight:650;margin-bottom:8px;}
   .capture-done .cd-p{font-size:13px;color:var(--text-dim);line-height:1.5;margin-bottom:16px;}
   .capture-done .btn{width:100%;justify-content:center;}
+  .hide-seen-btn.spinning .ic{animation:spin .8s linear infinite;}
   .carte-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
   .sel{font-family:var(--font);font-size:13px;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:7px 34px 7px 15px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e6e73' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;transition:.15s;}
   .sel:hover{border-color:var(--border-light);}
@@ -1114,7 +1115,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v51</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v53</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1235,6 +1236,7 @@
         </select>
       </div>
       <div style="display:flex;gap:8px;">
+        <button class="hide-seen-btn" id="refreshOffresBtn" onclick="refreshData(true)" title="Recharger mes offres (sans recharger la page)"><i data-ic="history"></i><span>Actualiser</span></button>
         <button class="hide-seen-btn" id="densityBtn" onclick="toggleDensity()" title="Cartes compactes : 2× plus d'offres par écran"><i data-ic="gridS"></i><span>Confort</span></button>
         <button class="hide-seen-btn" id="hideSeenBtn" onclick="toggleHideSeen()"><i data-ic="eye"></i><span>Cacher déjà triées</span></button>
       </div>
@@ -1435,6 +1437,8 @@
     return n.slice(0,60);
   }
   function detectSector(o){
+    // secteur choisi manuellement (menu déroulant de repli) prioritaire
+    if(o&&o.secteur){ const m=SECTORS.find(s=>s.key===o.secteur); if(m) return m; }
     const t=((o.titre||"")+" "+(o.entreprise||"")+" "+(o.description||"")+" "+(o.rome||"")).toLowerCase();
     for(const s of SECTORS){ if(s.kw.some(k=>t.includes(k))) return s; }
     return {key:"Autre",kw:[],c:"#9aa2b4"};
@@ -2548,7 +2552,7 @@
   }
   function bookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}function Q(a){for(var i=0;i<a.length;i++){var e=document.querySelector(a[i]);if(e){var t=(e.innerText||e.textContent||'').replace(W(),' ').trim();if(t)return t;}}return '';}var LIM=5000;var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,LIM);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,LIM);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}var HOST=location.hostname,FL='';if(HOST.indexOf('indeed')>=0){var it=Q(['h2[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title] span','[data-testid=simpler-jobTitle]','.jobsearch-JobInfoHeader-title','h1.jobsearch-JobInfoHeader-title']);if(it&&!/security check|v[eé]rification|just a moment|captcha|cloudflare/i.test(it))d.t=it;var ie=Q(['[data-testid=inlineHeader-companyName] a','[data-testid=inlineHeader-companyName]','[data-company-name=true]','.jobsearch-CompanyInfoContainer a','[data-testid=jobsearch-CompanyInfoContainer] a']);if(ie)d.e=ie;var il=Q(['[data-testid=inlineHeader-companyLocation] div','[data-testid=inlineHeader-companyLocation]','[data-testid=jobsearch-JobInfoHeader-companyLocation]','[data-testid=job-location]']);if(il)d.l=il;var idd=document.querySelector('#jobDescriptionText,.jobsearch-JobComponent-description');if(idd){var idt=(idd.innerText||idd.textContent||'').replace(W(),' ').trim();if(idt.length>d.ds.length)d.ds=idt.slice(0,LIM);}try{var ip=new URLSearchParams(location.search);var jk=ip.get('vjk')||ip.get('jk');if(jk)FL=location.protocol+'//'+HOST+'/viewjob?jk='+jk;}catch(e){}}else if(HOST.indexOf('linkedin')>=0){var lt=Q(['.job-details-jobs-unified-top-card__job-title','.jobs-unified-top-card__job-title','.t-24.job-details-jobs-unified-top-card__job-title','.topcard__title']);if(lt)d.t=lt;var lc=Q(['.job-details-jobs-unified-top-card__company-name a','.job-details-jobs-unified-top-card__company-name','.jobs-unified-top-card__company-name a','.jobs-unified-top-card__company-name','.topcard__org-name-link']);if(lc)d.e=lc;var ll=Q(['.job-details-jobs-unified-top-card__primary-description-container .tvm__text','.job-details-jobs-unified-top-card__bullet','.jobs-unified-top-card__bullet','.topcard__flavor--bullet']);if(ll)d.l=ll;var ldd=document.querySelector('.jobs-description__content,.jobs-box__html-content,.jobs-description-content__text,#job-details');if(ldd){var ldt=(ldd.innerText||ldd.textContent||'').replace(W(),' ').trim();if(ldt.length>d.ds.length)d.ds=ldt.slice(0,LIM);}try{var lp=new URLSearchParams(location.search);var cj=lp.get('currentJobId');if(cj)FL='https://www.linkedin.com/jobs/view/'+cj;}catch(e){}}else if(HOST.indexOf('glassdoor')>=0){var gt=Q(['[data-test=job-title]','[id^=jd-job-title]','[class*=JobDetails_jobTitle]']);if(gt)d.t=gt;var gc=Q(['[data-test=employerName]','[class*=EmployerProfile_employerName]','[data-test=detailsHeader] a']);if(gc)d.e=gc;var gl=Q(['[data-test=location]','[data-test=emp-location]','[class*=JobDetails_location]']);if(gl)d.l=gl;var gd=document.querySelector('[class*=JobDetails_jobDescription],#JobDescriptionContainer,[class*=jobDescriptionContent]');if(gd){var gdt=(gd.innerText||gd.textContent||'').replace(W(),' ').trim();if(gdt.length>d.ds.length)d.ds=gdt.slice(0,LIM);}}else if(HOST.indexOf('francetravail')>=0||HOST.indexOf('pole-emploi')>=0){var ftt=Q(['h1.t4','.media-heading-title','[class*=titre-offre]','main h1']);if(ftt&&ftt.length<140)d.t=ftt;var ftc=Q(['[class*=entreprise] a','[class*=Entreprise]','.coordonnees-entreprise','[itemprop=hiringOrganization]']);if(ftc)d.e=ftc;var ftl=Q(['[class*=localisation]','[class*=lieu-travail]','[itemprop=jobLocation]']);if(ftl)d.l=ftl;}function isJob(o){return o&&typeof o==='object'&&!Array.isArray(o)&&(o.jobInfoHeaderModel||(o.jobTitle&&(o.companyName||o.company))||(o.title&&(o.hiringOrganization||o.company||o.employer||o.companyName)));}function pull(o){if(o.jobInfoHeaderModel){var h=o.jobInfoHeaderModel;return {t:h.jobTitle||'',e:h.companyName||'',l:h.formattedLocation||h.location||'',ds:o.sanitizedJobDescription||o.jobDescriptionText||o.jobDescription||''};}var hg=o.hiringOrganization;var e=o.companyName||o.company||o.employer||(typeof hg==='string'?hg:(hg&&hg.name)||'');var l=o.formattedLocation||o.location||o.jobLocationCity||o.jobLocation||'';if(l&&typeof l==='object')l=l.city||l.name||l.formattedLocation||l.addressLocality||(l.address&&(l.address.addressLocality||l.address.addressRegion))||'';return {t:o.jobTitle||o.title||'',e:e,l:l,ds:o.jobDescription||o.description||o.sanitizedJobDescription||''};}function walkJob(root,cb){var stk=[root],g=0;while(stk.length&&g<6000){g++;var o=stk.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var ai=0;ai<o.length;ai++)stk.push(o[ai]);continue;}if(isJob(o)&&cb(o))return true;for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k)){var v=o[k];if(v&&typeof v==='object')stk.push(v);}}}return false;}if(!d.t||!d.e||!d.ds||d.ds.length<200){var blobs=[];try{if(window._initialData)blobs.push(window._initialData);}catch(e){}try{if(window.mosaic&&window.mosaic.providerData)blobs.push(window.mosaic.providerData);}catch(e){}try{if(window.__INITIAL_STATE__)blobs.push(window.__INITIAL_STATE__);}catch(e){}try{if(window.__NUXT__)blobs.push(window.__NUXT__);}catch(e){}try{if(window.__APOLLO_STATE__)blobs.push(window.__APOLLO_STATE__);}catch(e){}var asc=document.getElementsByTagName('script');var cnt=0;for(var si=0;si<asc.length&&cnt<14;si++){var ty=(asc[si].type||'');if(ty.indexOf('json')<0||ty.indexOf('ld+json')>=0)continue;var tc=asc[si].textContent||'';if(tc.length<20||tc.length>3000000)continue;cnt++;try{blobs.push(JSON.parse(tc));}catch(e){}}var known=d.t?d.t.toLowerCase().slice(0,18):'';for(var bi=0;bi<blobs.length;bi++){walkJob(blobs[bi],function(o){var p=pull(o);if(!p.t||p.t.length>160)return false;var pl=(''+p.t).toLowerCase();if(known&&pl.indexOf(known)<0&&known.indexOf(pl.slice(0,18))<0)return false;if(!d.t)d.t=p.t;if(!d.e&&p.e)d.e=(''+p.e).slice(0,80);if(!d.l&&p.l)d.l=(''+p.l).slice(0,80);if(p.ds&&(''+p.ds).length>d.ds.length)d.ds=strip(''+p.ds).slice(0,LIM);return true;});if(d.t&&d.e&&d.ds.length>200)break;}}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(d.ds.length<300){var sels=['[class*=description i]','[id*=description i]','[class*=job-description i]','[class*=offer-content i]','[class*=jobdesc i]','[class*=vacancy i]','article'];var best=d.ds;for(var q=0;q<sels.length;q++){var el=document.querySelector(sels[q]);if(el){var tx=(el.innerText||el.textContent||'').replace(W(),' ').trim();if(tx.length>best.length&&tx.length<12000)best=tx;}}if(best.length>d.ds.length)d.ds=best.slice(0,LIM);}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,LIM);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}if(/security check|v[eé]rification de s|just a moment|verify you are human|captcha|cloudflare|attention required|acc[eè]s refus/i.test(d.t))d.t='';var u='"+origin+"/?addUrl='+encodeURIComponent(FL||location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal)+'&capture=1';var w=window.open(u,'samtravail_capture','width=500,height=680,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}function Q(a){for(var i=0;i<a.length;i++){var e=document.querySelector(a[i]);if(e){var t=(e.innerText||e.textContent||'').replace(W(),' ').trim();if(t)return t;}}return '';}var LIM=5000;var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,LIM);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,LIM);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}var HOST=location.hostname,FL='';if(HOST.indexOf('indeed')>=0){var it=Q(['h2[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title] span','[data-testid=simpler-jobTitle]','.jobsearch-JobInfoHeader-title','h1.jobsearch-JobInfoHeader-title','[data-testid=jobsearch-ViewjobPaneWrapper] h1','[data-testid=jobsearch-ViewjobPaneWrapper] h2','[data-testid=viewJobTitle]']);if(it&&!/security check|v[eé]rification|just a moment|captcha|cloudflare/i.test(it))d.t=it;var ie=Q(['[data-testid=inlineHeader-companyName] a','[data-testid=inlineHeader-companyName]','[data-company-name=true]','.jobsearch-CompanyInfoContainer a','[data-testid=jobsearch-CompanyInfoContainer] a']);if(ie)d.e=ie;var il=Q(['[data-testid=inlineHeader-companyLocation] div','[data-testid=inlineHeader-companyLocation]','[data-testid=jobsearch-JobInfoHeader-companyLocation]','[data-testid=job-location]']);if(il)d.l=il;var idd=document.querySelector('#jobDescriptionText,.jobsearch-JobComponent-description');if(idd){var idt=(idd.innerText||idd.textContent||'').replace(W(),' ').trim();if(idt.length>d.ds.length)d.ds=idt.slice(0,LIM);}try{var ip=new URLSearchParams(location.search);var jk=ip.get('vjk')||ip.get('jk');if(jk)FL=location.protocol+'//'+HOST+'/viewjob?jk='+jk;}catch(e){}}else if(HOST.indexOf('linkedin')>=0){var lt=Q(['.job-details-jobs-unified-top-card__job-title','.jobs-unified-top-card__job-title','.t-24.job-details-jobs-unified-top-card__job-title','.topcard__title']);if(lt)d.t=lt;var lc=Q(['.job-details-jobs-unified-top-card__company-name a','.job-details-jobs-unified-top-card__company-name','.jobs-unified-top-card__company-name a','.jobs-unified-top-card__company-name','.topcard__org-name-link']);if(lc)d.e=lc;var ll=Q(['.job-details-jobs-unified-top-card__primary-description-container .tvm__text','.job-details-jobs-unified-top-card__bullet','.jobs-unified-top-card__bullet','.topcard__flavor--bullet']);if(ll)d.l=ll;var ldd=document.querySelector('.jobs-description__content,.jobs-box__html-content,.jobs-description-content__text,#job-details');if(ldd){var ldt=(ldd.innerText||ldd.textContent||'').replace(W(),' ').trim();if(ldt.length>d.ds.length)d.ds=ldt.slice(0,LIM);}try{var lp=new URLSearchParams(location.search);var cj=lp.get('currentJobId');if(cj)FL='https://www.linkedin.com/jobs/view/'+cj;}catch(e){}}else if(HOST.indexOf('glassdoor')>=0){var gt=Q(['[data-test=job-title]','[id^=jd-job-title]','[class*=JobDetails_jobTitle]']);if(gt)d.t=gt;var gc=Q(['[data-test=employerName]','[class*=EmployerProfile_employerName]','[data-test=detailsHeader] a']);if(gc)d.e=gc;var gl=Q(['[data-test=location]','[data-test=emp-location]','[class*=JobDetails_location]']);if(gl)d.l=gl;var gd=document.querySelector('[class*=JobDetails_jobDescription],#JobDescriptionContainer,[class*=jobDescriptionContent]');if(gd){var gdt=(gd.innerText||gd.textContent||'').replace(W(),' ').trim();if(gdt.length>d.ds.length)d.ds=gdt.slice(0,LIM);}}else if(HOST.indexOf('francetravail')>=0||HOST.indexOf('pole-emploi')>=0){var ftt=Q(['h1.t4','.media-heading-title','[class*=titre-offre]','main h1']);if(ftt&&ftt.length<140)d.t=ftt;var ftc=Q(['[class*=entreprise] a','[class*=Entreprise]','.coordonnees-entreprise','[itemprop=hiringOrganization]']);if(ftc)d.e=ftc;var ftl=Q(['[class*=localisation]','[class*=lieu-travail]','[itemprop=jobLocation]']);if(ftl)d.l=ftl;}function isJob(o){return o&&typeof o==='object'&&!Array.isArray(o)&&(o.jobInfoHeaderModel||(o.jobTitle&&(o.companyName||o.company))||(o.title&&(o.hiringOrganization||o.company||o.employer||o.companyName)));}function pull(o){if(o.jobInfoHeaderModel){var h=o.jobInfoHeaderModel;return {t:h.jobTitle||'',e:h.companyName||'',l:h.formattedLocation||h.location||'',ds:o.sanitizedJobDescription||o.jobDescriptionText||o.jobDescription||''};}var hg=o.hiringOrganization;var e=o.companyName||o.company||o.employer||(typeof hg==='string'?hg:(hg&&hg.name)||'');var l=o.formattedLocation||o.location||o.jobLocationCity||o.jobLocation||'';if(l&&typeof l==='object')l=l.city||l.name||l.formattedLocation||l.addressLocality||(l.address&&(l.address.addressLocality||l.address.addressRegion))||'';return {t:o.jobTitle||o.title||'',e:e,l:l,ds:o.jobDescription||o.description||o.sanitizedJobDescription||''};}function walkJob(root,cb){var stk=[root],g=0;while(stk.length&&g<6000){g++;var o=stk.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var ai=0;ai<o.length;ai++)stk.push(o[ai]);continue;}if(isJob(o)&&cb(o))return true;for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k)){var v=o[k];if(v&&typeof v==='object')stk.push(v);}}}return false;}if(!d.t||!d.e||!d.ds||d.ds.length<200){var blobs=[];try{if(window._initialData)blobs.push(window._initialData);}catch(e){}try{if(window.mosaic&&window.mosaic.providerData)blobs.push(window.mosaic.providerData);}catch(e){}try{if(window.__INITIAL_STATE__)blobs.push(window.__INITIAL_STATE__);}catch(e){}try{if(window.__NUXT__)blobs.push(window.__NUXT__);}catch(e){}try{if(window.__APOLLO_STATE__)blobs.push(window.__APOLLO_STATE__);}catch(e){}var asc=document.getElementsByTagName('script');var cnt=0;for(var si=0;si<asc.length&&cnt<14;si++){var ty=(asc[si].type||'');if(ty.indexOf('json')<0||ty.indexOf('ld+json')>=0)continue;var tc=asc[si].textContent||'';if(tc.length<20||tc.length>3000000)continue;cnt++;try{blobs.push(JSON.parse(tc));}catch(e){}}var known=d.t?d.t.toLowerCase().slice(0,18):'';for(var bi=0;bi<blobs.length;bi++){walkJob(blobs[bi],function(o){var p=pull(o);if(!p.t||p.t.length>160)return false;var pl=(''+p.t).toLowerCase();if(known&&pl.indexOf(known)<0&&known.indexOf(pl.slice(0,18))<0)return false;if(!d.t)d.t=p.t;if(!d.e&&p.e)d.e=(''+p.e).slice(0,80);if(!d.l&&p.l)d.l=(''+p.l).slice(0,80);if(p.ds&&(''+p.ds).length>d.ds.length)d.ds=strip(''+p.ds).slice(0,LIM);return true;});if(d.t&&d.e&&d.ds.length>200)break;}}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(d.ds.length<300){var sels=['[class*=description i]','[id*=description i]','[class*=job-description i]','[class*=offer-content i]','[class*=jobdesc i]','[class*=vacancy i]','article'];var best=d.ds;for(var q=0;q<sels.length;q++){var el=document.querySelector(sels[q]);if(el){var tx=(el.innerText||el.textContent||'').replace(W(),' ').trim();if(tx.length>best.length&&tx.length<12000)best=tx;}}if(best.length>d.ds.length)d.ds=best.slice(0,LIM);}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,LIM);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}if(/security check|v[eé]rification de s|just a moment|verify you are human|captcha|cloudflare|attention required|acc[eè]s refus/i.test(d.t))d.t='';var u='"+origin+"/?addUrl='+encodeURIComponent(FL||location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=500,height=680,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
   }
   function openAddLinks(prefillUrl, prefillTitle){
     const origin=window.location.origin;
@@ -2673,6 +2677,7 @@
           <input class="pc-in" placeholder="Salaire" value="${esc(o.salaire)}" oninput="addLinksData[${i}].salaire=this.value" />
         </div>
         <input class="pc-in" placeholder="Expérience (ex: 2 ans)" value="${esc(o.experience||"")}" oninput="addLinksData[${i}].experience=this.value" />
+        ${(()=>{const ds=detectSector(o).key;const auto=ds!=="Autre";return `<select class="pc-in" onchange="addLinksData[${i}].secteur=this.value" title="Secteur (détecté auto, modifiable)" style="${auto?'':'border-color:var(--orange);'}"><option value="" ${auto?'':'selected'}>Secteur — à préciser</option>${SECTORS.map(s=>`<option value="${esc(s.key)}" ${ds===s.key?'selected':''}>${esc(s.key)}</option>`).join("")}</select>`;})()}
         <textarea class="pc-in pc-desc" placeholder="Missions / description (optionnel)" oninput="addLinksData[${i}].description=this.value" rows="3">${esc(o.description||"")}</textarea>
         <div class="pc-interet">
           <span class="pc-interet-l">Classer :</span>
@@ -2701,13 +2706,31 @@
 
   function normUrl(u){try{const x=new URL(u);return (x.hostname.replace(/^www\./,"")+x.pathname).toLowerCase().replace(/\/+$/,"");}catch(e){return (u||"").toString().trim().toLowerCase();}}
   function dupKey(o){return (((o&&o.titre)||"")+"|"+((o&&o.entreprise)||"")).toLowerCase().replace(/\s+/g,"").slice(0,80);}
+  // Plateformes ATS dont les URLs se ressemblent fortement / expirent (Workday & co.)
+  function isAtsHost(url){ return /workday|myworkdayjobs|greenhouse|lever\.co|taleo|icims|smartrecruiters|teamtailor|brassring|successfactors|recruitee|workable|jobvite|ashbyhq|breezy/i.test(url||""); }
+  // Identifiant d'offre extrait de l'URL (query jk/jobId… ou ID dans le path : R-12345, JR12345, 1234567)
+  function offerIdOf(url){
+    if(!url) return "";
+    try{ const x=new URL(url); const q=x.searchParams;
+      for(const k of ["jobId","jobid","jk","vjk","gh_jid","currentJobId","offerId","offerid"]){ const v=q.get(k); if(v&&/[\w-]{3,}/.test(v)) return "q:"+(""+v).toLowerCase(); }
+      let m=x.pathname.match(/([A-Za-z]{1,4}[-_]?\d{4,})(?:\/|$)/) || x.pathname.match(/\/(\d{6,})(?:\/|$)/);
+      if(m) return "p:"+m[1].toLowerCase();
+    }catch(e){}
+    return "";
+  }
+  // Doublon = même ID d'offre (fort) OU même entreprise+titre (clé composite) OU même URL exacte (hors ATS)
   function findDuplicate(o){
-    const url=o.lien?normUrl(o.lien):"";const key=(o.titre&&o.entreprise)?dupKey(o):"";let byKey=null;
+    const oid=offerIdOf(o.lien);
+    const url=o.lien?normUrl(o.lien):"";
+    const ats=isAtsHost(o.lien);
+    const key=(o.titre&&o.entreprise)?dupKey(o):"";
+    let byKey=null;
     for(const id in statusMap){
       if(id===o.id||id.indexOf("__note_")===0) continue;
       const e=statusMap[id]&&statusMap[id].offer; if(!e) continue;
-      if(url&&e.lien&&normUrl(e.lien)===url) return {id,offer:e,statut:statusMap[id].statut,on:"url"};
-      if(!byKey&&key&&e.titre&&e.entreprise&&dupKey(e)===key) byKey={id,offer:e,statut:statusMap[id].statut,on:"titre"};
+      if(oid && e.lien && offerIdOf(e.lien)===oid) return {id,offer:e,statut:statusMap[id].statut,on:"id"};
+      if(!ats && url && e.lien && !isAtsHost(e.lien) && normUrl(e.lien)===url) return {id,offer:e,statut:statusMap[id].statut,on:"url"};
+      if(!byKey && key && e.titre && e.entreprise && dupKey(e)===key) byKey={id,offer:e,statut:statusMap[id].statut,on:"titre"};
     }
     return byKey;
   }
@@ -2741,17 +2764,20 @@
   function closeDupModal(){_dupQueue=[];finishAddLinks();}
   function finishAddLinks(){
     addLinksData=[];closeModal();
-    if(window._captureMode){
-      flashCenter("Offre ajout\u00e9e \u2713");
-      if(getCaptureAutoClose()){
-        setTimeout(captureClose,600);            // tentative de fermeture auto
-        setTimeout(()=>showCaptureDone(true),1200); // repli si le navigateur a refus\u00e9
-      } else {
-        showCaptureDone(false);
-      }
-      return;
-    }
+    if(window._captureMode){ flashCenter("Offre ajout\u00e9e \u2713"); captureFinish(); return; }
     setView("offres");setVeilleFilter("all");renderVeille();renderCockpit();renderStatsBadges();flashCenter("Offres enregistr\u00e9es");
+  }
+  // Fin de capture (pop-up bookmarklet) : la FEN\u00caTRE PARENTE ferme la pop-up (fiable), + replis
+  function captureFinish(){
+    if(!window._captureMode) return false;
+    if(getCaptureAutoClose()){
+      try{ if(window.opener && !window.opener.closed) window.opener.postMessage("st-close","*"); }catch(e){}
+      setTimeout(captureClose,450);                 // backup : auto-close interne
+      setTimeout(()=>showCaptureDone(true),1100);   // repli ultime : bouton 1-clic si toujours ouvert
+    } else {
+      showCaptureDone(false);
+    }
+    return true;
   }
   // Pr\u00e9f\u00e9rence : fermer auto la fen\u00eatre du favori apr\u00e8s ajout (ON par d\u00e9faut), stock\u00e9e en local
   function getCaptureAutoClose(){ try{ return localStorage.getItem("st_captureClose")!=="0"; }catch(e){ return true; } }
@@ -2773,6 +2799,20 @@
       <button class="btn primary" onclick="captureClose()">${ic("ban")}<span>Fermer la fen\u00eatre</span></button>
     </div>`;
   }
+  // Rafra\u00eechit les donn\u00e9es depuis Supabase sans recharger la page (bouton + retour de focus)
+  let _refreshing=false,_lastRefresh=0;
+  async function refreshData(force){
+    if(_refreshing||window._captureMode) return;
+    if(!force && Date.now()-_lastRefresh<4000) return;   // anti-rafale
+    _refreshing=true; _lastRefresh=Date.now();
+    const btn=document.getElementById("refreshOffresBtn"); if(btn)btn.classList.add("spinning");
+    try{ await loadAll(); refreshAll(); }catch(e){}
+    if(btn)btn.classList.remove("spinning");
+    _refreshing=false;
+    if(force)flashCenter("Offres \u00e0 jour","info");
+  }
+  window.addEventListener("focus",()=>refreshData(false));
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible")refreshData(false); });
 
   // Appelé quand tu cliques "J'ai postulé" depuis la liste à postuler -> crée l'entrée Pipeline
   async function markAsApplied(o){
@@ -3355,8 +3395,14 @@
   // ===== MARQUES (ex "Entreprises rêve") — helpers =====
   // déduit un domaine depuis une URL de site, sinon devine via le nom
   function brandDomain(e){
-    if(e.site){ try{ return new URL(e.site.startsWith("http")?e.site:"https://"+e.site).hostname.replace(/^www\./,""); }catch(x){} }
+    if(e.site && !isAtsHost(e.site)){ try{ return new URL(e.site.startsWith("http")?e.site:"https://"+e.site).hostname.replace(/^www\./,""); }catch(x){} }
     return "";
+  }
+  // Lien stable d'une marque : le vrai site s'il est valide (hors ATS/Workday), sinon une recherche Google « site de recrutement » (toujours fonctionnelle)
+  function brandStableSite(e){
+    const s=e&&e.site;
+    if(s && !isAtsHost(s)) return s.startsWith("http")?s:"https://"+s;
+    return "https://www.google.com/search?q="+encodeURIComponent(((e&&e.entreprise)||"")+" site de recrutement");
   }
   // logo via le service de favicon Google (gratuit, pas de clé) — fallback initiale si pas de domaine
   function brandLogo(e){
@@ -3516,7 +3562,7 @@
   // bookmarklet "marque" : capture nom + site de la page courante -> ?addBrand=...
   function brandBookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var jn='',jd='';var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!jn;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j],g=0;while(st.length&&!jn&&g<300){g++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=''+(o['@type']||'');if(/Organization|Corporation|LocalBusiness|EducationalOrganization|NewsMediaOrganization|WebSite/i.test(ty)&&(o.name||o.legalName)){jn=o.name||o.legalName;if(o.description)jd=o.description;break;}for(var k in o){var v=o[k];if(v&&typeof v==='object')st.push(v);}}}var raw=jn||M('og:site_name')||M('application-name')||M('twitter:title')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var site=location.origin;if(!site||site==='null'){var cu=((document.querySelector('link[rel=canonical]')||{}).href)||M('og:url')||'';site=cu?cu.split('/').slice(0,3).join('/'):(location.protocol+'//'+location.hostname);}var desc=(jd||M('og:description')||M('description')||M('keywords')||'').slice(0,400);var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc);window.open(u,'_blank');})();";
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var jn='',jd='';var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!jn;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j],g=0;while(st.length&&!jn&&g<300){g++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=''+(o['@type']||'');if(/Organization|Corporation|LocalBusiness|EducationalOrganization|NewsMediaOrganization|WebSite/i.test(ty)&&(o.name||o.legalName)){jn=o.name||o.legalName;if(o.description)jd=o.description;break;}for(var k in o){var v=o[k];if(v&&typeof v==='object')st.push(v);}}}var raw=jn||M('og:site_name')||M('application-name')||M('twitter:title')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var site=location.origin;if(!site||site==='null'){var cu=((document.querySelector('link[rel=canonical]')||{}).href)||M('og:url')||'';site=cu?cu.split('/').slice(0,3).join('/'):(location.protocol+'//'+location.hostname);}var desc=(jd||M('og:description')||M('description')||M('keywords')||'').slice(0,400);var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=520,height=720,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
   }
   // tri de la galerie
   let reveSort="note", reveSize="M", reveQuery="";
@@ -3594,7 +3640,7 @@
     const logo=brandLogo(e);
     const cl=companyLinks(e.entreprise||"");
     const dom=brandDomain(e);
-    const site=e.site||cl.site;
+    const site=brandStableSite(e);
     const gmaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent((e.entreprise||"")+" "+(e.ville||""));
     const {pipe,kept}=brandOffers(e);
     const detected=brandDetectedOffers(e);
@@ -3628,7 +3674,7 @@
         <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
         <a href="${cl.societe}" target="_blank" rel="noopener" title="CA">${ic("chart")}</a>
       </div>
-      ${e.site?sitePreviewHTML(e.site,e.entreprise||"Site"):""}
+      ${(e.site&&!isAtsHost(e.site))?sitePreviewHTML(e.site,e.entreprise||"Site"):""}
       ${e.pourquoi?`<div class="pc-section-h">Pourquoi cette boîte</div><div class="pc-notes">${esc(e.pourquoi)}</div>`:""}
       </div>
       <div class="fiche-col">
@@ -4021,7 +4067,9 @@
       alert("Échec de l'enregistrement :\n"+msg+hint);
       return; // on ne ferme pas : la saisie reste
     }
-    await loadAll();refreshAll();closeModal();
+    closeModal();
+    if(window._captureMode){ flashCenter("Marque ajoutée ✓"); captureFinish(); return; }
+    await loadAll();refreshAll();
   }
   async function delFromModal(){if(editing&&editing.id){await delRow(FORMS[editing.type].table,editing.id,true);closeModal();}}
   async function delRow(table,id,skipConfirm){
@@ -4626,7 +4674,9 @@
       history.replaceState({},"",window.location.pathname);
     } else if(params.get("addBrand")){
       // bookmarklet "marque" : pré-remplit le formulaire entreprise
-      const nomRaw=params.get("addBrand")||"", site=params.get("brandSite")||"", descB=params.get("brandDesc")||"";
+      const nomRaw=params.get("addBrand")||"", descB=params.get("brandDesc")||"";
+      let site=params.get("brandSite")||"";
+      if(isAtsHost(site)) site="";   // lien Workday/ATS instable -> on ne le sauvegarde pas (repli auto sur recherche Google)
       let nom=cleanBrandName(nomRaw);
       history.replaceState({},"",window.location.pathname);
       setView("reve");

@@ -280,6 +280,9 @@ module.exports = async function handler(req, res) {
       sysD = "Tu rediges un court texte professionnel en francais, clair et concis.\n" + STYLE_RULES + "Reponds uniquement par le texte.";
       usr = JSON.stringify(ctx);
     }
+    // Prompt système personnalisé (édité par l'utilisateur dans les Réglages) prioritaire s'il est fourni
+    const customSys = ("" + (body.systemPrompt || "")).trim();
+    if (customSys) sysD = customSys.slice(0, 4000);
     try {
       const out = await callAI(base, key, model,
         [{ role: "system", content: sysD }, { role: "user", content: usr }],

@@ -774,6 +774,26 @@
   .reve-check:hover{border-color:var(--green);color:var(--green);}
   .reve-check .ic{width:11px;height:11px;}
   .size-S .reve-sector,.size-S .reve-off,.size-S .reve-check{display:none;}
+  /* Ouverture en lot des marques */
+  .reve-bulkbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px;}
+  .reve-bulk-count{font-size:12.5px;color:var(--text-dim);font-weight:600;}
+  .reve-card.selecting{position:relative;}
+  .reve-card.selecting .reve-stars,.reve-card.selecting .reve-check{pointer-events:none;opacity:.5;}
+  .reve-card.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent-soft),inset 0 3px 0 var(--accent);}
+  .reve-cb{position:absolute;top:8px;left:8px;width:20px;height:20px;border-radius:6px;border:2px solid var(--border-light);background:var(--surface);display:grid;place-items:center;color:#fff;}
+  .reve-card.selected .reve-cb{background:var(--accent);border-color:var(--accent);}
+  .reve-cb .ic{width:13px;height:13px;}
+  /* Dossiers animés (groupement marques) */
+  .reve-groupbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
+  .rg-label{font-size:12.5px;color:var(--text-mute);font-weight:600;}
+  .reve-folder-head{grid-column:1/-1;display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:11px;cursor:pointer;user-select:none;}
+  .reve-folder-head:hover{background:var(--surface-2);border-color:var(--border-light);}
+  .reve-folder-head .ff-chev{display:inline-flex;transition:transform .2s;color:var(--text-dim);}
+  .reve-folder-head.collapsed .ff-chev{transform:rotate(-90deg);}
+  .reve-folder-head .ff-chev .ic{width:15px;height:15px;}
+  .ff-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .ff-label{flex:1;min-width:0;font-family:var(--display);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ff-count{font-size:12px;font-weight:700;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:1px 9px;}
   /* fiche marque */
   .reve-stars-row{display:flex;align-items:center;gap:8px;margin:4px 0 14px;}
   .reve-stars-lbl{font-size:12.5px;color:var(--text-dim);}
@@ -1115,7 +1135,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v53</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v56</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -3238,7 +3258,7 @@
     const offre=((document.getElementById("lettreOffre")||{}).value)||c.desc||"";
     if(!AI_ASSIST){ if(st)st.textContent="IA désactivée."; return; }
     if(st)st.textContent="Rédaction par l'IA…";
-    const aj=await aiSort({mode:"draft",kind:"accroche",context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 20000);
+    const aj=await aiSort({mode:"draft",kind:"accroche",systemPrompt:(promptAccroche||"").slice(0,4000),context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 20000);
     if(aj && aj.text){
       const parts=aj.text.split(/\n\s*-{3,}\s*\n/).map(x=>x.trim()).filter(Boolean);
       if(parts.length>=2){
@@ -3572,49 +3592,173 @@
   function setReveSize(v){reveSize=v;document.querySelectorAll(".reve-size-btn").forEach(b=>b.classList.toggle("active",b.dataset.size===v));renderReve();}
 
   // ===== REVE =====
+  // ===== Ouverture en lot des marques (batch) =====
+  let reveSelectMode=false, reveSectorFilter="all"; const reveSel=new Set();
+  function brandSectorOf(e){ return detectSector(e).key; }
+  function toggleReveSelectMode(){ reveSelectMode=!reveSelectMode; if(!reveSelectMode){reveSel.clear();reveSectorFilter="all";} renderReve(); }
+  function setReveSectorFilter(v){ reveSectorFilter=v; renderReve(); }
+  function toggleReveSel(id){ id=String(id); if(reveSel.has(id))reveSel.delete(id); else reveSel.add(id); renderReve(); }
+  function reveClearSel(){ reveSel.clear(); renderReve(); }
+  function reveSelectAll(){
+    document.querySelectorAll("#reve-content .reve-card[data-bid]").forEach(c=>reveSel.add(c.getAttribute("data-bid")));
+    renderReve();
+  }
+  function renderReveBulkBar(){
+    let bar=document.getElementById("reveBulkBar");
+    if(!reveSelectMode||!reveSel.size){ if(bar)bar.remove(); return; }
+    if(!bar){ bar=document.createElement("div"); bar.id="reveBulkBar"; bar.className="compare-bar"; document.body.appendChild(bar); }
+    bar.innerHTML=`<span>${ic("bookmark")} ${reveSel.size} marque(s)</span><button class="btn sm" onclick="openReveSelection()">${ic("link")}<span>Ouvrir la sélection</span></button><button class="btn ghost sm" onclick="reveClearSel()">Vider</button>`;
+  }
+  async function openReveSelection(){
+    const brands=[...reveSel].map(id=>reve.find(e=>String(e.id)===String(id))).filter(Boolean);
+    if(!brands.length) return;
+    if(brands.length>10 && !confirm("Ouvrir "+brands.length+" onglets ? Si ton navigateur bloque, autorise les pop-ups pour ce site.")) return;
+    let opened=0;
+    brands.forEach(e=>{ const w=window.open(brandStableSite(e),"_blank","noopener"); if(w)opened++; });
+    // marque comme visitées
+    const now=new Date().toISOString();
+    brands.forEach(e=>{ e.derniere_visite=now; e.nb_visites=(e.nb_visites||0)+1; if(sb){try{sb.from("entreprises_reve").update({derniere_visite:now,nb_visites:e.nb_visites}).eq("id",e.id);}catch(x){}} });
+    if(opened<brands.length) flashCenter("Autorise les pop-ups pour tout ouvrir","info");
+    else flashCenter(opened+" onglet(s) ouvert(s)");
+    renderReve();
+  }
+  // ===== Dossiers animés (groupement Secteur / Date de visite / À revisiter) =====
+  let reveGroupBy="none"; let reveGroupExpanded=false; const reveCollapsed=new Set();
+  function setReveGroupBy(g){ reveGroupBy=(reveGroupBy===g?"none":g); reveGroupExpanded=false; reveCollapsed.clear(); renderReve(); }
+  function expandReveGroups(){ reveGroupExpanded=true; renderReve(); }
+  function toggleReveFold(k){ if(reveCollapsed.has(k))reveCollapsed.delete(k); else reveCollapsed.add(k); renderReve(); }
+  // contenu interne d'une carte (réutilisé pour la réconciliation = animation FLIP)
+  function reveCardInner(e){
+    const logo=brandLogo(e), note=e.note||0;
+    const ds=e.derniere_visite?Math.floor((Date.now()-new Date(e.derniere_visite))/86400000):null;
+    const summary=brandOffersSummary(e);
+    const stars=[1,2,3,4,5].map(n=>`<span class="rstar ${n<=note?"on":""}" onclick="event.stopPropagation();setBrandNote('${e.id}',${n})">★</span>`).join("");
+    const visiteLbl=ds===null?"jamais visitée ici":ds===0?"visitée aujourd'hui":ds===1?"hier":"il y a "+ds+" j";
+    const stale=ds!==null&&ds>=21, nv=e.nb_visites||0, maxV=reveMaxVisits();
+    const hot=nv>0&&maxV>=3&&nv>=Math.max(3,maxV*0.7), sel=reveSel.has(String(e.id));
+    return `${reveSelectMode?`<span class="reve-cb">${sel?ic("check"):""}</span>`:""}
+      <div class="reve-logo">${logo?`<img src="${logo}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${esc((e.entreprise||'?').slice(0,1).toUpperCase())}';">`:esc((e.entreprise||"?").slice(0,1).toUpperCase())}</div>
+      <div class="reve-name">${esc(e.entreprise||"—")}</div>
+      ${e.secteur?`<div class="reve-sector">${esc(e.secteur)}</div>`:""}
+      <div class="reve-stars" title="Ta note">${stars}</div>
+      <div class="reve-foot">
+        <span class="reve-visite ${stale?"stale":""}" title="Dernière visite depuis l'app">${hot?ic("eye"):ic("clock")} ${visiteLbl}${nv?` · ${nv}`:""}</span>
+        ${summary?`<span class="reve-off" title="Offres liées">${summary}</span>`:""}
+        <button class="reve-check" onclick="event.stopPropagation();markBrandChecked('${e.id}')" title="Remettre l'ancienneté à zéro">${ic("check")} J'ai vérifié</button>
+      </div>`;
+  }
+  function reveCardClass(e){
+    const ds=e.derniere_visite?Math.floor((Date.now()-new Date(e.derniere_visite))/86400000):null;
+    const rcls=ds===null?"old":ds<=7?"fresh":ds<=21?"mid":"old";
+    return `reve-card r-${rcls}${reveSelectMode?" selecting":""}${reveSel.has(String(e.id))?" selected":""}`;
+  }
+  // dossiers selon le mode de groupement (la liste est déjà triée -> tri conservé dans chaque dossier)
+  function buildReveGroups(sorted){
+    if(reveGroupBy==="none") return [{key:"__all",cards:sorted,header:false}];
+    const now=Date.now(), dsOf=e=>e.derniere_visite?Math.floor((now-new Date(e.derniere_visite))/86400000):null;
+    if(reveGroupBy==="secteur"){
+      const m={}; sorted.forEach(e=>{const k=brandSectorOf(e);(m[k]=m[k]||[]).push(e);});
+      return Object.keys(m).sort((a,b)=>m[b].length-m[a].length).map(k=>({key:"sec_"+k,label:k,color:(SECTORS.find(s=>s.key===k)||{}).c||"var(--text-mute)",cards:m[k],header:true}));
+    }
+    if(reveGroupBy==="visite"){
+      const B=[{key:"v0",label:"Visitées cette semaine",color:"var(--green)",t:d=>d!==null&&d<=7},
+        {key:"v1",label:"Ce mois-ci",color:"var(--accent)",t:d=>d!==null&&d>7&&d<=30},
+        {key:"v2",label:"Il y a longtemps",color:"var(--orange)",t:d=>d!==null&&d>30},
+        {key:"v3",label:"Jamais visitées",color:"var(--text-mute)",t:d=>d===null}];
+      return B.map(b=>({key:b.key,label:b.label,color:b.color,cards:sorted.filter(e=>b.t(dsOf(e))),header:true})).filter(g=>g.cards.length);
+    }
+    if(reveGroupBy==="revisiter"){
+      const toRev=e=>(e.note||0)>=4 && (dsOf(e)===null||dsOf(e)>=21);
+      const a=sorted.filter(toRev), b=sorted.filter(e=>!toRev(e)), g=[];
+      if(a.length)g.push({key:"rev_y",label:"À revisiter (coups de cœur à relancer)",color:"var(--red)",cards:a,header:true});
+      if(b.length)g.push({key:"rev_n",label:"Le reste",color:"var(--text-mute)",cards:b,header:true});
+      return g;
+    }
+    return [{key:"__all",cards:sorted,header:false}];
+  }
+  function ensureReveScaffold(c){
+    let gal=document.getElementById("reveGallery");
+    if(!gal){
+      c.innerHTML=`<div id="reveBars"></div><div id="reveGallery" class="reve-gallery size-${reveSize}"></div>`;
+      gal=document.getElementById("reveGallery");
+    }
+    return gal;
+  }
+  // FLIP maison : mesure avant -> applique la mutation DOM -> anime le déplacement des cartes (réordonnancement satisfaisant)
+  function flipReve(gal,mutate){
+    if(!gal||!gal.offsetParent){ mutate(); return; }   // vue cachée : pas d'anim
+    const prev=new Map();
+    gal.querySelectorAll(".reve-card[data-bid]").forEach(el=>prev.set(el.getAttribute("data-bid"),el.getBoundingClientRect()));
+    mutate();
+    gal.querySelectorAll(".reve-card[data-bid]").forEach(el=>{
+      const b=prev.get(el.getAttribute("data-bid")), a=el.getBoundingClientRect();
+      if(b){
+        const dx=b.left-a.left, dy=b.top-a.top;
+        if(dx||dy){
+          el.style.transition="none"; el.style.transform="translate("+dx+"px,"+dy+"px)";
+          el.getBoundingClientRect();
+          requestAnimationFrame(()=>{ el.style.transition="transform .3s cubic-bezier(.2,.7,.3,1)"; el.style.transform=""; });
+          el.addEventListener("transitionend",function h(){el.style.transition="";el.removeEventListener("transitionend",h);},{once:true});
+        }
+      } else {
+        el.style.opacity="0"; el.style.transition="none";
+        requestAnimationFrame(()=>{ el.style.transition="opacity .26s ease"; el.style.opacity="1"; });
+      }
+    });
+  }
+  // peinture par réconciliation : on réutilise les nœuds de carte (même identité) -> Auto-Animate les fait glisser
+  function paintReve(gal,seq){
+    const cache=window._reveCardEls||(window._reveCardEls={});
+    const desired=[];
+    seq.forEach(it=>{
+      if(it.type==="header"){
+        const h=document.createElement("div"); h.className="reve-folder-head"+(it.collapsed?" collapsed":"");
+        h.innerHTML=`<span class="ff-chev">${ic("chevron")}</span><span class="ff-dot" style="background:${it.color||"var(--text-mute)"};"></span><span class="ff-label">${esc(it.label)}</span><span class="ff-count">${it.count}</span>`;
+        h.onclick=()=>toggleReveFold(it.key);
+        desired.push(h);
+      } else {
+        let node=cache[it.e.id];
+        if(!node){ node=document.createElement("div"); node.setAttribute("data-bid",it.e.id); cache[it.e.id]=node; }
+        node.className=reveCardClass(it.e);
+        node.onclick=reveSelectMode?(function(id){return function(){toggleReveSel(id);};})(it.e.id):(function(id){return function(){openBrandCard(id);};})(it.e.id);
+        node.innerHTML=reveCardInner(it.e);
+        desired.push(node);
+      }
+    });
+    const want=new Set(desired);
+    [...gal.children].forEach(ch=>{ if(!want.has(ch)) gal.removeChild(ch); });
+    desired.forEach(n=>gal.appendChild(n));
+  }
   function renderReve(){
     const c=document.getElementById("reve-content");
-    if(!reve.length){c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("bookmark")+'</div><div class="empty-h">Aucune marque suivie</div><div class="empty-p">Ajoute les entreprises qui te font rêver, note-les, et garde un œil sur celles à revisiter. Le favori « marque » (en haut) les capture en 1 clic.</div><div class="empty-actions"><button class="btn" onclick="openModal(\'reve\')">+ Ajouter une marque</button></div></div>';return;}
+    if(!reve.length){ window._reveCardEls=null; c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("bookmark")+'</div><div class="empty-h">Aucune marque suivie</div><div class="empty-p">Ajoute les entreprises qui te font rêver, note-les, et garde un œil sur celles à revisiter. Le favori « marque » (en haut) les capture en 1 clic.</div><div class="empty-actions"><button class="btn" onclick="openModal(\'reve\')">+ Ajouter une marque</button></div></div>'; return; }
     document.querySelectorAll("#reveSortPills .rsort").forEach(b=>b.classList.toggle("active",b.dataset.s===reveSort));
-    const now=Date.now();
-    const daysSince=e=>e.derniere_visite?Math.floor((now-new Date(e.derniere_visite))/86400000):null;
     const q=(reveQuery||"").trim().toLowerCase();
     let base=reve.slice();
     if(q)base=base.filter(e=>((e.entreprise||"")+" "+(e.secteur||"")+" "+(e.ville||"")).toLowerCase().indexOf(q)>=0);
+    if(reveSectorFilter!=="all")base=base.filter(e=>brandSectorOf(e)===reveSectorFilter);
     const sorted=base.sort((a,b)=>{
       if(reveSort==="note")return (b.note||0)-(a.note||0);
       if(reveSort==="populaires")return (b.nb_visites||0)-(a.nb_visites||0);
       if(reveSort==="offres")return (brandOffers(b).pipe.length+brandOffers(b).kept.length)-(brandOffers(a).pipe.length+brandOffers(a).kept.length);
       if(reveSort==="visite"){const da=a.derniere_visite?new Date(a.derniere_visite):0,db=b.derniere_visite?new Date(b.derniere_visite):0;return db-da;}
-      if(reveSort==="ancienne"){const da=a.derniere_visite?new Date(a.derniere_visite):0,db=b.derniere_visite?new Date(b.derniere_visite):0;return da-db;} // moins récemment visitées d'abord
+      if(reveSort==="ancienne"){const da=a.derniere_visite?new Date(a.derniere_visite):0,db=b.derniere_visite?new Date(b.derniere_visite):0;return da-db;}
       if(reveSort==="secteur")return (a.secteur||"").localeCompare(b.secteur||"");
       return (a.entreprise||"").localeCompare(b.entreprise||"");
     });
-    if(!sorted.length){c.innerHTML='<div class="empty">Aucune marque ne correspond à « '+esc(reveQuery)+' ».</div>';return;}
-    c.innerHTML=`<div class="reve-gallery size-${reveSize}">`+sorted.map(e=>{
-      const logo=brandLogo(e);
-      const note=e.note||0;
-      const ds=daysSince(e);
-      const summary=brandOffersSummary(e);
-      const stars=[1,2,3,4,5].map(n=>`<span class="rstar ${n<=note?"on":""}" onclick="event.stopPropagation();setBrandNote('${e.id}',${n})">★</span>`).join("");
-      const visiteLbl=ds===null?"jamais visitée ici":ds===0?"visitée aujourd'hui":ds===1?"hier":"il y a "+ds+" j";
-      const stale=ds!==null&&ds>=21; // pas revue depuis 3 semaines -> petit rappel
-      const nv=e.nb_visites||0;
-      const maxV=reveMaxVisits();
-      const hot=nv>0&&maxV>=3&&nv>=Math.max(3,maxV*0.7); // 🔥 si dans le top des visites
-      const rcls=ds===null?"old":ds<=7?"fresh":ds<=21?"mid":"old"; // ancienneté : vert/orange/rouge
-      return `<div class="reve-card r-${rcls}" onclick="openBrandCard('${e.id}')">
-        <div class="reve-logo">${logo?`<img src="${logo}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${esc((e.entreprise||'?').slice(0,1).toUpperCase())}';">`:esc((e.entreprise||"?").slice(0,1).toUpperCase())}</div>
-        <div class="reve-name">${esc(e.entreprise||"—")}</div>
-        ${e.secteur?`<div class="reve-sector">${esc(e.secteur)}</div>`:""}
-        <div class="reve-stars" title="Ta note">${stars}</div>
-        <div class="reve-foot">
-          <span class="reve-visite ${stale?"stale":""}" title="Dernière visite depuis l'app">${hot?ic("eye"):ic("clock")} ${visiteLbl}${nv?` · ${nv}`:""}</span>
-          ${summary?`<span class="reve-off" title="Offres liées">${summary}</span>`:""}
-          <button class="reve-check" onclick="event.stopPropagation();markBrandChecked('${e.id}')" title="Remettre l'ancienneté à zéro">${ic("check")} J'ai vérifié</button>
-        </div>
-      </div>`;
-    }).join("")+'</div>';
+    const gal=ensureReveScaffold(c); gal.className="reve-gallery size-"+reveSize;
+    const secs=[...new Set(reve.map(brandSectorOf))].sort();
+    const G=[["secteur","Secteur","building"],["visite","Date de visite","clock"],["revisiter","À revisiter","bell"]];
+    const groupBar=`<div class="reve-groupbar"><span class="rg-label">Dossiers :</span>${G.map(([k,l,i])=>`<button class="rsort ${reveGroupBy===k?"active":""}" onclick="setReveGroupBy('${k}')">${ic(i)} ${l}</button>`).join("")}<button class="rsort" onclick="refreshData(true)" title="Recharger mes marques">${ic("history")} Actualiser</button></div>`;
+    const bulkBar=`<div class="reve-bulkbar"><button class="rsort ${reveSelectMode?"active":""}" onclick="toggleReveSelectMode()">${ic("check")} ${reveSelectMode?"Quitter la sélection":"Ouvrir en lot"}</button>${reveSelectMode?`<select class="sel" onchange="setReveSectorFilter(this.value)"><option value="all">Tous les secteurs</option>${secs.map(s=>`<option value="${esc(s)}" ${reveSectorFilter===s?"selected":""}>${esc(s)}</option>`).join("")}</select><button class="rsort" onclick="reveSelectAll()">Tout cocher (${sorted.length})</button><span class="reve-bulk-count">${reveSel.size} sélectionnée(s)</span>`:""}</div>`;
+    document.getElementById("reveBars").innerHTML=groupBar+bulkBar+(sorted.length?"":'<div class="empty">Aucune marque ne correspond à ce filtre.</div>');
+    const groups=buildReveGroups(sorted), seq=[];
+    groups.forEach(g=>{
+      if(g.header){ const collapsed=reveCollapsed.has(g.key); seq.push({type:"header",key:g.key,label:g.label,color:g.color,count:g.cards.length,collapsed}); if(!collapsed)g.cards.forEach(e=>seq.push({type:"card",e})); }
+      else g.cards.forEach(e=>seq.push({type:"card",e}));
+    });
+    flipReve(gal,()=>paintReve(gal,seq));
+    renderReveBulkBar();
   }
 
   // Offres "détectées" : résultats de recherche de cette boîte pas encore triés (à rattacher)
@@ -4405,6 +4549,7 @@
   if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box"><b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
   let userName="", userIntro="", userCV="";
   let lettres={};
+  let promptAccroche="";   // prompt système d'accroche, éditable dans Réglages (sinon défaut backend)
   // ===== THÈME clair / sombre =====
   let theme="light";
   function applyTheme(){
@@ -4433,7 +4578,8 @@
     try{const ls=localStorage.getItem("st_name");if(ls)userName=ls;}catch(e){}
     // 2) sync Supabase (source de vérité multi-appareils)
     if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur){const v=data.valeur;if(v.prenom){userName=v.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}userIntro=v.intro||"";userCV=v.cv||"";}}catch(e){}
-      try{const {data:dl}=await sb.from("parametres").select("valeur").eq("cle","lettres").maybeSingle();if(dl&&dl.valeur)lettres=dl.valeur;}catch(e){}}
+      try{const {data:dl}=await sb.from("parametres").select("valeur").eq("cle","lettres").maybeSingle();if(dl&&dl.valeur)lettres=dl.valeur;}catch(e){}
+      try{const {data:dp}=await sb.from("parametres").select("valeur").eq("cle","promptAccroche").maybeSingle();if(dp&&dp.valeur&&dp.valeur.text)promptAccroche=dp.valeur.text;}catch(e){}}
     if(!userName && !skipAsk){ askName(); }
     else initDate();
   }
@@ -4535,6 +4681,7 @@
       <p class="modal-sub" style="margin-top:-4px;">Affine le score d'affinité (pondération des secteurs) et sauvegarde tes données.</p>
       <div class="prof-settings">
         <button class="btn ghost sm" onclick="closeModal();openCriteres();">${ic("sliders")}<span>Critères de matching</span></button>
+        <button class="btn ghost sm" onclick="openPromptAccroche()">${ic("sparkle")}<span>Prompt d'accroche (IA)</span></button>
         <button class="btn ghost sm" onclick="exportCSV()">${ic("download")}<span>Export CSV (sauvegarde)</span></button>
       </div>
       <label class="prof-toggle"><input type="checkbox" id="capCloseToggle" ${getCaptureAutoClose()?"checked":""} onchange="setCaptureAutoClose(this.checked)"><span>Fermer automatiquement la fenêtre du favori après l'ajout d'une offre <small>(évite d'accumuler les onglets)</small></span></label>
@@ -4549,6 +4696,23 @@
     await saveProfilData();
     closeModal(); initDate();
   }
+  // ===== Prompt d'accroche éditable (Réglages) =====
+  function openPromptAccroche(){
+    const box=document.getElementById("modalBox"); box.classList.remove("wide");
+    box.innerHTML=`<div class="modal-head"><h3>${ic("sparkle")} Prompt de l'accroche IA</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Le « rôle système » envoyé à l'IA pour rédiger tes accroches. Mets-le au point avec une IA puissante, l'app l'exécutera ensuite sur chaque offre (poste, entreprise, lieu, détails de l'offre, ton profil/CV te sont fournis en contexte). <b>Laisse vide</b> pour le prompt par défaut.</p>
+      <textarea class="draft-area" id="promptAccrocheTa" rows="12" placeholder="Ex : Tu adaptes MON accroche originale à l'offre. Garde mon style et ma longueur, cite l'entreprise et le poste, ton sobre, aucun superlatif. Donne deux versions séparées par une ligne ---.">${esc(promptAccroche)}</textarea>
+      <div class="modal-actions"><button class="btn ghost" onclick="resetPromptAccroche()">Réinitialiser</button><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn btn-validate" onclick="savePromptAccroche()">${ic("check")}<span>Enregistrer</span></button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  async function persistPromptAccroche(){
+    if(sb){try{await sb.from("parametres").upsert({cle:"promptAccroche",valeur:{text:promptAccroche},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
+  }
+  async function savePromptAccroche(){
+    const ta=document.getElementById("promptAccrocheTa"); if(ta)promptAccroche=(ta.value||"").trim();
+    await persistPromptAccroche(); closeModal(); flashCenter("Prompt enregistré");
+  }
+  async function resetPromptAccroche(){ promptAccroche=""; await persistPromptAccroche(); closeModal(); flashCenter("Prompt par défaut rétabli","info"); }
   function loadPdfJs(){
     return new Promise((resolve,reject)=>{
       if(window.pdfjsLib){resolve(window.pdfjsLib);return;}

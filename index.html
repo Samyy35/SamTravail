@@ -546,8 +546,24 @@
   .kb-count{font-weight:800;color:var(--text-dim);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:1px 9px;font-size:12px;}
   .kb-body{display:flex;flex-direction:column;gap:8px;min-height:34px;}
   .kb-empty{font-size:12px;color:var(--text-mute);text-align:center;padding:12px 0;}
+  /* Dossiers temporels adaptatifs (colonne Envoyé) */
+  .kb-fold{margin-bottom:6px;}
+  .kb-fold-head{display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;user-select:none;margin-bottom:8px;}
+  .kb-fold-head:hover{border-color:var(--border-light);background:var(--surface-2);}
+  .kb-fold-head .ff-chev{display:inline-flex;transition:transform .2s;color:var(--text-dim);}
+  .kb-fold.collapsed .ff-chev{transform:rotate(-90deg);}
+  .kb-fold-head .ff-chev .ic{width:13px;height:13px;}
+  .kb-fold-head .ff-label{flex:1;min-width:0;font-size:11.5px;font-weight:700;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font);}
+  .kb-fold-head .ff-count{font-size:11px;font-weight:700;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:0 7px;}
+  .kb-fold-body{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
   .kb-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:10px;padding:8px 10px;cursor:pointer;transition:.12s;}
   .kb-card:hover{border-color:var(--border-light);box-shadow:var(--shadow);transform:translateY(-1px);}
+  .kb-date{font-size:11px;color:var(--text-dim);margin-top:5px;display:flex;align-items:center;gap:5px;}
+  .kb-date .ic{width:12px;height:12px;}
+  .kb-date.warn{color:var(--orange);font-weight:700;}
+  .kb-reveal{max-height:0;overflow:hidden;opacity:0;transition:max-height .26s ease,opacity .2s ease,margin-top .26s ease;}
+  .kb-card:hover .kb-reveal{max-height:280px;opacity:1;margin-top:7px;}
+  @media(hover:none){.kb-reveal{max-height:none;opacity:1;margin-top:7px;}}
   .kb-card-top{display:flex;align-items:flex-start;gap:6px;}
   .kb-card-top .pipe-star .ic{width:14px;height:14px;}
   .kb-poste{font-size:13px;font-weight:700;line-height:1.25;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -783,9 +799,21 @@
   .reve-cb{position:absolute;top:8px;left:8px;width:20px;height:20px;border-radius:6px;border:2px solid var(--border-light);background:var(--surface);display:grid;place-items:center;color:#fff;}
   .reve-card.selected .reve-cb{background:var(--accent);border-color:var(--accent);}
   .reve-cb .ic{width:13px;height:13px;}
-  /* Dossiers animés (groupement marques) */
-  .reve-groupbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:10px;}
-  .rg-label{font-size:12.5px;color:var(--text-mute);font-weight:600;}
+  /* Barre de filtres unifiée des marques (groupement primaire + tris contextuels) */
+  .reve-toolbar{display:none!important;}
+  .reve-filterbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .rfilter{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;font-family:var(--font);padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:.14s;}
+  .rfilter:hover{border-color:var(--accent);color:var(--text);}
+  .rfilter.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 3px 10px var(--glow);}
+  .rfilter .ic{width:15px;height:15px;}
+  .rfilter .rf-chev{display:inline-flex;opacity:.85;} .rfilter .rf-chev .ic{width:13px;height:13px;}
+  .rfilter.rf-clear,.rfilter.rf-refresh{padding:8px 11px;color:var(--text-mute);}
+  .rfilter-sep{width:1px;height:22px;background:var(--border);margin:0 4px;flex-shrink:0;}
+  .rfilter-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-mute);margin-right:2px;}
+  .rsort-mini{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;font-family:var(--font);padding:6px 11px;border-radius:999px;border:1px solid transparent;background:var(--surface-2);color:var(--text-dim);cursor:pointer;transition:.14s;}
+  .rsort-mini:hover{color:var(--text);background:var(--surface-3);}
+  .rsort-mini.active{background:var(--text);color:var(--bg);}
+  .rsort-mini .ic{width:13px;height:13px;}
   .reve-folder-head{grid-column:1/-1;display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:11px;cursor:pointer;user-select:none;}
   .reve-folder-head:hover{background:var(--surface-2);border-color:var(--border-light);}
   .reve-folder-head .ff-chev{display:inline-flex;transition:transform .2s;color:var(--text-dim);}
@@ -1135,7 +1163,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v56</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v58</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1462,6 +1490,14 @@
     const t=((o.titre||"")+" "+(o.entreprise||"")+" "+(o.description||"")+" "+(o.rome||"")).toLowerCase();
     for(const s of SECTORS){ if(s.kw.some(k=>t.includes(k))) return s; }
     return {key:"Autre",kw:[],c:"#9aa2b4"};
+  }
+  // Liste fusionnée des secteurs : prédéfinis + personnalisés déjà saisis (offres + marques)
+  function mergedSectors(){
+    const s=new Set(SECTORS.map(x=>x.key));
+    reve.forEach(e=>{ if(e.secteur)s.add(e.secteur); });
+    Object.values(statusMap).forEach(x=>{ if(x&&x.offer&&x.offer.secteur)s.add(x.offer.secteur); });
+    pipeline.forEach(p=>{ if(p.secteur)s.add(p.secteur); });
+    return [...s].filter(Boolean).sort((a,b)=>a.localeCompare(b));
   }
 
   // ===== SCORE DE MATCH =====
@@ -3049,11 +3085,44 @@
     renderStatsBadges();
   }
   // ===== KANBAN CONDENSÉ =====
+  const kbCollapsed=new Set();
+  function toggleKbFold(k){ if(kbCollapsed.has(k))kbCollapsed.delete(k); else kbCollapsed.add(k); renderPipeline(); }
+  // Clustering temporel ADAPTATIF : découpe les candidatures envoyées en 3-5 dossiers équilibrés en nombre,
+  // avec des libellés ajustés à la volée (plage de dates / « Cette semaine »). null si trop peu d'offres.
+  function clusterByDate(cards){
+    const wd=cards.filter(p=>p.date_envoi).sort((a,b)=>new Date(b.date_envoi)-new Date(a.date_envoi));
+    const nd=cards.filter(p=>!p.date_envoi);
+    if(wd.length<6) return null;
+    const N=Math.min(5,Math.max(3,Math.round(wd.length/5)));   // densité -> 3 à 5 dossiers
+    const size=Math.ceil(wd.length/N);
+    const now=new Date(); now.setHours(0,0,0,0);
+    const f=d=>d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
+    const groups=[];
+    for(let i=0;i<wd.length;i+=size){
+      const chunk=wd.slice(i,i+size);
+      const newest=new Date(chunk[0].date_envoi), oldest=new Date(chunk[chunk.length-1].date_envoi);
+      const dN=Math.round((now-newest)/86400000);
+      let label = (i===0&&dN<=7) ? "Cette semaine"
+        : (newest.toDateString()===oldest.toDateString()) ? f(newest)
+        : f(oldest)+" → "+f(newest);
+      groups.push({label,cards:chunk});
+    }
+    if(nd.length) groups.push({label:"Sans date",cards:nd});
+    return groups;
+  }
   function renderKanban(){
     const cols=KANBAN_COLS.map(kc=>{
       const items=pipeline.filter(p=>kc.statuts.includes(p.statut))
         .sort((a,b)=>new Date(b.date_envoi||0)-new Date(a.date_envoi||0));
-      const body=items.length?items.map(kanbanCard).join(""):'<div class="kb-empty">—</div>';
+      const clusters=kc.key==="Envoyé"?clusterByDate(items):null;
+      let body;
+      if(clusters){
+        body=clusters.map((g,gi)=>{ const fk="env"+gi; const collapsed=kbCollapsed.has(fk);
+          return `<div class="kb-fold ${collapsed?"collapsed":""}"><div class="kb-fold-head" onclick="toggleKbFold('${fk}')"><span class="ff-chev">${ic("chevron")}</span><span class="ff-label">${esc(g.label)}</span><span class="ff-count">${g.cards.length}</span></div>${collapsed?"":`<div class="kb-fold-body">${g.cards.map(kanbanCard).join("")}</div>`}</div>`;
+        }).join("");
+      } else {
+        body=items.length?items.map(kanbanCard).join(""):'<div class="kb-empty">—</div>';
+      }
       return `<div class="kb-col">
         <div class="kb-head" style="--kc:${kc.color};"><span class="kb-dot"></span><span class="kb-label">${esc(kc.label)}</span><b class="kb-count">${items.length}</b></div>
         <div class="kb-body">${body}</div>
@@ -3077,18 +3146,21 @@
         <div class="kb-logo ${logo?'':'mono'}" style="${logo?'':`background:${sec.c}1f;color:${sec.c};`}">${logoInner}</div>
         <div class="kb-tt"><div class="kb-poste">${esc(p.poste||"—")}</div><div class="kb-ent">${esc(p.entreprise||"")}${b?` <span class="ocard-brand" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}</div></div>
       </div>
-      <div class="kb-meta">
-        ${p.ville?`<span>${ic("pin")} ${esc(p.ville)}</span>`:""}
-        ${days!==null?`<span class="${warn?"warn":""}">${warn?ic("alert"):ic("clock")} J+${days}</span>`:""}
-        ${p.niveau_envie?`<span title="Niveau d'envie : ${Math.min(5,p.niveau_envie)}/5"><span class="kb-star">${ic("star")}</span> ${Math.min(5,p.niveau_envie)}</span>`:""}
-        ${done?`<span title="Actions faites">${ic("check")} ${done}/${CHECKLIST_ITEMS.length}</span>`:""}
-      </div>
-      ${p.notes?`<div class="kb-notes">${esc(p.notes)}</div>`:""}
-      <div class="kb-steps" onclick="event.stopPropagation()">
-        ${STEPS.map(k=>{const cc=pipeColor(k);const on=p.statut===k;
-          return `<button class="kstep ${on?"on":""}" title="${esc(kLabel((KCOLS.find(c=>c.key===k)||{label:k}).label))}" onclick="changePipeStatut('${p.id}','${k}',this)" style="${on?`background:${cc};border-color:${cc};color:#fff;`:`color:${cc};border-color:${cc}55;`}">${ic(KICON[k]||"minus")}</button>`;
-        }).join("")}
-        <button class="kstep rollback" title="Renvoyer dans « À trier »" onclick="rollbackToTriage('${p.id}')">${ic("undo")}</button>
+      <div class="kb-date ${warn?"warn":""}">${p.date_envoi?`${warn?ic("alert"):ic("calendar")} ${new Date(p.date_envoi).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})}${days!==null?` · J+${days}`:""}`:(days!==null?`${ic("clock")} J+${days}`:`${ic("calendar")} —`)}</div>
+      <div class="kb-reveal">
+        <div class="kb-meta">
+          ${p.ville?`<span>${ic("pin")} ${esc(p.ville)}</span>`:""}
+          ${p.source?`<span>${ic("link")} ${esc(p.source)}</span>`:""}
+          ${p.niveau_envie?`<span title="Niveau d'envie : ${Math.min(5,p.niveau_envie)}/5"><span class="kb-star">${ic("star")}</span> ${Math.min(5,p.niveau_envie)}</span>`:""}
+          ${done?`<span title="Actions faites">${ic("check")} ${done}/${CHECKLIST_ITEMS.length}</span>`:""}
+        </div>
+        ${p.notes?`<div class="kb-notes">${esc(p.notes)}</div>`:""}
+        <div class="kb-steps" onclick="event.stopPropagation()">
+          ${STEPS.map(k=>{const cc=pipeColor(k);const on=p.statut===k;
+            return `<button class="kstep ${on?"on":""}" title="${esc(kLabel((KCOLS.find(c=>c.key===k)||{label:k}).label))}" onclick="changePipeStatut('${p.id}','${k}',this)" style="${on?`background:${cc};border-color:${cc};color:#fff;`:`color:${cc};border-color:${cc}55;`}">${ic(KICON[k]||"minus")}</button>`;
+          }).join("")}
+          <button class="kstep rollback" title="Renvoyer dans « À trier »" onclick="rollbackToTriage('${p.id}')">${ic("undo")}</button>
+        </div>
       </div>
     </div>`;
   }
@@ -3582,7 +3654,7 @@
   // bookmarklet "marque" : capture nom + site de la page courante -> ?addBrand=...
   function brandBookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var jn='',jd='';var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!jn;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j],g=0;while(st.length&&!jn&&g<300){g++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=''+(o['@type']||'');if(/Organization|Corporation|LocalBusiness|EducationalOrganization|NewsMediaOrganization|WebSite/i.test(ty)&&(o.name||o.legalName)){jn=o.name||o.legalName;if(o.description)jd=o.description;break;}for(var k in o){var v=o[k];if(v&&typeof v==='object')st.push(v);}}}var raw=jn||M('og:site_name')||M('application-name')||M('twitter:title')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var site=location.origin;if(!site||site==='null'){var cu=((document.querySelector('link[rel=canonical]')||{}).href)||M('og:url')||'';site=cu?cu.split('/').slice(0,3).join('/'):(location.protocol+'//'+location.hostname);}var desc=(jd||M('og:description')||M('description')||M('keywords')||'').slice(0,400);var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=520,height=720,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var jn='',jd='';var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!jn;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j],g=0;while(st.length&&!jn&&g<300){g++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=''+(o['@type']||'');if(/Organization|Corporation|LocalBusiness|EducationalOrganization|NewsMediaOrganization|WebSite/i.test(ty)&&(o.name||o.legalName)){jn=o.name||o.legalName;if(o.description)jd=o.description;break;}for(var k in o){var v=o[k];if(v&&typeof v==='object')st.push(v);}}}var raw=jn||M('og:site_name')||M('application-name')||M('twitter:title')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var ATS=/workday|myworkdayjobs|greenhouse|lever[.]co|taleo|icims|smartrecruiters|teamtailor|brassring|successfactors|recruitee|workable|jobvite|ashbyhq|breezy/i;var site='';if(ATS.test(location.hostname)){var rf=document.referrer||'';if(rf&&!ATS.test(rf))site=rf.split('/').slice(0,3).join('/');}else{site=location.origin;if(!site||site==='null'){var cu=((document.querySelector('link[rel=canonical]')||{}).href)||M('og:url')||'';site=cu?cu.split('/').slice(0,3).join('/'):(location.protocol+'//'+location.hostname);}}var desc=(jd||M('og:description')||M('description')||M('keywords')||'').slice(0,400);var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=520,height=720,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
   }
   // tri de la galerie
   let reveSort="note", reveSize="M", reveQuery="";
@@ -3749,7 +3821,20 @@
     const gal=ensureReveScaffold(c); gal.className="reve-gallery size-"+reveSize;
     const secs=[...new Set(reve.map(brandSectorOf))].sort();
     const G=[["secteur","Secteur","building"],["visite","Date de visite","clock"],["revisiter","À revisiter","bell"]];
-    const groupBar=`<div class="reve-groupbar"><span class="rg-label">Dossiers :</span>${G.map(([k,l,i])=>`<button class="rsort ${reveGroupBy===k?"active":""}" onclick="setReveGroupBy('${k}')">${ic(i)} ${l}</button>`).join("")}<button class="rsort" onclick="refreshData(true)" title="Recharger mes marques">${ic("history")} Actualiser</button></div>`;
+    const SRT=[["note","Ma note","star"],["populaires","Plus visitées","eye"],["offres","Offres","send"],["nom","A→Z",""]];
+    let groupHtml;
+    if(reveGroupBy!=="none" && !reveGroupExpanded){
+      const g=G.find(x=>x[0]===reveGroupBy)||G[0];
+      groupHtml=`<button class="rfilter active" onclick="expandReveGroups()" title="Changer de dossier">${ic(g[2])} ${g[1]} <span class="rf-chev">${ic("chevron")}</span></button>`;
+    }else{
+      groupHtml=G.map(([k,l,i])=>`<button class="rfilter ${reveGroupBy===k?"active":""}" onclick="setReveGroupBy('${k}')">${ic(i)} ${l}</button>`).join("");
+      if(reveGroupBy!=="none") groupHtml+=`<button class="rfilter rf-clear" onclick="setReveGroupBy('none')" title="Ne plus grouper">${ic("ban")}</button>`;
+    }
+    // tris secondaires : cachés seulement pendant qu'on choisit un dossier (mode déplié)
+    const showSorts=!(reveGroupBy!=="none" && reveGroupExpanded);
+    const sortHtml=showSorts?`<span class="rfilter-sep"></span>${reveGroupBy!=="none"?`<span class="rfilter-sub">tri</span>`:""}${SRT.map(([k,l,i])=>`<button class="rsort-mini ${reveSort===k?"active":""}" onclick="setReveSort('${k}')">${i?ic(i)+" ":""}${l}</button>`).join("")}`:"";
+    const sizeHtml=`<span class="rfilter-sep"></span>${[["S","gridS"],["M","gridM"],["L","gridL"]].map(([s,i])=>`<button class="reve-size-btn ${reveSize===s?"active":""}" onclick="setReveSize('${s}')">${ic(i)}</button>`).join("")}`;
+    const groupBar=`<div class="reve-filterbar">${groupHtml}${sortHtml}${sizeHtml}<button class="rfilter rf-refresh" onclick="refreshData(true)" title="Recharger mes marques">${ic("history")}</button></div>`;
     const bulkBar=`<div class="reve-bulkbar"><button class="rsort ${reveSelectMode?"active":""}" onclick="toggleReveSelectMode()">${ic("check")} ${reveSelectMode?"Quitter la sélection":"Ouvrir en lot"}</button>${reveSelectMode?`<select class="sel" onchange="setReveSectorFilter(this.value)"><option value="all">Tous les secteurs</option>${secs.map(s=>`<option value="${esc(s)}" ${reveSectorFilter===s?"selected":""}>${esc(s)}</option>`).join("")}</select><button class="rsort" onclick="reveSelectAll()">Tout cocher (${sorted.length})</button><span class="reve-bulk-count">${reveSel.size} sélectionnée(s)</span>`:""}</div>`;
     document.getElementById("reveBars").innerHTML=groupBar+bulkBar+(sorted.length?"":'<div class="empty">Aucune marque ne correspond à ce filtre.</div>');
     const groups=buildReveGroups(sorted), seq=[];
@@ -4135,13 +4220,13 @@
   const FORMS={
     pipeline:{title:"Candidature",table:"pipeline",fields:[
       {k:"entreprise",l:"Entreprise",t:"text"},{k:"poste",l:"Poste",t:"text"},{k:"ville",l:"Ville",t:"text"},
-      {k:"secteur",l:"Secteur",t:"text"},{k:"source",l:"Source",t:"text"},{k:"lien_offre",l:"Lien offre",t:"text"},
+      {k:"secteur",l:"Secteur",t:"sectorlist"},{k:"source",l:"Source",t:"text"},{k:"lien_offre",l:"Lien offre",t:"text"},
       {k:"statut",l:"Statut",t:"select",opts:["Envoyé","Entretien","Offre reçue","Refusé","Non intéressé"]},
       {k:"niveau_envie",l:"Niveau d'envie (1-5)",t:"number"},{k:"contact",l:"Contact",t:"text"},
       {k:"date_envoi",l:"Date d'envoi",t:"date"},{k:"date_relance",l:"Dernière relance",t:"date"},{k:"notes",l:"Notes",t:"textarea"},
     ]},
     reve:{title:"Entreprise rêve",table:"entreprises_reve",fields:[
-      {k:"entreprise",l:"Entreprise",t:"text"},{k:"site",l:"Site (carrières / officiel)",t:"text"},{k:"secteur",l:"Secteur",t:"text"},
+      {k:"entreprise",l:"Entreprise",t:"text"},{k:"site",l:"Site (carrières / officiel)",t:"text"},{k:"secteur",l:"Secteur",t:"sectorlist"},
       {k:"note",l:"Ma note",t:"stars"},
       {k:"ville",l:"Ville visée",t:"text"},
       {k:"statut",l:"Statut",t:"select",opts:["À explorer","À postuler","Postulé"]},
@@ -4169,6 +4254,7 @@
       const v=row?(row[fl.k]??""):"";
       if(fl.t==="select")return `<div class="field"><label>${fl.l}</label><select id="m-${fl.k}">${fl.opts.map(o=>`<option ${o===v?"selected":""}>${o}</option>`).join("")}</select></div>`;
       if(fl.t==="textarea")return `<div class="field"><label>${fl.l}</label><textarea id="m-${fl.k}">${esc(v)}</textarea></div>`;
+      if(fl.t==="sectorlist"){const opts=mergedSectors();return `<div class="field"><label>${fl.l}</label><input id="m-${fl.k}" type="text" list="__secList" value="${esc(v)}" placeholder="Choisis ou saisis un secteur" autocomplete="off" /><datalist id="__secList">${opts.map(o=>`<option value="${esc(o)}"></option>`).join("")}</datalist></div>`;}
       if(fl.t==="stars"){const cur=parseInt(v)||0;return `<div class="field"><label>${fl.l}</label><div class="star-input" id="stars-${fl.k}">${[1,2,3,4,5].map(n=>`<button type="button" class="star-btn ${cur>=n?"on":""}" data-n="${n}" onclick="setModalStars('${fl.k}',${n})" aria-label="${n} sur 5">${ic("star")}</button>`).join("")}<button type="button" class="star-clear" onclick="setModalStars('${fl.k}',0)" title="Effacer">Effacer</button></div><input type="hidden" id="m-${fl.k}" value="${cur||""}"></div>`;}
       return `<div class="field"><label>${fl.l}</label><input id="m-${fl.k}" type="${fl.t}" value="${esc(v)}" /></div>`;
     }).join("");
@@ -4178,6 +4264,14 @@
       html+=`<div class="field"><label>${ic("checklist")} Checklist de candidature</label><div class="modal-checklist">`+
         CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="chk-${i}" ${chk[it]?"checked":""} /> ${esc(it)}</label>`).join("")+
         `</div></div>`;
+    }
+    // Bookmarklet "Sam'Marque" (modale Marques) : même modèle draggable que la partie Offres
+    if(type==="reve"){
+      html+=`<details class="bookmarklet-help" ${isEdit?"":"open"}><summary>${ic("bookmark")} Ajouter une marque en 1 clic depuis le web</summary>
+        <p><b>Installe le favori (une fois) :</b> affiche ta barre de favoris (Ctrl+Maj+B), puis <b>glisse</b> ce bouton dedans :</p>
+        <a class="bookmarklet-btn" href="${brandBookmarkletCode()}" onclick="return false;" draggable="true" style="cursor:grab;">${ic("bookmark")} Sam'Marque</a>
+        <p class="bm-note">Ensuite, sur le site d'une entreprise → clique ce favori → la marque s'ouvre ici prête à ajouter, et la fenêtre se referme toute seule.</p>
+      </details>`;
     }
     html+=`<div class="modal-actions">${editing.id?`<button class="btn danger" onclick="delFromModal()" title="Supprimer" aria-label="Supprimer">${ic("ban")}</button>`:""}<button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveModal()">Enregistrer</button></div>`;
     box.innerHTML=html;

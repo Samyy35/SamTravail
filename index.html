@@ -753,28 +753,35 @@
   .hist-stat .ic{width:12px;height:12px;}
   /* ===== GALERIE MARQUES (Mes marques) ===== */
   .reve-sizes{display:inline-flex;gap:3px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:3px;}
-  .reve-size-btn{border:none;background:transparent;cursor:pointer;font-size:14px;padding:4px 9px;border-radius:6px;color:var(--text-dim);font-family:var(--font);}
-  .reve-size-btn.active{background:var(--accent);color:#fff;}
-  .reve-gallery{display:grid;gap:12px;}
-  .reve-gallery.size-S{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}
-  .reve-gallery.size-M{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));}
-  .reve-gallery.size-L{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));}
+  /* Grille 100% responsive : s'adapte seule à la largeur (mobile -> PC), sweet spot ~150px */
+  .reve-gallery{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  /* Densité auto : quand BEAUCOUP de marques sont affichées, les cartes/icônes rétrécissent
+     progressivement (et on masque les détails secondaires) pour limiter le scroll. Seuils volontairement tardifs. */
+  .reve-gallery.rv-d1{grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:10px;}
+  .reve-gallery.rv-d2{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:9px;}
+  .reve-gallery.rv-d3{grid-template-columns:repeat(auto-fill,minmax(94px,1fr));gap:8px;}
+  .rv-d1 .reve-logo{width:44px;height:44px;font-size:18px;}
+  .rv-d2 .reve-logo{width:37px;height:37px;font-size:15px;}
+  .rv-d3 .reve-logo{width:31px;height:31px;font-size:13px;}
+  .rv-d2 .reve-name{font-size:12px;}
+  .rv-d3 .reve-name{font-size:11px;line-height:1.2;}
+  .rv-d1 .reve-card,.rv-d2 .reve-card{padding:11px 9px;gap:5px;}
+  .rv-d3 .reve-card{padding:9px 7px;gap:4px;}
+  .rv-d1 .reve-sector,.rv-d1 .reve-off,.rv-d1 .reve-check{display:none;}
+  .rv-d2 .reve-sector,.rv-d2 .reve-foot{display:none;}
+  .rv-d3 .reve-sector,.rv-d3 .reve-foot{display:none;}
+  .rv-d3 .rstar{font-size:12px;}
   .reve-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;cursor:pointer;transition:.15s;}
   .reve-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow);}
   .reve-logo{width:52px;height:52px;border-radius:13px;background:var(--surface-2);border:1px solid var(--border);display:grid;place-items:center;font-family:var(--display);font-size:22px;font-weight:600;color:var(--text-dim);overflow:hidden;}
   .reve-logo img{width:100%;height:100%;object-fit:contain;padding:7px;}
-  .size-S .reve-logo{width:40px;height:40px;font-size:17px;}
-  .size-L .reve-logo{width:64px;height:64px;font-size:27px;}
   .reve-name{font-size:13.5px;font-weight:700;line-height:1.25;}
-  .size-S .reve-name{font-size:12px;}
-  .size-L .reve-name{font-size:15px;}
   .reve-sector{font-size:11px;color:var(--text-dim);}
   .reve-stars{display:flex;gap:2px;}
   .rstar{font-size:14px;color:var(--surface-3);cursor:pointer;transition:.1s;line-height:1;}
   .rstar.on{color:var(--gold);}
   .rstar:hover{transform:scale(1.2);}
   .rstar.big{font-size:24px;}
-  .size-S .rstar{font-size:11px;}
   .reve-foot{display:flex;flex-direction:column;gap:3px;margin-top:2px;width:100%;}
   .reve-visite{font-size:10.5px;color:var(--text-mute);}
   .reve-visite.stale{color:var(--orange);font-weight:600;}
@@ -789,7 +796,6 @@
   .reve-check{margin-top:4px;font-size:10px;font-weight:600;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px 9px;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;gap:4px;align-self:center;}
   .reve-check:hover{border-color:var(--green);color:var(--green);}
   .reve-check .ic{width:11px;height:11px;}
-  .size-S .reve-sector,.size-S .reve-off,.size-S .reve-check{display:none;}
   /* Ouverture en lot des marques */
   .reve-bulkbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px;}
   .reve-bulk-count{font-size:12.5px;color:var(--text-dim);font-weight:600;}
@@ -814,6 +820,40 @@
   .rsort-mini:hover{color:var(--text);background:var(--surface-3);}
   .rsort-mini.active{background:var(--text);color:var(--bg);}
   .rsort-mini .ic{width:13px;height:13px;}
+  /* Tri Marques : déclencheur unique + menu déroulant propre */
+  .rsort-dd{position:relative;display:inline-block;}
+  .rsort-dd>summary{list-style:none;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;font-family:var(--font);padding:8px 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:.14s;white-space:nowrap;}
+  .rsort-dd>summary::-webkit-details-marker{display:none;}
+  .rsort-dd>summary:hover{border-color:var(--accent);color:var(--text);}
+  .rsort-dd[open]>summary{border-color:var(--accent);color:var(--text);box-shadow:0 3px 10px var(--glow);}
+  .rsort-trigger .ic{width:15px;height:15px;}
+  .rsort-cur{font-weight:600;}
+  .rsort-caret{display:inline-flex;opacity:.6;transition:transform .16s;} .rsort-caret .ic{width:12px;height:12px;}
+  .rsort-dd[open] .rsort-caret{transform:rotate(180deg);}
+  .rsort-menu{position:absolute;top:calc(100% + 6px);left:0;z-index:30;min-width:230px;padding:6px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 38px rgba(0,0,0,.22);display:flex;flex-direction:column;gap:2px;animation:rsortIn .14s ease;}
+  @keyframes rsortIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+  .rsort-opt{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font-size:13px;font-weight:500;font-family:var(--font);padding:8px 10px;border:none;border-radius:9px;background:transparent;color:var(--text-dim);cursor:pointer;transition:.12s;}
+  .rsort-opt:hover{background:var(--surface-2);color:var(--text);}
+  .rsort-opt.active{background:var(--surface-2);color:var(--text);font-weight:600;}
+  .rsort-opt-ic{display:inline-flex;width:16px;flex-shrink:0;opacity:.8;} .rsort-opt-ic .ic{width:15px;height:15px;}
+  .rsort-opt-lbl{flex:1;}
+  .rsort-opt-chk{display:inline-flex;color:var(--accent);} .rsort-opt-chk .ic{width:15px;height:15px;}
+  .brand-desc{font-size:13.5px;line-height:1.5;color:var(--text-dim);margin:10px 0 4px;padding:11px 13px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;}
+  /* Barre de filtres Marques : groupement (segmented control) à gauche, tri + refresh à droite */
+  .reve-filterbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+  .reve-segctrl{display:inline-flex;align-items:center;gap:3px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:3px;}
+  .rseg{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;font-family:var(--font);padding:7px 13px;border-radius:8px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;transition:.14s;white-space:nowrap;}
+  .rseg:hover{color:var(--text);}
+  .rseg.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--glow);}
+  .rseg .ic{width:15px;height:15px;}
+  .reve-segctrl-note{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--accent);} .reve-segctrl-note .ic{width:15px;height:15px;}
+  .add-bar-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .add-bar-actions .btn.ghost.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  /* Loader de capture (pop-up bookmarklet) : boussole qui tourne + texte sobre, non bloquant */
+  .capture-loader{display:flex;align-items:center;gap:11px;margin:2px 0 14px;padding:11px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;}
+  .cap-compass{display:inline-flex;color:var(--accent);animation:spin 1.1s linear infinite;}
+  .cap-compass .ic{width:20px;height:20px;}
+  .cap-loader-txt{font-size:13px;color:var(--text-dim);font-weight:500;}
   .reve-folder-head{grid-column:1/-1;display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--surface);border:1px solid var(--border);border-radius:11px;cursor:pointer;user-select:none;}
   .reve-folder-head:hover{background:var(--surface-2);border-color:var(--border-light);}
   .reve-folder-head .ff-chev{display:inline-flex;transition:transform .2s;color:var(--text-dim);}
@@ -1022,8 +1062,6 @@
   .tl-toggle .btn .ic{width:14px;height:14px;}
   /* ===== Mes marques : icônes ===== */
   .rsort .ic{width:14px;height:14px;vertical-align:-.12em;}
-  .reve-size-btn{display:grid;place-items:center;}
-  .reve-size-btn .ic{width:16px;height:16px;}
   .reve-visite{display:inline-flex;align-items:center;gap:4px;}
   .reve-visite .ic{width:12px;height:12px;}
   .reve-off .ic{width:12px;height:12px;vertical-align:-.1em;}
@@ -1163,7 +1201,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v58</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v61</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1309,24 +1347,9 @@
 
   <!-- VIEW REVE -->
   <div class="view" id="view-reve">
-    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Mes marques</h2><div class="sub">Les boîtes qui te font envie — note-les, revisite-les, suis leurs offres.</div></div><button class="btn sm" onclick="openModal('reve')">+ Marque</button></div>
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Mes marques</h2><div class="sub">Les boîtes qui te font envie — note-les, revisite-les, suis leurs offres.</div></div><div class="add-bar-actions"><button class="btn sm ghost" id="reveBulkToggle" onclick="toggleReveSelectMode()"><i data-ic="layers"></i> <span id="reveBulkToggleLbl">Ouvrir en lot</span></button><button class="btn sm" onclick="openModal('reve')">+ Marque</button></div></div>
     <div id="reveBmSetup" class="bm-setup" style="display:none;"></div>
     <div class="reve-search"><i data-ic="search"></i><input id="reveSearch" type="search" placeholder="Rechercher une entreprise…" oninput="setReveQuery(this.value)" autocomplete="off"></div>
-    <div class="reve-toolbar">
-      <div class="reve-sortpills" id="reveSortPills">
-        <button class="rsort active" data-s="note" onclick="setReveSort('note')"><i data-ic="star"></i> Ma note</button>
-        <button class="rsort" data-s="populaires" onclick="setReveSort('populaires')"><i data-ic="eye"></i> Plus visitées</button>
-        <button class="rsort" data-s="offres" onclick="setReveSort('offres')"><i data-ic="send"></i> Offres</button>
-        <button class="rsort" data-s="ancienne" onclick="setReveSort('ancienne')"><i data-ic="clock"></i> À revisiter</button>
-        <button class="rsort" data-s="secteur" onclick="setReveSort('secteur')"><i data-ic="building"></i> Secteur</button>
-        <button class="rsort" data-s="nom" onclick="setReveSort('nom')">A→Z</button>
-      </div>
-      <div class="reve-sizes">
-        <button class="reve-size-btn" data-size="S" onclick="setReveSize('S')" title="Petites"><i data-ic="gridS"></i></button>
-        <button class="reve-size-btn active" data-size="M" onclick="setReveSize('M')" title="Moyennes"><i data-ic="gridM"></i></button>
-        <button class="reve-size-btn" data-size="L" onclick="setReveSize('L')" title="Grandes"><i data-ic="gridL"></i></button>
-      </div>
-    </div>
     <div id="reve-content"></div>
     <div class="notes-board"><h3><i data-ic="pencil"></i> Notes stratégie</h3><textarea id="notes-reve" placeholder="Idées d'approche, contacts à activer, candidatures spontanées à tenter..." oninput="saveNote('reve')"></textarea><div class="saved" id="saved-reve"></div></div>
   </div>
@@ -1427,7 +1450,8 @@
     tag:'<path d="M3.5 9.5V4a.5.5 0 01.5-.5h5.5l7 7-6 6-7-7z"/><circle cx="6.8" cy="6.8" r="1"/>',
     columns:'<rect x="3" y="3.5" width="3.6" height="13" rx="1"/><rect x="8.2" y="3.5" width="3.6" height="13" rx="1"/><rect x="13.4" y="3.5" width="3.6" height="13" rx="1"/>',
     trash:'<path d="M4.5 6h11M8 6V4.6a1 1 0 011-1h2a1 1 0 011 1V6M6.7 6l.6 9.2a1 1 0 001 .95h3.4a1 1 0 001-.95L14.3 6M8.6 9v4.5M11.4 9v4.5"/>',
-    undo:'<path d="M7 8H4V5M4.2 8.2A6 6 0 1110 16"/>'
+    undo:'<path d="M7 8H4V5M4.2 8.2A6 6 0 1110 16"/>',
+    compass:'<circle cx="10" cy="10" r="7.5"/><path d="M13.4 6.6l-2 4.8-4.8 2 2-4.8z"/>'
   };
   // étape du Suivi -> icône
   const KICON={"Envoyé":"send","Entretien":"mic","Offre reçue":"trophy","Refusé":"ban","Non intéressé":"minus"};
@@ -1483,6 +1507,17 @@
     n=n.replace(/\b(careers?|carri[e\u00e8]res?|jobs?|emplois?|recrutement|recruitment|talents?|talent\s+acquisition|hiring|nous\s+rejoindre|join\s+us|work\s+with\s+us|offres?\s+d['\u2019]emploi)\b/ig," ");
     n=n.replace(/\s{2,}/g," ").replace(/[\s\-\u2013\u2014\u2022\u00b7]+$/,"").trim();
     return n.slice(0,60);
+  }
+  // Niveau 1 : nettoie une description d'entreprise scrapp\u00e9e (meta) -> phrase(s) lisible(s), coupe propre ~280 car.
+  function cleanBrandDesc(raw){
+    let t=(""+(raw||"")).replace(/\s+/g," ").trim();
+    if(!t) return "";
+    if(t.length<=280) return t;
+    // coupe \u00e0 la fin de phrase la plus proche sous 280, sinon au dernier espace
+    const cut=t.slice(0,280); const lastDot=Math.max(cut.lastIndexOf(". "),cut.lastIndexOf("! "),cut.lastIndexOf("? "));
+    if(lastDot>140) return cut.slice(0,lastDot+1).trim();
+    const lastSp=cut.lastIndexOf(" ");
+    return (lastSp>140?cut.slice(0,lastSp):cut).trim()+"\u2026";
   }
   function detectSector(o){
     // secteur choisi manuellement (menu déroulant de repli) prioritaire
@@ -1972,7 +2007,7 @@
       seenOffers={}; (so&&so.data||[]).forEach(r=>seenOffers[r.offer_id]=true);
       activityLog=(al&&al.data)||[];
       if(pc&&pc.data&&pc.data.valeur){ try{ matchCriteria={...matchCriteria,...pc.data.valeur}; }catch(e){} }
-      if(sb){try{const {data:rsd}=await sb.from("parametres").select("valeur").eq("cle","reveSort").maybeSingle();if(rsd&&rsd.valeur&&rsd.valeur.s)reveSort=rsd.valeur.s;}catch(e){}}
+      if(sb){try{ if(_reveSortForce){ sb.from("parametres").upsert({cle:"reveSort",valeur:{s:"ancienne"},updated_at:new Date().toISOString()},{onConflict:"cle"}); } else { const {data:rsd}=await sb.from("parametres").select("valeur").eq("cle","reveSort").maybeSingle(); if(rsd&&rsd.valeur&&rsd.valeur.s)reveSort=rsd.valeur.s; } }catch(e){}}
     }catch(e){console.warn(e);}
     // notes (localStorage-free : stockées dans Supabase via table simple ? -> on garde en mémoire + localStorage interdit en artifact, donc on persiste via job_status spécial)
   }
@@ -2443,11 +2478,11 @@
     const scClass=sc>=75?"hi":sc>=55?"mid":"lo";
     const b=followedBrand(o.entreprise);
     const kept=(st==="apostuler"||st==="super");
-    // logo (favicon d'une marque suivie) sinon monogramme coloré par secteur
-    const logo=b?brandLogo(b):"";
+    // logo auto : og:image capté / marque suivie / Clearbit -> repli favicon -> monogramme coloré par secteur
+    const logo=offerLogo(o), logoDom=logoDomainOf(o);
     const ini=esc((o.entreprise||o.titre||"?").trim().slice(0,1).toUpperCase());
     const logoInner=logo
-      ? `<img src="${logo}" alt="" onerror="this.parentElement.classList.add('mono');this.parentElement.style.background='${sec.c}1f';this.parentElement.style.color='${sec.c}';this.parentElement.textContent='${ini}';">`
+      ? `<img src="${esc(logo)}" alt="" onerror="logoErr(this,'${esc(logoDom)}','${ini}','${sec.c}')">`
       : ini;
     const logoCls=logo?"":"mono";
     const logoStyle=logo?"":`background:${sec.c}1f;color:${sec.c};`;
@@ -2608,7 +2643,25 @@
   }
   function bookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}function Q(a){for(var i=0;i<a.length;i++){var e=document.querySelector(a[i]);if(e){var t=(e.innerText||e.textContent||'').replace(W(),' ').trim();if(t)return t;}}return '';}var LIM=5000;var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,LIM);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,LIM);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}var HOST=location.hostname,FL='';if(HOST.indexOf('indeed')>=0){var it=Q(['h2[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title] span','[data-testid=simpler-jobTitle]','.jobsearch-JobInfoHeader-title','h1.jobsearch-JobInfoHeader-title','[data-testid=jobsearch-ViewjobPaneWrapper] h1','[data-testid=jobsearch-ViewjobPaneWrapper] h2','[data-testid=viewJobTitle]']);if(it&&!/security check|v[eé]rification|just a moment|captcha|cloudflare/i.test(it))d.t=it;var ie=Q(['[data-testid=inlineHeader-companyName] a','[data-testid=inlineHeader-companyName]','[data-company-name=true]','.jobsearch-CompanyInfoContainer a','[data-testid=jobsearch-CompanyInfoContainer] a']);if(ie)d.e=ie;var il=Q(['[data-testid=inlineHeader-companyLocation] div','[data-testid=inlineHeader-companyLocation]','[data-testid=jobsearch-JobInfoHeader-companyLocation]','[data-testid=job-location]']);if(il)d.l=il;var idd=document.querySelector('#jobDescriptionText,.jobsearch-JobComponent-description');if(idd){var idt=(idd.innerText||idd.textContent||'').replace(W(),' ').trim();if(idt.length>d.ds.length)d.ds=idt.slice(0,LIM);}try{var ip=new URLSearchParams(location.search);var jk=ip.get('vjk')||ip.get('jk');if(jk)FL=location.protocol+'//'+HOST+'/viewjob?jk='+jk;}catch(e){}}else if(HOST.indexOf('linkedin')>=0){var lt=Q(['.job-details-jobs-unified-top-card__job-title','.jobs-unified-top-card__job-title','.t-24.job-details-jobs-unified-top-card__job-title','.topcard__title']);if(lt)d.t=lt;var lc=Q(['.job-details-jobs-unified-top-card__company-name a','.job-details-jobs-unified-top-card__company-name','.jobs-unified-top-card__company-name a','.jobs-unified-top-card__company-name','.topcard__org-name-link']);if(lc)d.e=lc;var ll=Q(['.job-details-jobs-unified-top-card__primary-description-container .tvm__text','.job-details-jobs-unified-top-card__bullet','.jobs-unified-top-card__bullet','.topcard__flavor--bullet']);if(ll)d.l=ll;var ldd=document.querySelector('.jobs-description__content,.jobs-box__html-content,.jobs-description-content__text,#job-details');if(ldd){var ldt=(ldd.innerText||ldd.textContent||'').replace(W(),' ').trim();if(ldt.length>d.ds.length)d.ds=ldt.slice(0,LIM);}try{var lp=new URLSearchParams(location.search);var cj=lp.get('currentJobId');if(cj)FL='https://www.linkedin.com/jobs/view/'+cj;}catch(e){}}else if(HOST.indexOf('glassdoor')>=0){var gt=Q(['[data-test=job-title]','[id^=jd-job-title]','[class*=JobDetails_jobTitle]']);if(gt)d.t=gt;var gc=Q(['[data-test=employerName]','[class*=EmployerProfile_employerName]','[data-test=detailsHeader] a']);if(gc)d.e=gc;var gl=Q(['[data-test=location]','[data-test=emp-location]','[class*=JobDetails_location]']);if(gl)d.l=gl;var gd=document.querySelector('[class*=JobDetails_jobDescription],#JobDescriptionContainer,[class*=jobDescriptionContent]');if(gd){var gdt=(gd.innerText||gd.textContent||'').replace(W(),' ').trim();if(gdt.length>d.ds.length)d.ds=gdt.slice(0,LIM);}}else if(HOST.indexOf('francetravail')>=0||HOST.indexOf('pole-emploi')>=0){var ftt=Q(['h1.t4','.media-heading-title','[class*=titre-offre]','main h1']);if(ftt&&ftt.length<140)d.t=ftt;var ftc=Q(['[class*=entreprise] a','[class*=Entreprise]','.coordonnees-entreprise','[itemprop=hiringOrganization]']);if(ftc)d.e=ftc;var ftl=Q(['[class*=localisation]','[class*=lieu-travail]','[itemprop=jobLocation]']);if(ftl)d.l=ftl;}function isJob(o){return o&&typeof o==='object'&&!Array.isArray(o)&&(o.jobInfoHeaderModel||(o.jobTitle&&(o.companyName||o.company))||(o.title&&(o.hiringOrganization||o.company||o.employer||o.companyName)));}function pull(o){if(o.jobInfoHeaderModel){var h=o.jobInfoHeaderModel;return {t:h.jobTitle||'',e:h.companyName||'',l:h.formattedLocation||h.location||'',ds:o.sanitizedJobDescription||o.jobDescriptionText||o.jobDescription||''};}var hg=o.hiringOrganization;var e=o.companyName||o.company||o.employer||(typeof hg==='string'?hg:(hg&&hg.name)||'');var l=o.formattedLocation||o.location||o.jobLocationCity||o.jobLocation||'';if(l&&typeof l==='object')l=l.city||l.name||l.formattedLocation||l.addressLocality||(l.address&&(l.address.addressLocality||l.address.addressRegion))||'';return {t:o.jobTitle||o.title||'',e:e,l:l,ds:o.jobDescription||o.description||o.sanitizedJobDescription||''};}function walkJob(root,cb){var stk=[root],g=0;while(stk.length&&g<6000){g++;var o=stk.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var ai=0;ai<o.length;ai++)stk.push(o[ai]);continue;}if(isJob(o)&&cb(o))return true;for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k)){var v=o[k];if(v&&typeof v==='object')stk.push(v);}}}return false;}if(!d.t||!d.e||!d.ds||d.ds.length<200){var blobs=[];try{if(window._initialData)blobs.push(window._initialData);}catch(e){}try{if(window.mosaic&&window.mosaic.providerData)blobs.push(window.mosaic.providerData);}catch(e){}try{if(window.__INITIAL_STATE__)blobs.push(window.__INITIAL_STATE__);}catch(e){}try{if(window.__NUXT__)blobs.push(window.__NUXT__);}catch(e){}try{if(window.__APOLLO_STATE__)blobs.push(window.__APOLLO_STATE__);}catch(e){}var asc=document.getElementsByTagName('script');var cnt=0;for(var si=0;si<asc.length&&cnt<14;si++){var ty=(asc[si].type||'');if(ty.indexOf('json')<0||ty.indexOf('ld+json')>=0)continue;var tc=asc[si].textContent||'';if(tc.length<20||tc.length>3000000)continue;cnt++;try{blobs.push(JSON.parse(tc));}catch(e){}}var known=d.t?d.t.toLowerCase().slice(0,18):'';for(var bi=0;bi<blobs.length;bi++){walkJob(blobs[bi],function(o){var p=pull(o);if(!p.t||p.t.length>160)return false;var pl=(''+p.t).toLowerCase();if(known&&pl.indexOf(known)<0&&known.indexOf(pl.slice(0,18))<0)return false;if(!d.t)d.t=p.t;if(!d.e&&p.e)d.e=(''+p.e).slice(0,80);if(!d.l&&p.l)d.l=(''+p.l).slice(0,80);if(p.ds&&(''+p.ds).length>d.ds.length)d.ds=strip(''+p.ds).slice(0,LIM);return true;});if(d.t&&d.e&&d.ds.length>200)break;}}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(d.ds.length<300){var sels=['[class*=description i]','[id*=description i]','[class*=job-description i]','[class*=offer-content i]','[class*=jobdesc i]','[class*=vacancy i]','article'];var best=d.ds;for(var q=0;q<sels.length;q++){var el=document.querySelector(sels[q]);if(el){var tx=(el.innerText||el.textContent||'').replace(W(),' ').trim();if(tx.length>best.length&&tx.length<12000)best=tx;}}if(best.length>d.ds.length)d.ds=best.slice(0,LIM);}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,LIM);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}if(/security check|v[eé]rification de s|just a moment|verify you are human|captcha|cloudflare|attention required|acc[eè]s refus/i.test(d.t))d.t='';var u='"+origin+"/?addUrl='+encodeURIComponent(FL||location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=500,height=680,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}function W(){return RegExp(String.fromCharCode(92)+'s+','g');}function strip(h){var t=document.createElement('div');t.innerHTML=h||'';return (t.textContent||t.innerText||'').replace(W(),' ').trim();}function clean(t,hard){t=(''+(t||'')).replace(W(),' ').trim();var low=t.toLowerCase();var cut=t.length;var seps=[' | ',' – ',' — ',' • ',' · ',' chez ',' at ','| '];if(hard)seps.push(' - ');for(var i=0;i<seps.length;i++){var p=low.indexOf(seps[i]);if(p>2&&p<cut)cut=p;}return t.substring(0,cut).trim();}function gx(n){var e=document.querySelector('[itemtype$=JobPosting] [itemprop='+n+'],[itemprop='+n+']');return e?(e.getAttribute('content')||e.innerText||e.textContent||'').trim():'';}function Q(a){for(var i=0;i<a.length;i++){var e=document.querySelector(a[i]);if(e){var t=(e.innerText||e.textContent||'').replace(W(),' ').trim();if(t)return t;}}return '';}var LIM=5000;var d={t:'',e:'',l:'',c:'',ds:'',dt:'',x:'',sal:'',lg:'',cu:''};var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!d.t;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j];var guard=0;while(st.length&&!d.t&&guard<400){guard++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=o['@type'];if(ty==='JobPosting'||(Array.isArray(ty)&&ty.indexOf('JobPosting')>=0)){d.t=(o.title||o.name||'').toString().trim();var hg=o.hiringOrganization;d.e=typeof hg==='string'?hg:(hg&&hg.name?hg.name:'');if(hg&&typeof hg==='object'){if(hg.logo&&!d.lg)d.lg=typeof hg.logo==='string'?hg.logo:(hg.logo.url||hg.logo.contentUrl||'');if(hg.url&&!d.cu)d.cu=''+hg.url;if(hg.sameAs&&!d.cu)d.cu=''+(Array.isArray(hg.sameAs)?hg.sameAs[0]:hg.sameAs);}var L=o.jobLocation;if(Array.isArray(L))L=L[0];if(L&&L.address)d.l=L.address.addressLocality||L.address.addressRegion||'';if(o.jobLocationType&&(''+o.jobLocationType).toUpperCase().indexOf('TELE')>=0)d.l=(d.l?d.l+' - ':'')+'Télétravail';if(o.employmentType)d.c=''+(Array.isArray(o.employmentType)?o.employmentType[0]:o.employmentType);if(o.description)d.ds=strip(o.description).slice(0,LIM);if(o.datePosted)d.dt=(''+o.datePosted).slice(0,10);if(o.experienceRequirements){var xr=o.experienceRequirements;d.x=typeof xr==='string'?xr:(xr&&xr.monthsOfExperience?(Math.round(xr.monthsOfExperience/12)+' an(s)'):'');}if(o.baseSalary){var b=o.baseSalary;var v=(b&&b.value)?b.value:b;var mn=v&&v.minValue,mx=v&&v.maxValue,va=v&&v.value;var ut=((v&&v.unitText)||'').toUpperCase();var us=ut.indexOf('HOUR')>=0?'/h':ut.indexOf('MONTH')>=0?'/mois':ut.indexOf('YEAR')>=0?'/an':'';if(mn&&mx)d.sal=mn+'-'+mx+us;else if(va)d.sal=''+va+us;}}}}if(!d.t&&document.querySelector('[itemtype$=JobPosting]')){d.t=gx('title');if(!d.e)d.e=gx('hiringOrganization')||gx('name');if(!d.l)d.l=gx('addressLocality');if(!d.ds)d.ds=strip(gx('description')).slice(0,LIM);if(!d.dt)d.dt=gx('datePosted').slice(0,10);}var HOST=location.hostname,FL='';if(HOST.indexOf('indeed')>=0){var it=Q(['h2[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title] span','[data-testid=simpler-jobTitle]','.jobsearch-JobInfoHeader-title','h1.jobsearch-JobInfoHeader-title','[data-testid=jobsearch-ViewjobPaneWrapper] h1','[data-testid=jobsearch-ViewjobPaneWrapper] h2','[data-testid=viewJobTitle]']);if(it&&!/security check|v[eé]rification|just a moment|captcha|cloudflare/i.test(it))d.t=it;var ie=Q(['[data-testid=inlineHeader-companyName] a','[data-testid=inlineHeader-companyName]','[data-company-name=true]','.jobsearch-CompanyInfoContainer a','[data-testid=jobsearch-CompanyInfoContainer] a']);if(ie)d.e=ie;var il=Q(['[data-testid=inlineHeader-companyLocation] div','[data-testid=inlineHeader-companyLocation]','[data-testid=jobsearch-JobInfoHeader-companyLocation]','[data-testid=job-location]']);if(il)d.l=il;var idd=document.querySelector('#jobDescriptionText,.jobsearch-JobComponent-description');if(idd){var idt=(idd.innerText||idd.textContent||'').replace(W(),' ').trim();if(idt.length>d.ds.length)d.ds=idt.slice(0,LIM);}try{var ip=new URLSearchParams(location.search);var jk=ip.get('vjk')||ip.get('jk');if(jk)FL=location.protocol+'//'+HOST+'/viewjob?jk='+jk;}catch(e){}}else if(HOST.indexOf('linkedin')>=0){var lt=Q(['.job-details-jobs-unified-top-card__job-title','.jobs-unified-top-card__job-title','.t-24.job-details-jobs-unified-top-card__job-title','.topcard__title']);if(lt)d.t=lt;var lc=Q(['.job-details-jobs-unified-top-card__company-name a','.job-details-jobs-unified-top-card__company-name','.jobs-unified-top-card__company-name a','.jobs-unified-top-card__company-name','.topcard__org-name-link']);if(lc)d.e=lc;var ll=Q(['.job-details-jobs-unified-top-card__primary-description-container .tvm__text','.job-details-jobs-unified-top-card__bullet','.jobs-unified-top-card__bullet','.topcard__flavor--bullet']);if(ll)d.l=ll;var ldd=document.querySelector('.jobs-description__content,.jobs-box__html-content,.jobs-description-content__text,#job-details');if(ldd){var ldt=(ldd.innerText||ldd.textContent||'').replace(W(),' ').trim();if(ldt.length>d.ds.length)d.ds=ldt.slice(0,LIM);}try{var lp=new URLSearchParams(location.search);var cj=lp.get('currentJobId');if(cj)FL='https://www.linkedin.com/jobs/view/'+cj;}catch(e){}}else if(HOST.indexOf('glassdoor')>=0){var gt=Q(['[data-test=job-title]','[id^=jd-job-title]','[class*=JobDetails_jobTitle]']);if(gt)d.t=gt;var gc=Q(['[data-test=employerName]','[class*=EmployerProfile_employerName]','[data-test=detailsHeader] a']);if(gc)d.e=gc;var gl=Q(['[data-test=location]','[data-test=emp-location]','[class*=JobDetails_location]']);if(gl)d.l=gl;var gd=document.querySelector('[class*=JobDetails_jobDescription],#JobDescriptionContainer,[class*=jobDescriptionContent]');if(gd){var gdt=(gd.innerText||gd.textContent||'').replace(W(),' ').trim();if(gdt.length>d.ds.length)d.ds=gdt.slice(0,LIM);}}else if(HOST.indexOf('francetravail')>=0||HOST.indexOf('pole-emploi')>=0){var ftt=Q(['h1.t4','.media-heading-title','[class*=titre-offre]','main h1']);if(ftt&&ftt.length<140)d.t=ftt;var ftc=Q(['[class*=entreprise] a','[class*=Entreprise]','.coordonnees-entreprise','[itemprop=hiringOrganization]']);if(ftc)d.e=ftc;var ftl=Q(['[class*=localisation]','[class*=lieu-travail]','[itemprop=jobLocation]']);if(ftl)d.l=ftl;}function isJob(o){return o&&typeof o==='object'&&!Array.isArray(o)&&(o.jobInfoHeaderModel||(o.jobTitle&&(o.companyName||o.company))||(o.title&&(o.hiringOrganization||o.company||o.employer||o.companyName)));}function pull(o){if(o.jobInfoHeaderModel){var h=o.jobInfoHeaderModel;return {t:h.jobTitle||'',e:h.companyName||'',l:h.formattedLocation||h.location||'',ds:o.sanitizedJobDescription||o.jobDescriptionText||o.jobDescription||''};}var hg=o.hiringOrganization;var e=o.companyName||o.company||o.employer||(typeof hg==='string'?hg:(hg&&hg.name)||'');var l=o.formattedLocation||o.location||o.jobLocationCity||o.jobLocation||'';if(l&&typeof l==='object')l=l.city||l.name||l.formattedLocation||l.addressLocality||(l.address&&(l.address.addressLocality||l.address.addressRegion))||'';return {t:o.jobTitle||o.title||'',e:e,l:l,ds:o.jobDescription||o.description||o.sanitizedJobDescription||''};}function walkJob(root,cb){var stk=[root],g=0;while(stk.length&&g<6000){g++;var o=stk.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var ai=0;ai<o.length;ai++)stk.push(o[ai]);continue;}if(isJob(o)&&cb(o))return true;for(var k in o){if(Object.prototype.hasOwnProperty.call(o,k)){var v=o[k];if(v&&typeof v==='object')stk.push(v);}}}return false;}if(!d.t||!d.e||!d.ds||d.ds.length<200){var blobs=[];try{if(window._initialData)blobs.push(window._initialData);}catch(e){}try{if(window.mosaic&&window.mosaic.providerData)blobs.push(window.mosaic.providerData);}catch(e){}try{if(window.__INITIAL_STATE__)blobs.push(window.__INITIAL_STATE__);}catch(e){}try{if(window.__NUXT__)blobs.push(window.__NUXT__);}catch(e){}try{if(window.__APOLLO_STATE__)blobs.push(window.__APOLLO_STATE__);}catch(e){}var asc=document.getElementsByTagName('script');var cnt=0;for(var si=0;si<asc.length&&cnt<14;si++){var ty=(asc[si].type||'');if(ty.indexOf('json')<0||ty.indexOf('ld+json')>=0)continue;var tc=asc[si].textContent||'';if(tc.length<20||tc.length>3000000)continue;cnt++;try{blobs.push(JSON.parse(tc));}catch(e){}}var known=d.t?d.t.toLowerCase().slice(0,18):'';for(var bi=0;bi<blobs.length;bi++){walkJob(blobs[bi],function(o){var p=pull(o);if(!p.t||p.t.length>160)return false;var pl=(''+p.t).toLowerCase();if(known&&pl.indexOf(known)<0&&known.indexOf(pl.slice(0,18))<0)return false;if(!d.t)d.t=p.t;if(!d.e&&p.e)d.e=(''+p.e).slice(0,80);if(!d.l&&p.l)d.l=(''+p.l).slice(0,80);if(p.ds&&(''+p.ds).length>d.ds.length)d.ds=strip(''+p.ds).slice(0,LIM);return true;});if(d.t&&d.e&&d.ds.length>200)break;}}if(!d.t){var h1=document.querySelector('h1');var ht=h1?clean(h1.innerText||h1.textContent||'',false):'';if(ht.length>120||ht.length<2)ht='';d.t=ht||clean(M('og:title'),true)||clean(M('twitter:title'),true)||clean(document.title,true)||'';}if(d.ds.length<300){var sels=['[class*=description i]','[id*=description i]','[class*=job-description i]','[class*=offer-content i]','[class*=jobdesc i]','[class*=vacancy i]','article'];var best=d.ds;for(var q=0;q<sels.length;q++){var el=document.querySelector(sels[q]);if(el){var tx=(el.innerText||el.textContent||'').replace(W(),' ').trim();if(tx.length>best.length&&tx.length<12000)best=tx;}}if(best.length>d.ds.length)d.ds=best.slice(0,LIM);}if(!d.ds)d.ds=(M('og:description')||M('twitter:description')||M('description')||'').slice(0,LIM);if(!d.e){var ce=document.querySelector('[class*=company i],[class*=employer i],[class*=entreprise i],[data-testid*=company i]');if(ce)d.e=(ce.innerText||ce.textContent||'').replace(W(),' ').trim().slice(0,60);}if(!d.l){var le=document.querySelector('[class*=location i],[class*=lieu i],[class*=ville i]');if(le)d.l=(le.innerText||le.textContent||'').replace(W(),' ').trim().slice(0,60);}if(/security check|v[eé]rification de s|just a moment|verify you are human|captcha|cloudflare|attention required|acc[eè]s refus/i.test(d.t))d.t='';var JB=/indeed|linkedin|glassdoor|welcometothejungle|hellowork|apec|francetravail|pole-emploi|monster|jobteaser|meteojob|cadremploi|jobijoba|stepstone|talent[.]com/i;var ATSh=/workday|myworkdayjobs|greenhouse|lever[.]co|taleo|icims|smartrecruiters|teamtailor|brassring|successfactors|recruitee|workable|jobvite|ashbyhq|breezy/i;if(!d.lg&&!JB.test(HOST))d.lg=M('og:image')||M('twitter:image')||'';if(!d.cu&&!JB.test(HOST)&&!ATSh.test(HOST))d.cu=location.protocol+'//'+HOST;var u='"+origin+"/?addUrl='+encodeURIComponent(FL||location.href)+'&addTitle='+encodeURIComponent(d.t)+'&addEnt='+encodeURIComponent(d.e)+'&addLieu='+encodeURIComponent(d.l)+'&addCt='+encodeURIComponent(d.c)+'&addDesc='+encodeURIComponent(d.ds)+'&addDate='+encodeURIComponent(d.dt)+'&addXp='+encodeURIComponent(d.x)+'&addSal='+encodeURIComponent(d.sal)+'&addLogo='+encodeURIComponent(d.lg)+'&addCompUrl='+encodeURIComponent(d.cu)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=500,height=680,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
+  }
+  // Loader de capture (pop-up bookmarklet) : boussole qui tourne + texte sobre, inséré sous l'entête de la modale.
+  // NON bloquant : la forme reste éditable pendant le traitement (scraping + IA) en arrière-plan.
+  function showCaptureLoader(text){
+    const box=document.getElementById("modalBox"); if(!box) return;
+    let el=box.querySelector(".capture-loader");
+    if(!el){
+      el=document.createElement("div"); el.className="capture-loader";
+      el.innerHTML=`<span class="cap-compass">${ic("compass")}</span><span class="cap-loader-txt"></span>`;
+      const head=box.querySelector(".modal-head");
+      if(head) head.insertAdjacentElement("afterend",el); else box.insertBefore(el,box.firstChild);
+    }
+    el.querySelector(".cap-loader-txt").textContent=text||"Analyse et optimisation en cours…";
+    el.style.display="";
+  }
+  function hideCaptureLoader(){
+    const box=document.getElementById("modalBox"); const el=box&&box.querySelector(".capture-loader");
+    if(el) el.style.display="none";
   }
   function openAddLinks(prefillUrl, prefillTitle){
     const origin=window.location.origin;
@@ -2639,7 +2692,8 @@
     if(!urls.length){document.getElementById("linksPreview").innerHTML='<div class="empty">Aucun lien valide détecté.</div>';return;}
     const btn=document.getElementById("fetchLinksBtn");btn.disabled=true;btn.textContent="...";
     const prev=document.getElementById("linksPreview");
-    prev.innerHTML='<div class="loading"><div class="spinner"></div>Récupération de '+urls.length+' offre(s)…</div>';
+    showCaptureLoader("Analyse et optimisation en cours…");   // boussole : reste affichée pendant scraping + IA
+    prev.innerHTML="";
     var _st=document.getElementById("aiEnrichStatus"); if(_st)_st.style.display="none";
     addLinksData=[];
     for(const url of urls){
@@ -2664,6 +2718,8 @@
         if(!offer.dateCreation && pf.dateCreation) offer.dateCreation=pf.dateCreation;
         if(!offer.experience && pf.experience) offer.experience=pf.experience;
         if(!offer.salaire && pf.salaire) offer.salaire=pf.salaire;
+        if(!offer.logo && pf.logo) offer.logo=pf.logo;               // og:image capté (logo société)
+        if(!offer.companyUrl && pf.companyUrl) offer.companyUrl=pf.companyUrl; // URL société -> logo via domaine
         // recalcule la qualité selon ce qu'on a au final
         if(offer.entreprise && offer.titre) quality="full";
         else if(offer.titre) quality= quality==="empty"?"partial":quality;
@@ -2691,29 +2747,30 @@
   }
   // Enrichissement IA non bloquant : complète les trous APRÈS affichage, sans écraser tes saisies
   async function aiEnrichLinks(){
-    if(!AI_ASSIST) return;
-    const todo=addLinksData.map((o,i)=>({o,i})).filter(x=>(!x.o.entreprise||!x.o.titre)&&(x.o.description||x.o.titre));
-    if(!todo.length) return;
-    const stEl=document.getElementById("aiEnrichStatus");
-    if(stEl){stEl.style.display="";stEl.innerHTML='<span class="spinner sp-s"></span> L\'IA complète les champs manquants en arrière-plan…';}
-    let touched=0;
-    for(const {o,i} of todo){
-      const aj=await aiSort({url:o.lien, text:("Titre suppose: "+(o.titre||"")+"\nEntreprise: "+(o.entreprise||"")+"\nLieu: "+(o.lieu||"")+"\n\nDescription:\n"+(o.description||"")).slice(0,6000)});
-      if(!(aj&&aj.offer)) continue;
-      const a=aj.offer, cur=addLinksData[i]; if(!cur) continue;
-      // ne remplit QUE ce qui est encore vide (tes saisies manuelles sont prioritaires)
-      if(a.titre && (!cur.titre||badTitle(cur.titre))){cur.titre=shortenTitle(a.titre);touched++;}
-      if(a.entreprise && !cur.entreprise){cur.entreprise=a.entreprise;touched++;}
-      if(a.lieu && !cur.lieu){cur.lieu=a.lieu;touched++;}
-      if(a.typeContrat && !cur.typeContrat){cur.typeContrat=a.typeContrat;touched++;}
-      if(a.salaire && !cur.salaire){cur.salaire=a.salaire;touched++;}
-      if(a.experience && !cur.experience){cur.experience=a.experience;touched++;}
+    try{
+      if(!AI_ASSIST) return;
+      const todo=addLinksData.map((o,i)=>({o,i})).filter(x=>(!x.o.entreprise||!x.o.titre)&&(x.o.description||x.o.titre));
+      if(!todo.length) return;
+      showCaptureLoader("Analyse et optimisation en cours…");   // garde la boussole pendant l'enrichissement IA
+      let touched=0;
+      for(const {o,i} of todo){
+        const aj=await aiSort({url:o.lien, text:("Titre suppose: "+(o.titre||"")+"\nEntreprise: "+(o.entreprise||"")+"\nLieu: "+(o.lieu||"")+"\n\nDescription:\n"+(o.description||"")).slice(0,6000)});
+        if(!(aj&&aj.offer)) continue;
+        const a=aj.offer, cur=addLinksData[i]; if(!cur) continue;
+        // ne remplit QUE ce qui est encore vide (tes saisies manuelles sont prioritaires)
+        if(a.titre && (!cur.titre||badTitle(cur.titre))){cur.titre=shortenTitle(a.titre);touched++;}
+        if(a.entreprise && !cur.entreprise){cur.entreprise=a.entreprise;touched++;}
+        if(a.lieu && !cur.lieu){cur.lieu=a.lieu;touched++;}
+        if(a.typeContrat && !cur.typeContrat){cur.typeContrat=a.typeContrat;touched++;}
+        if(a.salaire && !cur.salaire){cur.salaire=a.salaire;touched++;}
+        if(a.experience && !cur.experience){cur.experience=a.experience;touched++;}
+      }
+      // re-rend seulement si tu n'es pas en train de taper dans la preview
+      const prev=document.getElementById("linksPreview");
+      if(touched && prev && !prev.contains(document.activeElement)) renderLinksPreview();
+    } finally {
+      hideCaptureLoader();   // la boussole disparaît quand TOUT le traitement async est terminé
     }
-    // re-rend seulement si tu n'es pas en train de taper dans la preview
-    const prev=document.getElementById("linksPreview");
-    if(touched && prev && !prev.contains(document.activeElement)) renderLinksPreview();
-    const st2=document.getElementById("aiEnrichStatus");
-    if(st2){ st2.innerHTML=touched?ic("check")+" IA : "+touched+" champ(s) complété(s).":""; if(!touched)st2.style.display="none"; setTimeout(()=>{try{st2.style.display="none";}catch(e){}},6000); }
   }
 
   function renderLinksPreview(){
@@ -2865,6 +2922,7 @@
     try{ await loadAll(); refreshAll(); }catch(e){}
     if(btn)btn.classList.remove("spinning");
     _refreshing=false;
+    prefetchDescFmt();   // met en forme en arrière-plan les descriptions des offres fraîchement capturées
     if(force)flashCenter("Offres \u00e0 jour","info");
   }
   window.addEventListener("focus",()=>refreshData(false));
@@ -3496,11 +3554,37 @@
     if(s && !isAtsHost(s)) return s.startsWith("http")?s:"https://"+s;
     return "https://www.google.com/search?q="+encodeURIComponent(((e&&e.entreprise)||"")+" site de recrutement");
   }
-  // logo via le service de favicon Google (gratuit, pas de clé) — fallback initiale si pas de domaine
+  // logo d'une marque : og:image capté au bookmarklet (Niveau 2) sinon favicon Google du domaine (Niveau 1, gratuit, sans clé)
   function brandLogo(e){
+    if(e&&e.logo) return e.logo;
     const d=brandDomain(e);
     if(d) return "https://www.google.com/s2/favicons?sz=128&domain="+encodeURIComponent(d);
     return "";
+  }
+  // ===== LOGOS D'OFFRES (auto, sans saisie) =====
+  // hôtes de job boards : leur og:image / domaine n'est PAS le logo de l'entreprise -> on les ignore
+  function isJobBoardHost(h){ return /indeed|linkedin|glassdoor|welcometothejungle|hellowork|apec|francetravail|pole-emploi|monster|jobteaser|meteojob|cadremploi|jobijoba|stepstone|figaro|talent\.com/i.test(h||""); }
+  // domaine "entreprise" exploitable d'une offre (depuis l'URL société captée), hors job boards & ATS
+  function offerDomain(o){
+    if(o&&o.companyUrl){ try{ const h=new URL((""+o.companyUrl).startsWith("http")?o.companyUrl:"https://"+o.companyUrl).hostname.replace(/^www\./,""); if(h&&!isAtsHost(h)&&!isJobBoardHost(h)) return h; }catch(x){} }
+  return "";
+  }
+  // meilleur domaine pour le repli favicon (offre OU marque suivie liée)
+  function logoDomainOf(o){ const d=offerDomain(o); if(d) return d; const b=o&&followedBrand(o.entreprise); return b?brandDomain(b):""; }
+  // Niveau 1 (auto) : og:image capté -> marque suivie (favicon fiable) -> Clearbit depuis le domaine
+  function offerLogo(o){
+    if(o&&o.logo) return o.logo;                          // og:image / hiringOrganization.logo (capté au bookmarklet)
+    const b=o&&followedBrand(o.entreprise);
+    if(b){ const bl=brandLogo(b); if(bl) return bl; }      // logo de la marque suivie (favicon Google, fiable)
+    const d=offerDomain(o);
+    if(d) return "https://logo.clearbit.com/"+d;           // Clearbit depuis le domaine société (repli favicon géré par logoErr)
+    return "";
+  }
+  // chaîne de repli d'une <img> de logo : Clearbit échoue -> favicon Google -> monogramme coloré
+  function logoErr(img,dom,ini,col){
+    if(dom && !img.dataset.fb){ img.dataset.fb="1"; img.src="https://www.google.com/s2/favicons?sz=128&domain="+encodeURIComponent(dom); return; }
+    const p=img.parentElement; if(!p) return;
+    p.classList.add("mono"); if(col){ p.style.background=col+"1f"; p.style.color=col; } p.textContent=ini||"";
   }
   // offres liées à une marque (croise le nom d'entreprise avec pipeline + offres gardées)
   function brandOffers(e){
@@ -3654,14 +3738,17 @@
   // bookmarklet "marque" : capture nom + site de la page courante -> ?addBrand=...
   function brandBookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var jn='',jd='';var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!jn;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j],g=0;while(st.length&&!jn&&g<300){g++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=''+(o['@type']||'');if(/Organization|Corporation|LocalBusiness|EducationalOrganization|NewsMediaOrganization|WebSite/i.test(ty)&&(o.name||o.legalName)){jn=o.name||o.legalName;if(o.description)jd=o.description;break;}for(var k in o){var v=o[k];if(v&&typeof v==='object')st.push(v);}}}var raw=jn||M('og:site_name')||M('application-name')||M('twitter:title')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var ATS=/workday|myworkdayjobs|greenhouse|lever[.]co|taleo|icims|smartrecruiters|teamtailor|brassring|successfactors|recruitee|workable|jobvite|ashbyhq|breezy/i;var site='';if(ATS.test(location.hostname)){var rf=document.referrer||'';if(rf&&!ATS.test(rf))site=rf.split('/').slice(0,3).join('/');}else{site=location.origin;if(!site||site==='null'){var cu=((document.querySelector('link[rel=canonical]')||{}).href)||M('og:url')||'';site=cu?cu.split('/').slice(0,3).join('/'):(location.protocol+'//'+location.hostname);}}var desc=(jd||M('og:description')||M('description')||M('keywords')||'').slice(0,400);var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=520,height=720,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var jn='',jd='';var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!jn;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j],g=0;while(st.length&&!jn&&g<300){g++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=''+(o['@type']||'');if(/Organization|Corporation|LocalBusiness|EducationalOrganization|NewsMediaOrganization|WebSite/i.test(ty)&&(o.name||o.legalName)){jn=o.name||o.legalName;if(o.description)jd=o.description;break;}for(var k in o){var v=o[k];if(v&&typeof v==='object')st.push(v);}}}var raw=jn||M('og:site_name')||M('application-name')||M('twitter:title')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var ATS=/workday|myworkdayjobs|greenhouse|lever[.]co|taleo|icims|smartrecruiters|teamtailor|brassring|successfactors|recruitee|workable|jobvite|ashbyhq|breezy/i;var site='';if(ATS.test(location.hostname)){var rf=document.referrer||'';if(rf&&!ATS.test(rf))site=rf.split('/').slice(0,3).join('/');}else{site=location.origin;if(!site||site==='null'){var cu=((document.querySelector('link[rel=canonical]')||{}).href)||M('og:url')||'';site=cu?cu.split('/').slice(0,3).join('/'):(location.protocol+'//'+location.hostname);}}var desc=(jd||M('og:description')||M('description')||M('keywords')||'').slice(0,400);var blogo='';if(!ATS.test(location.hostname)){blogo=M('og:image')||M('twitter:image')||M('og:logo')||'';}var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc)+'&brandLogo='+encodeURIComponent(blogo)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=520,height=720,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
   }
-  // tri de la galerie
-  let reveSort="note", reveSize="M", reveQuery="";
-  try{var _rs=localStorage.getItem("reveSort");if(_rs)reveSort=_rs;}catch(e){}
-  function setReveSort(v){reveSort=v;try{localStorage.setItem("reveSort",v);}catch(e){}if(sb){try{sb.from("parametres").upsert({cle:"reveSort",valeur:{s:v},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}document.querySelectorAll("#reveSortPills .rsort").forEach(b=>b.classList.toggle("active",b.dataset.s===v));renderReve();}
+  // tri de la galerie — défaut : marque la plus anciennement visitée (à revisiter en priorité)
+  let reveSort="ancienne", reveQuery="";
+  // migration v59 : on impose une fois le nouveau défaut « anciennement visitées »
+  // (la valeur sauvegardée pouvait être un ancien tri) ; ensuite tout choix de l'utilisateur est respecté.
+  let _reveSortForce=false;
+  try{ if(localStorage.getItem("reveSortMig59")!=="1"){ _reveSortForce=true; localStorage.setItem("reveSortMig59","1"); localStorage.setItem("reveSort","ancienne"); } }catch(e){}
+  try{ if(!_reveSortForce){ var _rs=localStorage.getItem("reveSort"); if(_rs)reveSort=_rs; } }catch(e){}
+  function setReveSort(v){reveSort=v;try{localStorage.setItem("reveSort",v);}catch(e){}if(sb){try{sb.from("parametres").upsert({cle:"reveSort",valeur:{s:v},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}renderReve();}
   function setReveQuery(v){reveQuery=v;renderReve();}
-  function setReveSize(v){reveSize=v;document.querySelectorAll(".reve-size-btn").forEach(b=>b.classList.toggle("active",b.dataset.size===v));renderReve();}
 
   // ===== REVE =====
   // ===== Ouverture en lot des marques (batch) =====
@@ -3751,7 +3838,7 @@
   function ensureReveScaffold(c){
     let gal=document.getElementById("reveGallery");
     if(!gal){
-      c.innerHTML=`<div id="reveBars"></div><div id="reveGallery" class="reve-gallery size-${reveSize}"></div>`;
+      c.innerHTML=`<div id="reveBars"></div><div id="reveGallery" class="reve-gallery"></div>`;
       gal=document.getElementById("reveGallery");
     }
     return gal;
@@ -3804,7 +3891,6 @@
   function renderReve(){
     const c=document.getElementById("reve-content");
     if(!reve.length){ window._reveCardEls=null; c.innerHTML='<div class="empty-cta"><div class="empty-ico">'+ic("bookmark")+'</div><div class="empty-h">Aucune marque suivie</div><div class="empty-p">Ajoute les entreprises qui te font rêver, note-les, et garde un œil sur celles à revisiter. Le favori « marque » (en haut) les capture en 1 clic.</div><div class="empty-actions"><button class="btn" onclick="openModal(\'reve\')">+ Ajouter une marque</button></div></div>'; return; }
-    document.querySelectorAll("#reveSortPills .rsort").forEach(b=>b.classList.toggle("active",b.dataset.s===reveSort));
     const q=(reveQuery||"").trim().toLowerCase();
     let base=reve.slice();
     if(q)base=base.filter(e=>((e.entreprise||"")+" "+(e.secteur||"")+" "+(e.ville||"")).toLowerCase().indexOf(q)>=0);
@@ -3818,25 +3904,30 @@
       if(reveSort==="secteur")return (a.secteur||"").localeCompare(b.secteur||"");
       return (a.entreprise||"").localeCompare(b.entreprise||"");
     });
-    const gal=ensureReveScaffold(c); gal.className="reve-gallery size-"+reveSize;
+    // densité auto selon le nombre affiché (seuils tardifs : on ne rétrécit que si ça devient long à scroller)
+    const _dn=sorted.length, _dcls=_dn>=180?"rv-d3":_dn>=110?"rv-d2":_dn>=60?"rv-d1":"";
+    const gal=ensureReveScaffold(c); gal.className="reve-gallery"+(_dcls?" "+_dcls:"");
     const secs=[...new Set(reve.map(brandSectorOf))].sort();
     const G=[["secteur","Secteur","building"],["visite","Date de visite","clock"],["revisiter","À revisiter","bell"]];
-    const SRT=[["note","Ma note","star"],["populaires","Plus visitées","eye"],["offres","Offres","send"],["nom","A→Z",""]];
-    let groupHtml;
-    if(reveGroupBy!=="none" && !reveGroupExpanded){
-      const g=G.find(x=>x[0]===reveGroupBy)||G[0];
-      groupHtml=`<button class="rfilter active" onclick="expandReveGroups()" title="Changer de dossier">${ic(g[2])} ${g[1]} <span class="rf-chev">${ic("chevron")}</span></button>`;
+    const SRT=[["ancienne","Anciennement visitées","clock"],["visite","Récemment visitées","eye"],["note","Ma note","star"],["populaires","Plus visitées","send"],["offres","Plus d'offres","inbox"],["secteur","Secteur","building"],["nom","A → Z","list"]];
+    const curSrt=SRT.find(x=>x[0]===reveSort)||SRT[0];
+    // tri secondaire : un seul bouton-logo -> menu déroulant propre
+    const sortDd=`<details class="rsort-dd"><summary class="rsort-trigger" title="Trier les marques">${ic("sliders")}<span class="rsort-cur">${curSrt[1]}</span><span class="rsort-caret">${ic("chevron")}</span></summary><div class="rsort-menu">${SRT.map(([k,l,i])=>`<button class="rsort-opt ${reveSort===k?"active":""}" onclick="setReveSort('${k}')"><span class="rsort-opt-ic">${i?ic(i):""}</span><span class="rsort-opt-lbl">${l}</span>${reveSort===k?`<span class="rsort-opt-chk">${ic("check")}</span>`:""}</button>`).join("")}</div></details>`;
+    const refreshBtn=`<button class="rfilter rf-refresh" onclick="refreshData(true)" title="Recharger mes marques">${ic("history")}</button>`;
+    let groupBar;
+    if(reveSelectMode){
+      // mode sélection : dropdown secteur stylé (cohérent avec le tri) + tout cocher + compteur
+      const secDd=`<details class="rsort-dd sec-dd"><summary class="rsort-trigger" title="Filtrer par secteur">${ic("building")}<span class="rsort-cur">${reveSectorFilter==="all"?"Tous les secteurs":esc(reveSectorFilter)}</span><span class="rsort-caret">${ic("chevron")}</span></summary><div class="rsort-menu"><button class="rsort-opt ${reveSectorFilter==="all"?"active":""}" data-v="all" onclick="setReveSectorFilter(this.dataset.v)"><span class="rsort-opt-lbl">Tous les secteurs</span>${reveSectorFilter==="all"?`<span class="rsort-opt-chk">${ic("check")}</span>`:""}</button>${secs.map(s=>`<button class="rsort-opt ${reveSectorFilter===s?"active":""}" data-v="${esc(s)}" onclick="setReveSectorFilter(this.dataset.v)"><span class="rsort-opt-lbl">${esc(s)}</span>${reveSectorFilter===s?`<span class="rsort-opt-chk">${ic("check")}</span>`:""}</button>`).join("")}</div></details>`;
+      groupBar=`<div class="reve-filterbar select-mode"><span class="reve-segctrl-note">${ic("check")} Sélection</span>${secDd}<button class="rfilter" onclick="reveSelectAll()">${ic("checklist")} Tout cocher (${sorted.length})</button><span class="reve-bulk-count">${reveSel.size} sélectionnée(s)</span><div class="reve-filterbar-right">${refreshBtn}</div></div>`;
     }else{
-      groupHtml=G.map(([k,l,i])=>`<button class="rfilter ${reveGroupBy===k?"active":""}" onclick="setReveGroupBy('${k}')">${ic(i)} ${l}</button>`).join("");
-      if(reveGroupBy!=="none") groupHtml+=`<button class="rfilter rf-clear" onclick="setReveGroupBy('none')" title="Ne plus grouper">${ic("ban")}</button>`;
+      // groupement : segmented control -> les 3 dossiers restent toujours visibles & cliquables
+      const segHtml=`<div class="reve-segctrl">${G.map(([k,l,i])=>`<button class="rseg ${reveGroupBy===k?"active":""}" onclick="setReveGroupBy('${k}')">${ic(i)} ${l}</button>`).join("")}</div>`;
+      groupBar=`<div class="reve-filterbar">${segHtml}<div class="reve-filterbar-right">${sortDd}${refreshBtn}</div></div>`;
     }
-    // tris secondaires : cachés seulement pendant qu'on choisit un dossier (mode déplié)
-    const showSorts=!(reveGroupBy!=="none" && reveGroupExpanded);
-    const sortHtml=showSorts?`<span class="rfilter-sep"></span>${reveGroupBy!=="none"?`<span class="rfilter-sub">tri</span>`:""}${SRT.map(([k,l,i])=>`<button class="rsort-mini ${reveSort===k?"active":""}" onclick="setReveSort('${k}')">${i?ic(i)+" ":""}${l}</button>`).join("")}`:"";
-    const sizeHtml=`<span class="rfilter-sep"></span>${[["S","gridS"],["M","gridM"],["L","gridL"]].map(([s,i])=>`<button class="reve-size-btn ${reveSize===s?"active":""}" onclick="setReveSize('${s}')">${ic(i)}</button>`).join("")}`;
-    const groupBar=`<div class="reve-filterbar">${groupHtml}${sortHtml}${sizeHtml}<button class="rfilter rf-refresh" onclick="refreshData(true)" title="Recharger mes marques">${ic("history")}</button></div>`;
-    const bulkBar=`<div class="reve-bulkbar"><button class="rsort ${reveSelectMode?"active":""}" onclick="toggleReveSelectMode()">${ic("check")} ${reveSelectMode?"Quitter la sélection":"Ouvrir en lot"}</button>${reveSelectMode?`<select class="sel" onchange="setReveSectorFilter(this.value)"><option value="all">Tous les secteurs</option>${secs.map(s=>`<option value="${esc(s)}" ${reveSectorFilter===s?"selected":""}>${esc(s)}</option>`).join("")}</select><button class="rsort" onclick="reveSelectAll()">Tout cocher (${sorted.length})</button><span class="reve-bulk-count">${reveSel.size} sélectionnée(s)</span>`:""}</div>`;
-    document.getElementById("reveBars").innerHTML=groupBar+bulkBar+(sorted.length?"":'<div class="empty">Aucune marque ne correspond à ce filtre.</div>');
+    document.getElementById("reveBars").innerHTML=groupBar+(sorted.length?"":'<div class="empty">Aucune marque ne correspond à ce filtre.</div>');
+    // bouton « Ouvrir en lot » de l'entête : reflète le mode courant
+    const _tl=document.getElementById("reveBulkToggleLbl"); if(_tl)_tl.textContent=reveSelectMode?"Quitter la sélection":"Ouvrir en lot";
+    const _tb=document.getElementById("reveBulkToggle"); if(_tb)_tb.classList.toggle("active",reveSelectMode);
     const groups=buildReveGroups(sorted), seq=[];
     groups.forEach(g=>{
       if(g.header){ const collapsed=reveCollapsed.has(g.key); seq.push({type:"header",key:g.key,label:g.label,color:g.color,count:g.cards.length,collapsed}); if(!collapsed)g.cards.forEach(e=>seq.push({type:"card",e})); }
@@ -3894,6 +3985,7 @@
         <span class="pc-badge">${ic("clock")} ${visiteLbl}</span>
       </div>
       <div class="reve-stars-row">${stars}<span class="reve-stars-lbl">${note?note+"/5":"pas encore notée"}</span></div>
+      ${e.description?`<div class="brand-desc">${esc(e.description)}</div>`:""}
       <div class="pc-links">
         <a href="#" class="full site-link" onclick="visitBrand('${e.id}','${esc(site)}');return false;">${ic("building")} Voir le site${dom?` · <span class="site-dom">${esc(dom)}</span>`:""}</a>
         <a href="#" class="full" onclick="searchBrandOffers('${esc((e.entreprise||"").replace(/'/g,"\\'"))}');return false;" style="background:var(--accent-soft);color:var(--accent);border-color:var(--accent);">${ic("search")} Chercher ses offres</a>
@@ -3985,6 +4077,29 @@
       if(sb){ try{ await sb.from("job_status").upsert({offer_id:o.id,statut:cur.statut,offer_data:cur.offer,updated_at:new Date().toISOString()},{onConflict:"offer_id"}); }catch(e){} }
     }
   }
+  // ===== PRÉ-FORMATAGE DES DESCRIPTIONS (capture -> arrière-plan) =====
+  // Au lieu d'attendre la 1re ouverture d'une offre, on met en forme les descriptions
+  // des offres gardées/suivies en tâche de fond, dès que l'app (re)charge ses données
+  // (donc juste après une capture, quand la fenêtre principale reprend le focus).
+  // « Fire and forget » : ne bloque jamais l'UI, throttlé (2 en parallèle), et comme
+  // saveDescriptionFmt persiste le résultat, chaque offre n'est traitée qu'une seule fois.
+  let _descPrefetchRunning=false;
+  async function prefetchDescFmt(){
+    if(!AI_ASSIST||window._captureMode||_descPrefetchRunning) return;   // la pop-up de capture se ferme : on laisse la fenêtre principale faire le travail
+    _descPrefetchRunning=true;
+    try{
+      const seen=new Set(), queue=[];
+      Object.values(statusMap).forEach(s=>{
+        const o=s&&s.offer; if(!o||!o.description||o.descriptionFmt) return;
+        if(String(o.description).length<180) return;                    // courte : l'algo (Niveau 1) suffit
+        const k=o.lien||o.id; if(!k||seen.has(k)) return; seen.add(k); queue.push(o);
+      });
+      if(!queue.length) return;
+      let i=0;
+      const worker=async()=>{ while(i<queue.length){ const o=queue[i++]; try{ await aiFormatDescription(o,null); }catch(e){} } };
+      await Promise.all([worker(),worker()]);                           // 2 files séquentielles -> throttle doux (quota IA gratuit)
+    }finally{ _descPrefetchRunning=false; }
+  }
   // Retrouve l'offre d'origine (riche) liée à une candidature du Suivi
   function pipeOffer(p){
     if(!p) return null; let found=null;
@@ -4001,7 +4116,7 @@
     if(!o)return;
     const st=statusMap[o.id]?statusMap[o.id].statut:null;
     const sec=detectSector(o), sc=matchScore(o);
-    const b=followedBrand(o.entreprise), lg=b?brandLogo(b):"";
+    const b=followedBrand(o.entreprise), lg=offerLogo(o), lgDom=logoDomainOf(o);
     const ini=esc((o.entreprise||o.titre||"?").slice(0,1).toUpperCase());
     const cl=companyLinks(o.entreprise);
     const gmaps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(o.lieu||o.entreprise||"");
@@ -4011,7 +4126,7 @@
     const box=document.getElementById("modalBox");
     box.classList.add("wide");
     box.innerHTML=`
-      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;"><span class="pc-logo">${lg?`<img src="${lg}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${ini}';">`:ini}</span><span>${esc(o.titre||"Offre")}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;"><span class="pc-logo">${lg?`<img src="${esc(lg)}" alt="" onerror="logoErr(this,'${esc(lgDom)}','${ini}','')">`:ini}</span><span>${esc(o.titre||"Offre")}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
       <div class="fiche-2col">
       <div class="fiche-col">
       <div class="pc-company">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${b.id}")' style="cursor:pointer;">${ic("star")}</span>`:""}</div>
@@ -4229,8 +4344,10 @@
       {k:"entreprise",l:"Entreprise",t:"text"},{k:"site",l:"Site (carrières / officiel)",t:"text"},{k:"secteur",l:"Secteur",t:"sectorlist"},
       {k:"note",l:"Ma note",t:"stars"},
       {k:"ville",l:"Ville visée",t:"text"},
+      {k:"description",l:"Description (ce que fait l'entreprise)",t:"textarea"},
       {k:"statut",l:"Statut",t:"select",opts:["À explorer","À postuler","Postulé"]},
       {k:"source_info",l:"Source d'info",t:"text"},{k:"pourquoi",l:"Pourquoi cette boîte",t:"textarea"},{k:"notes",l:"Notes",t:"textarea"},
+      {k:"logo",l:"Logo (URL, optionnel)",t:"text"},
     ]},
     reseau:{title:"Contact",table:"reseau",fields:[
       {k:"prenom",l:"Prénom",t:"text"},{k:"nom",l:"Nom",t:"text"},{k:"entreprise",l:"Entreprise",t:"text"},
@@ -4284,6 +4401,24 @@
     const box=document.getElementById("stars-"+k); if(!box)return;
     box.querySelectorAll(".star-btn").forEach(b=>b.classList.toggle("on",parseInt(b.dataset.n)<=n));
   }
+  // Colonnes "récentes/optionnelles" : si elles n'existent pas encore en base (ALTER TABLE pas lancé),
+  // on les retire et on réessaie -> l'enregistrement réussit quand même (sans persister ce champ).
+  const OPTIONAL_COLS=new Set(["description","logo"]);
+  async function _saveRowWithSchemaRetry(table,obj,id){
+    let res;
+    for(let attempt=0;attempt<4;attempt++){
+      try{ res = id ? await sb.from(table).update(obj).eq("id",id) : await sb.from(table).insert(obj); }
+      catch(e){ res={error:e}; }
+      if(!(res&&res.error)) return res;
+      const msg=res.error.message||(""+res.error);
+      if(!/does not exist|could not find|schema cache/i.test(msg)) return res;
+      const m=msg.match(/'([a-zA-Z0-9_]+)'|"([a-zA-Z0-9_]+)"/);
+      const col=m&&(m[1]||m[2]);
+      if(col && OPTIONAL_COLS.has(col) && (col in obj)){ delete obj[col]; continue; } // colonne pas encore créée -> on l'ignore
+      return res;
+    }
+    return res;
+  }
   async function saveModal(){
     const f=FORMS[editing.type],obj={};
     f.fields.forEach(fl=>{const el=document.getElementById("m-"+fl.k);let val=el.value;if(fl.t==="number"||fl.t==="stars")val=val?parseInt(val):null;if(val==="")val=null;obj[fl.k]=val;});
@@ -4292,11 +4427,7 @@
       obj.checklist=chk;
     }
     if(!sb){ alert("Pas de connexion à la base — rien n'a été enregistré. Vérifie ta config Supabase."); return; }
-    let res;
-    try{
-      res = editing.id ? await sb.from(f.table).update(obj).eq("id",editing.id)
-                       : await sb.from(f.table).insert(obj);
-    }catch(e){ res={error:e}; }
+    let res=await _saveRowWithSchemaRetry(f.table,obj,editing.id);
     if(res && res.error){
       const msg=res.error.message||(""+res.error);
       let hint="";
@@ -4912,6 +5043,7 @@
     await loadAll();await reconcileActivity(true);loadNotes();loadStreak();loadTheme();
     await loadProfil(!!addUrl);  // si on arrive via bookmarklet, on ne demande pas le nom maintenant
     refreshAll();renderBmSetup();applyDensity();
+    if(!window._captureMode) prefetchDescFmt();   // pré-formate les descriptions au démarrage (hors pop-up de capture)
     // Bookmarklet : si ?addUrl=... -> ouvre directement l'ajout par lien
     if(addUrl){
       var _ttl=params.get("addTitle")||""; if(badTitle(_ttl))_ttl=""; else _ttl=tidyTitle(_ttl, params.get("addEnt")||"");
@@ -4926,13 +5058,15 @@
         description:_dsc,
         dateCreation:params.get("addDate")||"",
         experience:params.get("addXp")||"",
-        salaire:_sl
+        salaire:_sl,
+        logo:params.get("addLogo")||"",
+        companyUrl:params.get("addCompUrl")||""
       };
       openAddLinks(addUrl);
       history.replaceState({},"",window.location.pathname);
     } else if(params.get("addBrand")){
       // bookmarklet "marque" : pré-remplit le formulaire entreprise
-      const nomRaw=params.get("addBrand")||"", descB=params.get("brandDesc")||"";
+      const nomRaw=params.get("addBrand")||"", descB=params.get("brandDesc")||"", logoB=params.get("brandLogo")||"";
       let site=params.get("brandSite")||"";
       if(isAtsHost(site)) site="";   // lien Workday/ATS instable -> on ne le sauvegarde pas (repli auto sur recherche Google)
       let nom=cleanBrandName(nomRaw);
@@ -4940,16 +5074,23 @@
       setView("reve");
       const sec=detectSector({entreprise:nom,description:site+" "+descB});
       let secteur=sec.key==="Autre"?"":sec.key;
-      openModal("reve",{entreprise:nom,site:site,secteur:secteur,ville:""});
-      // Enrichissement IA en ARRIÈRE-PLAN : complète le formulaire ouvert sans le bloquer
+      // Niveau 1 (auto) : description courte propre depuis la meta scrappée (sans IA)
+      const descN1=cleanBrandDesc(descB);
+      openModal("reve",{entreprise:nom,site:site,secteur:secteur,ville:"",description:descN1,logo:logoB});
+      // Enrichissement IA en ARRIÈRE-PLAN (Niveau 2) : complète le formulaire ouvert sans le bloquer (boussole pendant ce temps)
+      if(AI_ASSIST) showCaptureLoader("Analyse et optimisation en cours…");
       (async()=>{
-        const aj=await aiSort({mode:"brand", url:site, text:(nom+"\n"+descB).slice(0,4000)});
-        if(!(aj&&aj.brand)) return;
-        const b=aj.brand, g=id=>document.getElementById(id);
-        const fE=g("m-entreprise"), fS=g("m-secteur"), fV=g("m-ville");
-        if(b.entreprise && b.entreprise.length<=60 && fE && fE.value===nom) fE.value=b.entreprise;
-        if(b.secteur && fS && (!fS.value||fS.value===secteur)){ for(const op of fS.options){ if(op.value===b.secteur||op.text===b.secteur){fS.value=op.value;break;} } }
-        if(b.ville && fV && !fV.value) fV.value=b.ville;
+        try{
+          const aj=await aiSort({mode:"brand", url:site, text:(nom+"\n"+descB).slice(0,4000)});
+          if(!(aj&&aj.brand)) return;
+          const b=aj.brand, g=id=>document.getElementById(id);
+          const fE=g("m-entreprise"), fS=g("m-secteur"), fV=g("m-ville"), fD=g("m-description");
+          if(b.entreprise && b.entreprise.length<=60 && fE && fE.value===nom) fE.value=b.entreprise;
+          if(b.secteur && fS && (!fS.value||fS.value===secteur)){ for(const op of fS.options){ if(op.value===b.secteur||op.text===b.secteur){fS.value=op.value;break;} } }
+          if(b.ville && fV && !fV.value) fV.value=b.ville;
+          // description IA = phrase courte et nette : remplace le Niveau 1 s'il est vide, trop long ou brouillon
+          if(b.description && fD && (!fD.value || fD.value.length>200)) fD.value=b.description;
+        } finally { hideCaptureLoader(); }
       })();
     }
     // NB : on ne lance plus la recherche API automatiquement à l'ouverture

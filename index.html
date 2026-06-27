@@ -1220,7 +1220,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v63</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v64</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -3793,16 +3793,24 @@
     if(!bar){ bar=document.createElement("div"); bar.id="reveBulkBar"; bar.className="compare-bar"; document.body.appendChild(bar); }
     bar.innerHTML=`<span>${ic("bookmark")} ${reveSel.size} marque(s)</span><button class="btn sm" onclick="openReveSelection()">${ic("link")}<span>Ouvrir la sélection</span></button><button class="btn ghost sm" onclick="reveClearSel()">Vider</button>`;
   }
-  async function openReveSelection(){
+  // NB : surtout PAS async, et AUCUN confirm/await avant la boucle d'ouverture.
+  // Sinon l'« activation utilisateur » du clic expire et le navigateur ne garde que le 1er onglet.
+  function openReveSelection(){
     const brands=[...reveSel].map(id=>reve.find(e=>String(e.id)===String(id))).filter(Boolean);
     if(!brands.length) return;
-    if(brands.length>10 && !confirm("Ouvrir "+brands.length+" onglets ? Si ton navigateur bloque, autorise les pop-ups pour ce site.")) return;
+    // 1) OUVERTURE SYNCHRONE, dans le geste du clic.
+    //    - pas de 3e argument "features" -> vrais ONGLETS (multi-onglets autorisés quand les pop-ups sont permises),
+    //      alors que "noopener"/features forcent une POP-UP (bloquée) ET font renvoyer null à window.open.
+    //    - on coupe le lien opener côté nouvelle fenêtre (sécurité = équivalent noopener).
     let opened=0;
-    brands.forEach(e=>{ const w=window.open(brandStableSite(e),"_blank","noopener"); if(w)opened++; });
-    // marque comme visitées
+    brands.forEach(e=>{
+      const w=window.open(brandStableSite(e),"_blank");
+      if(w){ try{ w.opener=null; }catch(_){} opened++; }
+    });
+    // 2) effets de bord (marquer comme visitées) APRÈS l'ouverture des onglets
     const now=new Date().toISOString();
     brands.forEach(e=>{ e.derniere_visite=now; e.nb_visites=(e.nb_visites||0)+1; if(sb){try{sb.from("entreprises_reve").update({derniere_visite:now,nb_visites:e.nb_visites}).eq("id",e.id);}catch(x){}} });
-    if(opened<brands.length) flashCenter("Autorise les pop-ups pour tout ouvrir","info");
+    if(opened<brands.length) flashCenter("Le navigateur a bloqué "+(brands.length-opened)+" onglet(s) sur "+brands.length+" — autorise les pop-ups pour ce site","info");
     else flashCenter(opened+" onglet(s) ouvert(s)");
     renderReve();
   }

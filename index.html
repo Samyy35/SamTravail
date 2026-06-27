@@ -97,7 +97,7 @@
   .stat-live{border-color:var(--accent);background:var(--accent-soft);}
   .brand h1{font-family:var(--display);font-size:27px;font-weight:600;letter-spacing:-.5px;}
   .brand .tag{color:var(--text-dim);font-size:13px;margin-top:-2px;}
-  .greeting{text-align:right;}
+  .greeting{text-align:right;margin-left:auto;}
   .greeting .hi{font-family:var(--display);font-size:18px;font-weight:500;}
   .greeting .date{color:var(--text-mute);font-size:12px;}
 
@@ -629,9 +629,18 @@
   .pdact .ic{width:15px;height:15px;}
   .pdact:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
   .pdact.on{color:#fff;}
-  .pdact.rollback{margin-left:auto;border-color:var(--accent);color:var(--accent);}
+  .pdact.rollback{border-color:var(--accent);color:var(--accent);}
   .pdact.rollback:hover{background:var(--accent);color:#fff;}
-  @media(max-width:520px){.pdact.rollback{margin-left:0;}}
+  /* ===== Barre d'actions contextuelles EN HAUT des fiches (offre « à trier » + suivi) — placement homogène ===== */
+  .fiche-top{margin-bottom:2px;}
+  .fiche-actbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 18px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+  .fiche-actbar .fa-group{display:flex;flex-wrap:wrap;align-items:center;gap:7px;}
+  .fiche-actbar .fa-spacer{flex:1 1 auto;min-width:6px;}
+  .fiche-actbar .fa-sep{width:1px;align-self:stretch;min-height:24px;background:var(--border);margin:0 3px;}
+  .fiche-actbar .fa-label{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text-mute);display:inline-flex;align-items:center;gap:5px;}
+  .fiche-actbar .fa-label .ic{width:14px;height:14px;}
+  .fiche-actbar .pdact.rollback{margin-left:0;}
+  @media(max-width:520px){.fiche-actbar .fa-spacer{flex-basis:100%;height:0;}}
   .modal h3{font-family:var(--display);font-size:19px;margin-bottom:16px;}
   .modal .field{margin-bottom:13px;min-width:0;}
   .modal-actions{display:flex;flex-direction:row;flex-wrap:wrap;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;}
@@ -699,7 +708,7 @@
   @media(max-width:680px){
     .wrap{padding:16px 14px 80px;}
     header{align-items:flex-start;}
-    .greeting{text-align:left;}
+    .greeting{text-align:left;margin-left:0;}
     .theme-toggle{position:absolute;top:16px;right:14px;}
     /* nav : défilement horizontal au lieu d'un pavé qui passe à la ligne */
     .nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
@@ -921,6 +930,12 @@
   .pc-int.on.super{background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;color:#fff;}
   .pc-int.on.apostuler{background:var(--green);border-color:var(--green);color:#fff;}
   .pc-int.on.reflexion{background:var(--cyan);border-color:var(--cyan);color:#fff;}
+  /* toggle binaire coup de cœur (formulaire d'ajout) */
+  .pc-coeur{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:.13s;font-family:var(--font);}
+  .pc-coeur .ic{width:14px;height:14px;}
+  .pc-coeur:hover{border-color:var(--gold);color:var(--text);}
+  .pc-coeur.on{background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;color:#fff;}
+  .pc-coeur-hint{font-size:11.5px;color:var(--text-mute);font-style:italic;}
   /* ===== Accueil : bouton recherche (remplace le bandeau 3 étapes) ===== */
   .home-cta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
   .home-shortcut{display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 15px;cursor:pointer;transition:.16s ease;box-shadow:var(--shadow);font-family:var(--font);color:var(--text);}
@@ -1205,7 +1220,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v62</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v63</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1306,11 +1321,6 @@
         <button class="btn quiet sm" onclick="openCriteres()"><i data-ic="sliders"></i><span>Critères</span></button>
         <button class="btn primary sm" onclick="openAddLinks()"><i data-ic="plus"></i><span>Ajouter par lien</span></button>
       </div>
-    </div>
-    <div class="pills" id="veille-pills">
-      <div class="pill active" data-f="all" onclick="setVeilleFilter('all')">Toutes <span class="count" id="vc-all">0</span></div>
-      <div class="pill" data-f="super" onclick="setVeilleFilter('super')"><i data-ic="star"></i> Coups de cœur <span class="count" id="vc-super">0</span></div>
-      <div class="pill" data-f="apostuler" onclick="setVeilleFilter('apostuler')"><i data-ic="heart"></i> À postuler <span class="count" id="vc-apostuler">0</span></div>
     </div>
     <div class="grid-toolbar" id="grid-toolbar">
       <div class="group-by">
@@ -1959,7 +1969,7 @@
     // 6 tuiles : l'entonnoir (à trier → à postuler → offres envoyées → relances → entretiens → offre reçue)
     const items=[
       {n:aTrier,t:"à trier",ic:"inbox",act:()=>{setView('offres');setVeilleFilter('all');}},
-      {n:aPostuler,t:"à postuler",ic:"heart",act:()=>{setView('offres');setVeilleFilter('apostuler');}},
+      {n:aPostuler,t:"à postuler",ic:"heart",act:()=>{setView('offres');setVeilleFilter('all');}},
       {n:envoyees,t:"offres envoyées",ic:"send",act:()=>{setView('pipeline');setPipeFilter&&setPipeFilter('Envoyé');}},
       {n:relances,t:"relances",ic:"bell",act:()=>setView('pipeline')},
       {n:entretiens_,t:"entretiens",ic:"mic",act:()=>setView('pipeline')},
@@ -2502,8 +2512,7 @@
           <div class="ocard-co">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}${o.lieu?`<span class="dot">·</span>${esc(o.lieu)}`:""}${o.isNew&&!st?' <span class="ocard-new">Nouveau</span>':""}</div>
         </div>
         <div class="ocard-rate">
-          <button class="rate star ${st==="super"?"on":""}" onclick='markOffer(${oData},"super")' title="Coup de cœur">${ic("star")}</button>
-          <button class="rate heart ${st==="apostuler"?"on":""}" onclick='markOffer(${oData},"apostuler")' title="À postuler">${ic("heart")}</button>
+          <button class="rate star ${st==="super"?"on":""}" onclick='setCoeur(${oData},${st!=="super"})' title="${st==="super"?"Coup de cœur — cliquer pour retirer":"Marquer en coup de cœur"}">${ic("star")}</button>
         </div>
       </div>
       <div class="ocard-sub">${sub}</div>
@@ -2527,6 +2536,15 @@
     if(ns===null){delete statusMap[o.id];if(sb)await sb.from("job_status").delete().eq("offer_id",o.id);}
     else{statusMap[o.id]={statut:ns,offer:o};if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:ns,offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});}
     if(ns==="apostuler"||ns==="super")maybeNudgeBrand(o); // I
+    renderVeille();renderCockpit();renderStatsBadges();
+  }
+  // Modèle binaire : coup de cœur on/off. L'offre reste TOUJOURS gardée (super=cœur, apostuler=gardée simple) — jamais supprimée par ce toggle.
+  async function setCoeur(o,on){
+    if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
+    const ns=on?"super":"apostuler";
+    statusMap[o.id]={statut:ns,offer:o};
+    if(sb)await sb.from("job_status").upsert({offer_id:o.id,statut:ns,offer_data:o,updated_at:new Date().toISOString()},{onConflict:"offer_id"});
+    if(on)maybeNudgeBrand(o);
     renderVeille();renderCockpit();renderStatsBadges();
   }
 
@@ -2738,7 +2756,7 @@
       offer._quality=quality;
       // suggestion de niveau d'intérêt selon le score de match (modifiable)
       const sc=matchScore(offer);
-      offer._interet = sc>=75 ? "super" : sc>=55 ? "apostuler" : "reflexion";
+      offer._interet = sc>=75 ? "super" : "apostuler";   // binaire : coup de cœur (super) sinon simplement gardée (apostuler)
       addLinksData.push(offer);
     }
     // trie la preview : meilleures offres (score) en haut
@@ -2796,10 +2814,8 @@
         ${(()=>{const ds=detectSector(o).key;const auto=ds!=="Autre";return `<select class="pc-in" onchange="addLinksData[${i}].secteur=this.value" title="Secteur (détecté auto, modifiable)" style="${auto?'':'border-color:var(--orange);'}"><option value="" ${auto?'':'selected'}>Secteur — à préciser</option>${SECTORS.map(s=>`<option value="${esc(s.key)}" ${ds===s.key?'selected':''}>${esc(s.key)}</option>`).join("")}</select>`;})()}
         <textarea class="pc-in pc-desc" placeholder="Missions / description (optionnel)" oninput="addLinksData[${i}].description=this.value" rows="3">${esc(o.description||"")}</textarea>
         <div class="pc-interet">
-          <span class="pc-interet-l">Classer :</span>
-          <button class="pc-int ${o._interet==="super"?"on super":""}" onclick="setLinkInteret(${i},'super')">${ic("star")} Coup de cœur</button>
-          <button class="pc-int ${o._interet==="apostuler"?"on apostuler":""}" onclick="setLinkInteret(${i},'apostuler')">${ic("heart")} À postuler</button>
-          <button class="pc-int ${o._interet==="reflexion"?"on reflexion":""}" onclick="setLinkInteret(${i},'reflexion')">${ic("clock")} Plus tard</button>
+          <button class="pc-coeur ${o._interet==="super"?"on":""}" onclick="setLinkCoeur(${i})" title="Marquer / retirer le coup de cœur">${ic("star")}<span>Coup de cœur</span></button>
+          <span class="pc-coeur-hint">${o._interet==="super"?"⭐ ajoutée en coup de cœur":"ajoutée dans « à trier »"}</span>
         </div>
         <a class="pc-link" href="${esc(o.lien)}" target="_blank" rel="noopener">${ic("doc")} voir l'offre</a>
       </div>`;
@@ -2807,7 +2823,8 @@
   }
 
   function removeLink(i){addLinksData.splice(i,1);renderLinksPreview();}
-  function setLinkInteret(i,niveau){ if(addLinksData[i]){addLinksData[i]._interet=niveau;renderLinksPreview();} }
+  // binaire : bascule coup de cœur (super) <-> simplement gardée (apostuler)
+  function setLinkCoeur(i){ if(addLinksData[i]){ addLinksData[i]._interet=(addLinksData[i]._interet==="super")?"apostuler":"super"; renderLinksPreview(); } }
 
   async function validateAddLinks(){
     const valid=addLinksData.filter(o=>(o.titre||"").trim()||(o.entreprise||"").trim());
@@ -3466,8 +3483,7 @@
     box.classList.add("wide");
     box.innerHTML=`
       <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;">${(()=>{const b=followedBrand(p.entreprise);const lg=b?brandLogo(b):"";const ini=esc((p.entreprise||p.poste||"?").slice(0,1).toUpperCase());return `<span class="pc-logo">${lg?`<img src="${lg}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${ini}';">`:ini}</span>`;})()}<span>${esc(titre)}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
-      <div class="fiche-2col">
-      <div class="fiche-col">
+      <div class="fiche-top">
         <div class="pc-company">${esc(p.entreprise||"")}${followedBrand(p.entreprise)?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${followedBrand(p.entreprise).id}")' style="cursor:pointer;">${ic("star")}</span>`:""}</div>
         <div class="pc-badges">
           <span class="pc-badge" style="background:${col}1a;color:${col};border-color:${col}55;">${esc(statutLabel)}</span>
@@ -3479,13 +3495,19 @@
           ${p.niveau_envie?`<span class="pc-badge">${ic("star")} ${Math.min(5,p.niveau_envie)}/5</span>`:""}
           ${p.source?`<span class="pc-badge">${esc(p.source)}</span>`:""}
         </div>
+      </div>
+      <div class="fiche-actbar">
+        <span class="fa-label">${ic("send")} Faire évoluer</span>
+        <div class="fa-group">
+          ${["Envoyé","Entretien","Offre reçue","Refusé"].map(k=>{const cc=pipeColor(k);const on=p.statut===k;return `<button class="pdact ${on?"on":""}" onclick="changePipeStatut('${p.id}','${k}',this);setTimeout(()=>openPipeCard('${p.id}'),320)" style="${on?`background:${cc};border-color:${cc};color:#fff;`:`color:${cc};border-color:${cc}55;`}">${ic(KICON[k]||"minus")} ${esc(kLabel((KCOLS.find(c=>c.key===k)||{label:k}).label))}</button>`;}).join("")}
+        </div>
+        <span class="fa-sep"></span>
+        <button class="pdact rollback" onclick="closeModal();rollbackToTriage('${p.id}')" title="Renvoyer l'offre dans « À trier »">${ic("undo")} À trier</button>
+      </div>
+      <div class="fiche-2col">
+      <div class="fiche-col">
         <div class="pc-section-h">${ic("doc")} Description</div>
         <div id="pcDesc" class="pc-notes desc-rich oc-desc-full">${descRaw?formatDescription(descRaw):'<span class="muted">Pas de description enregistrée pour cette candidature. Ouvre l\'annonce d\'origine pour la consulter.</span>'}</div>
-        <div class="pc-section-h">${ic("send")} Faire évoluer</div>
-        <div class="pipe-detail-acts">
-          ${["Envoyé","Entretien","Offre reçue","Refusé"].map(k=>{const cc=pipeColor(k);const on=p.statut===k;return `<button class="pdact ${on?"on":""}" onclick="changePipeStatut('${p.id}','${k}',this);setTimeout(()=>openPipeCard('${p.id}'),320)" style="${on?`background:${cc};border-color:${cc};color:#fff;`:`color:${cc};border-color:${cc}55;`}">${ic(KICON[k]||"minus")} ${esc(kLabel((KCOLS.find(c=>c.key===k)||{label:k}).label))}</button>`;}).join("")}
-          <button class="pdact rollback" onclick="closeModal();rollbackToTriage('${p.id}')" title="Renvoyer l'offre dans « À trier »">${ic("undo")} À trier</button>
-        </div>
       </div>
       <div class="fiche-col">
         <div class="pc-section-h">${ic("link")} Liens utiles</div>
@@ -4130,42 +4152,48 @@
     box.classList.add("wide");
     box.innerHTML=`
       <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;"><span class="pc-logo">${lg?`<img src="${esc(lg)}" alt="" onerror="logoErr(this,'${esc(lgDom)}','${ini}','')">`:ini}</span><span>${esc(o.titre||"Offre")}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="fiche-top">
+        <div class="pc-company">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${b.id}")' style="cursor:pointer;">${ic("star")}</span>`:""}</div>
+        <div class="pc-badges">
+          <span class="pc-badge" title="Score de match">${ic("target")} ${sc}/100</span>
+          <span class="pc-badge" style="color:${sec.c};border-color:${sec.c}55;">${esc(sec.key)}</span>
+          ${o.lieu?`<span class="pc-badge">${ic("pin")} ${esc(o.lieu)}</span>`:""}
+          ${o.typeContrat?`<span class="pc-badge">${ic("doc")} ${esc(o.typeContrat)}</span>`:""}
+          ${o.salaire?`<span class="pc-badge">${ic("chart")} ${esc(o.salaire)}</span>`:""}
+          ${o.experience?`<span class="pc-badge">${ic("clock")} ${esc(o.experience)}</span>`:""}
+          ${dateStr?`<span class="pc-badge">${ic("calendar")} ${dateStr}</span>`:""}
+        </div>
+      </div>
+      <div class="fiche-actbar">
+        <div class="fa-group">
+          <button class="pdact ${st==="super"?"on":""}" onclick='offerCardCoeur(${oData})' style="${st==="super"?"background:var(--gold);border-color:var(--gold);color:#fff;":"color:var(--gold);border-color:var(--gold)55;"}" title="${st==="super"?"Coup de cœur — cliquer pour retirer":"Marquer en coup de cœur"}">${ic("star")} Coup de cœur</button>
+          <button class="pdact" onclick='openLettre(${oData})' title="Générer une accroche / un CV sur mesure">${ic("sparkle")} ${lettreFor(o.lien||o.id)?"CV sur mesure":"Accroche"}</button>
+          <span class="fa-sep"></span>
+          <button class="pdact" onclick='markOfferFromCard(${oData},"ignore")' title="Passer / retirer de la pile">${ic("ban")} Passer</button>
+        </div>
+        <span class="fa-spacer"></span>
+        <button class="btn primary sm" onclick='closeModal();markAsApplied(${oData})'>${ic("mail")} J'ai postulé</button>
+      </div>
       <div class="fiche-2col">
       <div class="fiche-col">
-      <div class="pc-company">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${b.id}")' style="cursor:pointer;">${ic("star")}</span>`:""}</div>
-      <div class="pc-badges">
-        <span class="pc-badge" title="Score de match">${ic("target")} ${sc}/100</span>
-        <span class="pc-badge" style="color:${sec.c};border-color:${sec.c}55;">${esc(sec.key)}</span>
-        ${o.lieu?`<span class="pc-badge">${ic("pin")} ${esc(o.lieu)}</span>`:""}
-        ${o.typeContrat?`<span class="pc-badge">${ic("doc")} ${esc(o.typeContrat)}</span>`:""}
-        ${o.salaire?`<span class="pc-badge">${ic("chart")} ${esc(o.salaire)}</span>`:""}
-        ${o.experience?`<span class="pc-badge">${ic("clock")} ${esc(o.experience)}</span>`:""}
-        ${dateStr?`<span class="pc-badge">${ic("calendar")} ${dateStr}</span>`:""}
-      </div>
-      <div class="pc-section-h">${ic("checklist")} Trier cette offre</div>
-      <div class="ocard-acts" style="margin-bottom:4px;">
-        <button class="act ${st==="super"?"on super":""}" onclick='markOfferFromCard(${oData},"super")' title="Coup de cœur">${ic("star")}</button>
-        <button class="act ${st==="apostuler"?"on apostuler":""}" onclick='markOfferFromCard(${oData},"apostuler")' title="À postuler">${ic("heart")}</button>
-        <button class="act ${st==="ignore"?"on ignore":""}" onclick='markOfferFromCard(${oData},"ignore")' title="Passer">${ic("ban")}</button>
-        <button class="btn ghost sm" style="margin-left:6px;" onclick='openLettre(${oData})'>${ic("sparkle")}<span>${lettreFor(o.lien||o.id)?"CV sur mesure":"Accroche"}</span></button>
-        <button class="btn primary sm" onclick='closeModal();markAsApplied(${oData})'>${ic("mail")}<span>J'ai postulé</span></button>
-      </div>
-      ${(o.descriptionFmt||o.description)?`<div class="pc-section-h">${ic("doc")} Description</div><div id="ocDesc" class="pc-notes desc-rich oc-desc-full">${formatDescription(o.descriptionFmt||o.description)}</div>`:""}
+        <div class="pc-section-h">${ic("doc")} Description</div>
+        ${(o.descriptionFmt||o.description)?`<div id="ocDesc" class="pc-notes desc-rich oc-desc-full">${formatDescription(o.descriptionFmt||o.description)}</div>`:`<div class="pc-notes"><span class="muted">Pas de description fournie. Ouvre l'annonce d'origine pour la consulter.</span></div>`}
       </div>
       <div class="fiche-col">
-      ${o.lien?sitePreviewHTML(o.lien,"Annonce d'origine"):""}
-      ${(o.lieu||o.lat)?`<div id="ocMap" class="offer-map" style="height:220px;margin-top:14px;"><div class="mini-map-loading">Chargement de la carte…</div></div>`:""}
-      <div class="company-info" id="ci-oc-${o.id}"><span class="ci-na">Chargement infos société…</span></div>
-      ${contacts.length?`<div class="pc-section-h">${ic("user")} Contacts chez ${esc(o.entreprise||"cette entreprise")} (${contacts.length})</div>
-      <div class="brand-offers">${contacts.map(r=>`<div class="brand-off-row"><span class="brand-off-stat">${ic("user")} ${esc(((r.prenom||"")+" "+(r.nom||"")).trim()||"Contact")}</span><span class="brand-off-titre">${esc(r.poste||"")}${r.statut?` · ${esc(r.statut)}`:""}</span>${r.lien_linkedin?`<a href="${esc(r.lien_linkedin)}" target="_blank" rel="noopener" class="rel-link">LinkedIn</a>`:""}</div>`).join("")}</div>`:""}
-      <div class="pc-links">
-        <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre" class="full site-link">${ic("doc")} Voir l'annonce complète</a>
-        <a href="${cl.site}" target="_blank" rel="noopener" title="Site">${ic("building")}</a>
-        <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
-        <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
-        <a href="${cl.societe}" target="_blank" rel="noopener" title="Chiffre d'affaires">${ic("chart")}</a>
-        <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
-      </div>
+        <div class="pc-section-h">${ic("link")} Liens utiles</div>
+        <div class="pc-links">
+          <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre" class="full site-link">${ic("doc")} Voir l'annonce</a>
+          <a href="${cl.site}" target="_blank" rel="noopener" title="Site">${ic("building")}</a>
+          <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
+          <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
+          <a href="${cl.societe}" target="_blank" rel="noopener" title="Chiffre d'affaires">${ic("chart")}</a>
+          <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
+        </div>
+        ${(o.lieu||o.lat)?`<div id="ocMap" class="offer-map" style="height:220px;margin-top:12px;"><div class="mini-map-loading">Chargement de la carte…</div></div>`:""}
+        ${contacts.length?`<div class="pc-section-h">${ic("user")} Contacts chez ${esc(o.entreprise||"cette entreprise")} (${contacts.length})</div>
+        <div class="brand-offers">${contacts.map(r=>`<div class="brand-off-row"><span class="brand-off-stat">${ic("user")} ${esc(((r.prenom||"")+" "+(r.nom||"")).trim()||"Contact")}</span><span class="brand-off-titre">${esc(r.poste||"")}${r.statut?` · ${esc(r.statut)}`:""}</span>${r.lien_linkedin?`<a href="${esc(r.lien_linkedin)}" target="_blank" rel="noopener" class="rel-link">LinkedIn</a>`:""}</div>`).join("")}</div>`:""}
+        <div class="pc-section-h">${ic("building")} Infos société</div>
+        <div class="company-info" id="ci-oc-${o.id}"><span class="ci-na">Chargement infos société…</span></div>
       </div>
       </div>
       <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
@@ -4173,7 +4201,6 @@
       </div>`;
     document.getElementById("modalBg").classList.add("open");
     loadCompanyInto("ci-oc-"+o.id, o.entreprise);
-    if(o.lien)loadSitePreview(o.lien);
     aiFormatDescription(o,"ocDesc");
     (async()=>{
       const mb=document.getElementById("ocMap");if(!mb||typeof L==="undefined")return;
@@ -4193,6 +4220,13 @@
     closeModal();
     if(cur!==statut) flashCenter(TRI_LABELS[statut]||"Triée");
     else flashCenter("Tri retiré","info");
+  }
+  // Coup de cœur depuis la fiche : bascule l'état SANS fermer (la fiche reste ouverte et se met à jour)
+  async function offerCardCoeur(o){
+    if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
+    const cur=statusMap[o.id]?statusMap[o.id].statut:null;
+    await setCoeur(o, cur!=="super");
+    openOfferCard(o);
   }
 
   // ===== DENSITÉ AUTO de la grille « À trier » (sans réglage : s'adapte au nombre d'offres affichées) =====

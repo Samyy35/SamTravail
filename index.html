@@ -1168,7 +1168,7 @@
   .ocard-tt:hover .ocard-title{color:var(--accent);}
   .find-main{cursor:pointer;}
   .oc-desc-full{max-height:320px;overflow-y:auto;}
-  /* ===== Mode compact (Offres à trier) ===== */
+  /* ===== Densité AUTO (Offres à trier) : compact dès ~30 offres, ultra dès ~80 ===== */
   #veille-grid.compact .ocard{padding:11px 13px;gap:6px;}
   #veille-grid.compact .ocard-sub{display:none;}
   #veille-grid.compact .ocard-title{-webkit-line-clamp:1;}
@@ -1176,6 +1176,10 @@
   #veille-grid.compact .grid{gap:9px;}
   #veille-grid.compact .rate{width:30px;height:30px;border-radius:8px;}
   #veille-grid.compact .rate .ic{width:15px;height:15px;}
+  #veille-grid.ultra .grid{grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:8px;}
+  #veille-grid.ultra .ocard{padding:9px 11px;}
+  #veille-grid.ultra .ocard-logo{width:30px;height:30px;font-size:14px;}
+  #veille-grid.ultra .ocard-title{font-size:13.5px;}
 </style>
 </head>
 <body>
@@ -1201,7 +1205,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v61</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v62</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1323,7 +1327,6 @@
       </div>
       <div style="display:flex;gap:8px;">
         <button class="hide-seen-btn" id="refreshOffresBtn" onclick="refreshData(true)" title="Recharger mes offres (sans recharger la page)"><i data-ic="history"></i><span>Actualiser</span></button>
-        <button class="hide-seen-btn" id="densityBtn" onclick="toggleDensity()" title="Cartes compactes : 2× plus d'offres par écran"><i data-ic="gridS"></i><span>Confort</span></button>
         <button class="hide-seen-btn" id="hideSeenBtn" onclick="toggleHideSeen()"><i data-ic="eye"></i><span>Cacher déjà triées</span></button>
       </div>
     </div>
@@ -4192,19 +4195,14 @@
     else flashCenter("Tri retiré","info");
   }
 
-  // ===== DENSITÉ de la grille (confort / compact) =====
-  let gridDensity="confort";
-  try{const _gd=localStorage.getItem("st_density");if(_gd)gridDensity=_gd;}catch(e){}
-  function toggleDensity(){
-    gridDensity=gridDensity==="compact"?"confort":"compact";
-    try{localStorage.setItem("st_density",gridDensity);}catch(e){}
-    applyDensity();
-  }
+  // ===== DENSITÉ AUTO de la grille « À trier » (sans réglage : s'adapte au nombre d'offres affichées) =====
+  // Seuils tardifs : on ne compacte que quand ça commence à faire beaucoup à scroller.
   function applyDensity(){
     const g=document.getElementById("veille-grid");
-    if(g)g.classList.toggle("compact",gridDensity==="compact");
-    const btn=document.getElementById("densityBtn");
-    if(btn){btn.classList.toggle("on",gridDensity==="compact");const sp=btn.querySelector("span");if(sp)sp.textContent=gridDensity==="compact"?"Compact":"Confort";}
+    if(!g) return;
+    const n=g.querySelectorAll(".ocard").length;
+    g.classList.toggle("compact", n>=30);   // beaucoup d'offres -> cartes compactes automatiquement
+    g.classList.toggle("ultra",   n>=80);   // énormément -> colonnes plus étroites (encore moins de scroll)
   }
 
   // ===== CANDIDATURE SPONTANÉE (depuis une fiche marque) =====

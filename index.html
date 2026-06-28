@@ -1270,7 +1270,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v66</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v67</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -5270,9 +5270,9 @@
       const raw=await fetchFollowupMail(token,fid);
       const have=new Set(syncedMail.map(r=>syncKey(r.from_email,r.subject,r.received_at)));
       const rows=[];
-      raw.forEach(m=>{ const ea=(m.from&&m.from.emailAddress)||{}; const subj=cleanSubject(m.subject||""); const k=syncKey(ea.address||"",subj,m.receivedDateTime); if(have.has(k))return; have.add(k);
-        const nature=classifyMail(subj,m.bodyPreview||"");
-        rows.push({subject:subj||"(sans objet)",from_name:ea.name||"",from_email:ea.address||"",from_domain:(ea.address||"").split("@")[1]||"",received_at:m.receivedDateTime||new Date().toISOString(),body:(m.bodyPreview||"").slice(0,20000),nature:nature.key}); });
+      raw.forEach(m=>{ const ea=(m.from&&m.from.emailAddress)||{};
+        const row=smartRow({fromName:ea.name||"",fromEmail:ea.address||"",subject:m.subject||"",date:m.receivedDateTime||null,body:m.bodyPreview||""});
+        const k=syncKey(row.from_email,row.subject,row.received_at); if(have.has(k))return; have.add(k); rows.push(row); });
       if(rows.length && sb){ const res=await sb.from("emails_sync").insert(rows); if(res.error) throw res.error; }
       flashCenter(rows.length?(rows.length+" e-mail(s) importé(s)"):"Déjà à jour","info");
       await loadSyncedMail();
@@ -5369,6 +5369,74 @@
     const match=matchMailToOffer({subject:r.subject,fromName:r.from_name,fromAddr:r.from_email,preview:r.body});
     return Object.assign({},r,{_nature:nat,_match:match});
   }
+  // champs e-mail (Gmail/Graph) -> ligne emails_sync, en détectant un TRANSFERT (alors on extrait le vrai expéditeur du corps)
+  function smartRow(o){
+    let fromName=o.fromName||"", fromEmail=o.fromEmail||"", subject=cleanSubject(o.subject||""), date=o.date||null, body=o.body||"";
+    const looksFwd=/^\s*(?:\[[^\]]*\]\s*)?(?:tr|trans|fwd?|fw)\s*:/i.test(o.subject||"") || /^[ \t]*(?:de|from|exp[ée]diteur)\s*:\s*.*<[^>]+@/im.test(body);
+    if(looksFwd){ const p=parseForwardedEmail(body); if(p.fromEmail){fromEmail=p.fromEmail;fromName=p.fromName||fromName;} if(p.subject)subject=p.subject; if(p.date)date=p.date; if(p.body)body=p.body; }
+    const nature=classifyMail(subject,body);
+    return { subject:subject||"(sans objet)", from_name:fromName, from_email:fromEmail, from_domain:(fromEmail.split("@")[1]||"").toLowerCase(), received_at:date||new Date().toISOString(), body:(body||"").slice(0,20000), nature:nature.key };
+  }
+
+  // ===== GMAIL (lecture seule via Google Identity Services + Gmail API) — méthode auto recommandée =====
+  let GMAIL_CLIENT_ID=""; try{ GMAIL_CLIENT_ID=localStorage.getItem("st_gmail_client_id")||""; }catch(e){}
+  let GMAIL_QUERY="label:suivi-candidatures"; try{ const q=localStorage.getItem("st_gmail_query"); if(q)GMAIL_QUERY=q; }catch(e){}
+  let _gmailToken=null, _gmailTokenClient=null, gmailConnected=false;
+  function loadGis(){ if(window.google&&google.accounts&&google.accounts.oauth2) return Promise.resolve();
+    return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="https://accounts.google.com/gsi/client"; s.async=true; s.onload=()=>res(); s.onerror=()=>rej(new Error("Chargement de Google impossible (réseau).")); document.head.appendChild(s); }); }
+  function getGmailTokenClient(){
+    if(!GMAIL_CLIENT_ID||!(window.google&&google.accounts&&google.accounts.oauth2)) return null;
+    if(_gmailTokenClient) return _gmailTokenClient;
+    _gmailTokenClient=google.accounts.oauth2.initTokenClient({ client_id:GMAIL_CLIENT_ID, scope:"https://www.googleapis.com/auth/gmail.readonly", callback:function(){} });
+    return _gmailTokenClient;
+  }
+  async function connectGmail(){
+    const inp=document.getElementById("gmailClientId"); if(inp)GMAIL_CLIENT_ID=(inp.value||"").trim();
+    const qi=document.getElementById("gmailQuery"); if(qi)GMAIL_QUERY=(qi.value||"").trim()||"label:suivi-candidatures";
+    if(!GMAIL_CLIENT_ID){ mailError="Colle d'abord l'ID client OAuth Google."; renderMessagerie(); return; }
+    try{ localStorage.setItem("st_gmail_client_id",GMAIL_CLIENT_ID); localStorage.setItem("st_gmail_query",GMAIL_QUERY); }catch(e){}
+    mailError=""; mailLoading=true; renderMessagerie();
+    try{
+      await loadGis();
+      const tc=getGmailTokenClient(); if(!tc) throw new Error("Google indisponible");
+      _gmailToken=await new Promise((resolve,reject)=>{ tc.callback=function(resp){ if(resp&&resp.access_token)resolve(resp.access_token); else reject(new Error((resp&&resp.error)||"accès refusé")); }; try{ tc.requestAccessToken({prompt:gmailConnected?"":"consent"}); }catch(e){ reject(e); } });
+      gmailConnected=true; mailLoading=false; await importGmailToSync();
+    }catch(e){ mailLoading=false; mailError="Connexion Gmail échouée : "+((e&&e.message)||e); renderMessagerie(); }
+  }
+  function disconnectGmail(){ _gmailToken=null; gmailConnected=false; flashCenter("Gmail déconnecté","info"); renderMessagerie(); }
+  async function gmailGet(url){ const r=await fetch(url,{headers:{Authorization:"Bearer "+_gmailToken}}); if(!r.ok){ let t=""; try{t=await r.text();}catch(_){} const err=new Error("gmail"); err.status=r.status; err.detail=t; throw err; } return r.json(); }
+  function gmailDecode(b64){ if(!b64) return ""; try{ return decodeURIComponent(escape(atob(b64.replace(/-/g,"+").replace(/_/g,"/")))); }catch(e){ try{ return atob(b64.replace(/-/g,"+").replace(/_/g,"/")); }catch(_){ return ""; } } }
+  function gmailBodyText(payload){
+    if(!payload) return "";
+    if(payload.mimeType==="text/plain" && payload.body&&payload.body.data) return gmailDecode(payload.body.data);
+    if(payload.parts){ for(const p of payload.parts){ if(p.mimeType==="text/plain"){ const b=gmailBodyText(p); if(b)return b; } } for(const p of payload.parts){ const b=gmailBodyText(p); if(b)return b; } }
+    if(payload.mimeType==="text/html" && payload.body&&payload.body.data){ const div=document.createElement("div"); div.innerHTML=gmailDecode(payload.body.data); return (div.textContent||div.innerText||"").replace(/\n{3,}/g,"\n\n").trim(); }
+    return "";
+  }
+  function gmailHeader(headers,name){ const h=(headers||[]).find(x=>(x.name||"").toLowerCase()===name); return h?h.value:""; }
+  async function importGmailToSync(){
+    if(!_gmailToken){ mailError="Reconnecte Gmail."; renderMessagerie(); return; }
+    mailLoading=true; mailError=""; renderMessagerie();
+    try{
+      const list=await gmailGet("https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q="+encodeURIComponent(GMAIL_QUERY||"label:suivi-candidatures"));
+      const ids=(list.messages||[]).map(m=>m.id);
+      const have=new Set(syncedMail.map(r=>syncKey(r.from_email,r.subject,r.received_at)));
+      const rows=[];
+      for(const id of ids){
+        let full; try{ full=await gmailGet("https://gmail.googleapis.com/gmail/v1/users/me/messages/"+id+"?format=full"); }catch(e){ continue; }
+        const hs=full.payload&&full.payload.headers;
+        const fromRaw=gmailHeader(hs,"from"), subject=gmailHeader(hs,"subject"), dateH=gmailHeader(hs,"date");
+        const em=((fromRaw.match(/<([^>]+@[^>]+)>/)||fromRaw.match(/([^\s<>]+@[^\s<>]+)/))||[])[1]||"";
+        const nm=fromRaw.replace(/<[^>]*>/,"").replace(/["']/g,"").trim();
+        const d=dateH?new Date(dateH):null;
+        const row=smartRow({fromName:nm,fromEmail:em,subject:subject,date:(d&&!isNaN(d.getTime()))?d.toISOString():null,body:gmailBodyText(full.payload)||full.snippet||""});
+        const k=syncKey(row.from_email,row.subject,row.received_at); if(have.has(k))continue; have.add(k); rows.push(row);
+      }
+      if(rows.length&&sb){ const res=await sb.from("emails_sync").insert(rows); if(res.error)throw res.error; }
+      flashCenter(rows.length?(rows.length+" e-mail(s) importé(s) de Gmail"):"Gmail déjà à jour","info");
+      await loadSyncedMail();
+    }catch(e){ mailError=(e&&e.status===401)?"Session Gmail expirée — reclique « Connecter Gmail » (Google réinitialise ~tous les 7 jours).":("Lecture Gmail impossible : "+((e&&e.detail)||(e&&e.message)||e)); mailLoading=false; renderMessagerie(); }
+  }
 
   // --- UI (méthode principale = coller un e-mail transféré) ---
   function mailCard(m){
@@ -5386,28 +5454,41 @@
       </div>
     </div>`;
   }
-  function mzgGraphSection(){
-    const redirect=location.origin+location.pathname;
-    if(outlookAccount){
-      return `<div class="mzg-bar" style="margin:6px 0 0;">
-        <div class="mzg-account">${ic("user")} ${esc(outlookAccount.username||"compte connecté")}</div>
-        <div class="mzg-bar-actions">
-          <button class="hide-seen-btn" onclick="importGraphToSync()" ${mailLoading?"disabled":""}>${ic("history")}<span>Importer « ${esc(OUTLOOK_FOLDER)} »</span></button>
-          <button class="hide-seen-btn" onclick="disconnectOutlook()">${ic("ban")}<span>Déconnecter</span></button>
-        </div></div>
-        ${mailFolderMissing?`<div class="empty">Dossier « ${esc(OUTLOOK_FOLDER)} » introuvable dans Outlook.</div>`:""}`;
-    }
-    return `<div class="mzg-connect-p">Si ton compte Microsoft l'autorise, connecte Outlook pour importer automatiquement le dossier « <b>${esc(OUTLOOK_FOLDER)}</b> » (lecture seule, Mail.Read).</div>
-      <input id="outlookClientId" class="mzg-input" placeholder="Application (client) ID — depuis Azure" value="${esc(OUTLOOK_CLIENT_ID)}" autocomplete="off" spellcheck="false">
-      <button class="btn sm" onclick="connectOutlook()">${ic("link")}<span>Connecter mon Outlook</span></button>
-      <details class="bookmarklet-help"><summary>${ic("info")} Obtenir l'ID d'application Azure</summary>
-        <ol class="mzg-steps">
-          <li><a href="https://entra.microsoft.com" target="_blank" rel="noopener">entra.microsoft.com</a> → <b>Inscriptions d'applications</b> → <b>Nouvelle inscription</b> ; comptes : tout annuaire + perso.</li>
-          <li>URI de redirection type <b>SPA</b> : <code>${esc(redirect)}</code></li>
-          <li>Copie l'<b>ID d'application (client)</b> ci-dessus. <b>Autorisations</b> → Graph → Déléguées → <b>Mail.Read</b>.</li>
-        </ol>
-        <p class="bm-note">${ic("alert")} Compte école : souvent bloqué par l'IT (« accord administrateur requis ») et l'auto-transfert externe est désactivé par défaut — d'où la méthode « coller » ci-dessus, qui marche partout.</p>
-      </details>`;
+  function mzgSyncSection(){
+    const origin=location.origin, redirect=location.origin+location.pathname;
+    // --- Gmail (recommandé) ---
+    const gmail = gmailConnected
+      ? `<div class="mzg-bar" style="margin:4px 0;"><div class="mzg-account">${ic("mail")} Gmail connecté</div>
+          <div class="mzg-bar-actions">
+            <button class="hide-seen-btn" onclick="importGmailToSync()" ${mailLoading?"disabled":""}>${ic("history")}<span>Importer Gmail</span></button>
+            <button class="hide-seen-btn" onclick="disconnectGmail()">${ic("ban")}<span>Déconnecter</span></button>
+          </div></div>`
+      : `<div class="mzg-connect-p"><b>Gmail (recommandé)</b> — postule avec ton Gmail, et/ou fais pousser tes mails école dedans (Power Automate). Lecture seule.</div>
+          <input id="gmailClientId" class="mzg-input" placeholder="ID client OAuth Google (…apps.googleusercontent.com)" value="${esc(GMAIL_CLIENT_ID)}" autocomplete="off" spellcheck="false">
+          <input id="gmailQuery" class="mzg-input" placeholder="Recherche Gmail (ex: label:suivi-candidatures)" value="${esc(GMAIL_QUERY)}" autocomplete="off" spellcheck="false">
+          <button class="btn sm primary" onclick="connectGmail()">${ic("link")}<span>Connecter Gmail</span></button>
+          <details class="bookmarklet-help"><summary>${ic("info")} Obtenir l'ID client Google (≈ 5 min, une fois)</summary>
+            <ol class="mzg-steps">
+              <li><a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a> → crée un projet → active <b>Gmail API</b> (APIs & Services → Bibliothèque).</li>
+              <li><b>Écran de consentement OAuth</b> : type <b>External</b>, renseigne ton e-mail, puis ajoute-toi en <b>Utilisateur test</b>.</li>
+              <li><b>Identifiants</b> → Créer → <b>ID client OAuth</b> → type <b>Application Web</b> → <b>Origines JavaScript autorisées</b> = <code>${esc(origin)}</code> → copie l'<b>ID client</b> ci-dessus.</li>
+              <li>Dans Gmail, crée un libellé <b>Suivi Candidatures</b> (la recherche par défaut <code>label:suivi-candidatures</code> le vise).</li>
+            </ol>
+            <p class="bm-note">${ic("alert")} Google affiche « application non vérifiée » → clique <b>Continuer</b>. Reconnexion ~tous les 7 jours (normal pour un usage perso non vérifié).</p>
+          </details>`;
+    // --- Outlook direct (secondaire) ---
+    const outlook = outlookAccount
+      ? `<div class="mzg-bar" style="margin:12px 0 4px;"><div class="mzg-account">${ic("user")} ${esc(outlookAccount.username||"Outlook")}</div>
+          <div class="mzg-bar-actions">
+            <button class="hide-seen-btn" onclick="importGraphToSync()" ${mailLoading?"disabled":""}>${ic("history")}<span>Importer Outlook</span></button>
+            <button class="hide-seen-btn" onclick="disconnectOutlook()">${ic("ban")}<span>Déconnecter</span></button>
+          </div></div>${mailFolderMissing?`<div class="empty">Dossier « ${esc(OUTLOOK_FOLDER)} » introuvable.</div>`:""}`
+      : `<details class="bookmarklet-help" style="margin-top:12px;"><summary>${ic("mail")} Outlook direct (si ton compte l'autorise — souvent bloqué côté école)</summary>
+          <input id="outlookClientId" class="mzg-input" placeholder="Application (client) ID — Azure" value="${esc(OUTLOOK_CLIENT_ID)}" autocomplete="off" spellcheck="false">
+          <button class="btn sm" onclick="connectOutlook()">${ic("link")}<span>Connecter Outlook</span></button>
+          <p class="mzg-steps" style="list-style:none;padding-left:0;"><a href="https://entra.microsoft.com" target="_blank" rel="noopener">entra.microsoft.com</a> → Inscriptions d'applications → Nouvelle (SPA, redirection <code>${esc(redirect)}</code>) → Mail.Read. Préfère <b>Gmail + Power Automate</b>.</p>
+        </details>`;
+    return gmail+outlook;
   }
   function renderMessagerie(){
     const c=document.getElementById("messagerie-content"); if(!c) return;
@@ -5425,7 +5506,7 @@
     if(mailLoading && !syncedMail.length) html+=`<div class="loading"><div class="spinner"></div>Chargement…</div>`;
     else if(!syncedMail.length && !mailTableMissing) html+=`<div class="empty">Aucun e-mail pour l'instant. Colle ton premier mail de candidature ci-dessus.</div>`;
     else if(syncedMail.length) html+=`<div class="mzg-list">${syncedMail.map(mailCard).join("")}</div>`;
-    html+=`<details class="bookmarklet-help mzg-adv"><summary>${ic("mail")} Connexion Outlook automatique (optionnel, avancé)</summary>${mzgGraphSection()}</details>`;
+    html+=`<details class="bookmarklet-help mzg-adv"><summary>${ic("history")} Synchronisation automatique — Gmail / Outlook (optionnel)</summary>${mzgSyncSection()}</details>`;
     c.innerHTML=html;
     wireMailDrop();
   }

@@ -690,6 +690,24 @@
   .mzg-adv{margin-top:18px;}
   .mzg-adv summary{color:var(--text-dim);font-size:12.5px;}
   .mzg-sql{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:13px;font-size:11.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;color:var(--text);overflow:auto;}
+  /* Boîte de réception (style messagerie) */
+  .mzg-inbox{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);}
+  .mzg-row{display:flex;align-items:flex-start;gap:12px;padding:12px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:.12s;}
+  .mzg-row:last-child{border-bottom:none;}
+  .mzg-row:hover{background:var(--surface-2);}
+  .mzg-ava{flex-shrink:0;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:16px;margin-top:1px;}
+  .mzg-row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+  .mzg-row-l1{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+  .mzg-row-l1 .mzg-from{font-weight:700;font-size:13.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mzg-row-l1 .mzg-date{flex-shrink:0;font-size:11.5px;color:var(--text-mute);}
+  .mzg-row .mzg-subject{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mzg-row .mzg-preview{font-size:12px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mzg-row .mzg-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+  .mzg-row .mzg-del{flex-shrink:0;align-self:center;margin-left:0;background:transparent;border:none;color:var(--text-mute);cursor:pointer;padding:5px;border-radius:7px;opacity:.45;transition:.12s;}
+  .mzg-row:hover .mzg-del{opacity:1;}
+  .mzg-row .mzg-del:hover{color:var(--red);background:var(--red-soft);}
+  .mzg-row .mzg-del .ic{width:15px;height:15px;}
+  #mailSyncBtn.on{border-color:var(--green);color:var(--green);}
   .modal h3{font-family:var(--display);font-size:19px;margin-bottom:16px;}
   .modal .field{margin-bottom:13px;min-width:0;}
   .modal-actions{display:flex;flex-direction:row;flex-wrap:wrap;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;}
@@ -1270,7 +1288,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v67</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v68</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1431,7 +1449,7 @@
 
   <!-- VIEW MESSAGERIE (e-mails de candidature via Outlook / Microsoft Graph) -->
   <div class="view" id="view-messagerie">
-    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Messagerie</h2><div class="sub">Les e-mails de tes candidatures (dossier Outlook « Suivi Candidatures »), reliés à tes offres.</div></div></div>
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Messagerie</h2><div class="sub">Tes e-mails de candidature, classés et reliés à tes offres.</div></div><div class="add-bar-actions"><button class="btn sm ghost" id="mailSyncBtn" onclick="openMailSync()"><i data-ic="link"></i> <span>Synchronisation</span></button><button class="btn sm ghost" onclick="refreshMail()"><i data-ic="history"></i> <span>Actualiser</span></button><button class="btn sm" onclick="openMailPaste()"><i data-ic="plus"></i> <span>Ajouter</span></button></div></div>
     <div id="messagerie-content"></div>
   </div>
 
@@ -2051,7 +2069,7 @@
     if(v==="carte"){setTimeout(renderCarteMap,100);}
     if(v==="bilan"){renderBilan();}
     if(v==="reve"){renderReveBmSetup();}
-    if(v==="messagerie"){renderMessagerie();loadSyncedMail();tryAutoConnectMail();}
+    if(v==="messagerie"){renderMessagerie();loadSyncedMail();if(gmailConnected&&_gmailToken)importGmailToSync();else tryGmailSilent(true);tryAutoConnectMail();}
   }
   function toggleMore(e){if(e)e.stopPropagation();const m=document.getElementById("moreMenu");if(m)m.classList.toggle("open");}
   function closeMore(){const m=document.getElementById("moreMenu");if(m)m.classList.remove("open");}
@@ -5207,7 +5225,7 @@
       if(acc){ outlookAccount=acc; app.setActiveAccount(acc); renderMessagerie(); }   // compte restauré : l'import reste manuel
     }catch(e){}
   }
-  function refreshMailOnFocus(){ const v=document.getElementById("view-messagerie"); if(v&&v.classList.contains("active")&&!mailLoading) loadSyncedMail(); }
+  function refreshMailOnFocus(){ const v=document.getElementById("view-messagerie"); if(v&&v.classList.contains("active")&&!mailLoading){ if(gmailConnected&&_gmailToken)importGmailToSync(); else loadSyncedMail(); } }
 
   // --- Microsoft Graph (lecture seule) ---
   async function graphGet(token,url){
@@ -5252,8 +5270,8 @@
     mailLoading=true; mailError=""; renderMessagerie();
     try{
       const res=await sb.from("emails_sync").insert(row).select(); if(res.error) throw res.error;
-      if(ta)ta.value=""; flashCenter("E-mail ajouté ✓"); await loadSyncedMail();
-    }catch(e){ const msg=(e&&e.message)||(""+e); mailError=mailTableErr(msg)?"Crée d'abord la table « emails_sync » dans Supabase (SQL dans l'aide ci-dessous).":("Échec de l'enregistrement : "+msg); mailLoading=false; renderMessagerie(); }
+      if(ta)ta.value=""; closeModal(); flashCenter("E-mail ajouté ✓"); await loadSyncedMail();
+    }catch(e){ const msg=(e&&e.message)||(""+e); mailError=mailTableErr(msg)?"Crée d'abord la table « emails_sync » dans Supabase (SQL : bouton Synchronisation).":("Échec de l'enregistrement : "+msg); mailLoading=false; renderMessagerie(); }
   }
   async function deleteSyncedMail(id){
     if(sb){ try{ await sb.from("emails_sync").delete().eq("id",id); }catch(e){} }
@@ -5400,10 +5418,21 @@
       await loadGis();
       const tc=getGmailTokenClient(); if(!tc) throw new Error("Google indisponible");
       _gmailToken=await new Promise((resolve,reject)=>{ tc.callback=function(resp){ if(resp&&resp.access_token)resolve(resp.access_token); else reject(new Error((resp&&resp.error)||"accès refusé")); }; try{ tc.requestAccessToken({prompt:gmailConnected?"":"consent"}); }catch(e){ reject(e); } });
-      gmailConnected=true; mailLoading=false; await importGmailToSync();
+      gmailConnected=true; try{localStorage.setItem("st_gmail_on","1");}catch(e){} mailLoading=false; await importGmailToSync();
     }catch(e){ mailLoading=false; mailError="Connexion Gmail échouée : "+((e&&e.message)||e); renderMessagerie(); }
   }
-  function disconnectGmail(){ _gmailToken=null; gmailConnected=false; flashCenter("Gmail déconnecté","info"); renderMessagerie(); }
+  // reconnexion SILENCIEUSE (sans pop-up si la session Google est encore valide) -> sync auto à l'arrivée
+  async function tryGmailSilent(thenImport){
+    if(!GMAIL_CLIENT_ID) return false;
+    let on=false; try{ on=localStorage.getItem("st_gmail_on")==="1"; }catch(e){}
+    if(!on || (gmailConnected&&_gmailToken)) return gmailConnected;
+    try{ await loadGis(); const tc=getGmailTokenClient(); if(!tc) return false;
+      const tok=await new Promise(res=>{ tc.callback=function(r){ res((r&&r.access_token)||null); }; try{ tc.requestAccessToken({prompt:""}); }catch(e){ res(null); } });
+      if(tok){ _gmailToken=tok; gmailConnected=true; if(thenImport) importGmailToSync(); return true; }
+    }catch(e){}
+    return false;
+  }
+  function disconnectGmail(){ _gmailToken=null; gmailConnected=false; try{localStorage.removeItem("st_gmail_on");}catch(e){} flashCenter("Gmail déconnecté","info"); renderMessagerie(); }
   async function gmailGet(url){ const r=await fetch(url,{headers:{Authorization:"Bearer "+_gmailToken}}); if(!r.ok){ let t=""; try{t=await r.text();}catch(_){} const err=new Error("gmail"); err.status=r.status; err.detail=t; throw err; } return r.json(); }
   function gmailDecode(b64){ if(!b64) return ""; try{ return decodeURIComponent(escape(atob(b64.replace(/-/g,"+").replace(/_/g,"/")))); }catch(e){ try{ return atob(b64.replace(/-/g,"+").replace(/_/g,"/")); }catch(_){ return ""; } } }
   function gmailBodyText(payload){
@@ -5438,20 +5467,25 @@
     }catch(e){ mailError=(e&&e.status===401)?"Session Gmail expirée — reclique « Connecter Gmail » (Google réinitialise ~tous les 7 jours).":("Lecture Gmail impossible : "+((e&&e.detail)||(e&&e.message)||e)); mailLoading=false; renderMessagerie(); }
   }
 
-  // --- UI (méthode principale = coller un e-mail transféré) ---
-  function mailCard(m){
+  // --- UI : boîte de réception (style messagerie classique simplifiée) ---
+  function mailRow(m){
     const d=m.received_at?new Date(m.received_at):null;
-    const dateStr=d&&!isNaN(d.getTime())?d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"";
+    const now=new Date(), sameDay=d&&d.toDateString()===now.toDateString();
+    const dateStr=!d||isNaN(d.getTime())?"":sameDay?d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
     const nat=m._nature||MAIL_NATURE_OTHER, mt=m._match;
-    return `<div class="mzg-card" onclick='openMail("${esc(m.id)}")'>
-      <div class="mzg-card-top"><span class="mzg-from">${esc(m.from_name||m.from_email||"Expéditeur inconnu")}</span><span class="mzg-date">${dateStr}</span></div>
-      <div class="mzg-subject">${esc(m.subject)}</div>
-      <div class="mzg-preview">${esc((m.body||"").slice(0,150))}</div>
-      <div class="mzg-tags">
-        <span class="mzg-pill" style="color:${nat.color};border-color:${nat.color}55;">${ic(nat.icon)} ${esc(nat.label)}</span>
-        ${mt?`<span class="mzg-pill linked" onclick='event.stopPropagation();openMatchedOffer("${esc(m.id)}")' title="Confiance : ${mt.confidence}">${ic("link")} Lié à : ${esc(mt.entreprise)}</span>`:`<span class="mzg-pill none">${ic("minus")} Non rattaché</span>`}
-        <span class="mzg-del" onclick='event.stopPropagation();deleteSyncedMail("${esc(m.id)}")' title="Supprimer">${ic("trash")}</span>
+    const ini=esc((m.from_name||m.from_email||"?").trim().charAt(0).toUpperCase());
+    return `<div class="mzg-row" onclick='openMail("${esc(m.id)}")'>
+      <div class="mzg-ava" style="background:${nat.color}1f;color:${nat.color};">${ini}</div>
+      <div class="mzg-row-main">
+        <div class="mzg-row-l1"><span class="mzg-from">${esc(m.from_name||m.from_email||"Expéditeur inconnu")}</span><span class="mzg-date">${dateStr}</span></div>
+        <div class="mzg-subject">${esc(m.subject||"(sans objet)")}</div>
+        <div class="mzg-preview">${esc((m.body||"").replace(/\s+/g," ").slice(0,130))}</div>
+        <div class="mzg-tags">
+          <span class="mzg-pill" style="color:${nat.color};border-color:${nat.color}55;">${ic(nat.icon)} ${esc(nat.label)}</span>
+          ${mt?`<span class="mzg-pill linked" onclick='event.stopPropagation();openMatchedOffer("${esc(m.id)}")' title="Confiance : ${mt.confidence}">${ic("link")} ${esc(mt.entreprise)}</span>`:`<span class="mzg-pill none">${ic("minus")} Non rattaché</span>`}
+        </div>
       </div>
+      <button class="mzg-del" onclick='event.stopPropagation();deleteSyncedMail("${esc(m.id)}")' title="Supprimer">${ic("trash")}</button>
     </div>`;
   }
   function mzgSyncSection(){
@@ -5492,31 +5526,37 @@
   }
   function renderMessagerie(){
     const c=document.getElementById("messagerie-content"); if(!c) return;
-    let html=`<div class="mzg-compose">
-      <div class="mzg-compose-h">${ic("plus")} Ajouter un e-mail reçu</div>
-      <div class="mzg-compose-p">Transfère-toi le mail du recruteur (ou copie-le entièrement), puis colle-le ici. L'app détecte le <b>vrai expéditeur</b>, la <b>nature</b> du message, et le <b>relie à ton offre</b>. Rien à configurer.</div>
-      <textarea id="mailPasteInput" class="mzg-paste" rows="5" placeholder="Colle ici l'e-mail transféré — avec l'en-tête « De : … / Objet : … » + le corps…"></textarea>
-      <div class="mzg-compose-actions">
-        <button class="btn primary sm" onclick="addPastedEmail()" ${mailLoading?"disabled":""}>${ic("check")}<span>Analyser et ajouter</span></button>
-        <span class="mzg-drop-hint">${ic("doc")} ou dépose un fichier .eml / .txt</span>
-      </div>
-    </div>`;
+    // pastille « connecté » sur le bouton Synchronisation
+    const sb2=document.getElementById("mailSyncBtn"); if(sb2)sb2.classList.toggle("on",gmailConnected||!!outlookAccount);
+    let html="";
     if(mailTableMissing) html+=`<div class="mzg-error">${ic("alert")}<span>Table « emails_sync » absente dans Supabase.</span><button class="btn ghost sm" onclick="showEmailsSyncSQL()">Voir le SQL à lancer</button></div>`;
-    else if(mailError) html+=`<div class="mzg-error">${ic("alert")}<span>${esc(mailError)}</span><button class="btn ghost sm" onclick="loadSyncedMail()">${ic("history")} Réessayer</button></div>`;
+    else if(mailError) html+=`<div class="mzg-error">${ic("alert")}<span>${esc(mailError)}</span><button class="btn ghost sm" onclick="refreshMail()">${ic("history")} Réessayer</button></div>`;
     if(mailLoading && !syncedMail.length) html+=`<div class="loading"><div class="spinner"></div>Chargement…</div>`;
-    else if(!syncedMail.length && !mailTableMissing) html+=`<div class="empty">Aucun e-mail pour l'instant. Colle ton premier mail de candidature ci-dessus.</div>`;
-    else if(syncedMail.length) html+=`<div class="mzg-list">${syncedMail.map(mailCard).join("")}</div>`;
-    html+=`<details class="bookmarklet-help mzg-adv"><summary>${ic("history")} Synchronisation automatique — Gmail / Outlook (optionnel)</summary>${mzgSyncSection()}</details>`;
+    else if(!syncedMail.length && !mailTableMissing){
+      html+=`<div class="empty-cta"><div class="empty-ico">${ic("mail")}</div><div class="empty-h">Boîte vide</div><div class="empty-p">Connecte ta synchro Gmail, ou ajoute un e-mail à la main. Chaque message sera classé (entretien, refus, offre…) et relié à ton offre.</div><div class="empty-actions"><button class="btn" onclick="openMailSync()">${ic("link")} Synchroniser</button><button class="btn ghost" onclick="openMailPaste()">${ic("plus")} Ajouter à la main</button></div></div>`;
+    }
+    else if(syncedMail.length) html+=`<div class="mzg-inbox">${syncedMail.map(mailRow).join("")}</div>`;
     c.innerHTML=html;
-    wireMailDrop();
+    // si la fenêtre Synchronisation est ouverte, on la rafraîchit (état connecté/erreur)
+    const sm=document.getElementById("mzgSyncModalBody"); if(sm) sm.innerHTML=(mailError?`<div class="mzg-error">${ic("alert")}<span>${esc(mailError)}</span></div>`:"")+mzgSyncSection();
   }
-  function wireMailDrop(){
-    const zone=document.querySelector("#messagerie-content .mzg-compose"); if(!zone) return;
-    zone.addEventListener("dragover",e=>{ e.preventDefault(); zone.classList.add("drag"); });
-    zone.addEventListener("dragleave",()=>zone.classList.remove("drag"));
-    zone.addEventListener("drop",e=>{ e.preventDefault(); zone.classList.remove("drag"); const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!f)return;
-      const rd=new FileReader(); rd.onload=()=>{ const ta=document.getElementById("mailPasteInput"); if(ta){ta.value=""+(rd.result||"");} addPastedEmail(); }; rd.readAsText(f); });
+  function openMailPaste(){
+    const box=document.getElementById("modalBox"); box.classList.remove("wide");
+    box.innerHTML=`<div class="modal-head"><h3>${ic("plus")} Ajouter un e-mail</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Transfère-toi le mail du recruteur (ou copie-le), puis colle-le ici. L'app détecte l'expéditeur d'origine, la nature et l'offre liée.</p>
+      <textarea id="mailPasteInput" class="mzg-paste" rows="9" placeholder="Colle ici l'e-mail transféré (en-tête « De : … / Objet : … » + le corps)…"></textarea>
+      <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn primary" onclick="addPastedEmail()">${ic("check")}<span>Analyser et ajouter</span></button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+    setTimeout(()=>{const t=document.getElementById("mailPasteInput");if(t)t.focus();},60);
   }
+  function openMailSync(){
+    const box=document.getElementById("modalBox"); box.classList.remove("wide");
+    box.innerHTML=`<div class="modal-head"><h3>${ic("link")} Synchronisation</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div id="mzgSyncModalBody">${mzgSyncSection()}</div>
+      <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  function refreshMail(){ if(gmailConnected&&_gmailToken) importGmailToSync(); else if(outlookAccount) importGraphToSync(); else loadSyncedMail(); }
   function showEmailsSyncSQL(){
     const box=document.getElementById("modalBox");
     box.innerHTML=`<div class="modal-head"><h3>${ic("doc")} Table « emails_sync »</h3><button class="x" onclick="closeModal()">✕</button></div>

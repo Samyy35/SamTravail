@@ -641,6 +641,55 @@
   .fiche-actbar .fa-label .ic{width:14px;height:14px;}
   .fiche-actbar .pdact.rollback{margin-left:0;}
   @media(max-width:520px){.fiche-actbar .fa-spacer{flex-basis:100%;height:0;}}
+  /* ===== Messagerie (Outlook / Microsoft Graph) ===== */
+  .mzg-connect{max-width:520px;margin:30px auto;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 26px;box-shadow:var(--shadow);}
+  .mzg-connect-ico{width:54px;height:54px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px;}
+  .mzg-connect-ico .ic{width:28px;height:28px;}
+  .mzg-connect-h{font-family:var(--display);font-size:20px;font-weight:650;margin-bottom:8px;}
+  .mzg-connect-p{font-size:13px;color:var(--text-dim);line-height:1.55;margin-bottom:16px;}
+  .mzg-input{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:10px;font-family:var(--font);font-size:13px;margin-bottom:12px;background:var(--surface-2);color:var(--text);box-sizing:border-box;}
+  .mzg-connect .btn.primary{width:100%;justify-content:center;margin-bottom:8px;}
+  .mzg-steps{text-align:left;font-size:12.5px;color:var(--text-dim);line-height:1.65;padding-left:18px;margin:8px 0;}
+  .mzg-steps code{background:var(--surface-3);padding:1px 5px;border-radius:5px;font-size:11.5px;word-break:break-all;}
+  .mzg-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .mzg-account{font-size:13px;font-weight:600;color:var(--text-dim);display:inline-flex;align-items:center;gap:7px;min-width:0;}
+  .mzg-account .ic{width:15px;height:15px;flex-shrink:0;}
+  .mzg-bar-actions{display:flex;gap:8px;}
+  .mzg-error{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--red-soft);border:1px solid var(--red);color:var(--red);border-radius:11px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;}
+  .mzg-error span{flex:1;min-width:160px;}
+  .mzg-error .ic{width:16px;height:16px;flex-shrink:0;}
+  .mzg-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+  .mzg-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px 15px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:6px;}
+  .mzg-card:hover{border-color:var(--border-light);box-shadow:var(--shadow);transform:translateY(-1px);}
+  .mzg-card.unread{border-left:3px solid var(--accent);}
+  .mzg-card-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;}
+  .mzg-from{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mzg-date{color:var(--text-mute);flex-shrink:0;}
+  .mzg-subject{font-size:13.5px;font-weight:600;color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .mzg-preview{font-size:12px;color:var(--text-dim);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .mzg-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;}
+  .mzg-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);background:var(--surface-2);}
+  .mzg-pill .ic{width:12px;height:12px;}
+  .mzg-pill.linked{border-color:rgba(255,111,94,.4);color:var(--accent);background:var(--accent-soft);cursor:pointer;}
+  .mzg-pill.none{color:var(--text-mute);}
+  .mzg-body{margin-top:6px;}
+  .mzg-iframe{width:100%;height:56vh;border:1px solid var(--border);border-radius:10px;background:#fff;}
+  .mzg-body-text{white-space:pre-wrap;font-size:13px;color:var(--text-dim);line-height:1.6;padding:12px;background:var(--surface-2);border-radius:10px;max-height:56vh;overflow:auto;}
+  .mzg-compose{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:16px;transition:.15s;}
+  .mzg-compose.drag{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .mzg-compose-h{font-family:var(--display);font-size:15px;font-weight:650;display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+  .mzg-compose-h .ic{width:16px;height:16px;color:var(--accent);}
+  .mzg-compose-p{font-size:12.5px;color:var(--text-dim);line-height:1.5;margin-bottom:10px;}
+  .mzg-paste{width:100%;box-sizing:border-box;padding:11px 13px;border:1px solid var(--border);border-radius:10px;font-family:var(--font);font-size:12.5px;line-height:1.5;background:var(--surface-2);color:var(--text);resize:vertical;}
+  .mzg-compose-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;}
+  .mzg-drop-hint{font-size:11.5px;color:var(--text-mute);display:inline-flex;align-items:center;gap:5px;}
+  .mzg-drop-hint .ic{width:13px;height:13px;}
+  .mzg-del{margin-left:auto;display:inline-flex;align-items:center;color:var(--text-mute);cursor:pointer;padding:2px;border-radius:6px;}
+  .mzg-del:hover{color:var(--red);background:var(--red-soft);}
+  .mzg-del .ic{width:14px;height:14px;}
+  .mzg-adv{margin-top:18px;}
+  .mzg-adv summary{color:var(--text-dim);font-size:12.5px;}
+  .mzg-sql{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:13px;font-size:11.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;color:var(--text);overflow:auto;}
   .modal h3{font-family:var(--display);font-size:19px;margin-bottom:16px;}
   .modal .field{margin-bottom:13px;min-width:0;}
   .modal-actions{display:flex;flex-direction:row;flex-wrap:wrap;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;}
@@ -1205,6 +1254,7 @@
     <button class="sb-item active" data-view="aujourdhui" onclick="setView('aujourdhui')"><i data-ic="sun"></i><span>Aujourd'hui</span></button>
     <button class="sb-item" data-view="offres" onclick="setView('offres')"><i data-ic="inbox"></i><span>À trier</span></button>
     <button class="sb-item" data-view="pipeline" onclick="setView('pipeline')"><i data-ic="columns"></i><span>Suivi</span></button>
+    <button class="sb-item" data-view="messagerie" onclick="setView('messagerie')"><i data-ic="mail"></i><span>Messagerie</span></button>
     <button class="sb-item" data-view="reve" onclick="setView('reve')"><i data-ic="bookmark"></i><span>Mes marques</span></button>
     <button class="sb-item" data-view="carte" onclick="setView('carte')"><i data-ic="pin"></i><span>Carte</span></button>
     <button class="sb-item" data-view="bilan" onclick="setView('bilan')"><i data-ic="chart"></i><span>Statistiques</span></button>
@@ -1220,7 +1270,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v64</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v66</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1377,6 +1427,12 @@
   <div class="view" id="view-entretiens">
     <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Entretiens</h2><div class="sub">Préparation et suivi.</div></div><button class="btn sm" onclick="openModal('entretiens')">+ Entretien</button></div>
     <div id="entretiens-content"></div>
+  </div>
+
+  <!-- VIEW MESSAGERIE (e-mails de candidature via Outlook / Microsoft Graph) -->
+  <div class="view" id="view-messagerie">
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Messagerie</h2><div class="sub">Les e-mails de tes candidatures (dossier Outlook « Suivi Candidatures »), reliés à tes offres.</div></div></div>
+    <div id="messagerie-content"></div>
   </div>
 
   <!-- VIEW BILAN (stats + campagnes) -->
@@ -1995,6 +2051,7 @@
     if(v==="carte"){setTimeout(renderCarteMap,100);}
     if(v==="bilan"){renderBilan();}
     if(v==="reve"){renderReveBmSetup();}
+    if(v==="messagerie"){renderMessagerie();loadSyncedMail();tryAutoConnectMail();}
   }
   function toggleMore(e){if(e)e.stopPropagation();const m=document.getElementById("moreMenu");if(m)m.classList.toggle("open");}
   function closeMore(){const m=document.getElementById("moreMenu");if(m)m.classList.remove("open");}
@@ -5063,6 +5120,369 @@
     el.style.display="inline-flex";
     el.innerHTML=fire+' <b>'+n+' jour'+(n>1?"s":"")+'</b> de suite · '+msg+(streakData.best>n?' <span class="streak-best">record '+streakData.best+'</span>':"");
   }
+
+  // ===================== MESSAGERIE — Outlook / Microsoft Graph =====================
+  // OAuth2 Authorization Code + PKCE via MSAL.js (navigateur, AUCUN secret) ; lecture seule Mail.Read.
+  // Les e-mails ne sont JAMAIS stockés (restent en mémoire navigateur). Tout est isolé : une erreur API
+  // reste dans cet onglet (bannière + Réessayer) et ne casse jamais le reste de l'app.
+  let OUTLOOK_CLIENT_ID=""; try{ OUTLOOK_CLIENT_ID=localStorage.getItem("st_outlook_client_id")||""; }catch(e){}
+  const OUTLOOK_SCOPES=["Mail.Read"];
+  const OUTLOOK_FOLDER="Suivi Candidatures";
+  let _msalApp=null, outlookAccount=null, mailError="", mailLoading=false, mailFolderMissing=false;
+  // Méthode principale (choisie) = COLLER l'e-mail transféré -> parsing -> matching -> stockage Supabase (emails_sync).
+  // Le webhook/forward-to-address est évité (Microsoft 365 bloque l'auto-transfert externe par défaut + nécessite un domaine).
+  // La connexion Outlook/Graph reste dispo en option « avancé » (importe vers la même table).
+  let syncedMail=[], mailTableMissing=false;
+
+  // --- Diagnostics d'erreur -> message FR clair ---
+  function graphErrorMsg(status,raw){
+    const m=(""+(raw||"")).toLowerCase();
+    if(!status||/failed to fetch|networkerror/.test(m)) return "Microsoft injoignable (réseau). Réessaie dans un instant.";
+    if(status===401) return "Session expirée. Reconnecte ton Outlook (bouton Déconnecter puis Connecter).";
+    if(status===403||/consent|mail\.read|denied/.test(m)) return "Permission refusée : ton organisation (école) n'autorise pas la lecture du courrier par cette app (accord administrateur requis).";
+    if(status===404) return "Dossier « "+OUTLOOK_FOLDER+" » introuvable dans Outlook.";
+    if(status===429) return "Trop de requêtes (limite Microsoft). Réessaie dans une minute.";
+    if(status>=500) return "Service Microsoft indisponible. Réessaie plus tard.";
+    return "Erreur Microsoft Graph"+(status?(" ("+status+")"):"")+".";
+  }
+  function authErrorMsg(e){
+    const m=(""+((e&&(e.errorCode||e.message))||e||"")).toLowerCase();
+    if(/user_cancelled|user cancelled|cancelled|interaction_in_progress/.test(m)) return ""; // annulation : silencieux
+    if(/popup|window|blocked/.test(m)) return "Le navigateur a bloqué la fenêtre de connexion — autorise les pop-ups pour ce site.";
+    if(/aadsts65001|consent|admin|approval/.test(m)) return "Ton organisation (école) exige l'accord d'un administrateur pour cette app. Essaie avec un Outlook perso, ou demande le consentement à l'IT.";
+    if(/aadsts50011|redirect/.test(m)) return "URI de redirection non déclarée dans Azure. Ajoute « "+(location.origin+location.pathname)+" » comme URI de redirection de type SPA.";
+    if(/aadsts700016|unauthorized_client|invalid.?client/.test(m)) return "ID d'application invalide. Revérifie l'« Application (client) ID » copié depuis Azure.";
+    return "Connexion Outlook échouée : "+((e&&e.message)||e||"erreur inconnue");
+  }
+
+  // --- MSAL : chargement à la demande + app publique (PKCE) ---
+  function loadMsal(){
+    if(window.msal&&window.msal.PublicClientApplication) return Promise.resolve();
+    return new Promise((res,rej)=>{
+      const s=document.createElement("script");
+      s.src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"; s.async=true;
+      s.onload=()=>res(); s.onerror=()=>rej(new Error("Chargement de MSAL impossible (réseau)."));
+      document.head.appendChild(s);
+    });
+  }
+  function getMsalApp(){
+    if(_msalApp) return _msalApp;
+    if(!OUTLOOK_CLIENT_ID||!(window.msal&&window.msal.PublicClientApplication)) return null;
+    _msalApp=new msal.PublicClientApplication({
+      auth:{clientId:OUTLOOK_CLIENT_ID, authority:"https://login.microsoftonline.com/common", redirectUri:location.origin+location.pathname},
+      cache:{cacheLocation:"localStorage", storeAuthStateInCookie:false}
+    });
+    return _msalApp;
+  }
+  async function connectOutlook(){
+    const inp=document.getElementById("outlookClientId"); if(inp) OUTLOOK_CLIENT_ID=(inp.value||"").trim();
+    if(!OUTLOOK_CLIENT_ID){ mailError="Colle d'abord l'« Application (client) ID » obtenu sur Azure."; renderMessagerie(); return; }
+    try{ localStorage.setItem("st_outlook_client_id",OUTLOOK_CLIENT_ID); }catch(e){}
+    mailError=""; mailLoading=true; renderMessagerie();
+    try{
+      await loadMsal();
+      const app=getMsalApp(); if(!app) throw new Error("MSAL indisponible");
+      const res=await app.loginPopup({scopes:OUTLOOK_SCOPES, prompt:"select_account"});
+      outlookAccount=res.account; app.setActiveAccount(res.account);
+      mailLoading=false; await importGraphToSync();
+    }catch(e){ mailLoading=false; const msg=authErrorMsg(e); if(msg)mailError=msg; renderMessagerie(); }
+  }
+  async function getGraphToken(){
+    const app=getMsalApp(); if(!app) return null;
+    const account=outlookAccount||app.getActiveAccount()||app.getAllAccounts()[0]; if(!account) return null;
+    try{ const r=await app.acquireTokenSilent({scopes:OUTLOOK_SCOPES,account}); return r.accessToken; }
+    catch(e){ try{ const r=await app.acquireTokenPopup({scopes:OUTLOOK_SCOPES,account}); return r.accessToken; }
+      catch(e2){ const msg=authErrorMsg(e2); if(msg)mailError=msg; return null; } }
+  }
+  function disconnectOutlook(){
+    const app=getMsalApp();
+    try{ if(app&&outlookAccount) app.logoutPopup({account:outlookAccount, mainWindowRedirectUri:location.origin+location.pathname}); }catch(e){}
+    outlookAccount=null; mailError=""; mailFolderMissing=false; renderMessagerie();
+  }
+  async function tryAutoConnectMail(){
+    if(outlookAccount){ renderMessagerie(); return; }
+    if(!OUTLOOK_CLIENT_ID) return;
+    try{ await loadMsal(); const app=getMsalApp(); if(!app)return;
+      const acc=app.getActiveAccount()||app.getAllAccounts()[0];
+      if(acc){ outlookAccount=acc; app.setActiveAccount(acc); renderMessagerie(); }   // compte restauré : l'import reste manuel
+    }catch(e){}
+  }
+  function refreshMailOnFocus(){ const v=document.getElementById("view-messagerie"); if(v&&v.classList.contains("active")&&!mailLoading) loadSyncedMail(); }
+
+  // --- Microsoft Graph (lecture seule) ---
+  async function graphGet(token,url){
+    const r=await fetch(url,{headers:{Authorization:"Bearer "+token,Accept:"application/json"}});
+    if(!r.ok){ let t=""; try{t=await r.text();}catch(_){} const err=new Error("graph"); err.status=r.status; err.detail=t; throw err; }
+    return r.json();
+  }
+  async function findFollowupFolderId(token){
+    const want=OUTLOOK_FOLDER.toLowerCase();
+    const data=await graphGet(token,"https://graph.microsoft.com/v1.0/me/mailFolders?$top=100&$select=id,displayName");
+    let f=(data.value||[]).find(x=>(x.displayName||"").toLowerCase()===want); if(f) return f.id;
+    for(const top of (data.value||[])){ // dossier rangé en sous-dossier ?
+      try{ const sub=await graphGet(token,"https://graph.microsoft.com/v1.0/me/mailFolders/"+top.id+"/childFolders?$top=100&$select=id,displayName");
+        const m=(sub.value||[]).find(x=>(x.displayName||"").toLowerCase()===want); if(m) return m.id; }catch(e){}
+    }
+    return null;
+  }
+  async function fetchFollowupMail(token,folderId){
+    const url="https://graph.microsoft.com/v1.0/me/mailFolders/"+encodeURIComponent(folderId)+"/messages?$top=50&$orderby=receivedDateTime%20desc&$select=id,subject,from,receivedDateTime,bodyPreview,webLink,isRead";
+    const data=await graphGet(token,url); return data.value||[];
+  }
+  // --- Stockage Supabase (emails_sync) : alimenté par le COLLAGE (principal) ou l'import Graph (avancé) ---
+  function syncKey(email,subject,date){ return (email||"").toLowerCase()+"|"+normTxt(subject).trim()+"|"+(""+(date||"")).slice(0,10); }
+  function mailTableErr(msg){ return /relation .*does not exist|table|schema cache|could not find/i.test(""+(msg||"")); }
+  async function loadSyncedMail(){
+    if(!sb){ syncedMail=[]; renderMessagerie(); return; }
+    mailLoading=true; renderMessagerie();
+    try{
+      const res=await sb.from("emails_sync").select("*").order("received_at",{ascending:false}).limit(150);
+      if(res.error) throw res.error;
+      syncedMail=(res.data||[]).map(enrichSynced); mailError=""; mailTableMissing=false;
+    }catch(e){ const msg=(e&&e.message)||(""+e); if(mailTableErr(msg)) mailTableMissing=true; else mailError="Lecture impossible : "+msg; }
+    mailLoading=false; renderMessagerie();
+  }
+  async function addPastedEmail(){
+    const ta=document.getElementById("mailPasteInput"); const raw=ta?ta.value:"";
+    if(!(""+raw).trim()){ mailError="Colle d'abord le contenu d'un e-mail."; renderMessagerie(); return; }
+    if(!sb){ mailError="Pas de connexion à la base."; renderMessagerie(); return; }
+    const p=parseForwardedEmail(raw);
+    const nature=classifyMail(p.subject,p.body);
+    const row={ subject:p.subject||"(sans objet)", from_name:p.fromName||"", from_email:p.fromEmail||"", from_domain:(p.fromEmail.split("@")[1]||"").toLowerCase(), received_at:p.date||new Date().toISOString(), body:(p.body||"").slice(0,20000), nature:nature.key };
+    mailLoading=true; mailError=""; renderMessagerie();
+    try{
+      const res=await sb.from("emails_sync").insert(row).select(); if(res.error) throw res.error;
+      if(ta)ta.value=""; flashCenter("E-mail ajouté ✓"); await loadSyncedMail();
+    }catch(e){ const msg=(e&&e.message)||(""+e); mailError=mailTableErr(msg)?"Crée d'abord la table « emails_sync » dans Supabase (SQL dans l'aide ci-dessous).":("Échec de l'enregistrement : "+msg); mailLoading=false; renderMessagerie(); }
+  }
+  async function deleteSyncedMail(id){
+    if(sb){ try{ await sb.from("emails_sync").delete().eq("id",id); }catch(e){} }
+    syncedMail=syncedMail.filter(x=>String(x.id)!==String(id)); renderMessagerie();
+  }
+  // Import optionnel depuis Outlook (avancé) -> même table, avec dédoublonnage
+  async function importGraphToSync(){
+    mailLoading=true; mailError=""; renderMessagerie();
+    try{
+      const token=await getGraphToken(); if(!token) throw Object.assign(new Error("token"),{status:401});
+      const fid=await findFollowupFolderId(token);
+      if(!fid){ mailFolderMissing=true; mailLoading=false; renderMessagerie(); return; }
+      mailFolderMissing=false;
+      const raw=await fetchFollowupMail(token,fid);
+      const have=new Set(syncedMail.map(r=>syncKey(r.from_email,r.subject,r.received_at)));
+      const rows=[];
+      raw.forEach(m=>{ const ea=(m.from&&m.from.emailAddress)||{}; const subj=cleanSubject(m.subject||""); const k=syncKey(ea.address||"",subj,m.receivedDateTime); if(have.has(k))return; have.add(k);
+        const nature=classifyMail(subj,m.bodyPreview||"");
+        rows.push({subject:subj||"(sans objet)",from_name:ea.name||"",from_email:ea.address||"",from_domain:(ea.address||"").split("@")[1]||"",received_at:m.receivedDateTime||new Date().toISOString(),body:(m.bodyPreview||"").slice(0,20000),nature:nature.key}); });
+      if(rows.length && sb){ const res=await sb.from("emails_sync").insert(rows); if(res.error) throw res.error; }
+      flashCenter(rows.length?(rows.length+" e-mail(s) importé(s)"):"Déjà à jour","info");
+      await loadSyncedMail();
+    }catch(e){ mailError=graphErrorMsg(e&&e.status, e&&(e.detail||e.message)); mailLoading=false; renderMessagerie(); }
+  }
+  // --- Parsing d'un e-mail TRANSFÉRÉ (modulaire) : objet nettoyé + vrai expéditeur + date + corps ---
+  function cleanSubject(s){
+    let t=(""+(s||"")).trim(), prev;
+    do{ prev=t; t=t.replace(/^\s*(?:\[[^\]]*\]\s*)?(?:tr|trans|fwd?|fw|re|r[ée]f|aw|wg)\s*:\s*/i,""); }while(t!==prev);
+    return t.trim();
+  }
+  function parseFrDate(s){ // JS ne lit pas « 24 juin 2026 » -> petit parseur FR
+    const M={janvier:0,fevrier:1,mars:2,avril:3,mai:4,juin:5,juillet:6,aout:7,septembre:8,octobre:9,novembre:10,decembre:11};
+    const t=(""+s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+    const m=t.match(/(\d{1,2})\s+([a-z]+)\s+(\d{4})(?:\D+(\d{1,2})[h:](\d{2}))?/);
+    if(!m||M[m[2]]==null)return null;
+    const d=new Date(+m[3],M[m[2]],+m[1],m[4]?+m[4]:0,m[5]?+m[5]:0);
+    return isNaN(d.getTime())?null:d;
+  }
+  function parseForwardedEmail(raw){
+    const text=(""+(raw||"")).replace(/\r/g,"");
+    const out={subject:"",fromName:"",fromEmail:"",date:null,body:text.trim()};
+    const mFrom=text.match(/^[ \t]*(?:de|from|exp[ée]diteur)\s*:\s*(.+)$/im);
+    if(mFrom){ const v=mFrom[1].trim(); const em=v.match(/<([^>]+@[^>]+)>/)||v.match(/([^\s<>"]+@[^\s<>"]+)/); if(em)out.fromEmail=em[1].trim();
+      let name=v.replace(/<[^>]*>/,"").replace(/["']/g,"").replace(/[;,]\s*$/,"").trim(); if(name&&name.indexOf("@")<0)out.fromName=name.slice(0,80); }
+    const mDate=text.match(/^[ \t]*(?:envoy[ée]|sent|date)\s*:\s*(.+)$/im);
+    if(mDate){ const ds=mDate[1].trim(); let d=new Date(ds); if(isNaN(d.getTime())){ const fr=parseFrDate(ds); if(fr)d=fr; } if(!isNaN(d.getTime()))out.date=d.toISOString(); }
+    const mSubj=text.match(/^[ \t]*(?:objet|subject)\s*:\s*(.+)$/im);
+    if(mSubj)out.subject=cleanSubject(mSubj[1]);
+    // corps : retire le séparateur de transfert puis le bloc d'en-tête (les en-têtes restants après l'objet aussi)
+    let body=text.replace(/[-_]{2,}\s*(?:forwarded message|message transf[ée]r[ée]|original message|message d'origine)\s*[-_]{2,}/i,"\n");
+    if(mSubj){ const idx=body.indexOf(mSubj[0]); if(idx>=0)out.body=body.slice(idx+mSubj[0].length).replace(/^\s+/,"").replace(/^(?:[ \t]*(?:[àa]|to|cc|cci|bcc|copie)\s*:.*\n?)+/im,"").trim(); }
+    else out.body=body.replace(/^(?:[ \t]*(?:de|from|exp[ée]diteur|envoy[ée]|sent|date|[àa]|to|cc|objet|subject)\s*:.*\n?)+/im,"").trim();
+    if(!out.body)out.body=text.trim();
+    return out;
+  }
+
+  // --- Niveau 1 (algo, sans IA) : nature de l'e-mail + rattachement à une offre ---
+  function normTxt(s){ return (" "+(s||"")+" ").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/['’`]/g,"'").replace(/\s+/g," "); }
+  function normCompany(s){ return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/\b(sa|sas|sasu|sarl|eurl|inc|ltd|llc|plc|gmbh|ag|bv|nv|group|groupe|france|holding|corp|co|company|technologies|solutions|consulting|services|international)\b/g," ").replace(/[^a-z0-9]+/g," ").trim(); }
+  const MAIL_NATURE=[
+    {key:"offre",label:"Offre / Embauche",color:"var(--gold)",icon:"trophy",kw:["proposition d'embauche","promesse d'embauche","contrat de travail","nous avons le plaisir de vous proposer","ravis de vous proposer","pleased to offer","offer letter","we are delighted to offer","welcome aboard","job offer"]},
+    {key:"refus",label:"Refus",color:"var(--red)",icon:"ban",kw:["avons le regret","au regret de","ne pourrons malheureusement","ne donnerons pas suite","n'avons pas retenu","pas retenu votre","candidature n'a pas ete retenue","d'autres candidats","regret to inform","unfortunately","other candidates","not been selected","not to proceed","not moving forward","decided to move forward with other","will not be moving"]},
+    {key:"entretien",label:"Entretien",color:"var(--purple)",icon:"mic",kw:["entretien","entrevue","interview","disponibilites pour un echange","disponibilites pour un entretien","rencontrer nos equipes","suite a notre echange","prochaines etapes","schedule an interview","phone screen","screening call","availability for a call","book a time","calendly","planifier un creneau","next steps","move forward with your application","aimerions vous rencontrer"]},
+    {key:"test",label:"Test / Cas pratique",color:"var(--cyan)",icon:"checklist",kw:["tester vos competences","cas pratique","test technique","etude de cas","exercice technique","coding assessment","technical test","take-home","online assessment","hackerrank","codility"]},
+    {key:"recu",label:"Candidature reçue",color:"var(--green)",icon:"check",kw:["candidature recue","accuse de reception","nous avons bien recu","bien recu votre","votre candidature","dossier de candidature","statut de votre candidature","espace candidat","candidate portal","applicant portal","candidate profile","votre profil","application received","your application","thank you for applying","resume received","application status","update on your application","regarding your application","we have received"]},
+  ];
+  const MAIL_NATURE_OTHER={key:"autre",label:"Autre / RH",color:"var(--text-mute)",icon:"mail"};
+  // Fonction utilitaire MODULAIRE de parsing du corps -> nature (point d'entrée pour le Niveau 2 IA).
+  function classifyMail(subject,body){
+    // Poids par nature : les issues DÉCISIVES (offre/refus) priment sur les signaux génériques
+    // (accusé de réception), pour éviter qu'un objet « Votre candidature » fasse passer un refus pour un accusé.
+    const W={offre:5,refus:5,entretien:3,test:3,recu:1};
+    const subj=normTxt(subject), bod=normTxt(body);
+    let best=MAIL_NATURE_OTHER, bestScore=0;
+    for(const b of MAIL_NATURE){
+      let raw=0; for(const k of b.kw){ const nk=normTxt(k); if(subj.indexOf(nk)>=0)raw+=3; if(bod.indexOf(nk)>=0)raw+=1; }
+      const s=raw*(W[b.key]||1);
+      if(s>bestScore){bestScore=s;best=b;}
+    }
+    // TODO: IA Fallback — si bestScore est faible/0 ou ambigu, appeler /api/ai-sort (mode "mail")
+    // pour résumer le mail en un statut fiable ("Entretien proposé","Refus","Demande d'infos") quand l'algo strict ne tranche pas.
+    return best;
+  }
+  function matchOfferCandidates(){
+    const list=[], seen=new Set();
+    const add=(entreprise,poste,kind,ref)=>{ const c=normCompany(entreprise); if(!c||c.length<3)return; const key=c+"|"+kind; if(seen.has(key))return; seen.add(key); list.push({entreprise,poste:poste||"",kind,ref,cnorm:c,cflat:c.replace(/ /g,"")}); };
+    (typeof pipeline!=="undefined"?pipeline:[]).forEach(p=>add(p.entreprise,p.poste,"pipe",p));
+    Object.values(statusMap||{}).forEach(s=>{ if(s&&s.offer&&(s.statut==="apostuler"||s.statut==="super")) add(s.offer.entreprise,s.offer.titre,"offer",s.offer); });
+    (typeof reve!=="undefined"?reve:[]).forEach(e=>add(e.entreprise,"","reve",e));
+    return list;
+  }
+  function matchMailToOffer(mail){
+    const cands=matchOfferCandidates(); if(!cands.length) return null;
+    const domain=normTxt((mail.fromAddr||"").split("@")[1]||"").replace(/[^a-z0-9]/g,"");
+    const subj=normTxt(mail.subject);
+    const hay=normTxt((mail.fromName||"")+" "+(mail.fromAddr||"")+" "+(mail.subject||"")+" "+(mail.preview||""));
+    const hayFlat=hay.replace(/[^a-z0-9]/g,"");
+    let best=null,bestScore=0;
+    for(const c of cands){
+      let score=0;
+      if(c.cflat.length>=3 && domain && domain.indexOf(c.cflat)>=0) score=100;            // domaine expéditeur = entreprise -> très fiable
+      else if(hay.indexOf(" "+c.cnorm+" ")>=0) score=60;                                   // nom entreprise présent (mot entier)
+      else if(c.cflat.length>=5 && hayFlat.indexOf(c.cflat)>=0) score=42;                  // nom collé présent
+      if(score>0 && c.poste){ const pn=normTxt(c.poste); if(pn.replace(/\s/g,"").length>5 && subj.indexOf(pn)>=0) score+=10; }
+      const total=score+(c.kind==="pipe"?2:c.kind==="offer"?1:0);                          // priorité de source à score égal
+      if(score>0 && total>bestScore){ bestScore=total; best={entreprise:c.entreprise,poste:c.poste,kind:c.kind,ref:c.ref,confidence:score>=100?"haute":score>=60?"bonne":"moyenne"}; }
+    }
+    return best;
+  }
+  // enrichit une ligne emails_sync : nature (stockée) + rattachement offre calculé EN DIRECT (suit l'état des offres)
+  function enrichSynced(r){
+    const nat=MAIL_NATURE.find(b=>b.key===r.nature)||MAIL_NATURE_OTHER;
+    const match=matchMailToOffer({subject:r.subject,fromName:r.from_name,fromAddr:r.from_email,preview:r.body});
+    return Object.assign({},r,{_nature:nat,_match:match});
+  }
+
+  // --- UI (méthode principale = coller un e-mail transféré) ---
+  function mailCard(m){
+    const d=m.received_at?new Date(m.received_at):null;
+    const dateStr=d&&!isNaN(d.getTime())?d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})+" "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):"";
+    const nat=m._nature||MAIL_NATURE_OTHER, mt=m._match;
+    return `<div class="mzg-card" onclick='openMail("${esc(m.id)}")'>
+      <div class="mzg-card-top"><span class="mzg-from">${esc(m.from_name||m.from_email||"Expéditeur inconnu")}</span><span class="mzg-date">${dateStr}</span></div>
+      <div class="mzg-subject">${esc(m.subject)}</div>
+      <div class="mzg-preview">${esc((m.body||"").slice(0,150))}</div>
+      <div class="mzg-tags">
+        <span class="mzg-pill" style="color:${nat.color};border-color:${nat.color}55;">${ic(nat.icon)} ${esc(nat.label)}</span>
+        ${mt?`<span class="mzg-pill linked" onclick='event.stopPropagation();openMatchedOffer("${esc(m.id)}")' title="Confiance : ${mt.confidence}">${ic("link")} Lié à : ${esc(mt.entreprise)}</span>`:`<span class="mzg-pill none">${ic("minus")} Non rattaché</span>`}
+        <span class="mzg-del" onclick='event.stopPropagation();deleteSyncedMail("${esc(m.id)}")' title="Supprimer">${ic("trash")}</span>
+      </div>
+    </div>`;
+  }
+  function mzgGraphSection(){
+    const redirect=location.origin+location.pathname;
+    if(outlookAccount){
+      return `<div class="mzg-bar" style="margin:6px 0 0;">
+        <div class="mzg-account">${ic("user")} ${esc(outlookAccount.username||"compte connecté")}</div>
+        <div class="mzg-bar-actions">
+          <button class="hide-seen-btn" onclick="importGraphToSync()" ${mailLoading?"disabled":""}>${ic("history")}<span>Importer « ${esc(OUTLOOK_FOLDER)} »</span></button>
+          <button class="hide-seen-btn" onclick="disconnectOutlook()">${ic("ban")}<span>Déconnecter</span></button>
+        </div></div>
+        ${mailFolderMissing?`<div class="empty">Dossier « ${esc(OUTLOOK_FOLDER)} » introuvable dans Outlook.</div>`:""}`;
+    }
+    return `<div class="mzg-connect-p">Si ton compte Microsoft l'autorise, connecte Outlook pour importer automatiquement le dossier « <b>${esc(OUTLOOK_FOLDER)}</b> » (lecture seule, Mail.Read).</div>
+      <input id="outlookClientId" class="mzg-input" placeholder="Application (client) ID — depuis Azure" value="${esc(OUTLOOK_CLIENT_ID)}" autocomplete="off" spellcheck="false">
+      <button class="btn sm" onclick="connectOutlook()">${ic("link")}<span>Connecter mon Outlook</span></button>
+      <details class="bookmarklet-help"><summary>${ic("info")} Obtenir l'ID d'application Azure</summary>
+        <ol class="mzg-steps">
+          <li><a href="https://entra.microsoft.com" target="_blank" rel="noopener">entra.microsoft.com</a> → <b>Inscriptions d'applications</b> → <b>Nouvelle inscription</b> ; comptes : tout annuaire + perso.</li>
+          <li>URI de redirection type <b>SPA</b> : <code>${esc(redirect)}</code></li>
+          <li>Copie l'<b>ID d'application (client)</b> ci-dessus. <b>Autorisations</b> → Graph → Déléguées → <b>Mail.Read</b>.</li>
+        </ol>
+        <p class="bm-note">${ic("alert")} Compte école : souvent bloqué par l'IT (« accord administrateur requis ») et l'auto-transfert externe est désactivé par défaut — d'où la méthode « coller » ci-dessus, qui marche partout.</p>
+      </details>`;
+  }
+  function renderMessagerie(){
+    const c=document.getElementById("messagerie-content"); if(!c) return;
+    let html=`<div class="mzg-compose">
+      <div class="mzg-compose-h">${ic("plus")} Ajouter un e-mail reçu</div>
+      <div class="mzg-compose-p">Transfère-toi le mail du recruteur (ou copie-le entièrement), puis colle-le ici. L'app détecte le <b>vrai expéditeur</b>, la <b>nature</b> du message, et le <b>relie à ton offre</b>. Rien à configurer.</div>
+      <textarea id="mailPasteInput" class="mzg-paste" rows="5" placeholder="Colle ici l'e-mail transféré — avec l'en-tête « De : … / Objet : … » + le corps…"></textarea>
+      <div class="mzg-compose-actions">
+        <button class="btn primary sm" onclick="addPastedEmail()" ${mailLoading?"disabled":""}>${ic("check")}<span>Analyser et ajouter</span></button>
+        <span class="mzg-drop-hint">${ic("doc")} ou dépose un fichier .eml / .txt</span>
+      </div>
+    </div>`;
+    if(mailTableMissing) html+=`<div class="mzg-error">${ic("alert")}<span>Table « emails_sync » absente dans Supabase.</span><button class="btn ghost sm" onclick="showEmailsSyncSQL()">Voir le SQL à lancer</button></div>`;
+    else if(mailError) html+=`<div class="mzg-error">${ic("alert")}<span>${esc(mailError)}</span><button class="btn ghost sm" onclick="loadSyncedMail()">${ic("history")} Réessayer</button></div>`;
+    if(mailLoading && !syncedMail.length) html+=`<div class="loading"><div class="spinner"></div>Chargement…</div>`;
+    else if(!syncedMail.length && !mailTableMissing) html+=`<div class="empty">Aucun e-mail pour l'instant. Colle ton premier mail de candidature ci-dessus.</div>`;
+    else if(syncedMail.length) html+=`<div class="mzg-list">${syncedMail.map(mailCard).join("")}</div>`;
+    html+=`<details class="bookmarklet-help mzg-adv"><summary>${ic("mail")} Connexion Outlook automatique (optionnel, avancé)</summary>${mzgGraphSection()}</details>`;
+    c.innerHTML=html;
+    wireMailDrop();
+  }
+  function wireMailDrop(){
+    const zone=document.querySelector("#messagerie-content .mzg-compose"); if(!zone) return;
+    zone.addEventListener("dragover",e=>{ e.preventDefault(); zone.classList.add("drag"); });
+    zone.addEventListener("dragleave",()=>zone.classList.remove("drag"));
+    zone.addEventListener("drop",e=>{ e.preventDefault(); zone.classList.remove("drag"); const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!f)return;
+      const rd=new FileReader(); rd.onload=()=>{ const ta=document.getElementById("mailPasteInput"); if(ta){ta.value=""+(rd.result||"");} addPastedEmail(); }; rd.readAsText(f); });
+  }
+  function showEmailsSyncSQL(){
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3>${ic("doc")} Table « emails_sync »</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Colle ceci dans Supabase → SQL Editor → Run (une seule fois). Puis désactive la RLS sur la table (comme les autres).</p>
+      <pre class="mzg-sql">create table if not exists emails_sync (
+  id uuid primary key default gen_random_uuid(),
+  subject text, from_name text, from_email text, from_domain text,
+  received_at timestamptz, body text, nature text,
+  created_at timestamptz default now()
+);
+alter table emails_sync disable row level security;</pre>
+      <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  function openMatchedOffer(mailId){
+    const m=syncedMail.find(x=>String(x.id)===String(mailId)); const mt=m&&m._match; if(!mt) return;
+    if(mt.kind==="pipe") openPipeCard(mt.ref&&mt.ref.id);
+    else if(mt.kind==="offer"){ if(mt.ref) openOfferCard(mt.ref); }
+    else if(mt.kind==="reve") openBrandCard(mt.ref&&mt.ref.id);
+  }
+  function openMail(id){
+    const m=syncedMail.find(x=>String(x.id)===String(id)); if(!m) return;
+    const box=document.getElementById("modalBox"); box.classList.add("wide");
+    const nat=m._nature||MAIL_NATURE_OTHER, mt=m._match;
+    const recv=m.received_at?new Date(m.received_at).toLocaleString("fr-FR"):"";
+    box.innerHTML=`
+      <div class="modal-head"><h3 style="font-size:17px;">${esc(m.subject)}</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="fiche-top">
+        <div class="pc-company">${esc(m.from_name||m.from_email||"Expéditeur inconnu")}${m.from_name&&m.from_email?` <span style="color:var(--text-mute);font-weight:400;">&lt;${esc(m.from_email)}&gt;</span>`:""}</div>
+        <div class="pc-badges">
+          <span class="pc-badge" style="color:${nat.color};border-color:${nat.color}55;">${ic(nat.icon)} ${esc(nat.label)}</span>
+          ${mt?`<span class="pc-badge" style="color:var(--accent);border-color:var(--accent)55;cursor:pointer;" onclick='openMatchedOffer("${esc(m.id)}")'>${ic("link")} ${esc(mt.entreprise)} (${esc(mt.confidence)})</span>`:`<span class="pc-badge">${ic("minus")} Non rattaché</span>`}
+          ${recv?`<span class="pc-badge">${ic("calendar")} ${esc(recv)}</span>`:""}
+        </div>
+      </div>
+      <div class="fiche-actbar">
+        ${mt?`<button class="pdact" onclick='openMatchedOffer("${esc(m.id)}")'>${ic("link")} Voir l'offre liée</button>`:""}
+        <button class="pdact" onclick='deleteSyncedMail("${esc(m.id)}");closeModal()'>${ic("trash")} Supprimer</button>
+      </div>
+      <div class="mzg-body"><div class="mzg-body-text">${esc(m.body||"(corps du message indisponible)")}</div></div>
+      <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  window.addEventListener("focus",refreshMailOnFocus);
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible")refreshMailOnFocus(); });
+  // ===================== FIN MESSAGERIE =====================
+
   (async function init(){
     initDate();renderRoadmap();
     const params=new URLSearchParams(window.location.search);

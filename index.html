@@ -14,6 +14,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <!-- Typo : police système (SF Pro sur iOS/Mac), pas de dépendance externe -->
 <style>
   :root{
@@ -708,6 +711,8 @@
   .mzg-row .mzg-del:hover{color:var(--red);background:var(--red-soft);}
   .mzg-row .mzg-del .ic{width:15px;height:15px;}
   #mailSyncBtn.on{border-color:var(--green);color:var(--green);}
+  .lettre-lang{font-size:12px;color:var(--text-dim);display:inline-flex;align-items:center;gap:5px;}
+  .lettre-lang .vers-btn{padding:3px 9px;}
   .modal h3{font-family:var(--display);font-size:19px;margin-bottom:16px;}
   .modal .field{margin-bottom:13px;min-width:0;}
   .modal-actions{display:flex;flex-direction:row;flex-wrap:wrap;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;}
@@ -1288,7 +1293,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v68</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v71</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1739,7 +1744,7 @@
   }
   // ===== MINI-MAP INTERACTIVE (Leaflet + tuiles Geoapify dark-matter) =====
   const GEOAPIFY_KEY="5fda6ac6574e46e583b4955b0f578860";
-  const MAP_STYLE="positron";
+  const MAP_STYLE="osm-bright-smooth";
   let geoCache={};
   let mapInstances={}; // pour nettoyer les cartes Leaflet entre les slides
   // Géocodage ville -> {lat,lon} (réutilisable, avec cache)
@@ -1749,7 +1754,7 @@
     if(geoCache[key])return geoCache[key];
     try{
       const q=lieu.replace(/[()]/g," ").trim();
-      const r=await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(q)+"&type=city&filter=countrycode:fr,be,ch,lu&format=json&limit=1&apiKey="+GEOAPIFY_KEY);
+      const r=await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(q)+"&type=city&bias=countrycode:fr,nl,be,lu,ch,de&format=json&limit=1&apiKey="+GEOAPIFY_KEY);
       const d=await r.json();
       if(d.results&&d.results[0]){geoCache[key]={lat:d.results[0].lat,lon:d.results[0].lon};return geoCache[key];}
     }catch(e){}
@@ -1773,7 +1778,7 @@
       else{
         try{
           const q=lieu.replace(/[()]/g," ").trim();
-          const r=await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(q)+"&type=city&filter=countrycode:fr,be,ch,lu&format=json&limit=1&apiKey="+GEOAPIFY_KEY);
+          const r=await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(q)+"&type=city&bias=countrycode:fr,nl,be,lu,ch,de&format=json&limit=1&apiKey="+GEOAPIFY_KEY);
           const d=await r.json();
           if(d.results&&d.results[0]){ la=d.results[0].lat; lo=d.results[0].lon; geoCache[key]={lat:la,lon:lo}; }
         }catch(e){}
@@ -1827,7 +1832,7 @@
   }
 
   // ===== CARTE DES CANDIDATURES (postulé / entretien / refusé) =====
-  let carteMap=null,carteMarkers=[],carteFilter="all",carteSector="all";
+  let carteMap=null,carteMarkers=[],carteCluster=null,carteFilter="all",carteSector="all";
   const SAINTMALO=[48.649,-2.026]; // base / repère
   const CARTE_STAT={
     "Envoyé":{label:"Postulé",color:"#0071e3"},
@@ -1861,6 +1866,11 @@
       L.tileLayer(tileUrl(),{maxZoom:18}).addTo(carteMap);
     } else { carteMarkers.forEach(m=>{try{carteMap.removeLayer(m);}catch(e){}}); }
     carteMarkers=[];
+    // regroupement (clustering) : gros point + nombre quand des offres sont proches, se divise au zoom
+    if(L.markerClusterGroup){
+      if(!carteCluster){ carteCluster=L.markerClusterGroup({showCoverageOnHover:false,spiderfyOnMaxZoom:true,maxClusterRadius:48}); carteMap.addLayer(carteCluster); }
+      else carteCluster.clearLayers();
+    }
     // repère « base » Saint-Malo
     try{ const home=L.marker(SAINTMALO,{icon:pinIconC("#2c3d63")}).addTo(carteMap); home.bindPopup('<b>Saint-Malo</b><br><span style="color:#888">ta base</span>'); carteMarkers.push(home); }catch(e){}
     setTimeout(()=>{try{carteMap.invalidateSize();}catch(e){}},250);
@@ -1876,10 +1886,11 @@
     const pts=[];
     located.filter(Boolean).forEach(({p,la,lo})=>{
       const meta=CARTE_STAT[p.statut]||{label:p.statut,color:"#9aa2b4"};
-      const m=L.marker([la,lo],{icon:pinIconC(meta.color)}).addTo(carteMap);
+      const m=L.marker([la,lo],{icon:pinIconC(meta.color)});
       const acts=`<div style="margin-top:6px;display:flex;gap:10px;flex-wrap:wrap;"><a href="#" onclick="closeCartePopup();setView('pipeline');openPipeCard('${p.id}');return false;" style="cursor:pointer;">Voir dans le suivi</a>${p.lien_offre?`<a href="${esc(p.lien_offre)}" target="_blank" rel="noopener">Ouvrir l'offre</a>`:""}</div>`;
       m.bindPopup('<b>'+esc(p.poste||"")+'</b><br>'+esc(p.entreprise||"")+'<br><span style="color:#888">'+esc(p.ville||"")+' · '+esc(meta.label)+'</span>'+acts);
-      carteMarkers.push(m);pts.push([la,lo]);
+      if(carteCluster)carteCluster.addLayer(m); else{ m.addTo(carteMap); carteMarkers.push(m); }
+      pts.push([la,lo]);
     });
     if(cnt)cnt.textContent=pts.length+" candidature(s) sur la carte"+(list.length>pts.length?" ("+(list.length-pts.length)+" sans lieu)":"");
     setTimeout(()=>{try{carteMap.invalidateSize();if(pts.length===1)carteMap.setView(pts[0],10);else if(pts.length>1)carteMap.fitBounds([...pts,SAINTMALO],{padding:[40,40],maxZoom:11});else carteMap.setView(SAINTMALO,8);}catch(e){}},300);
@@ -3297,7 +3308,7 @@
     return `<div class="kb-card" style="border-left-color:${col};">
       <div class="kb-card-head" onclick="openPipeCard('${p.id}')" title="Voir la fiche">
         <div class="kb-logo ${logo?'':'mono'}" style="${logo?'':`background:${sec.c}1f;color:${sec.c};`}">${logoInner}</div>
-        <div class="kb-tt"><div class="kb-poste">${esc(p.poste||"—")}</div><div class="kb-ent">${esc(p.entreprise||"")}${b?` <span class="ocard-brand" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}</div></div>
+        <div class="kb-tt"><div class="kb-poste">${autoFlags().has(String(p.id))?`<span class="kb-auto" title="Statut mis à jour automatiquement d'après un e-mail">🤖</span> `:""}${esc(p.poste||"—")}</div><div class="kb-ent">${esc(p.entreprise||"")}${b?` <span class="ocard-brand" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}</div></div>
       </div>
       <div class="kb-date ${warn?"warn":""}">${p.date_envoi?`${warn?ic("alert"):ic("calendar")} ${new Date(p.date_envoi).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})}${days!==null?` · J+${days}`:""}`:(days!==null?`${ic("clock")} J+${days}`:`${ic("calendar")} —`)}</div>
       <div class="kb-reveal">
@@ -3450,20 +3461,34 @@
     const st=document.getElementById("lettreStatus");
     if(st)st.innerHTML=ok?(ic("check")+" Prompt copié — colle-le dans ChatGPT / Gemini, puis recopie l'accroche ici."):"Copie impossible.";
   }
+  // Auto-détection de la langue d'accroche : langue de la description (stopwords FR/EN), sinon pays de la ville
+  function detectLang(text,lieu){
+    const t=(" "+(text||"")+" ").toLowerCase();
+    const fr=(t.match(/\b(le|la|les|des|une|nous|vous|pour|avec|dans|est|sont|votre|notre|profil|poste|entreprise|missions|comp[ée]tences|au sein|recherche)\b/g)||[]).length;
+    const en=(t.match(/\b(the|and|for|with|you|we|our|your|are|will|role|team|position|company|requirements|skills|about|join)\b/g)||[]).length;
+    if(fr>=3 && fr>en) return "fr";
+    if(en>=3 && en>fr) return "en";
+    const l=(lieu||"").toLowerCase();
+    if(/\b(netherlands|nederland|amsterdam|rotterdam|utrecht|eindhoven|hague|den haag|london|dublin|berlin|munich|frankfurt|madrid|barcelona|lisbon|milan|warsaw)\b/.test(l)) return "en";
+    return "fr";
+  }
+  function setLettreLang(l){ if(_lettreCtx)_lettreCtx.lang=l; ["fr","en"].forEach(x=>{const b=document.getElementById("lettreLang-"+x);if(b)b.classList.toggle("on",x===l);}); }
   function openLettre(o){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
     if(!o)return;
     _lettreVers=null;
     _lettreCtx={key:lettreKey(o), poste:(o.poste||o.titre||""), entreprise:(o.entreprise||""), lieu:(o.lieu||o.ville||""), desc:(o.description||"")};
     const c=_lettreCtx, existing=lettreFor(c.key);
+    c.lang=detectLang(c.desc,c.lieu);   // pré-sélection intelligente FR/EN
     const box=document.getElementById("modalBox");
     box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("sparkle")} Candidature sur mesure</h3><button class="x" onclick="closeModal()">✕</button></div>
       <p class="modal-sub">${esc(c.poste)} · ${esc(c.entreprise)} — l'IA part de ton accroche (Mon profil) et l'adapte à cette offre. Tu édites, puis tu télécharges un CV lié à l'annonce.</p>
       ${(userCV||userIntro)?"":'<p class="lettre-warn">Astuce : renseigne ton <b>profil</b> (intro + CV) pour une accroche bien plus pertinente.</p>'}
       <label class="prof-lab">Détails de l'offre <span class="prof-hint">— pré-rempli depuis l'annonce, ajuste si besoin</span></label>
       <textarea class="draft-area" id="lettreOffre" rows="3" placeholder="(optionnel) extraits de l'offre">${esc((c.desc||"").slice(0,2000))}</textarea>
-      <div class="prof-import" style="margin:12px 0 4px;">
+      <div class="prof-import" style="margin:12px 0 4px;align-items:center;">
         <button class="btn sm" id="lettreGenBtn" onclick="genLettre()">${ic("sparkle")}<span>${existing?"Régénérer":"Générer l'accroche"}</span></button>
+        <span class="lettre-lang">Langue : <button class="vers-btn ${c.lang==="fr"?"on":""}" id="lettreLang-fr" onclick="setLettreLang('fr')">FR</button><button class="vers-btn ${c.lang==="en"?"on":""}" id="lettreLang-en" onclick="setLettreLang('en')">EN</button></span>
         <button class="btn ghost sm" onclick="copyLettrePrompt()" title="Copier un prompt prêt pour ChatGPT / Gemini">${ic("link")}<span>Prompt externe</span></button>
         <span class="draft-status" id="lettreStatus" style="flex-basis:100%;"></span>
       </div>
@@ -3483,7 +3508,7 @@
     const offre=((document.getElementById("lettreOffre")||{}).value)||c.desc||"";
     if(!AI_ASSIST){ if(st)st.textContent="IA désactivée."; return; }
     if(st)st.textContent="Rédaction par l'IA…";
-    const aj=await aiSort({mode:"draft",kind:"accroche",systemPrompt:(promptAccroche||"").slice(0,4000),context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 20000);
+    const aj=await aiSort({mode:"draft",kind:"accroche",lang:(c.lang||"fr"),systemPrompt:(promptAccroche||"").slice(0,4000),context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 20000);
     if(aj && aj.text){
       const parts=aj.text.split(/\n\s*-{3,}\s*\n/).map(x=>x.trim()).filter(Boolean);
       if(parts.length>=2){
@@ -3545,6 +3570,7 @@
 
   function openPipeCard(id){
     const p=pipeline.find(x=>String(x.id)===String(id));if(!p)return;
+    clearAutoFlag(id);   // #4 : l'indicateur 🤖 disparaît dès que tu consultes l'offre
     const o=pipeOffer(p)||{};                       // offre d'origine (description, salaire, etc.)
     const col=pipeColor(p.statut);
     const days=p.date_envoi?Math.round((Date.now()-new Date(p.date_envoi))/86400000):null;
@@ -3686,12 +3712,25 @@
     const p=img.parentElement; if(!p) return;
     p.classList.add("mono"); if(col){ p.style.background=col+"1f"; p.style.color=col; } p.textContent=ini||"";
   }
-  // offres liées à une marque (croise le nom d'entreprise avec pipeline + offres gardées)
+  // ===== FUZZY MATCHING entreprise <-> marque (tolérance orthographique) =====
+  // distance de Levenshtein (typos) + similarité ; normCompany() retire déjà accents/casse/suffixes (SA, SAS, France…)
+  function levenshtein(a,b){
+    a=a||"";b=b||"";const m=a.length,n=b.length; if(!m)return n; if(!n)return m;
+    let prev=[]; for(let j=0;j<=n;j++)prev[j]=j;
+    for(let i=1;i<=m;i++){ const cur=[i]; for(let j=1;j<=n;j++){ const cost=a.charCodeAt(i-1)===b.charCodeAt(j-1)?0:1; cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+cost); } prev=cur; }
+    return prev[n];
+  }
+  function companySim(a,b){
+    const x=normCompany(a), y=normCompany(b); if(!x||!y) return 0; if(x===y) return 1;
+    if(x.length>=4 && y.length>=4 && (x.indexOf(y)>=0||y.indexOf(x)>=0)) return 0.94;   // l'un contient l'autre (mot/suffixe en plus)
+    const ml=Math.max(x.length,y.length); return ml?1-levenshtein(x,y)/ml:0;
+  }
+  function sameCompany(a,b){ return companySim(a,b)>=0.86; }   // seuil : tolère les typos sur noms longs, exige l'exactitude sur noms courts (moins de faux positifs)
+  // offres liées à une marque (croise le nom d'entreprise avec pipeline + offres gardées) — matching tolérant
   function brandOffers(e){
-    const name=(e.entreprise||"").toLowerCase().trim();
-    if(!name) return {pipe:[],kept:[]};
-    const pipe=pipeline.filter(p=>(p.entreprise||"").toLowerCase().trim()===name);
-    const kept=Object.values(statusMap).filter(s=>isKeptOffer(s)&&(s.offer.entreprise||"").toLowerCase().trim()===name).map(s=>s.offer);
+    const nm=e.entreprise; if(!normCompany(nm)) return {pipe:[],kept:[]};
+    const pipe=pipeline.filter(p=>sameCompany(p.entreprise,nm));
+    const kept=Object.values(statusMap).filter(s=>isKeptOffer(s)&&sameCompany(s.offer.entreprise,nm)).map(s=>s.offer);
     return {pipe,kept};
   }
   // libellé court de répartition des offres liées par étape
@@ -3708,9 +3747,11 @@
   }
   // une entreprise (par son nom) est-elle une marque suivie ? renvoie l'objet marque ou null
   function followedBrand(entreprise){
-    const n=(entreprise||"").toLowerCase().trim();
-    if(!n)return null;
-    return reve.find(e=>(e.entreprise||"").toLowerCase().trim()===n)||null;
+    if(!normCompany(entreprise)) return null;
+    // meilleure marque au-dessus du seuil de similarité (couvre exact + typos + casse + suffixes)
+    let best=null,bestS=0;
+    reve.forEach(e=>{ const s=companySim(entreprise,e.entreprise); if(s>bestS){bestS=s;best=e;} });
+    return bestS>=0.86?best:null;
   }
   // badge ⭐ "marque suivie" pour les cartes d'offres (A)
   function brandTag(entreprise){
@@ -4047,9 +4088,8 @@
 
   // Offres "détectées" : résultats de recherche de cette boîte pas encore triés (à rattacher)
   function brandDetectedOffers(e){
-    const name=(e.entreprise||"").toLowerCase().trim();
-    if(!name) return [];
-    return allOffers.filter(o=>(o.entreprise||"").toLowerCase().trim()===name && !statusMap[o.id]);
+    if(!normCompany(e.entreprise)) return [];
+    return allOffers.filter(o=>!statusMap[o.id] && sameCompany(o.entreprise,e.entreprise));
   }
   // Valider (→ à postuler, rejoint le suivi) ou ignorer une offre détectée, puis rafraîchir la fiche
   async function brandRattach(o,statut,brandId){
@@ -5259,6 +5299,38 @@
       syncedMail=(res.data||[]).map(enrichSynced); mailError=""; mailTableMissing=false;
     }catch(e){ const msg=(e&&e.message)||(""+e); if(mailTableErr(msg)) mailTableMissing=true; else mailError="Lecture impossible : "+msg; }
     mailLoading=false; renderMessagerie();
+    applyMailAutomations();   // #3 : fait avancer le statut des offres selon les mails reçus
+  }
+  // ===== #3+#4 AUTOMATISATION : un mail rattaché (confiance HAUTE) fait avancer le statut de la candidature =====
+  const NATURE_STATUS={recu:"Envoyé",entretien:"Entretien",test:"Entretien",offre:"Offre reçue",refus:"Refusé"};
+  const STATUS_RANK={"Envoyé":1,"Entretien":2,"Offre reçue":3};
+  let _autoFlags=null;
+  function autoFlags(){ if(!_autoFlags){ try{_autoFlags=new Set(JSON.parse(localStorage.getItem("st_auto_flag")||"[]"));}catch(e){_autoFlags=new Set();} } return _autoFlags; }
+  function saveAutoFlags(){ try{ localStorage.setItem("st_auto_flag",JSON.stringify([...autoFlags()])); }catch(e){} }
+  function clearAutoFlag(pid){ if(autoFlags().delete(String(pid))){ saveAutoFlags(); } }   // effacé dès que l'offre est consultée
+  async function _autoSetPipeStatus(p,col){
+    if(!p||p.statut===col) return false;
+    p.statut=col; const patch={statut:col};
+    if(col!=="Envoyé"&&!p.date_reponse){ patch.date_reponse=new Date().toISOString().slice(0,10); p.date_reponse=patch.date_reponse; }
+    if(sb){ try{ await sb.from("pipeline").update(patch).eq("id",p.id); }catch(e){} }
+    return true;
+  }
+  async function applyMailAutomations(){
+    let done; try{ done=new Set(JSON.parse(localStorage.getItem("st_mail_auto")||"[]")); }catch(e){ done=new Set(); }
+    let n=0, touched=false;
+    for(const m of syncedMail){
+      if(done.has(m.id)) continue;
+      done.add(m.id); touched=true;
+      const mt=m._match;
+      if(!mt || mt.kind!=="pipe" || mt.confidence!=="haute") continue;   // sécurité : uniquement candidatures + match domaine fiable
+      const target=NATURE_STATUS[((m._nature||{}).key)]; if(!target) continue;
+      const p=pipeline.find(x=>String(x.id)===String(mt.ref&&mt.ref.id)); if(!p) continue;
+      if(p.statut==="Refusé"||p.statut==="Non intéressé") continue;       // dossier clos : on ne réanime pas
+      const apply = target==="Refusé" ? true : (STATUS_RANK[target]||0)>(STATUS_RANK[p.statut]||0);  // jamais de régression
+      if(apply && await _autoSetPipeStatus(p,target)){ autoFlags().add(String(p.id)); n++; }
+    }
+    if(touched){ try{ localStorage.setItem("st_mail_auto",JSON.stringify([...done])); }catch(e){} }
+    if(n){ saveAutoFlags(); refreshAll(); flashCenter(n+" candidature(s) mise(s) à jour auto 🤖","info"); }
   }
   async function addPastedEmail(){
     const ta=document.getElementById("mailPasteInput"); const raw=ta?ta.value:"";

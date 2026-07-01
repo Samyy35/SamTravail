@@ -283,6 +283,9 @@ module.exports = async function handler(req, res) {
     // Prompt système personnalisé (édité par l'utilisateur dans les Réglages) prioritaire s'il est fourni
     const customSys = ("" + (body.systemPrompt || "")).trim();
     if (customSys) sysD = customSys.slice(0, 4000);
+    // Langue de sortie (accroche multilingue) : anglais si demandé, sinon français par défaut
+    const lang = ("" + (body.lang || "fr")).toLowerCase();
+    if (lang === "en") sysD += "\n\nIMPORTANT: Write the ENTIRE response in natural, professional ENGLISH (not French). Keep the same rules and structure; if two versions are requested, keep the two-version format separated by a line containing only ---.";
     try {
       const out = await callAI(base, key, model,
         [{ role: "system", content: sysD }, { role: "user", content: usr }],

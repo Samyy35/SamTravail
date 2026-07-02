@@ -730,6 +730,24 @@
   .pdf-doc h1{font-size:16pt;margin:0 0 2pt;}
   .pdf-doc .pdf-meta{color:#555;font-size:10.5pt;margin-bottom:22pt;}
   .pdf-doc p{margin:0 0 10pt;text-align:justify;}
+  .pdf-body h3{font-size:12.5pt;margin:12pt 0 4pt;}
+  .pdf-body ul{margin:0 0 10pt;padding-left:20pt;} .pdf-body li{margin:0 0 3pt;}
+  /* Éditeur d'accroche « façon Word » (contenteditable) */
+  .rich-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:5px;border:1px solid var(--border);border-bottom:none;border-radius:9px 9px 0 0;background:var(--surface-2);}
+  .rt-btn{min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text-dim);cursor:pointer;border-radius:6px;font-size:14px;font-family:var(--font);padding:0 6px;}
+  .rt-btn:hover{background:var(--surface-3);color:var(--text);}
+  .rt-btn .ic{width:15px;height:15px;}
+  .rt-sep{width:1px;height:18px;background:var(--border);margin:0 3px;}
+  .rich-edit{border-radius:0 0 9px 9px;min-height:150px;max-height:340px;overflow:auto;outline:none;line-height:1.55;}
+  .rich-edit:empty:before{content:attr(data-ph);color:var(--text-mute);}
+  .rich-edit p{margin:0 0 9px;} .rich-edit h3{font-size:15px;font-weight:700;margin:10px 0 5px;} .rich-edit ul{padding-left:20px;margin:0 0 9px;}
+  .doc-list{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;}
+  .doc-row{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--border);border-radius:11px;cursor:pointer;transition:.12s;background:var(--surface);}
+  .doc-row:hover{border-color:var(--accent);background:var(--surface-2);}
+  .doc-main{flex:1;min-width:0;}
+  .doc-title{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:6px;} .doc-title .ic{width:14px;height:14px;color:var(--accent);}
+  .doc-snip{font-size:12px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;}
+  .doc-date{font-size:11.5px;color:var(--text-mute);flex-shrink:0;}
   @media print{
     body{background:#fff!important;}
     body *{visibility:hidden!important;}
@@ -1317,7 +1335,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v74</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v77</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1457,7 +1475,7 @@
 
   <!-- VIEW REVE -->
   <div class="view" id="view-reve">
-    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Mes marques</h2><div class="sub">Les boîtes qui te font envie — note-les, revisite-les, suis leurs offres.</div></div><div class="add-bar-actions"><button class="btn sm ghost" id="reveBulkToggle" onclick="toggleReveSelectMode()"><i data-ic="layers"></i> <span id="reveBulkToggleLbl">Ouvrir en lot</span></button><button class="btn sm" onclick="openModal('reve')">+ Marque</button></div></div>
+    <div class="add-bar"><div><h2 style="font-family:var(--display);font-size:21px;">Mes marques</h2><div class="sub">Les boîtes qui te font envie — note-les, revisite-les, suis leurs offres.</div></div><div class="add-bar-actions"><button class="btn sm ghost" onclick="openSourcing()" title="Trouver des entreprises où postuler"><i data-ic="search"></i> <span>Découvrir</span></button><button class="btn sm ghost" id="reveBulkToggle" onclick="toggleReveSelectMode()"><i data-ic="layers"></i> <span id="reveBulkToggleLbl">Ouvrir en lot</span></button><button class="btn sm" onclick="openModal('reve')">+ Marque</button></div></div>
     <div id="reveBmSetup" class="bm-setup" style="display:none;"></div>
     <div class="reve-search"><i data-ic="search"></i><input id="reveSearch" type="search" placeholder="Rechercher une entreprise…" oninput="setReveQuery(this.value)" autocomplete="off"></div>
     <div id="reve-content"></div>
@@ -3437,6 +3455,7 @@
   }
   function lettreKey(o){ return String((o&&(o.lien||o.lien_offre||o.id))||""); }
   function lettreFor(key){ const l=lettres[String(key)]; return (l&&l.texte)?l.texte:""; }
+  function lettreHtmlFor(key){ const l=lettres[String(key)]; if(l&&l.html)return l.html; if(l&&l.texte)return textToHtml(l.texte); return "<p><br></p>"; }
   function downloadDoc(filename, titre, accroche, cvText){
     const nl2br=(t)=>esc(t).replace(/\n/g,"<br>");
     const html="<html><head><meta charset='utf-8'></head>"
@@ -3455,7 +3474,7 @@
   let _lettreCtx=null, _lettreVers=null;
   function pickVers(i){
     if(!_lettreVers||!_lettreVers[i])return;
-    const ta=document.getElementById("lettreText"); if(ta)ta.value=_lettreVers[i];
+    lettreSetVal(_lettreVers[i]);
     const b0=document.getElementById("versB0"), b1=document.getElementById("versB1");
     if(b0)b0.classList.toggle("on",i===0); if(b1)b1.classList.toggle("on",i===1);
   }
@@ -3499,18 +3518,96 @@
     return "fr";
   }
   function setLettreLang(l){ if(_lettreCtx)_lettreCtx.lang=l; ["fr","en"].forEach(x=>{const b=document.getElementById("lettreLang-"+x);if(b)b.classList.toggle("on",x===l);}); }
-  // Export PDF NATIF (impression navigateur → « Enregistrer au format PDF ») : zéro librairie, durable, format A4 propre
+  // ===== Éditeur d'accroche « façon Word » (contenteditable, ZÉRO dépendance / 0€) + export PDF natif =====
+  function lettreEl(){ return document.getElementById("lettreText"); }
+  function textToHtml(t){ t=(""+(t||"")).trim(); if(!t)return "<p><br></p>"; return t.split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,"<br>")}</p>`).join(""); }
+  function lettreVal(){ const e=lettreEl(); return e?(e.innerText||"").replace(/ /g," ").replace(/\n{3,}/g,"\n\n").trim():""; }
+  function lettreHtml(){ const e=lettreEl(); return e?e.innerHTML:""; }
+  function lettreSetVal(t){ const e=lettreEl(); if(e)e.innerHTML=textToHtml(t); }
+  function richCmd(cmd,val){ const e=lettreEl(); if(e)e.focus(); try{ document.execCommand(cmd,false,val||null); }catch(err){} }
+  function richToolbar(){ return `<div class="rich-toolbar">
+    <button type="button" class="rt-btn" title="Gras" onmousedown="event.preventDefault();richCmd('bold')"><b>B</b></button>
+    <button type="button" class="rt-btn" title="Italique" onmousedown="event.preventDefault();richCmd('italic')"><i>I</i></button>
+    <button type="button" class="rt-btn" title="Souligné" onmousedown="event.preventDefault();richCmd('underline')"><u>U</u></button>
+    <span class="rt-sep"></span>
+    <button type="button" class="rt-btn" title="Liste à puces" onmousedown="event.preventDefault();richCmd('insertUnorderedList')">${ic("list")}</button>
+    <button type="button" class="rt-btn" title="Titre" onmousedown="event.preventDefault();richCmd('formatBlock','H3')">H</button>
+    <span class="rt-sep"></span>
+    <button type="button" class="rt-btn" title="Aligner à gauche" onmousedown="event.preventDefault();richCmd('justifyLeft')">⯇</button>
+    <button type="button" class="rt-btn" title="Justifier" onmousedown="event.preventDefault();richCmd('justifyFull')">☰</button>
+    <span class="rt-sep"></span>
+    <button type="button" class="rt-btn" title="Effacer la mise en forme" onmousedown="event.preventDefault();richCmd('removeFormat')">✕</button>
+  </div>`; }
+  // Export PDF NATIF (impression → « Enregistrer au format PDF ») : 0 librairie, A4, conserve la mise en forme de l'éditeur
   function exportAccrochePdf(){
-    const ta=document.getElementById("lettreText"); const txt=((ta?ta.value:"")||"").trim();
-    if(!txt){ flashCenter("Écris ou génère d'abord une accroche.","info"); return; }
-    const c=_lettreCtx||{};
+    if(!lettreVal()){ flashCenter("Écris ou génère d'abord une accroche.","info"); return; }
+    const html=lettreHtml(), c=_lettreCtx||{};
     let area=document.getElementById("pdfPrintArea");
     if(!area){ area=document.createElement("div"); area.id="pdfPrintArea"; document.body.appendChild(area); }
-    const paras=txt.split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,"<br>")}</p>`).join("");
     const today=new Date().toLocaleDateString(c.lang==="en"?"en-GB":"fr-FR",{year:"numeric",month:"long",day:"numeric"});
     const meta=[c.entreprise?esc(c.entreprise):"",c.poste?esc(c.poste):""].filter(Boolean).join(" — ");
-    area.innerHTML=`<div class="pdf-doc">${userName?`<h1>${esc(userName)}</h1>`:""}<div class="pdf-meta">${meta?meta+" · ":""}${today}</div>${paras}</div>`;
-    setTimeout(()=>{ try{ window.print(); }catch(e){} },60);   // laisse le DOM se poser avant l'impression
+    area.innerHTML=`<div class="pdf-doc">${userName?`<h1>${esc(userName)}</h1>`:""}<div class="pdf-meta">${meta?meta+" · ":""}${today}</div><div class="pdf-body">${html}</div></div>`;
+    setTimeout(()=>{ try{ window.print(); }catch(e){} },60);
+  }
+  // ===== Sourcing d'entreprises (0€, durable) : générateur de super-prompt à coller dans son propre LLM gratuit =====
+  function buildSourcingPrompt(){
+    const g=id=>((document.getElementById(id)||{}).value||"").trim();
+    const sec=g("srcSecteur"), ville=g("srcVille"), poste=g("srcPoste");
+    return `Tu es un expert du sourcing d'entreprises et du marché de l'emploi${ville?` (zone : ${ville})`:""}.\n`
+      +`Objectif : liste-moi 25 à 40 entreprises PERTINENTES où postuler, AU-DELÀ des grands groupes déjà connus.\n`
+      +(sec?`Secteur : ${sec}.\n`:"")+(poste?`Type de poste visé : ${poste}.\n`:"")
+      +`Priorité aux entreprises en CROISSANCE ou qui RECRUTENT (PME, ETI, scale-ups, filiales, sites industriels), pas seulement les leaders.\n`
+      +`Pour CHAQUE entreprise, une ligne, format EXACT :\n`
+      +`Nom | ville ou région | site carrière (URL si connue, sinon site officiel) | 1 phrase : activité + pourquoi c'est pertinent (croissance / ce qu'elle recrute)\n`
+      +`Règles : n'invente pas d'URL (si incertain, donne le site officiel probable). Classe de la plus pertinente à la moins. Réponds UNIQUEMENT par la liste.`;
+  }
+  function refreshSourcingPrompt(){ const t=document.getElementById("srcPrompt"); if(t)t.value=buildSourcingPrompt(); }
+  async function copySourcingPrompt(){
+    const txt=buildSourcingPrompt(); let ok=false;
+    try{ await navigator.clipboard.writeText(txt); ok=true; }catch(e){ try{const t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();ok=document.execCommand("copy");t.remove();}catch(e2){} }
+    const b=document.getElementById("srcCopyBtn"); if(b)b.innerHTML=(ok?ic("check"):ic("alert"))+"<span>"+(ok?"Copié ! Colle-le dans ton IA":"Copie manuelle")+"</span>";
+  }
+  function openSourcing(){
+    const box=document.getElementById("modalBox"); box.classList.remove("wide");
+    const secs=(typeof SECTORS!=="undefined"?SECTORS:[]).map(s=>s.key||s).filter(Boolean);
+    box.innerHTML=`<div class="modal-head"><h3>${ic("search")} Découvrir des entreprises</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Remplis tes critères → copie le prompt → colle-le dans ton IA gratuite (ChatGPT, Gemini, Claude). Tu récupères une liste d'entreprises à ajouter en Marques. <b>0€, sans limite.</b></p>
+      <div class="field"><label>Secteur</label><input class="crit-in" id="srcSecteur" list="__srcSec" oninput="refreshSourcingPrompt()" placeholder="Ex : Pharma / Santé"><datalist id="__srcSec">${secs.map(s=>`<option value="${esc(s)}"></option>`).join("")}</datalist></div>
+      <div class="field"><label>Ville / région (optionnel)</label><input class="crit-in" id="srcVille" oninput="refreshSourcingPrompt()" placeholder="Ex : Nantes, Bretagne, Pays-Bas…"></div>
+      <div class="field"><label>Type de poste (optionnel)</label><input class="crit-in" id="srcPoste" oninput="refreshSourcingPrompt()" placeholder="Ex : Supply chain, planification"></div>
+      <label class="prof-lab">Prompt généré</label>
+      <textarea class="draft-area" id="srcPrompt" rows="8" readonly onclick="this.select()"></textarea>
+      <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button><button class="btn btn-validate" id="srcCopyBtn" onclick="copySourcingPrompt()">${ic("link")}<span>Copier le prompt</span></button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+    refreshSourcingPrompt();
+  }
+  // ===== CV modèle (HTML riche) : édition + fusion {{ACCROCHE}} + historique des documents =====
+  function rcmd(id,cmd,val){ const e=document.getElementById(id); if(e)e.focus(); try{ document.execCommand(cmd,false,val||null); }catch(x){} }
+  function cvInsertMarker(){ const e=document.getElementById("profCvHtml"); if(!e)return; e.focus(); try{ document.execCommand("insertText",false,"{{ACCROCHE}}"); }catch(x){ e.innerHTML+=" {{ACCROCHE}} "; } }
+  // Fusion CV modèle + accroche -> PDF propre (balise {{ACCROCHE}} remplacée par l'accroche mise en forme)
+  function exportCvAccrochePdf(){
+    if(!lettreVal()){ flashCenter("Génère d'abord une accroche.","info"); return; }
+    const tpl=userCvHtml||"";
+    if(!tpl.replace(/<[^>]*>/g,"").trim() || tpl.indexOf("{{ACCROCHE}}")<0){ flashCenter("Ajoute d'abord ton CV modèle (Profil) avec la balise {{ACCROCHE}}.","info"); return; }
+    let area=document.getElementById("pdfPrintArea"); if(!area){ area=document.createElement("div"); area.id="pdfPrintArea"; document.body.appendChild(area); }
+    area.innerHTML=`<div class="pdf-doc"><div class="pdf-body">${tpl.replace(/\{\{ACCROCHE\}\}/g,lettreHtml())}</div></div>`;
+    setTimeout(()=>{ try{ window.print(); }catch(e){} },60);
+  }
+  function openDocByKey(k){ const l=lettres[String(k)]||{}; openLettre({lien:String(k), entreprise:l.entreprise||"", poste:l.poste||"", titre:l.poste||""}); }
+  function openDocsHistory(){
+    const box=document.getElementById("modalBox"); box.classList.remove("wide");
+    const entries=Object.entries(lettres).filter(([k,l])=>l&&(l.texte||l.html)).sort((a,b)=>new Date(b[1].updated_at||0)-new Date(a[1].updated_at||0));
+    const rows=entries.map(([k,l])=>{
+      const d=l.updated_at?new Date(l.updated_at).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"}):"";
+      const title=(esc(l.entreprise||"")+(l.poste?" — "+esc(l.poste):""))||"Document";
+      const snip=esc(((l.texte||(l.html||"").replace(/<[^>]*>/g," "))||"").replace(/\s+/g," ").slice(0,110));
+      return `<div class="doc-row" onclick='openDocByKey("${esc(k)}")'><div class="doc-main"><div class="doc-title">${ic("sparkle")} ${title}</div><div class="doc-snip">${snip}</div></div><span class="doc-date">${d}</span></div>`;
+    }).join("");
+    box.innerHTML=`<div class="modal-head"><h3>${ic("doc")} Mes accroches & documents (${entries.length})</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Tous tes textes générés, reliés à leur offre. Clique pour rouvrir, éditer et exporter en PDF.</p>
+      ${entries.length?`<div class="doc-list">${rows}</div>`:'<div class="empty">Aucun document pour l\'instant. Génère une accroche depuis une offre.</div>'}
+      <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
+    document.getElementById("modalBg").classList.add("open");
   }
   function openLettre(o){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
@@ -3532,11 +3629,13 @@
         <span class="draft-status" id="lettreStatus" style="flex-basis:100%;"></span>
       </div>
       <label class="prof-lab">Accroche <span class="prof-hint">— édite librement</span></label>
-      <textarea class="draft-area" id="lettreText" rows="8" placeholder="Clique sur « Générer l'accroche »…">${esc(existing)}</textarea>
+      ${richToolbar()}
+      <div class="draft-area rich-edit" id="lettreText" contenteditable="true" data-ph="Génère ou écris ton accroche, puis retouche-la comme dans Word…">${lettreHtmlFor(c.key)}</div>
       <div class="modal-actions">
         <button class="btn danger" onclick="closeModal()">Fermer</button>
         <button class="btn ghost" id="lettreCopyBtn" onclick="copyLettre()">${ic("link")}<span>Copier</span></button>
         <button class="btn ghost" onclick="exportAccrochePdf()">${ic("doc")}<span>Exporter PDF</span></button>
+        <button class="btn ghost" onclick="exportCvAccrochePdf()" title="Fusionne l'accroche dans ton CV modèle (Profil) et exporte en PDF">${ic("doc")}<span>CV + accroche PDF</span></button>
         <button class="btn ghost" onclick="dlLettre()">${ic("download")}<span>Télécharger CV</span></button>
         <button class="btn btn-validate" onclick="saveLettre()">${ic("check")}<span>Enregistrer</span></button>
       </div>`;
@@ -3554,10 +3653,10 @@
       const parts=aj.text.split(/\n\s*-{3,}\s*\n/).map(x=>x.trim()).filter(Boolean);
       if(parts.length>=2){
         _lettreVers=[parts[0],parts[1]];
-        if(ta)ta.value=parts[0];
+        lettreSetVal(parts[0]);
         if(st)st.innerHTML=ic("check")+' Deux propositions : <button class="vers-btn on" id="versB0" onclick="pickVers(0)">Proche de l\u2019originale</button> <button class="vers-btn" id="versB1" onclick="pickVers(1)">Plus adaptée</button>';
       } else {
-        if(ta)ta.value=aj.text;
+        lettreSetVal(aj.text);
         if(st)st.innerHTML=ic("check")+" Proposé par IA — édite librement.";
       }
     }
@@ -3572,16 +3671,16 @@
   }
   async function saveLettre(){
     const c=_lettreCtx; if(!c)return;
-    const ta=document.getElementById("lettreText"); const txt=ta?(ta.value||"").trim():"";
-    lettres[c.key]={texte:txt, updated_at:new Date().toISOString()};
+    const txt=lettreVal();
+    lettres[c.key]={texte:txt, html:lettreHtml(), entreprise:c.entreprise||"", poste:c.poste||"", updated_at:new Date().toISOString()};
     await saveLettres();
     const st=document.getElementById("lettreStatus"); if(st)st.innerHTML=ic("check")+" Enregistré — retrouvable sur l'offre et dans le suivi.";
     try{renderVeille&&renderVeille();}catch(e){}
   }
   async function dlLettre(){
     const c=_lettreCtx; if(!c)return;
-    const ta=document.getElementById("lettreText"); const txt=ta?(ta.value||"").trim():lettreFor(c.key);
-    lettres[c.key]={texte:txt, updated_at:new Date().toISOString()}; await saveLettres();
+    const txt=lettreVal()||lettreFor(c.key);
+    lettres[c.key]={texte:txt, html:lettreHtml(), entreprise:c.entreprise||"", poste:c.poste||"", updated_at:new Date().toISOString()}; await saveLettres();
     const safe=(s)=>(s||"").toString().replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,40);
     const st=document.getElementById("lettreStatus");
     const dx=await loadCvDocx();
@@ -3603,9 +3702,9 @@
     try{renderVeille&&renderVeille();}catch(e){}
   }
   async function copyLettre(){
-    const ta=document.getElementById("lettreText"); if(!ta)return;
+    const txt=lettreVal(); if(!txt)return;
     let ok=false;
-    try{ await navigator.clipboard.writeText(ta.value); ok=true; }catch(e){ try{ ta.select(); document.execCommand("copy"); ok=true; }catch(e2){} }
+    try{ await navigator.clipboard.writeText(txt); ok=true; }catch(e){ try{ const t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();ok=document.execCommand("copy");t.remove(); }catch(e2){} }
     const b=document.getElementById("lettreCopyBtn"); if(b)b.innerHTML=(ok?ic("check"):ic("alert"))+"<span>"+(ok?"Copié !":"Copie manuelle")+"</span>";
   }
 
@@ -4968,7 +5067,7 @@
 
   // ===== INIT =====
   if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box"><b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
-  let userName="", userIntro="", userIntroEn="", userCV="";
+  let userName="", userIntro="", userIntroEn="", userCV="", userCvHtml="";
   let lettres={};
   let promptAccroche="";   // prompt système d'accroche, éditable dans Réglages (sinon défaut backend)
   // ===== THÈME clair / sombre =====
@@ -4998,7 +5097,7 @@
     // 1) cache local instantané (évite de redemander même si Supabase est lent/indispo)
     try{const ls=localStorage.getItem("st_name");if(ls)userName=ls;}catch(e){}
     // 2) sync Supabase (source de vérité multi-appareils)
-    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur){const v=data.valeur;if(v.prenom){userName=v.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}userIntro=v.intro||"";userIntroEn=v.introEn||"";userCV=v.cv||"";}}catch(e){}
+    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur){const v=data.valeur;if(v.prenom){userName=v.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}userIntro=v.intro||"";userIntroEn=v.introEn||"";userCV=v.cv||"";userCvHtml=v.cvHtml||"";}}catch(e){}
       try{const {data:dl}=await sb.from("parametres").select("valeur").eq("cle","lettres").maybeSingle();if(dl&&dl.valeur)lettres=dl.valeur;}catch(e){}
       try{const {data:dp}=await sb.from("parametres").select("valeur").eq("cle","promptAccroche").maybeSingle();if(dp&&dp.valeur&&dp.valeur.text)promptAccroche=dp.valeur.text;}catch(e){}}
     if(!userName && !skipAsk){ askName(); }
@@ -5023,7 +5122,7 @@
   }
   // ===== Mon profil (intro + CV) : nourrit l'IA pour personnaliser les messages =====
   async function saveProfilData(){
-    if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName,intro:userIntro,introEn:userIntroEn,cv:userCV},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
+    if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName,intro:userIntro,introEn:userIntroEn,cv:userCV,cvHtml:(userCvHtml||"").slice(0,60000)},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
   }
   // ===== CV Word (.docx) : conservé tel quel, accroche ajoutée en page suivante =====
   let userCvDocx; // undefined = pas encore chargé ; null = aucun ; {name,b64}
@@ -5100,11 +5199,24 @@
         <button class="btn ghost sm" onclick="aiProfilFill()" title="Pré-remplir prénom et accroche depuis le CV">${ic("sparkle")}<span>Analyser mon CV</span></button>
         <span class="draft-status" id="cvStatus"></span>
       </div>
+      <label class="prof-lab">CV mis en page (modèle) <span class="prof-hint">— construis ton CV ici et place la balise <code>{{ACCROCHE}}</code> où l'accroche doit s'insérer. Depuis une offre : « CV + accroche → PDF ».</span></label>
+      <div class="rich-toolbar">
+        <button type="button" class="rt-btn" title="Gras" onmousedown="event.preventDefault();rcmd('profCvHtml','bold')"><b>B</b></button>
+        <button type="button" class="rt-btn" title="Italique" onmousedown="event.preventDefault();rcmd('profCvHtml','italic')"><i>I</i></button>
+        <button type="button" class="rt-btn" title="Souligné" onmousedown="event.preventDefault();rcmd('profCvHtml','underline')"><u>U</u></button>
+        <span class="rt-sep"></span>
+        <button type="button" class="rt-btn" title="Liste à puces" onmousedown="event.preventDefault();rcmd('profCvHtml','insertUnorderedList')">${ic("list")}</button>
+        <button type="button" class="rt-btn" title="Titre" onmousedown="event.preventDefault();rcmd('profCvHtml','formatBlock','H3')">H</button>
+        <span class="rt-sep"></span>
+        <button type="button" class="rt-btn" title="Insérer la balise {{ACCROCHE}}" onmousedown="event.preventDefault();cvInsertMarker()">{{…}}</button>
+      </div>
+      <div class="draft-area rich-edit" id="profCvHtml" contenteditable="true" data-ph="Colle/écris ton CV mis en forme, et place {{ACCROCHE}} où tu veux l'accroche…">${userCvHtml||"<p><br></p>"}</div>
       <div class="pc-section-h">${ic("gear")} Réglages</div>
       <p class="modal-sub" style="margin-top:-4px;">Affine le score d'affinité (pondération des secteurs) et sauvegarde tes données.</p>
       <div class="prof-settings">
         <button class="btn ghost sm" onclick="closeModal();openCriteres();">${ic("sliders")}<span>Critères de matching</span></button>
         <button class="btn ghost sm" onclick="openPromptAccroche()">${ic("sparkle")}<span>Prompt d'accroche (IA)</span></button>
+        <button class="btn ghost sm" onclick="openDocsHistory()">${ic("doc")}<span>Mes documents</span></button>
         <button class="btn ghost sm" onclick="exportCSV()">${ic("download")}<span>Export CSV (sauvegarde)</span></button>
       </div>
       <label class="prof-toggle"><input type="checkbox" id="capCloseToggle" ${getCaptureAutoClose()?"checked":""} onchange="setCaptureAutoClose(this.checked)"><span>Fermer automatiquement la fenêtre du favori après l'ajout d'une offre <small>(évite d'accumuler les onglets)</small></span></label>
@@ -5115,6 +5227,7 @@
   async function saveProfil(){
     const gp=id=>{const e=document.getElementById(id);return e?(e.value||"").trim():"";};
     userName=gp("profPrenom"); userIntro=gp("profIntro"); userIntroEn=gp("profIntroEn"); userCV=gp("profCv").slice(0,8000);
+    const _cvh=document.getElementById("profCvHtml"); if(_cvh)userCvHtml=(_cvh.innerHTML||"").slice(0,60000);
     try{localStorage.setItem("st_name",userName);}catch(e){}
     await saveProfilData();
     closeModal(); initDate();

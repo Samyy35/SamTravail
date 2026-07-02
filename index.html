@@ -706,13 +706,37 @@
   .mzg-row .mzg-subject{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .mzg-row .mzg-preview{font-size:12px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .mzg-row .mzg-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
-  .mzg-row .mzg-del{flex-shrink:0;align-self:center;margin-left:0;background:transparent;border:none;color:var(--text-mute);cursor:pointer;padding:5px;border-radius:7px;opacity:.45;transition:.12s;}
-  .mzg-row:hover .mzg-del{opacity:1;}
-  .mzg-row .mzg-del:hover{color:var(--red);background:var(--red-soft);}
-  .mzg-row .mzg-del .ic{width:15px;height:15px;}
+  .mzg-row-acts{flex-shrink:0;align-self:center;display:flex;gap:2px;}
+  .mzg-act{background:transparent;border:none;color:var(--text-mute);cursor:pointer;padding:5px;border-radius:7px;opacity:.4;transition:.12s;}
+  .mzg-row:hover .mzg-act{opacity:.85;}
+  .mzg-act:hover{opacity:1;background:var(--surface-3);color:var(--text);}
+  .mzg-act:last-child:hover{color:var(--red);background:var(--red-soft);}
+  .mzg-act .ic{width:15px;height:15px;display:block;}
+  .mzg-row.unread{background:var(--accent-soft);}
+  .mzg-row.unread .mzg-from,.mzg-row.unread .mzg-subject{color:var(--text);font-weight:800;}
+  .mzg-row.archived{opacity:.6;}
+  .mzg-unread-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:middle;}
+  .mzg-inbox-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+  .mzg-inbox-title{font-size:13px;font-weight:600;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;} .mzg-inbox-title .ic{width:15px;height:15px;}
   #mailSyncBtn.on{border-color:var(--green);color:var(--green);}
   .lettre-lang{font-size:12px;color:var(--text-dim);display:inline-flex;align-items:center;gap:5px;}
   .lettre-lang .vers-btn{padding:3px 9px;}
+  /* Clusters carte : couleur NEUTRE (navy) — évite le conflit avec la légende de statuts (vert/rouge) */
+  .marker-cluster-small,.marker-cluster-medium,.marker-cluster-large{background:rgba(44,61,99,.30)!important;}
+  .marker-cluster-small div,.marker-cluster-medium div,.marker-cluster-large div{background:#2c3d63!important;color:#fff!important;font-family:var(--font)!important;font-weight:700!important;}
+  /* Export PDF natif (impression) : zone dédiée, isolée à l'impression, format A4 propre */
+  #pdfPrintArea{display:none;}
+  .pdf-doc{font-size:12.5pt;line-height:1.55;color:#111;font-family:Georgia,'Times New Roman',serif;}
+  .pdf-doc h1{font-size:16pt;margin:0 0 2pt;}
+  .pdf-doc .pdf-meta{color:#555;font-size:10.5pt;margin-bottom:22pt;}
+  .pdf-doc p{margin:0 0 10pt;text-align:justify;}
+  @media print{
+    body{background:#fff!important;}
+    body *{visibility:hidden!important;}
+    #pdfPrintArea,#pdfPrintArea *{visibility:visible!important;}
+    #pdfPrintArea{display:block!important;position:absolute;left:0;top:0;width:100%;}
+    @page{size:A4;margin:2.2cm 2cm;}
+  }
   .modal h3{font-family:var(--display);font-size:19px;margin-bottom:16px;}
   .modal .field{margin-bottom:13px;min-width:0;}
   .modal-actions{display:flex;flex-direction:row;flex-wrap:wrap;gap:9px;justify-content:flex-end;align-items:center;margin-top:16px;}
@@ -1293,7 +1317,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v71</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v74</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -3447,7 +3471,9 @@
     p+="\nPOSTE : "+(c.poste||"")+"\nENTREPRISE : "+(c.entreprise||"");
     if(c.lieu) p+="\nLIEU : "+c.lieu;
     if(offre) p+="\n\nDÉTAILS DE L'OFFRE :\n"+offre.slice(0,1500);
-    if(userIntro) p+="\n\nMON ACCROCHE ORIGINALE (à adapter) :\n"+userIntro.slice(0,800);
+    if(c.lang==="en") p+="\n\nIMPORTANT : rédige les DEUX versions en ANGLAIS (anglais professionnel naturel, pas une traduction mot à mot).";
+    const _bi=(c.lang==="en"&&userIntroEn)?userIntroEn:userIntro;
+    if(_bi) p+="\n\nMON ACCROCHE ORIGINALE (à adapter) :\n"+_bi.slice(0,800);
     else p+="\n\n(Je n'ai pas d'accroche existante : rédige une accroche courte de 4 à 6 phrases à partir de mon CV.)";
     if(userCV) p+="\n\nMON CV (extrait) :\n"+userCV.slice(0,2000);
     return p;
@@ -3473,6 +3499,19 @@
     return "fr";
   }
   function setLettreLang(l){ if(_lettreCtx)_lettreCtx.lang=l; ["fr","en"].forEach(x=>{const b=document.getElementById("lettreLang-"+x);if(b)b.classList.toggle("on",x===l);}); }
+  // Export PDF NATIF (impression navigateur → « Enregistrer au format PDF ») : zéro librairie, durable, format A4 propre
+  function exportAccrochePdf(){
+    const ta=document.getElementById("lettreText"); const txt=((ta?ta.value:"")||"").trim();
+    if(!txt){ flashCenter("Écris ou génère d'abord une accroche.","info"); return; }
+    const c=_lettreCtx||{};
+    let area=document.getElementById("pdfPrintArea");
+    if(!area){ area=document.createElement("div"); area.id="pdfPrintArea"; document.body.appendChild(area); }
+    const paras=txt.split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,"<br>")}</p>`).join("");
+    const today=new Date().toLocaleDateString(c.lang==="en"?"en-GB":"fr-FR",{year:"numeric",month:"long",day:"numeric"});
+    const meta=[c.entreprise?esc(c.entreprise):"",c.poste?esc(c.poste):""].filter(Boolean).join(" — ");
+    area.innerHTML=`<div class="pdf-doc">${userName?`<h1>${esc(userName)}</h1>`:""}<div class="pdf-meta">${meta?meta+" · ":""}${today}</div>${paras}</div>`;
+    setTimeout(()=>{ try{ window.print(); }catch(e){} },60);   // laisse le DOM se poser avant l'impression
+  }
   function openLettre(o){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
     if(!o)return;
@@ -3497,6 +3536,7 @@
       <div class="modal-actions">
         <button class="btn danger" onclick="closeModal()">Fermer</button>
         <button class="btn ghost" id="lettreCopyBtn" onclick="copyLettre()">${ic("link")}<span>Copier</span></button>
+        <button class="btn ghost" onclick="exportAccrochePdf()">${ic("doc")}<span>Exporter PDF</span></button>
         <button class="btn ghost" onclick="dlLettre()">${ic("download")}<span>Télécharger CV</span></button>
         <button class="btn btn-validate" onclick="saveLettre()">${ic("check")}<span>Enregistrer</span></button>
       </div>`;
@@ -3508,7 +3548,8 @@
     const offre=((document.getElementById("lettreOffre")||{}).value)||c.desc||"";
     if(!AI_ASSIST){ if(st)st.textContent="IA désactivée."; return; }
     if(st)st.textContent="Rédaction par l'IA…";
-    const aj=await aiSort({mode:"draft",kind:"accroche",lang:(c.lang||"fr"),systemPrompt:(promptAccroche||"").slice(0,4000),context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(userIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 20000);
+    const baseIntro=(c.lang==="en" && userIntroEn) ? userIntroEn : userIntro;   // accroche EN dédiée quand on génère en anglais (pas une traduction)
+    const aj=await aiSort({mode:"draft",kind:"accroche",lang:(c.lang||"fr"),systemPrompt:(promptAccroche||"").slice(0,4000),context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(baseIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 20000);
     if(aj && aj.text){
       const parts=aj.text.split(/\n\s*-{3,}\s*\n/).map(x=>x.trim()).filter(Boolean);
       if(parts.length>=2){
@@ -4927,7 +4968,7 @@
 
   // ===== INIT =====
   if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box"><b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
-  let userName="", userIntro="", userCV="";
+  let userName="", userIntro="", userIntroEn="", userCV="";
   let lettres={};
   let promptAccroche="";   // prompt système d'accroche, éditable dans Réglages (sinon défaut backend)
   // ===== THÈME clair / sombre =====
@@ -4957,7 +4998,7 @@
     // 1) cache local instantané (évite de redemander même si Supabase est lent/indispo)
     try{const ls=localStorage.getItem("st_name");if(ls)userName=ls;}catch(e){}
     // 2) sync Supabase (source de vérité multi-appareils)
-    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur){const v=data.valeur;if(v.prenom){userName=v.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}userIntro=v.intro||"";userCV=v.cv||"";}}catch(e){}
+    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur){const v=data.valeur;if(v.prenom){userName=v.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}userIntro=v.intro||"";userIntroEn=v.introEn||"";userCV=v.cv||"";}}catch(e){}
       try{const {data:dl}=await sb.from("parametres").select("valeur").eq("cle","lettres").maybeSingle();if(dl&&dl.valeur)lettres=dl.valeur;}catch(e){}
       try{const {data:dp}=await sb.from("parametres").select("valeur").eq("cle","promptAccroche").maybeSingle();if(dp&&dp.valeur&&dp.valeur.text)promptAccroche=dp.valeur.text;}catch(e){}}
     if(!userName && !skipAsk){ askName(); }
@@ -4982,7 +5023,7 @@
   }
   // ===== Mon profil (intro + CV) : nourrit l'IA pour personnaliser les messages =====
   async function saveProfilData(){
-    if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName,intro:userIntro,cv:userCV},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
+    if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName,intro:userIntro,introEn:userIntroEn,cv:userCV},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
   }
   // ===== CV Word (.docx) : conservé tel quel, accroche ajoutée en page suivante =====
   let userCvDocx; // undefined = pas encore chargé ; null = aucun ; {name,b64}
@@ -5046,8 +5087,10 @@
       <p class="modal-sub">Ces infos servent à personnaliser les messages générés par l'IA (relances, et bientôt accroches de candidature). Rien n'est obligatoire.</p>
       <label class="prof-lab">Prénom</label>
       <input class="crit-in" id="profPrenom" value="${esc(userName)}" placeholder="Ton prénom" />
-      <label class="prof-lab">Accroche / intro <span class="prof-hint">— 2-3 phrases : qui tu es, ce que tu cherches</span></label>
+      <label class="prof-lab">Accroche / intro (FR) <span class="prof-hint">— 2-3 phrases : qui tu es, ce que tu cherches</span></label>
       <textarea class="draft-area" id="profIntro" rows="4" placeholder="Ex : Diplômé d'un master supply chain, je cherche un poste opérationnel en milieu industriel près du littoral. Rigoureux, orienté data et terrain.">${esc(userIntro)}</textarea>
+      <label class="prof-lab">Accroche / intro (EN) <span class="prof-hint">— ta version anglaise (l'IA part de CELLE-CI en anglais, pas d'une traduction)</span></label>
+      <textarea class="draft-area" id="profIntroEn" rows="4" placeholder="Ex: Supply chain master's graduate seeking an operations role (procurement, planning, inventory) in an industrial setting. Data-driven and hands-on.">${esc(userIntroEn)}</textarea>
       <label class="prof-lab">CV (texte) <span class="prof-hint">— colle ton CV, ou importe un PDF / .txt</span></label>
       <textarea class="draft-area" id="profCv" rows="7" placeholder="Colle ici le contenu de ton CV : expériences, compétences, formations.">${esc(userCV)}</textarea>
       <div class="draft-status" id="cvDocxInfo"></div>
@@ -5071,7 +5114,7 @@
   }
   async function saveProfil(){
     const gp=id=>{const e=document.getElementById(id);return e?(e.value||"").trim():"";};
-    userName=gp("profPrenom"); userIntro=gp("profIntro"); userCV=gp("profCv").slice(0,8000);
+    userName=gp("profPrenom"); userIntro=gp("profIntro"); userIntroEn=gp("profIntroEn"); userCV=gp("profCv").slice(0,8000);
     try{localStorage.setItem("st_name",userName);}catch(e){}
     await saveProfilData();
     closeModal(); initDate();
@@ -5191,6 +5234,13 @@
   // Le webhook/forward-to-address est évité (Microsoft 365 bloque l'auto-transfert externe par défaut + nécessite un domaine).
   // La connexion Outlook/Graph reste dispo en option « avancé » (importe vers la même table).
   let syncedMail=[], mailTableMissing=false;
+  // États appli « lu / archivé » (localStorage) : persistants, sans schéma DB. Cross-appareils viendra si un jour on fait la synchro serveur.
+  let _mailRead=null,_mailArch=null,mailShowArchived=false;
+  function mailReadSet(){ if(!_mailRead){try{_mailRead=new Set(JSON.parse(localStorage.getItem("st_mail_read")||"[]"));}catch(e){_mailRead=new Set();}} return _mailRead; }
+  function mailArchSet(){ if(!_mailArch){try{_mailArch=new Set(JSON.parse(localStorage.getItem("st_mail_arch")||"[]"));}catch(e){_mailArch=new Set();}} return _mailArch; }
+  function markMailRead(id){ const s=mailReadSet(); if(!s.has(String(id))){ s.add(String(id)); try{localStorage.setItem("st_mail_read",JSON.stringify([...s]));}catch(e){} const m=syncedMail.find(x=>String(x.id)===String(id)); if(m)m._read=true; } }
+  function toggleMailArchived(id){ const s=mailArchSet(); id=String(id); if(s.has(id))s.delete(id); else s.add(id); try{localStorage.setItem("st_mail_arch",JSON.stringify([...s]));}catch(e){} const m=syncedMail.find(x=>String(x.id)===id); if(m)m._archived=s.has(id); renderMessagerie(); }
+  function toggleShowArchived(){ mailShowArchived=!mailShowArchived; renderMessagerie(); }
 
   // --- Diagnostics d'erreur -> message FR clair ---
   function graphErrorMsg(status,raw){
@@ -5337,7 +5387,7 @@
     if(!(""+raw).trim()){ mailError="Colle d'abord le contenu d'un e-mail."; renderMessagerie(); return; }
     if(!sb){ mailError="Pas de connexion à la base."; renderMessagerie(); return; }
     const p=parseForwardedEmail(raw);
-    const nature=classifyMail(p.subject,p.body);
+    const nature=classifyMail(p.subject,p.body,p.fromEmail);
     const row={ subject:p.subject||"(sans objet)", from_name:p.fromName||"", from_email:p.fromEmail||"", from_domain:(p.fromEmail.split("@")[1]||"").toLowerCase(), received_at:p.date||new Date().toISOString(), body:(p.body||"").slice(0,20000), nature:nature.key };
     mailLoading=true; mailError=""; renderMessagerie();
     try{
@@ -5412,7 +5462,7 @@
   ];
   const MAIL_NATURE_OTHER={key:"autre",label:"Autre / RH",color:"var(--text-mute)",icon:"mail"};
   // Fonction utilitaire MODULAIRE de parsing du corps -> nature (point d'entrée pour le Niveau 2 IA).
-  function classifyMail(subject,body){
+  function classifyMail(subject,body,fromEmail){
     // Poids par nature : les issues DÉCISIVES (offre/refus) priment sur les signaux génériques
     // (accusé de réception), pour éviter qu'un objet « Votre candidature » fasse passer un refus pour un accusé.
     const W={offre:5,refus:5,entretien:3,test:3,recu:1};
@@ -5422,6 +5472,14 @@
       let raw=0; for(const k of b.kw){ const nk=normTxt(k); if(subj.indexOf(nk)>=0)raw+=3; if(bod.indexOf(nk)>=0)raw+=1; }
       const s=raw*(W[b.key]||1);
       if(s>bestScore){bestScore=s;best=b;}
+    }
+    // Précision : un mail AUTOMATIQUE (no-reply) qui mentionne « entretien » SANS proposer de créneau
+    // = accusé/process type, PAS une vraie invitation -> on le reclasse en « reçue » (évite les faux entretiens).
+    if(best.key==="entretien"){
+      const full=" "+subj+"  "+bod+" ";
+      const sched=/(disponibilit|creneau|calendly|planifier|rencontrer|schedule an|schedule a call|book a |phone screen|screening call|proposer un)/.test(full);
+      const auto=/(no.?reply|noreply|ne.?pas.?repondre|do.?not.?reply|mailer-daemon|postmaster|notification|automat)/.test(normTxt(fromEmail||""));
+      if(auto && !sched){ const r=MAIL_NATURE.find(b=>b.key==="recu"); if(r) best=r; }
     }
     // TODO: IA Fallback — si bestScore est faible/0 ou ambigu, appeler /api/ai-sort (mode "mail")
     // pour résumer le mail en un statut fiable ("Entretien proposé","Refus","Demande d'infos") quand l'algo strict ne tranche pas.
@@ -5457,14 +5515,14 @@
   function enrichSynced(r){
     const nat=MAIL_NATURE.find(b=>b.key===r.nature)||MAIL_NATURE_OTHER;
     const match=matchMailToOffer({subject:r.subject,fromName:r.from_name,fromAddr:r.from_email,preview:r.body});
-    return Object.assign({},r,{_nature:nat,_match:match});
+    return Object.assign({},r,{_nature:nat,_match:match,_read:mailReadSet().has(String(r.id)),_archived:mailArchSet().has(String(r.id))});
   }
   // champs e-mail (Gmail/Graph) -> ligne emails_sync, en détectant un TRANSFERT (alors on extrait le vrai expéditeur du corps)
   function smartRow(o){
     let fromName=o.fromName||"", fromEmail=o.fromEmail||"", subject=cleanSubject(o.subject||""), date=o.date||null, body=o.body||"";
     const looksFwd=/^\s*(?:\[[^\]]*\]\s*)?(?:tr|trans|fwd?|fw)\s*:/i.test(o.subject||"") || /^[ \t]*(?:de|from|exp[ée]diteur)\s*:\s*.*<[^>]+@/im.test(body);
     if(looksFwd){ const p=parseForwardedEmail(body); if(p.fromEmail){fromEmail=p.fromEmail;fromName=p.fromName||fromName;} if(p.subject)subject=p.subject; if(p.date)date=p.date; if(p.body)body=p.body; }
-    const nature=classifyMail(subject,body);
+    const nature=classifyMail(subject,body,fromEmail);
     return { subject:subject||"(sans objet)", from_name:fromName, from_email:fromEmail, from_domain:(fromEmail.split("@")[1]||"").toLowerCase(), received_at:date||new Date().toISOString(), body:(body||"").slice(0,20000), nature:nature.key };
   }
 
@@ -5546,10 +5604,10 @@
     const dateStr=!d||isNaN(d.getTime())?"":sameDay?d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}):d.toLocaleDateString("fr-FR",{day:"2-digit",month:"short"});
     const nat=m._nature||MAIL_NATURE_OTHER, mt=m._match;
     const ini=esc((m.from_name||m.from_email||"?").trim().charAt(0).toUpperCase());
-    return `<div class="mzg-row" onclick='openMail("${esc(m.id)}")'>
+    return `<div class="mzg-row ${m._read?"":"unread"} ${m._archived?"archived":""}" onclick='openMail("${esc(m.id)}")'>
       <div class="mzg-ava" style="background:${nat.color}1f;color:${nat.color};">${ini}</div>
       <div class="mzg-row-main">
-        <div class="mzg-row-l1"><span class="mzg-from">${esc(m.from_name||m.from_email||"Expéditeur inconnu")}</span><span class="mzg-date">${dateStr}</span></div>
+        <div class="mzg-row-l1"><span class="mzg-from">${m._read?"":'<span class="mzg-unread-dot" title="Non lu"></span>'}${esc(m.from_name||m.from_email||"Expéditeur inconnu")}</span><span class="mzg-date">${dateStr}</span></div>
         <div class="mzg-subject">${esc(m.subject||"(sans objet)")}</div>
         <div class="mzg-preview">${esc((m.body||"").replace(/\s+/g," ").slice(0,130))}</div>
         <div class="mzg-tags">
@@ -5557,7 +5615,10 @@
           ${mt?`<span class="mzg-pill linked" onclick='event.stopPropagation();openMatchedOffer("${esc(m.id)}")' title="Confiance : ${mt.confidence}">${ic("link")} ${esc(mt.entreprise)}</span>`:`<span class="mzg-pill none">${ic("minus")} Non rattaché</span>`}
         </div>
       </div>
-      <button class="mzg-del" onclick='event.stopPropagation();deleteSyncedMail("${esc(m.id)}")' title="Supprimer">${ic("trash")}</button>
+      <div class="mzg-row-acts">
+        <button class="mzg-act" onclick='event.stopPropagation();toggleMailArchived("${esc(m.id)}")' title="${m._archived?"Désarchiver":"Archiver"}">${ic(m._archived?"undo":"inbox")}</button>
+        <button class="mzg-act" onclick='event.stopPropagation();deleteSyncedMail("${esc(m.id)}")' title="Supprimer">${ic("trash")}</button>
+      </div>
     </div>`;
   }
   function mzgSyncSection(){
@@ -5607,7 +5668,13 @@
     else if(!syncedMail.length && !mailTableMissing){
       html+=`<div class="empty-cta"><div class="empty-ico">${ic("mail")}</div><div class="empty-h">Boîte vide</div><div class="empty-p">Connecte ta synchro Gmail, ou ajoute un e-mail à la main. Chaque message sera classé (entretien, refus, offre…) et relié à ton offre.</div><div class="empty-actions"><button class="btn" onclick="openMailSync()">${ic("link")} Synchroniser</button><button class="btn ghost" onclick="openMailPaste()">${ic("plus")} Ajouter à la main</button></div></div>`;
     }
-    else if(syncedMail.length) html+=`<div class="mzg-inbox">${syncedMail.map(mailRow).join("")}</div>`;
+    else if(syncedMail.length){
+      const visible=syncedMail.filter(m=>mailShowArchived?m._archived:!m._archived);
+      const archN=syncedMail.filter(m=>m._archived).length;
+      const unreadN=syncedMail.filter(m=>!m._archived&&!m._read).length;
+      html+=`<div class="mzg-inbox-bar"><span class="mzg-inbox-title">${mailShowArchived?`${ic("inbox")} Archivés (${archN})`:`${ic("mail")} Boîte de réception${unreadN?` · <b>${unreadN} non lu(s)</b>`:""}`}</span>${archN?`<button class="hide-seen-btn" onclick="toggleShowArchived()">${ic(mailShowArchived?"undo":"inbox")}<span>${mailShowArchived?"Voir la boîte":"Voir archivés ("+archN+")"}</span></button>`:""}</div>`;
+      html+=visible.length?`<div class="mzg-inbox">${visible.map(mailRow).join("")}</div>`:`<div class="empty">${mailShowArchived?"Aucun e-mail archivé.":"Tout est archivé — clique « Voir archivés »."}</div>`;
+    }
     c.innerHTML=html;
     // si la fenêtre Synchronisation est ouverte, on la rafraîchit (état connecté/erreur)
     const sm=document.getElementById("mzgSyncModalBody"); if(sm) sm.innerHTML=(mailError?`<div class="mzg-error">${ic("alert")}<span>${esc(mailError)}</span></div>`:"")+mzgSyncSection();
@@ -5651,6 +5718,7 @@ alter table emails_sync disable row level security;</pre>
   }
   function openMail(id){
     const m=syncedMail.find(x=>String(x.id)===String(id)); if(!m) return;
+    if(!m._read){ markMailRead(id); renderMessagerie(); }   // marqué lu à l'ouverture
     const box=document.getElementById("modalBox"); box.classList.add("wide");
     const nat=m._nature||MAIL_NATURE_OTHER, mt=m._match;
     const recv=m.received_at?new Date(m.received_at).toLocaleString("fr-FR"):"";

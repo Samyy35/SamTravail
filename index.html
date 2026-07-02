@@ -721,6 +721,8 @@
   #mailSyncBtn.on{border-color:var(--green);color:var(--green);}
   .lettre-lang{font-size:12px;color:var(--text-dim);display:inline-flex;align-items:center;gap:5px;}
   .lettre-lang .vers-btn{padding:3px 9px;}
+  .prof-langsel{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:16px 0 8px;font-size:13px;font-weight:600;color:var(--text-dim);}
+  .prof-langsel .vers-btn{padding:5px 14px;font-size:13px;}
   /* Clusters carte : couleur NEUTRE (navy) — évite le conflit avec la légende de statuts (vert/rouge) */
   .marker-cluster-small,.marker-cluster-medium,.marker-cluster-large{background:rgba(44,61,99,.30)!important;}
   .marker-cluster-small div,.marker-cluster-medium div,.marker-cluster-large div{background:#2c3d63!important;color:#fff!important;font-family:var(--font)!important;font-weight:700!important;}
@@ -751,6 +753,7 @@
   @media print{
     body{background:#fff!important;}
     body *{visibility:hidden!important;}
+    .modal-bg,.sidebar,header{display:none!important;}
     #pdfPrintArea,#pdfPrintArea *{visibility:visible!important;}
     #pdfPrintArea{display:block!important;position:absolute;left:0;top:0;width:100%;}
     @page{size:A4;margin:2.2cm 2cm;}
@@ -1335,7 +1338,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v77</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v79</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -3538,15 +3541,22 @@
     <span class="rt-sep"></span>
     <button type="button" class="rt-btn" title="Effacer la mise en forme" onmousedown="event.preventDefault();richCmd('removeFormat')">✕</button>
   </div>`; }
-  // Export PDF NATIF (impression → « Enregistrer au format PDF ») : 0 librairie, A4, conserve la mise en forme de l'éditeur
+  // Export PDF NATIF (impression → « Enregistrer au format PDF ») : 0 librairie, A4. INTELLIGENT :
+  // si un CV modèle avec {{ACCROCHE}} existe → CV + accroche fusionnés ; sinon → l'accroche seule en lettre propre.
   function exportAccrochePdf(){
     if(!lettreVal()){ flashCenter("Écris ou génère d'abord une accroche.","info"); return; }
-    const html=lettreHtml(), c=_lettreCtx||{};
+    const acc=lettreHtml(), c=_lettreCtx||{}, tpl=((c.lang==="en"?userCvHtmlEn:userCvHtml)||userCvHtml||"");
     let area=document.getElementById("pdfPrintArea");
     if(!area){ area=document.createElement("div"); area.id="pdfPrintArea"; document.body.appendChild(area); }
-    const today=new Date().toLocaleDateString(c.lang==="en"?"en-GB":"fr-FR",{year:"numeric",month:"long",day:"numeric"});
-    const meta=[c.entreprise?esc(c.entreprise):"",c.poste?esc(c.poste):""].filter(Boolean).join(" — ");
-    area.innerHTML=`<div class="pdf-doc">${userName?`<h1>${esc(userName)}</h1>`:""}<div class="pdf-meta">${meta?meta+" · ":""}${today}</div><div class="pdf-body">${html}</div></div>`;
+    let inner;
+    if(tpl.replace(/<[^>]*>/g,"").trim() && /\{\{\s*accroche\s*\}\}/i.test(tpl)){
+      inner=`<div class="pdf-body">${tpl.replace(/\{\{\s*accroche\s*\}\}/gi,acc)}</div>`;   // CV modèle (bonne langue) + accroche
+    } else {
+      const today=new Date().toLocaleDateString(c.lang==="en"?"en-GB":"fr-FR",{year:"numeric",month:"long",day:"numeric"});
+      const meta=[c.entreprise?esc(c.entreprise):"",c.poste?esc(c.poste):""].filter(Boolean).join(" — ");
+      inner=`${userName?`<h1>${esc(userName)}</h1>`:""}<div class="pdf-meta">${meta?meta+" · ":""}${today}</div><div class="pdf-body">${acc}</div>`;
+    }
+    area.innerHTML=`<div class="pdf-doc">${inner}</div>`;
     setTimeout(()=>{ try{ window.print(); }catch(e){} },60);
   }
   // ===== Sourcing d'entreprises (0€, durable) : générateur de super-prompt à coller dans son propre LLM gratuit =====
@@ -3634,9 +3644,8 @@
       <div class="modal-actions">
         <button class="btn danger" onclick="closeModal()">Fermer</button>
         <button class="btn ghost" id="lettreCopyBtn" onclick="copyLettre()">${ic("link")}<span>Copier</span></button>
-        <button class="btn ghost" onclick="exportAccrochePdf()">${ic("doc")}<span>Exporter PDF</span></button>
-        <button class="btn ghost" onclick="exportCvAccrochePdf()" title="Fusionne l'accroche dans ton CV modèle (Profil) et exporte en PDF">${ic("doc")}<span>CV + accroche PDF</span></button>
-        <button class="btn ghost" onclick="dlLettre()">${ic("download")}<span>Télécharger CV</span></button>
+        <button class="btn ghost" onclick="exportAccrochePdf()" title="PDF propre — fusionne avec ton CV modèle s'il existe (sinon accroche seule)">${ic("doc")}<span>Exporter PDF</span></button>
+        <button class="btn ghost" onclick="dlLettre()" title="CV Word (.docx) d'origine + accroche">${ic("download")}<span>Télécharger .docx</span></button>
         <button class="btn btn-validate" onclick="saveLettre()">${ic("check")}<span>Enregistrer</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
@@ -5067,7 +5076,7 @@
 
   // ===== INIT =====
   if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box"><b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
-  let userName="", userIntro="", userIntroEn="", userCV="", userCvHtml="";
+  let userName="", userIntro="", userIntroEn="", userCV="", userCvHtml="", userCvHtmlEn="", profLang="fr";
   let lettres={};
   let promptAccroche="";   // prompt système d'accroche, éditable dans Réglages (sinon défaut backend)
   // ===== THÈME clair / sombre =====
@@ -5097,7 +5106,7 @@
     // 1) cache local instantané (évite de redemander même si Supabase est lent/indispo)
     try{const ls=localStorage.getItem("st_name");if(ls)userName=ls;}catch(e){}
     // 2) sync Supabase (source de vérité multi-appareils)
-    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur){const v=data.valeur;if(v.prenom){userName=v.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}userIntro=v.intro||"";userIntroEn=v.introEn||"";userCV=v.cv||"";userCvHtml=v.cvHtml||"";}}catch(e){}
+    if(sb){try{const {data}=await sb.from("parametres").select("valeur").eq("cle","profil").maybeSingle();if(data&&data.valeur){const v=data.valeur;if(v.prenom){userName=v.prenom;try{localStorage.setItem("st_name",userName);}catch(e){}}userIntro=v.intro||"";userIntroEn=v.introEn||"";userCV=v.cv||"";userCvHtml=v.cvHtml||"";userCvHtmlEn=v.cvHtmlEn||"";}}catch(e){}
       try{const {data:dl}=await sb.from("parametres").select("valeur").eq("cle","lettres").maybeSingle();if(dl&&dl.valeur)lettres=dl.valeur;}catch(e){}
       try{const {data:dp}=await sb.from("parametres").select("valeur").eq("cle","promptAccroche").maybeSingle();if(dp&&dp.valeur&&dp.valeur.text)promptAccroche=dp.valeur.text;}catch(e){}}
     if(!userName && !skipAsk){ askName(); }
@@ -5122,7 +5131,7 @@
   }
   // ===== Mon profil (intro + CV) : nourrit l'IA pour personnaliser les messages =====
   async function saveProfilData(){
-    if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName,intro:userIntro,introEn:userIntroEn,cv:userCV,cvHtml:(userCvHtml||"").slice(0,60000)},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
+    if(sb){try{await sb.from("parametres").upsert({cle:"profil",valeur:{prenom:userName,intro:userIntro,introEn:userIntroEn,cv:userCV,cvHtml:(userCvHtml||"").slice(0,60000),cvHtmlEn:(userCvHtmlEn||"").slice(0,60000)},updated_at:new Date().toISOString()},{onConflict:"cle"});}catch(e){}}
   }
   // ===== CV Word (.docx) : conservé tel quel, accroche ajoutée en page suivante =====
   let userCvDocx; // undefined = pas encore chargé ; null = aucun ; {name,b64}
@@ -5179,6 +5188,77 @@
     zip.file(path,xml);
     return await zip.generateAsync({type:"blob",compression:"DEFLATE",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
   }
+  // ===== CV modèle : import .docx -> HTML (Mammoth, mise en page conservée) + bascule FR/EN + aperçu =====
+  function loadMammoth(){ if(window.mammoth&&mammoth.convertToHtml) return Promise.resolve();
+    return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"; s.onload=()=>res(); s.onerror=()=>rej(new Error("Chargement du convertisseur .docx impossible (réseau).")); document.head.appendChild(s); }); }
+  function htmlToText(html){ const d=document.createElement("div"); d.innerHTML=html||""; return (d.innerText||d.textContent||"").replace(/\n{3,}/g,"\n\n").trim(); }
+  function richBar(id){ return `<div class="rich-toolbar">
+    <button type="button" class="rt-btn" title="Gras" onmousedown="event.preventDefault();rcmd('${id}','bold')"><b>B</b></button>
+    <button type="button" class="rt-btn" title="Italique" onmousedown="event.preventDefault();rcmd('${id}','italic')"><i>I</i></button>
+    <button type="button" class="rt-btn" title="Souligné" onmousedown="event.preventDefault();rcmd('${id}','underline')"><u>U</u></button>
+    <span class="rt-sep"></span>
+    <button type="button" class="rt-btn" title="Liste à puces" onmousedown="event.preventDefault();rcmd('${id}','insertUnorderedList')">${ic("list")}</button>
+    <button type="button" class="rt-btn" title="Titre" onmousedown="event.preventDefault();rcmd('${id}','formatBlock','H3')">H</button>
+    <span class="rt-sep"></span>
+    <button type="button" class="rt-btn" title="Effacer la mise en forme" onmousedown="event.preventDefault();rcmd('${id}','removeFormat')">✕</button>
+  </div>`; }
+  function cvInsertMarkerL(){ const e=document.getElementById("profCvHtmlL"); if(!e)return; e.focus(); try{ document.execCommand("insertText",false,"{{accroche}}"); }catch(x){ e.innerHTML+=" {{accroche}} "; } }
+  function captureProfLang(){
+    const a=document.getElementById("profIntroL"), c=document.getElementById("profCvHtmlL");
+    if(a){ if(profLang==="fr")userIntro=a.value; else userIntroEn=a.value; }
+    if(c){ if(profLang==="fr")userCvHtml=c.innerHTML; else userCvHtmlEn=c.innerHTML; }
+  }
+  function setProfLang(l){ captureProfLang(); profLang=l; ["fr","en"].forEach(x=>{const b=document.getElementById("profLang-"+x);if(b)b.classList.toggle("on",x===l);}); renderProfLangBlock(); }
+  function renderProfLangBlock(){
+    const el=document.getElementById("profLangBlock"); if(!el)return;
+    const isFr=profLang==="fr", acc=isFr?userIntro:userIntroEn, cv=(isFr?userCvHtml:userCvHtmlEn)||"<p><br></p>";
+    el.innerHTML=`
+      <label class="prof-lab">Accroche / intro ${isFr?"(FR)":"(EN)"} <span class="prof-hint">— 2-3 phrases : qui tu es, ce que tu cherches (l'IA part de CELLE-CI)</span></label>
+      <textarea class="draft-area" id="profIntroL" rows="4" placeholder="${isFr?"Ex : Diplômé d'un master supply chain, je cherche un poste opérationnel…":"Ex: Supply chain master's graduate seeking an operations role…"}">${esc(acc)}</textarea>
+      <label class="prof-lab">CV modèle ${isFr?"(FR)":"(EN)"} <span class="prof-hint">— importe ton CV en <b>.docx</b> (mise en page conservée), puis place la balise <code>{{accroche}}</code> à l'endroit voulu.</span></label>
+      ${richBar("profCvHtmlL")}
+      <div class="draft-area rich-edit" id="profCvHtmlL" contenteditable="true" data-ph="Importe ton CV .docx ci-dessous, puis place {{accroche}} où l'accroche s'insérera…">${cv}</div>
+      <div class="prof-import">
+        <label class="btn ghost sm" for="cvFile">${ic("download")}<span>Importer .docx</span></label>
+        <input type="file" id="cvFile" accept=".docx,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" style="display:none" onchange="importCvIntoModel(this)" />
+        <button class="btn ghost sm" onmousedown="event.preventDefault();cvInsertMarkerL()">${ic("plus")}<span>Insérer {{accroche}}</span></button>
+        <button class="btn ghost sm" onclick="previewCv()">${ic("eye")}<span>Aperçu</span></button>
+        <span class="draft-status" id="cvStatus"></span>
+      </div>`;
+  }
+  async function importCvIntoModel(input){
+    const f=input.files&&input.files[0]; if(!f)return;
+    const st=document.getElementById("cvStatus"); if(st)st.innerHTML='<span class="spinner sp-s"></span> Import…';
+    try{
+      if(/\.docx$/i.test(f.name)){
+        await loadMammoth();
+        const buf=await f.arrayBuffer();
+        const r=await mammoth.convertToHtml({arrayBuffer:buf});
+        const html=(r&&r.value)||"";
+        const el=document.getElementById("profCvHtmlL"); if(el)el.innerHTML=html||"<p><br></p>";
+        try{ await saveCvDocx({name:f.name,b64:bufToB64(buf)}); }catch(e){}   // garde aussi le .docx original (téléchargement legacy)
+        if(st)st.innerHTML=ic("check")+" CV importé (.docx) — mise en page conservée. Place maintenant <b>{{accroche}}</b> où tu veux.";
+      } else if(/\.txt$/i.test(f.name)){
+        const t=await f.text(); const el=document.getElementById("profCvHtmlL"); if(el)el.innerHTML=textToHtml(t);
+        if(st)st.innerHTML=ic("check")+" Texte importé (mise en forme simple).";
+      } else {
+        if(st)st.innerHTML=ic("alert")+" PDF non supporté pour la mise en page : exporte ton CV en <b>.docx</b> (Word / Google Docs → Télécharger .docx) pour un rendu parfait.";
+      }
+    }catch(e){ if(st)st.innerHTML=ic("alert")+" Import impossible : "+esc((e&&e.message)||e); }
+    input.value="";
+  }
+  function previewCv(){
+    captureProfLang();
+    const tpl=(profLang==="fr"?userCvHtml:userCvHtmlEn)||"";
+    const acc=textToHtml(profLang==="fr"?userIntro:userIntroEn);
+    const merged=tpl.replace(/\{\{\s*accroche\s*\}\}/gi, acc||'<p style="color:#b00">[ton accroche s\'insérera ici]</p>');
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3>${ic("eye")} Aperçu du CV ${profLang==="fr"?"(FR)":"(EN)"}</h3><button class="x" onclick="openProfil()">✕</button></div>
+      <p class="modal-sub">Voici le rendu final (CV + accroche à la place de la balise). Depuis une offre, l'accroche sera personnalisée.</p>
+      <div class="pdf-doc" style="background:#fff;color:#111;padding:22px;border:1px solid var(--border);border-radius:10px;max-height:68vh;overflow:auto;"><div class="pdf-body">${merged||"<p>(CV vide — importe ton .docx d'abord.)</p>"}</div></div>
+      <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="openProfil()">← Retour</button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
   function openProfil(){
     closeMore&&closeMore();
     const box=document.getElementById("modalBox");
@@ -5186,31 +5266,12 @@
       <p class="modal-sub">Ces infos servent à personnaliser les messages générés par l'IA (relances, et bientôt accroches de candidature). Rien n'est obligatoire.</p>
       <label class="prof-lab">Prénom</label>
       <input class="crit-in" id="profPrenom" value="${esc(userName)}" placeholder="Ton prénom" />
-      <label class="prof-lab">Accroche / intro (FR) <span class="prof-hint">— 2-3 phrases : qui tu es, ce que tu cherches</span></label>
-      <textarea class="draft-area" id="profIntro" rows="4" placeholder="Ex : Diplômé d'un master supply chain, je cherche un poste opérationnel en milieu industriel près du littoral. Rigoureux, orienté data et terrain.">${esc(userIntro)}</textarea>
-      <label class="prof-lab">Accroche / intro (EN) <span class="prof-hint">— ta version anglaise (l'IA part de CELLE-CI en anglais, pas d'une traduction)</span></label>
-      <textarea class="draft-area" id="profIntroEn" rows="4" placeholder="Ex: Supply chain master's graduate seeking an operations role (procurement, planning, inventory) in an industrial setting. Data-driven and hands-on.">${esc(userIntroEn)}</textarea>
-      <label class="prof-lab">CV (texte) <span class="prof-hint">— colle ton CV, ou importe un PDF / .txt</span></label>
-      <textarea class="draft-area" id="profCv" rows="7" placeholder="Colle ici le contenu de ton CV : expériences, compétences, formations.">${esc(userCV)}</textarea>
-      <div class="draft-status" id="cvDocxInfo"></div>
-      <div class="prof-import">
-        <label class="btn ghost sm" for="cvFile">${ic("download")}<span>Importer (.docx / PDF / .txt)</span></label>
-        <input type="file" id="cvFile" accept=".docx,.pdf,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,text/plain" style="display:none" onchange="importCvFile(this)" />
-        <button class="btn ghost sm" onclick="aiProfilFill()" title="Pré-remplir prénom et accroche depuis le CV">${ic("sparkle")}<span>Analyser mon CV</span></button>
-        <span class="draft-status" id="cvStatus"></span>
+      <div class="prof-langsel">Langue du CV & de l'accroche :
+        <button class="vers-btn ${profLang==="fr"?"on":""}" id="profLang-fr" onclick="setProfLang('fr')">Français</button>
+        <button class="vers-btn ${profLang==="en"?"on":""}" id="profLang-en" onclick="setProfLang('en')">English</button>
+        <span class="prof-hint" style="margin-left:auto;">Importe ton CV <b>.docx</b> → il garde sa mise en page.</span>
       </div>
-      <label class="prof-lab">CV mis en page (modèle) <span class="prof-hint">— construis ton CV ici et place la balise <code>{{ACCROCHE}}</code> où l'accroche doit s'insérer. Depuis une offre : « CV + accroche → PDF ».</span></label>
-      <div class="rich-toolbar">
-        <button type="button" class="rt-btn" title="Gras" onmousedown="event.preventDefault();rcmd('profCvHtml','bold')"><b>B</b></button>
-        <button type="button" class="rt-btn" title="Italique" onmousedown="event.preventDefault();rcmd('profCvHtml','italic')"><i>I</i></button>
-        <button type="button" class="rt-btn" title="Souligné" onmousedown="event.preventDefault();rcmd('profCvHtml','underline')"><u>U</u></button>
-        <span class="rt-sep"></span>
-        <button type="button" class="rt-btn" title="Liste à puces" onmousedown="event.preventDefault();rcmd('profCvHtml','insertUnorderedList')">${ic("list")}</button>
-        <button type="button" class="rt-btn" title="Titre" onmousedown="event.preventDefault();rcmd('profCvHtml','formatBlock','H3')">H</button>
-        <span class="rt-sep"></span>
-        <button type="button" class="rt-btn" title="Insérer la balise {{ACCROCHE}}" onmousedown="event.preventDefault();cvInsertMarker()">{{…}}</button>
-      </div>
-      <div class="draft-area rich-edit" id="profCvHtml" contenteditable="true" data-ph="Colle/écris ton CV mis en forme, et place {{ACCROCHE}} où tu veux l'accroche…">${userCvHtml||"<p><br></p>"}</div>
+      <div id="profLangBlock"></div>
       <div class="pc-section-h">${ic("gear")} Réglages</div>
       <p class="modal-sub" style="margin-top:-4px;">Affine le score d'affinité (pondération des secteurs) et sauvegarde tes données.</p>
       <div class="prof-settings">
@@ -5222,12 +5283,12 @@
       <label class="prof-toggle"><input type="checkbox" id="capCloseToggle" ${getCaptureAutoClose()?"checked":""} onchange="setCaptureAutoClose(this.checked)"><span>Fermer automatiquement la fenêtre du favori après l'ajout d'une offre <small>(évite d'accumuler les onglets)</small></span></label>
       <div class="modal-actions"><button class="btn danger" onclick="closeModal()">Annuler</button><button class="btn btn-validate" onclick="saveProfil()">${ic("check")}<span>Enregistrer</span></button></div>`;
     document.getElementById("modalBg").classList.add("open");
-    loadCvDocx().then(d=>{const di=document.getElementById("cvDocxInfo");if(di&&d&&d.name)di.innerHTML=ic("check")+" CV Word enregistré : <b>"+esc(d.name)+"</b> — mise en page conservée au téléchargement.";});
+    renderProfLangBlock();
   }
   async function saveProfil(){
-    const gp=id=>{const e=document.getElementById(id);return e?(e.value||"").trim():"";};
-    userName=gp("profPrenom"); userIntro=gp("profIntro"); userIntroEn=gp("profIntroEn"); userCV=gp("profCv").slice(0,8000);
-    const _cvh=document.getElementById("profCvHtml"); if(_cvh)userCvHtml=(_cvh.innerHTML||"").slice(0,60000);
+    const pn=document.getElementById("profPrenom"); userName=pn?(pn.value||"").trim():userName;
+    captureProfLang();                                             // capture la langue affichée dans les bonnes variables
+    userCV=htmlToText(userCvHtml||userCvHtmlEn).slice(0,8000);     // texte du CV pour nourrir l'IA (dérivé du modèle HTML)
     try{localStorage.setItem("st_name",userName);}catch(e){}
     await saveProfilData();
     closeModal(); initDate();

@@ -541,8 +541,8 @@
     .pipe-pill{flex:0 0 auto;}
   }
   /* ===== SUIVI : Kanban condensé (4 colonnes) ===== */
-  .kanban-board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start;}
-  .kb-col{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:10px;min-width:0;}
+  .kanban-board{display:flex;gap:12px;align-items:flex-start;}
+  .kb-col{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:10px;flex:var(--kw,1) 1 160px;min-width:150px;}
   .kb-head{display:flex;align-items:center;gap:8px;padding:3px 5px 11px;font-size:13px;font-weight:700;color:var(--text);}
   .kb-head .kb-dot{width:9px;height:9px;border-radius:50%;background:var(--kc,var(--text-mute));flex-shrink:0;}
   .kb-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -588,8 +588,8 @@
   .kb-star{color:var(--gold);} .kb-star .ic{width:12px;height:12px;vertical-align:-.12em;}
   .kb-notes{margin-top:6px;font-size:11px;color:var(--text-dim);line-height:1.4;background:var(--surface-2);border-radius:7px;padding:5px 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   @media(max-width:760px){
-    .kanban-board{grid-auto-flow:column;grid-auto-columns:74vw;grid-template-columns:none;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding-bottom:6px;}
-    .kb-col{scroll-snap-align:start;}
+    .kanban-board{overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding-bottom:6px;}
+    .kb-col{scroll-snap-align:start;flex:0 0 74vw;}
   }
 
   /* NOTES libre (bloc-notes) */
@@ -750,6 +750,15 @@
   .doc-title{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:6px;} .doc-title .ic{width:14px;height:14px;color:var(--accent);}
   .doc-snip{font-size:12px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;}
   .doc-date{font-size:11.5px;color:var(--text-mute);flex-shrink:0;}
+  .src-count{font-size:12px;color:var(--text-dim);font-weight:600;margin:8px 0;}
+  .src-card{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1px solid var(--border);border-radius:11px;margin-bottom:8px;background:var(--surface);}
+  .src-card.added{opacity:.55;}
+  .src-cmain{flex:1;min-width:0;}
+  .src-cname{font-size:13.5px;font-weight:700;}
+  .src-city{font-weight:400;color:var(--text-mute);font-size:12px;}
+  .src-cctx{font-size:12px;color:var(--text-dim);line-height:1.45;margin:2px 0;}
+  .src-clink{font-size:11.5px;color:var(--accent);display:inline-flex;align-items:center;gap:4px;} .src-clink .ic{width:12px;height:12px;}
+  .src-card>.btn{flex-shrink:0;}
   @media print{
     body{background:#fff!important;}
     body *{visibility:hidden!important;}
@@ -1338,7 +1347,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v79</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v81</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1588,10 +1597,11 @@
     columns:'<rect x="3" y="3.5" width="3.6" height="13" rx="1"/><rect x="8.2" y="3.5" width="3.6" height="13" rx="1"/><rect x="13.4" y="3.5" width="3.6" height="13" rx="1"/>',
     trash:'<path d="M4.5 6h11M8 6V4.6a1 1 0 011-1h2a1 1 0 011 1V6M6.7 6l.6 9.2a1 1 0 001 .95h3.4a1 1 0 001-.95L14.3 6M8.6 9v4.5M11.4 9v4.5"/>',
     undo:'<path d="M7 8H4V5M4.2 8.2A6 6 0 1110 16"/>',
-    compass:'<circle cx="10" cy="10" r="7.5"/><path d="M13.4 6.6l-2 4.8-4.8 2 2-4.8z"/>'
+    compass:'<circle cx="10" cy="10" r="7.5"/><path d="M13.4 6.6l-2 4.8-4.8 2 2-4.8z"/>',
+    phone:'<path d="M4.7 3.5h2.9l1.1 2.9-1.5 1.1a9.6 9.6 0 004.3 4.3l1.1-1.5 2.9 1.1v2.9a1.3 1.3 0 01-1.4 1.3A11.7 11.7 0 013.4 4.9 1.3 1.3 0 014.7 3.5z"/>'
   };
   // étape du Suivi -> icône
-  const KICON={"Envoyé":"send","Entretien":"mic","Offre reçue":"trophy","Refusé":"ban","Non intéressé":"minus"};
+  const KICON={"Envoyé":"send","Screening":"phone","Entretien":"mic","Offre reçue":"trophy","Refusé":"ban","Non intéressé":"minus"};
   // libellé d'étape sans l'emoji de tête (pour affichage à côté d'une icône)
   function kLabel(label){return (label||"").replace(/^\S+\s*/,"");}
   function ic(name,cls){
@@ -1881,6 +1891,7 @@
   const SAINTMALO=[48.649,-2.026]; // base / repère
   const CARTE_STAT={
     "Envoyé":{label:"Postulé",color:"#0071e3"},
+    "Screening":{label:"Screening",color:"#06b6c9"},
     "Entretien":{label:"Entretien",color:"#a87ffb"},
     "Offre reçue":{label:"Offre reçue",color:"#34c759"},
     "Refusé":{label:"Refusé",color:"#e5484d"},
@@ -1892,7 +1903,7 @@
   function carteOffers(){
     let list=pipeline.filter(p=>CARTE_STAT[p.statut]);
     if(carteFilter==="postule")list=list.filter(p=>p.statut==="Envoyé");
-    else if(carteFilter==="entretien")list=list.filter(p=>p.statut==="Entretien"||p.statut==="Offre reçue");
+    else if(carteFilter==="entretien")list=list.filter(p=>p.statut==="Screening"||p.statut==="Entretien"||p.statut==="Offre reçue");
     else if(carteFilter==="refuse")list=list.filter(p=>p.statut==="Refusé");
     if(carteSector!=="all")list=list.filter(p=>detectSector({titre:p.poste,entreprise:p.entreprise}).key===carteSector);
     return list;
@@ -3099,14 +3110,16 @@
   // ===== PIPELINE KANBAN =====
   const KCOLS=[
     {key:"Envoyé",cls:"envoye",label:"📤 Candidature envoyée"},
+    {key:"Screening",cls:"screening",label:"📞 Screening"},
     {key:"Entretien",cls:"entretien",label:"🎤 Entretien"},
     {key:"Offre reçue",cls:"offre",label:"🎉 Offre reçue"},
     {key:"Refusé",cls:"refuse",label:"❌ Refus"},
     {key:"Non intéressé",cls:"relance",label:"💤 Pas pour moi"},
   ];
-  // Kanban condensé : 4 colonnes (Refusé + Pas pour moi fusionnés en « Clos »)
+  // Kanban : 5 colonnes (Refusé + Pas pour moi fusionnés en « Clos »), largeurs dynamiques selon le nb de cartes
   const KANBAN_COLS=[
     {key:"Envoyé",label:"Envoyé",statuts:["Envoyé"],color:"var(--accent)"},
+    {key:"Screening",label:"Screening",statuts:["Screening"],color:"var(--cyan)"},
     {key:"Entretien",label:"Entretien",statuts:["Entretien"],color:"var(--purple)"},
     {key:"Offre reçue",label:"Offre reçue",statuts:["Offre reçue"],color:"var(--green)"},
     {key:"Clos",label:"Clos",statuts:["Refusé","Non intéressé"],color:"var(--text-mute)"},
@@ -3332,7 +3345,7 @@
       } else {
         body=items.length?items.map(kanbanCard).join(""):'<div class="kb-empty">—</div>';
       }
-      return `<div class="kb-col">
+      return `<div class="kb-col" style="--kw:${Math.max(1,items.length)};">
         <div class="kb-head" style="--kc:${kc.color};"><span class="kb-dot"></span><span class="kb-label">${esc(kc.label)}</span><b class="kb-count">${items.length}</b></div>
         <div class="kb-body">${body}</div>
       </div>`;
@@ -3349,7 +3362,7 @@
     const ini=esc((p.entreprise||p.poste||"?").trim().slice(0,1).toUpperCase());
     const logoInner=logo?`<img src="${logo}" alt="" onerror="this.parentElement.classList.add('mono');this.parentElement.style.background='${sec.c}1f';this.parentElement.style.color='${sec.c}';this.parentElement.textContent='${ini}';">`:ini;
     const chk=p.checklist||{}; const done=Object.keys(chk).filter(k=>chk[k]).length;
-    const STEPS=["Envoyé","Entretien","Offre reçue","Refusé"]; // « Pas pour moi » retiré, remplacé par le rollback
+    const STEPS=["Envoyé","Screening","Entretien","Offre reçue","Refusé"]; // « Pas pour moi » retiré, remplacé par le rollback
     return `<div class="kb-card" style="border-left-color:${col};">
       <div class="kb-card-head" onclick="openPipeCard('${p.id}')" title="Voir la fiche">
         <div class="kb-logo ${logo?'':'mono'}" style="${logo?'':`background:${sec.c}1f;color:${sec.c};`}">${logoInner}</div>
@@ -3374,7 +3387,7 @@
     </div>`;
   }
   function pipeColor(key){
-    return {"Envoyé":"var(--accent)","Entretien":"var(--purple)","Offre reçue":"var(--green)","Refusé":"var(--red)","Non intéressé":"var(--text-mute)"}[key]||"var(--text-mute)";
+    return {"Envoyé":"var(--accent)","Screening":"var(--cyan)","Entretien":"var(--purple)","Offre reçue":"var(--green)","Refusé":"var(--red)","Non intéressé":"var(--text-mute)"}[key]||"var(--text-mute)";
   }
   function pipeRow(p){
     const days=p.date_envoi?Math.round((Date.now()-new Date(p.date_envoi))/86400000):null;
@@ -3563,10 +3576,17 @@
   function buildSourcingPrompt(){
     const g=id=>((document.getElementById(id)||{}).value||"").trim();
     const sec=g("srcSecteur"), ville=g("srcVille"), poste=g("srcPoste");
+    // Point 2 : la liste d'exclusion (mes ~200 marques déjà en base) n'est injectée QUE dans le prompt à copier
+    // (IA externe puissante), pas dans l'IA interne légère (qui garde sa mémoire des 60 derniers, plus économe en tokens).
+    const known=[...new Set((typeof reve!=="undefined"?reve:[]).map(e=>((e&&e.entreprise)||"").trim()).filter(Boolean))];
+    const exclBlock = known.length
+      ? `\nEXCLUS ABSOLUMENT de tes résultats les entreprises suivantes (déjà dans ma base — ne me les repropose sous AUCUN prétexte, même une variante orthographique ou une filiale) :\n${known.join(", ")}.\n`
+      : "";
     return `Tu es un expert du sourcing d'entreprises et du marché de l'emploi${ville?` (zone : ${ville})`:""}.\n`
       +`Objectif : liste-moi 25 à 40 entreprises PERTINENTES où postuler, AU-DELÀ des grands groupes déjà connus.\n`
       +(sec?`Secteur : ${sec}.\n`:"")+(poste?`Type de poste visé : ${poste}.\n`:"")
       +`Priorité aux entreprises en CROISSANCE ou qui RECRUTENT (PME, ETI, scale-ups, filiales, sites industriels), pas seulement les leaders.\n`
+      +exclBlock
       +`Pour CHAQUE entreprise, une ligne, format EXACT :\n`
       +`Nom | ville ou région | site carrière (URL si connue, sinon site officiel) | 1 phrase : activité + pourquoi c'est pertinent (croissance / ce qu'elle recrute)\n`
       +`Règles : n'invente pas d'URL (si incertain, donne le site officiel probable). Classe de la plus pertinente à la moins. Réponds UNIQUEMENT par la liste.`;
@@ -3577,19 +3597,70 @@
     try{ await navigator.clipboard.writeText(txt); ok=true; }catch(e){ try{const t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();ok=document.execCommand("copy");t.remove();}catch(e2){} }
     const b=document.getElementById("srcCopyBtn"); if(b)b.innerHTML=(ok?ic("check"):ic("alert"))+"<span>"+(ok?"Copié ! Colle-le dans ton IA":"Copie manuelle")+"</span>";
   }
+  // Option A : IA du site (backend) — mémoire anti-doublons (localStorage + Supabase), prompt token-efficient
+  let _sourcingSeen=null, _srcLast=[];
+  async function loadSourcingSeen(){
+    if(_sourcingSeen) return _sourcingSeen;
+    _sourcingSeen=new Set();
+    try{ (JSON.parse(localStorage.getItem("st_sourcing_seen")||"[]")||[]).forEach(x=>_sourcingSeen.add(x)); }catch(e){}
+    if(sb){ try{ const {data}=await sb.from("parametres").select("valeur").eq("cle","sourcingSeen").maybeSingle(); if(data&&data.valeur&&Array.isArray(data.valeur.names)) data.valeur.names.forEach(x=>_sourcingSeen.add(x)); }catch(e){} }
+    return _sourcingSeen;
+  }
+  function saveSourcingSeen(){
+    const arr=[..._sourcingSeen].slice(-400);
+    try{ localStorage.setItem("st_sourcing_seen",JSON.stringify(arr)); }catch(e){}
+    if(sb){ try{ sb.from("parametres").upsert({cle:"sourcingSeen",valeur:{names:arr},updated_at:new Date().toISOString()},{onConflict:"cle"}); }catch(e){} }
+  }
+  function srcCard(c,i){
+    const site=c.site?(String(c.site).startsWith("http")?c.site:"https://"+c.site):"";
+    const dom=site?esc(site.replace(/^https?:\/\//,"").split("/")[0]):"";
+    return `<div class="src-card"><div class="src-cmain"><div class="src-cname">${esc(c.nom||"")}${c.ville?` <span class="src-city">· ${esc(c.ville)}</span>`:""}</div>${c.contexte?`<div class="src-cctx">${esc(c.contexte)}</div>`:""}${site?`<a href="${esc(site)}" target="_blank" rel="noopener" class="src-clink">${ic("link")} ${dom}</a>`:""}</div><button class="btn sm" onclick="addSourcedBrand(${i})">${ic("plus")} Ajouter</button></div>`;
+  }
+  async function aiDiscoverCompanies(){
+    const g=id=>((document.getElementById(id)||{}).value||"").trim();
+    const secteur=g("srcSecteur"), ville=g("srcVille"), poste=g("srcPoste");
+    const res=document.getElementById("srcResults"), btn=document.getElementById("srcAiBtn");
+    if(!AI_ASSIST){ if(res)res.innerHTML='<div class="empty">IA désactivée — utilise le prompt externe ci-dessous.</div>'; return; }
+    await loadSourcingSeen();
+    if(btn){ btn.disabled=true; btn.innerHTML='<span class="spinner sp-s"></span> Recherche…'; }
+    const aj=await aiSort({mode:"sourcing",secteur,ville,poste,exclude:[..._sourcingSeen].slice(-60)}, 20000);
+    if(btn){ btn.disabled=false; btn.innerHTML=ic("sparkle")+"<span>Découvrir avec l'IA du site</span>"; }
+    if(!aj || !aj.companies){ if(res)res.innerHTML='<div class="empty">'+(aj&&aj.reason?("IA indisponible ("+esc(aj.reason)+(aj.status?(" "+aj.status):"")+")"):(aj===null?"IA hors délai":"Aucun résultat"))+' — utilise le prompt externe ci-dessous.</div>'; return; }
+    const fresh=aj.companies.filter(c=>c&&c.nom && !_sourcingSeen.has(normCompany(c.nom)));
+    fresh.forEach(c=>_sourcingSeen.add(normCompany(c.nom)));
+    if(fresh.length) saveSourcingSeen();
+    _srcLast=fresh;
+    const seenLbl=document.getElementById("srcSeenLbl"); if(seenLbl)seenLbl.textContent="("+_sourcingSeen.size+" déjà mémorisée(s))";
+    if(res)res.innerHTML=fresh.length?`<div class="src-count">${fresh.length} nouvelle(s) entreprise(s) — « Ajouter » les met en Marques</div>`+fresh.map((c,i)=>srcCard(c,i)).join(""):'<div class="empty">Que des entreprises déjà proposées — relance pour d\'autres.</div>';
+  }
+  async function addSourcedBrand(i){
+    const c=(_srcLast||[])[i]; if(!c)return;
+    let site=c.site?(String(c.site).startsWith("http")?c.site:"https://"+c.site):"";
+    if(typeof isAtsHost==="function" && isAtsHost(site)) site="";
+    if(!sb){ flashCenter("Pas de connexion base.","info"); return; }
+    try{ await sb.from("entreprises_reve").insert({entreprise:c.nom||"", site:site, ville:c.ville||"", secteur:((document.getElementById("srcSecteur")||{}).value||"")}); }catch(e){ flashCenter("Échec : "+((e&&e.message)||e),"info"); return; }
+    const cards=document.querySelectorAll("#srcResults .src-card"); if(cards[i]){ const b=cards[i].querySelector("button"); if(b){ b.disabled=true; b.innerHTML=ic("check")+" Ajoutée"; } cards[i].classList.add("added"); }
+    flashCenter("« "+(c.nom||"")+" » ajoutée aux Marques ✓");
+    try{ await loadAll(); refreshAll(); }catch(e){}
+  }
   function openSourcing(){
     const box=document.getElementById("modalBox"); box.classList.remove("wide");
     const secs=(typeof SECTORS!=="undefined"?SECTORS:[]).map(s=>s.key||s).filter(Boolean);
     box.innerHTML=`<div class="modal-head"><h3>${ic("search")} Découvrir des entreprises</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">Remplis tes critères → copie le prompt → colle-le dans ton IA gratuite (ChatGPT, Gemini, Claude). Tu récupères une liste d'entreprises à ajouter en Marques. <b>0€, sans limite.</b></p>
+      <p class="modal-sub">Trouve des entreprises où postuler au-delà des grands groupes. L'IA du site évite de te reproposer les mêmes. <span id="srcSeenLbl" style="color:var(--text-mute);"></span></p>
       <div class="field"><label>Secteur</label><input class="crit-in" id="srcSecteur" list="__srcSec" oninput="refreshSourcingPrompt()" placeholder="Ex : Pharma / Santé"><datalist id="__srcSec">${secs.map(s=>`<option value="${esc(s)}"></option>`).join("")}</datalist></div>
       <div class="field"><label>Ville / région (optionnel)</label><input class="crit-in" id="srcVille" oninput="refreshSourcingPrompt()" placeholder="Ex : Nantes, Bretagne, Pays-Bas…"></div>
       <div class="field"><label>Type de poste (optionnel)</label><input class="crit-in" id="srcPoste" oninput="refreshSourcingPrompt()" placeholder="Ex : Supply chain, planification"></div>
-      <label class="prof-lab">Prompt généré</label>
-      <textarea class="draft-area" id="srcPrompt" rows="8" readonly onclick="this.select()"></textarea>
-      <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button><button class="btn btn-validate" id="srcCopyBtn" onclick="copySourcingPrompt()">${ic("link")}<span>Copier le prompt</span></button></div>`;
+      <div class="modal-actions" style="margin:8px 0 2px;"><button class="btn primary" id="srcAiBtn" onclick="aiDiscoverCompanies()">${ic("sparkle")}<span>Découvrir avec l'IA du site</span></button></div>
+      <div id="srcResults"></div>
+      <details class="bookmarklet-help" style="margin-top:12px;"><summary>${ic("link")} Ou copier un prompt pour ton IA externe (ChatGPT / Gemini, illimité)</summary>
+        <textarea class="draft-area" id="srcPrompt" rows="7" readonly onclick="this.select()"></textarea>
+        <button class="btn sm" id="srcCopyBtn" onclick="copySourcingPrompt()">${ic("link")}<span>Copier le prompt</span></button>
+      </details>
+      <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
     document.getElementById("modalBg").classList.add("open");
     refreshSourcingPrompt();
+    loadSourcingSeen().then(s=>{ const l=document.getElementById("srcSeenLbl"); if(l&&s.size)l.textContent="("+s.size+" déjà mémorisée(s))"; });
   }
   // ===== CV modèle (HTML riche) : édition + fusion {{ACCROCHE}} + historique des documents =====
   function rcmd(id,cmd,val){ const e=document.getElementById(id); if(e)e.focus(); try{ document.execCommand(cmd,false,val||null); }catch(x){} }
@@ -3749,7 +3820,7 @@
       <div class="fiche-actbar">
         <span class="fa-label">${ic("send")} Faire évoluer</span>
         <div class="fa-group">
-          ${["Envoyé","Entretien","Offre reçue","Refusé"].map(k=>{const cc=pipeColor(k);const on=p.statut===k;return `<button class="pdact ${on?"on":""}" onclick="changePipeStatut('${p.id}','${k}',this);setTimeout(()=>openPipeCard('${p.id}'),320)" style="${on?`background:${cc};border-color:${cc};color:#fff;`:`color:${cc};border-color:${cc}55;`}">${ic(KICON[k]||"minus")} ${esc(kLabel((KCOLS.find(c=>c.key===k)||{label:k}).label))}</button>`;}).join("")}
+          ${["Envoyé","Screening","Entretien","Offre reçue","Refusé"].map(k=>{const cc=pipeColor(k);const on=p.statut===k;return `<button class="pdact ${on?"on":""}" onclick="changePipeStatut('${p.id}','${k}',this);setTimeout(()=>openPipeCard('${p.id}'),320)" style="${on?`background:${cc};border-color:${cc};color:#fff;`:`color:${cc};border-color:${cc}55;`}">${ic(KICON[k]||"minus")} ${esc(kLabel((KCOLS.find(c=>c.key===k)||{label:k}).label))}</button>`;}).join("")}
         </div>
         <span class="fa-sep"></span>
         <button class="pdact rollback" onclick="closeModal();rollbackToTriage('${p.id}')" title="Renvoyer l'offre dans « À trier »">${ic("undo")} À trier</button>
@@ -4640,7 +4711,7 @@
     pipeline:{title:"Candidature",table:"pipeline",fields:[
       {k:"entreprise",l:"Entreprise",t:"text"},{k:"poste",l:"Poste",t:"text"},{k:"ville",l:"Ville",t:"text"},
       {k:"secteur",l:"Secteur",t:"sectorlist"},{k:"source",l:"Source",t:"text"},{k:"lien_offre",l:"Lien offre",t:"text"},
-      {k:"statut",l:"Statut",t:"select",opts:["Envoyé","Entretien","Offre reçue","Refusé","Non intéressé"]},
+      {k:"statut",l:"Statut",t:"select",opts:["Envoyé","Screening","Entretien","Offre reçue","Refusé","Non intéressé"]},
       {k:"niveau_envie",l:"Niveau d'envie (1-5)",t:"number"},{k:"contact",l:"Contact",t:"text"},
       {k:"date_envoi",l:"Date d'envoi",t:"date"},{k:"date_relance",l:"Dernière relance",t:"date"},{k:"notes",l:"Notes",t:"textarea"},
     ]},
@@ -4891,6 +4962,7 @@
   // ===== HISTORIQUE all-time des candidatures (lit la table pipeline) =====
   const HIST_STATUTS={
     "Envoyé":{c:"var(--accent)",ico:"send"},
+    "Screening":{c:"var(--cyan)",ico:"phone"},
     "Entretien":{c:"var(--purple)",ico:"mic"},
     "Offre reçue":{c:"var(--green)",ico:"trophy"},
     "Refusé":{c:"var(--red)",ico:"ban"},
@@ -4994,8 +5066,8 @@
     const entretiens_=pipeline.filter(p=>p.statut==="Entretien").length;
     const offres_=pipeline.filter(p=>p.statut==="Offre reçue").length;
     const refus=pipeline.filter(p=>p.statut==="Refusé").length;
-    const enCours=pipeline.filter(p=>p.statut==="Envoyé"||p.statut==="Entretien").length;
-    const reponses=pipeline.filter(p=>p.statut==="Entretien"||p.statut==="Offre reçue"||p.statut==="Refusé"||p.date_reponse).length;
+    const enCours=pipeline.filter(p=>p.statut==="Envoyé"||p.statut==="Screening"||p.statut==="Entretien").length;
+    const reponses=pipeline.filter(p=>p.statut==="Screening"||p.statut==="Entretien"||p.statut==="Offre reçue"||p.statut==="Refusé"||p.date_reponse).length;
     const tauxRep=envoyees?Math.round(reponses/envoyees*100):0;
     const tauxEnt=envoyees?Math.round(entretiens_/envoyees*100):0;
     // ancienneté médiane de la pile à trier (métrique robuste, remplace le délai de réponse jugé fragile)
@@ -5526,8 +5598,8 @@
     applyMailAutomations();   // #3 : fait avancer le statut des offres selon les mails reçus
   }
   // ===== #3+#4 AUTOMATISATION : un mail rattaché (confiance HAUTE) fait avancer le statut de la candidature =====
-  const NATURE_STATUS={recu:"Envoyé",entretien:"Entretien",test:"Entretien",offre:"Offre reçue",refus:"Refusé"};
-  const STATUS_RANK={"Envoyé":1,"Entretien":2,"Offre reçue":3};
+  const NATURE_STATUS={recu:"Envoyé",screening:"Screening",entretien:"Entretien",test:"Entretien",offre:"Offre reçue",refus:"Refusé"};
+  const STATUS_RANK={"Envoyé":1,"Screening":2,"Entretien":3,"Offre reçue":4};
   let _autoFlags=null;
   function autoFlags(){ if(!_autoFlags){ try{_autoFlags=new Set(JSON.parse(localStorage.getItem("st_auto_flag")||"[]"));}catch(e){_autoFlags=new Set();} } return _autoFlags; }
   function saveAutoFlags(){ try{ localStorage.setItem("st_auto_flag",JSON.stringify([...autoFlags()])); }catch(e){} }
@@ -5630,7 +5702,8 @@
   const MAIL_NATURE=[
     {key:"offre",label:"Offre / Embauche",color:"var(--gold)",icon:"trophy",kw:["proposition d'embauche","promesse d'embauche","contrat de travail","nous avons le plaisir de vous proposer","ravis de vous proposer","pleased to offer","offer letter","we are delighted to offer","welcome aboard","job offer"]},
     {key:"refus",label:"Refus",color:"var(--red)",icon:"ban",kw:["avons le regret","au regret de","ne pourrons malheureusement","ne donnerons pas suite","n'avons pas retenu","pas retenu votre","candidature n'a pas ete retenue","d'autres candidats","regret to inform","unfortunately","other candidates","not been selected","not to proceed","not moving forward","decided to move forward with other","will not be moving"]},
-    {key:"entretien",label:"Entretien",color:"var(--purple)",icon:"mic",kw:["entretien","entrevue","interview","disponibilites pour un echange","disponibilites pour un entretien","rencontrer nos equipes","suite a notre echange","prochaines etapes","schedule an interview","phone screen","screening call","availability for a call","book a time","calendly","planifier un creneau","next steps","move forward with your application","aimerions vous rencontrer"]},
+    {key:"entretien",label:"Entretien",color:"var(--purple)",icon:"mic",kw:["entretien","entrevue","interview","disponibilites pour un echange","disponibilites pour un entretien","rencontrer nos equipes","suite a notre echange","prochaines etapes","schedule an interview","availability for a call","book a time","calendly","planifier un creneau","next steps","move forward with your application","aimerions vous rencontrer"]},
+    {key:"screening",label:"Screening / Pré-qualif",color:"var(--cyan)",icon:"phone",kw:["echange telephonique","echange rapide","pre-qualification","prequalification","premier echange","point telephonique","court echange","appel de qualification","qualification telephonique","faire connaissance","quelques questions","questionnaire","test de personnalite","bref echange","echange preliminaire","preselection telephonique","phone screen","screening call","pre-screening","prescreening","initial call","first call","quick call","intro call","get to know you","short questionnaire","personality test"]},
     {key:"test",label:"Test / Cas pratique",color:"var(--cyan)",icon:"checklist",kw:["tester vos competences","cas pratique","test technique","etude de cas","exercice technique","coding assessment","technical test","take-home","online assessment","hackerrank","codility"]},
     {key:"recu",label:"Candidature reçue",color:"var(--green)",icon:"check",kw:["candidature recue","accuse de reception","nous avons bien recu","bien recu votre","votre candidature","dossier de candidature","statut de votre candidature","espace candidat","candidate portal","applicant portal","candidate profile","votre profil","application received","your application","thank you for applying","resume received","application status","update on your application","regarding your application","we have received"]},
   ];
@@ -5639,7 +5712,7 @@
   function classifyMail(subject,body,fromEmail){
     // Poids par nature : les issues DÉCISIVES (offre/refus) priment sur les signaux génériques
     // (accusé de réception), pour éviter qu'un objet « Votre candidature » fasse passer un refus pour un accusé.
-    const W={offre:5,refus:5,entretien:3,test:3,recu:1};
+    const W={offre:5,refus:5,entretien:3,test:3,screening:2,recu:1};
     const subj=normTxt(subject), bod=normTxt(body);
     let best=MAIL_NATURE_OTHER, bestScore=0;
     for(const b of MAIL_NATURE){

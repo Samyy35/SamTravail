@@ -211,6 +211,34 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  // ----- MODE SOURCING : liste d'entreprises pertinentes (découverte), token-efficient + anti-doublons -----
+  if (mode === "sourcing") {
+    const secteur = clean(body.secteur), ville = clean(body.ville), poste = clean(body.poste);
+    const exclude = Array.isArray(body.exclude) ? body.exclude.slice(0, 60).map(x => ("" + x).slice(0, 40)).filter(Boolean).join(", ") : "";
+    const sysS =
+      "Tu es un expert du sourcing d'entreprises pour la recherche d'emploi (France/Europe). " +
+      'Reponds UNIQUEMENT par un objet JSON valide : {"companies":[{"nom":"","ville":"","site":"","contexte":""}]}. ' +
+      "Propose 15 entreprises PERTINENTES et VARIEES (PME, ETI, scale-ups, filiales en croissance ou qui recrutent), PAS seulement les grands groupes connus. " +
+      "'site' = URL du site carriere si tu la connais, sinon le site officiel probable (jamais d'URL inventee farfelue). " +
+      "'contexte' = une phrase courte (activite + pourquoi c'est pertinent). N'invente aucun fait.";
+    const usrS = "Secteur: " + secteur + "\nVille/region: " + ville + "\nType de poste: " + poste +
+      (exclude ? ("\n\nNe propose AUCUNE de ces entreprises deja proposees: " + exclude) : "");
+    try {
+      const out = await callAI(base, key, model,
+        [{ role: "system", content: sysS }, { role: "user", content: usrS }], 1400);
+      if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
+      let c = (out.parsed && out.parsed.choices && out.parsed.choices[0] && out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
+      c = ("" + c).replace(/```json|```/g, "").trim();
+      let d = {}; try { d = JSON.parse(c); } catch (e) {}
+      const list = Array.isArray(d.companies) ? d.companies.slice(0, 20).map(x => ({
+        nom: clean(x && x.nom), ville: clean(x && x.ville), site: clean(x && x.site),
+        contexte: ("" + ((x && x.contexte) || "")).replace(/\s+/g, " ").trim().slice(0, 180),
+      })).filter(x => x.nom) : [];
+      res.status(200).json({ ok: true, companies: list });
+    } catch (e) { res.status(200).json({ ok: false, reason: "ai_error" }); }
+    return;
+  }
+
   // ----- MODE BROUILLON : rédige un court message (relance, etc.) -----
   if (mode === "draft") {
     const kind = "" + (body.kind || "relance");

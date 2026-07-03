@@ -762,6 +762,41 @@
   .cv-fit{font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;}
   .cv-fit .ic{width:14px;height:14px;}
   .cv-fit.ok{color:var(--green);} .cv-fit.over{color:var(--red);}
+  /* Suggestions e-mail (human-in-the-loop) */
+  .kb-suggest{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:#b07d00;background:rgba(255,205,0,.16);border:1px solid rgba(255,205,0,.55);border-radius:8px;padding:3px 8px;margin-bottom:8px;cursor:pointer;}
+  .kb-suggest:hover{background:rgba(255,205,0,.28);}
+  .kb-suggest .ic{width:13px;height:13px;}
+  .pipe-suggest{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#b07d00;background:rgba(255,205,0,.16);border:1px solid rgba(255,205,0,.5);border-radius:20px;padding:1px 8px;margin-left:6px;cursor:pointer;}
+  .pipe-suggest:hover{background:rgba(255,205,0,.28);} .pipe-suggest .ic{width:12px;height:12px;}
+  .ms-offer{font-size:13.5px;padding:9px 12px;background:var(--surface-2);border-radius:10px;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .ms-offer .ms-cur{color:var(--text-mute);font-size:12px;}
+  .ms-mail{border:1px solid var(--border);border-radius:11px;overflow:hidden;}
+  .ms-mail-head{padding:9px 13px;background:var(--surface-2);font-size:13px;border-bottom:1px solid var(--border);} .ms-mail-head .ms-date{color:var(--text-mute);font-weight:400;}
+  .ms-subj{padding:8px 13px 2px;font-weight:600;font-size:13.5px;}
+  .ms-body{padding:2px 13px 12px;font-size:12.5px;color:var(--text-dim);line-height:1.5;max-height:34vh;overflow:auto;white-space:pre-wrap;}
+  /* Capture Marque — pop-up épurée (Apple-like) */
+  .bcap{position:relative;padding:2px 2px 0;}
+  .bcap-x{position:absolute;top:-6px;right:-4px;border:none;background:transparent;color:var(--text-mute);font-size:18px;cursor:pointer;line-height:1;padding:6px;}
+  .bcap-head{display:flex;align-items:center;gap:13px;margin:4px 0 14px;}
+  .bcap-logo{width:52px;height:52px;border-radius:14px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--text-dim);overflow:hidden;flex-shrink:0;}
+  .bcap-logo img{width:100%;height:100%;object-fit:contain;padding:6px;} .bcap-logo.mono img{display:none;}
+  .bcap-name{flex:1;min-width:0;border:none;background:transparent;font-size:21px;font-weight:700;font-family:var(--display);color:var(--text);padding:2px 0;outline:none;border-bottom:1.5px solid transparent;}
+  .bcap-name:focus{border-bottom-color:var(--accent);}
+  .bcap-info{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:22px;margin-bottom:14px;font-size:12px;}
+  .bcap-src{display:inline-flex;align-items:center;gap:4px;font-weight:600;} .bcap-src .ic{width:13px;height:13px;}
+  .bcap-src.ok{color:var(--green);} .bcap-src.none,.bcap-src.load{color:var(--text-mute);}
+  .bcap-chip{display:inline-flex;align-items:center;gap:4px;background:var(--surface-2);border-radius:20px;padding:2px 9px;color:var(--text-dim);font-weight:500;} .bcap-chip .ic{width:12px;height:12px;}
+  .bcap-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px;}
+  .bcap-cell{display:flex;flex-direction:column;gap:4px;} .bcap-cell.full{margin-bottom:11px;}
+  .bcap-lab{font-size:11.5px;font-weight:600;color:var(--text-mute);display:flex;align-items:center;gap:5px;} .bcap-lab .ic{width:13px;height:13px;}
+  .bcap-cell input,.bcap-cell select,.bcap-cell textarea{border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:9px 11px;font-size:14px;font-family:var(--font);color:var(--text);width:100%;box-sizing:border-box;outline:none;transition:border-color .12s;}
+  .bcap-cell input:focus,.bcap-cell select:focus,.bcap-cell textarea:focus{border-color:var(--accent);}
+  .bcap-cell textarea{resize:vertical;line-height:1.45;}
+  .bcap-more{margin:2px 0 4px;border-top:1px solid var(--border);padding-top:10px;}
+  .bcap-more>summary{cursor:pointer;font-size:13px;color:var(--text-dim);font-weight:600;list-style:none;} .bcap-more>summary::-webkit-details-marker{display:none;}
+  .bcap-more>summary span{color:var(--text-mute);font-weight:400;} .bcap-more[open]>summary{margin-bottom:11px;}
+  .bcap-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;}
+  .ci-strip{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;font-size:11.5px;}
   .cv-docx-view{max-height:58vh;overflow:auto;background:#e9e9ec;border:1px solid var(--border);border-radius:8px;padding:12px;}
   .cv-docx-view .docx-wrapper{background:transparent;padding:0;box-shadow:none;gap:12px;}
   .cv-docx-view section.docx{box-shadow:0 1px 6px rgba(0,0,0,.18);}
@@ -1390,7 +1425,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v89</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v91</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -3406,10 +3441,12 @@
     const logoInner=logo?`<img src="${logo}" alt="" onerror="this.parentElement.classList.add('mono');this.parentElement.style.background='${sec.c}1f';this.parentElement.style.color='${sec.c}';this.parentElement.textContent='${ini}';">`:ini;
     const chk=p.checklist||{}; const done=Object.keys(chk).filter(k=>chk[k]).length;
     const STEPS=["Envoyé","Screening","Entretien","Offre reçue","Refusé"]; // « Pas pour moi » retiré, remplacé par le rollback
+    const sug=mailSuggestFor(p.id);
     return `<div class="kb-card" style="border-left-color:${col};">
+      ${sug?`<div class="kb-suggest" onclick="event.stopPropagation();openMailSuggest('${p.id}')" title="Suggestion d'après un e-mail — clique pour valider">${ic("bell")} Suggestion : ${esc(kLabel((KCOLS.find(c=>c.key===sug.status)||{label:sug.status}).label))}</div>`:""}
       <div class="kb-card-head" onclick="openPipeCard('${p.id}')" title="Voir la fiche">
         <div class="kb-logo ${logo?'':'mono'}" style="${logo?'':`background:${sec.c}1f;color:${sec.c};`}">${logoInner}</div>
-        <div class="kb-tt"><div class="kb-poste">${autoFlags().has(String(p.id))?`<span class="kb-auto" title="Statut mis à jour automatiquement d'après un e-mail">🤖</span> `:""}${esc(p.poste||"—")}</div><div class="kb-ent">${esc(p.entreprise||"")}${b?` <span class="ocard-brand" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}</div></div>
+        <div class="kb-tt"><div class="kb-poste">${esc(p.poste||"—")}</div><div class="kb-ent">${esc(p.entreprise||"")}${b?` <span class="ocard-brand" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}</div></div>
       </div>
       <div class="kb-date ${warn?"warn":""}">${p.date_envoi?`${warn?ic("alert"):ic("calendar")} ${new Date(p.date_envoi).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"})}${days!==null?` · J+${days}`:""}`:(days!==null?`${ic("clock")} J+${days}`:`${ic("calendar")} —`)}</div>
       <div class="kb-reveal">
@@ -3448,7 +3485,7 @@
           <span class="pipe-check-ico">${ic(chkDone?"check":"checklist")}</span><span class="pipe-check-n">${done}/${all}</span>
         </button>
         <div class="pipe-main" onclick="openPipeCard('${p.id}')">
-          <div class="pipe-row-top">${star}<span class="pipe-poste">${esc(p.poste||"—")}</span><span class="pipe-ent">${esc(p.entreprise||"")}</span></div>
+          <div class="pipe-row-top">${star}<span class="pipe-poste">${esc(p.poste||"—")}</span><span class="pipe-ent">${esc(p.entreprise||"")}</span>${(function(){const s=mailSuggestFor(p.id);return s?`<span class="pipe-suggest" onclick="event.stopPropagation();openMailSuggest('${p.id}')" title="Suggestion d'après un e-mail">${ic("bell")} ${esc(kLabel((KCOLS.find(c=>c.key===s.status)||{label:s.status}).label))} ?</span>`:"";})()}</div>
           <div class="pipe-row-meta">
             ${p.ville?`<span class="pipe-m">${ic("pin")} ${esc(p.ville)}</span>`:""}
             ${days!==null?`<span class="pipe-m ${warn?"warn":""}">${warn?ic("alert")+" à relancer · ":""}${ic("clock")} ${days} j</span>`:""}
@@ -4451,7 +4488,7 @@
   // bookmarklet "marque" : capture nom + site de la page courante -> ?addBrand=...
   function brandBookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var jn='',jd='';var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!jn;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j],g=0;while(st.length&&!jn&&g<300){g++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=''+(o['@type']||'');if(/Organization|Corporation|LocalBusiness|EducationalOrganization|NewsMediaOrganization|WebSite/i.test(ty)&&(o.name||o.legalName)){jn=o.name||o.legalName;if(o.description)jd=o.description;break;}for(var k in o){var v=o[k];if(v&&typeof v==='object')st.push(v);}}}var raw=jn||M('og:site_name')||M('application-name')||M('twitter:title')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var ATS=/workday|myworkdayjobs|greenhouse|lever[.]co|taleo|icims|smartrecruiters|teamtailor|brassring|successfactors|recruitee|workable|jobvite|ashbyhq|breezy/i;var site='';if(ATS.test(location.hostname)){var rf=document.referrer||'';if(rf&&!ATS.test(rf))site=rf.split('/').slice(0,3).join('/');}else{site=location.origin;if(!site||site==='null'){var cu=((document.querySelector('link[rel=canonical]')||{}).href)||M('og:url')||'';site=cu?cu.split('/').slice(0,3).join('/'):(location.protocol+'//'+location.hostname);}}var desc=(jd||M('og:description')||M('description')||M('keywords')||'').slice(0,400);var blogo='';if(!ATS.test(location.hostname)){blogo=M('og:image')||M('twitter:image')||M('og:logo')||'';}var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc)+'&brandLogo='+encodeURIComponent(blogo)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=520,height=720,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
+    return "javascript:(function(){function M(p){var ms=document.getElementsByTagName('meta');for(var i=0;i<ms.length;i++){var m=ms[i];if((m.getAttribute('property')||m.getAttribute('name'))===p)return m.content||'';}return '';}var jn='',jd='',jc='',js='',ji='',jl='';var sc=document.getElementsByTagName('script');for(var i=0;i<sc.length&&!jn;i++){if((sc[i].type||'').indexOf('ld+json')<0)continue;var j;try{j=JSON.parse(sc[i].textContent);}catch(e){continue;}var st=[j],g=0;while(st.length&&!jn&&g<300){g++;var o=st.shift();if(!o||typeof o!=='object')continue;if(Array.isArray(o)){for(var z=0;z<o.length;z++)st.push(o[z]);continue;}if(o['@graph'])st.push(o['@graph']);var ty=''+(o['@type']||'');if(/Organization|Corporation|LocalBusiness|EducationalOrganization|NewsMediaOrganization|WebSite/i.test(ty)&&(o.name||o.legalName)){jn=o.name||o.legalName;if(o.description)jd=o.description;if(o.numberOfEmployees)js=(typeof o.numberOfEmployees=='object'?(o.numberOfEmployees.value||o.numberOfEmployees.name||''):o.numberOfEmployees);if(o.address&&o.address.addressLocality)jc=o.address.addressLocality;if(o.industry)ji=''+o.industry;if(o.logo)jl=(typeof o.logo=='string'?o.logo:(o.logo.url||''));break;}for(var k in o){var v=o[k];if(v&&typeof v==='object')st.push(v);}}}var raw=jn||M('og:site_name')||M('application-name')||M('twitter:title')||document.title||location.hostname;var name=(''+raw).split(/[|\-–—:•·]/)[0].trim();name=name.replace(/\b(careers?|carri[eè]res?|jobs?|emplois?|recrutement|recruitment|talents?|hiring)\b/ig,' ').replace(/\s{2,}/g,' ').trim().slice(0,60);if(!name)name=location.hostname.replace(/^www./,'').split('.')[0];var ATS=/workday|myworkdayjobs|greenhouse|lever[.]co|taleo|icims|smartrecruiters|teamtailor|brassring|successfactors|recruitee|workable|jobvite|ashbyhq|breezy/i;var site='';if(ATS.test(location.hostname)){var rf=document.referrer||'';if(rf&&!ATS.test(rf))site=rf.split('/').slice(0,3).join('/');}else{site=location.origin;if(!site||site==='null'){var cu=((document.querySelector('link[rel=canonical]')||{}).href)||M('og:url')||'';site=cu?cu.split('/').slice(0,3).join('/'):(location.protocol+'//'+location.hostname);}}var desc=(jd||M('og:description')||M('description')||M('keywords')||'').slice(0,400);var blogo='';if(!ATS.test(location.hostname)){blogo=jl||M('og:image')||M('twitter:image')||M('og:logo')||'';}var u='"+origin+"/?addBrand='+encodeURIComponent(name)+'&brandSite='+encodeURIComponent(site)+'&brandDesc='+encodeURIComponent(desc)+'&brandLogo='+encodeURIComponent(blogo)+'&brandCity='+encodeURIComponent(jc)+'&brandSize='+encodeURIComponent(js)+'&brandSectorHint='+encodeURIComponent(ji)+'&capture=1';var w;try{window.addEventListener('message',function(ev){if(ev&&ev.data==='st-close'&&w){try{w.close();}catch(e){}}});}catch(e){}w=window.open(u,'samtravail_capture','width=520,height=720,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}})();";
   }
   // tri de la galerie — défaut : marque la plus anciennement visitée (à revisiter en priorité)
   let reveSort="ancienne", reveQuery="";
@@ -4704,6 +4741,7 @@
         ${e.ville?`<span class="pc-badge">${ic("pin")} ${esc(e.ville)}</span>`:""}
         <span class="pc-badge">${ic("clock")} ${visiteLbl}</span>
       </div>
+      <div class="ci-strip" id="ci-brand-${e.id}"></div>
       <div class="reve-stars-row">${stars}<span class="reve-stars-lbl">${note?note+"/5":"pas encore notée"}</span></div>
       ${e.description?`<div class="brand-desc">${esc(e.description)}</div>`:""}
       <div class="pc-links">
@@ -4734,6 +4772,83 @@
       </div>`;
     document.getElementById("modalBg").classList.add("open");
     if(e.site)loadSitePreview(e.site);
+    if(e.entreprise)loadCompanyInto("ci-brand-"+e.id, e.entreprise);   // infos officielles (effectif/activité/création) en direct
+  }
+  // ===== Capture Marque — pop-up épurée (Apple-like) + enrichissement fiable (annuaire officiel FR + JSON-LD) =====
+  let _capBrand=null, _capNote=0;
+  function faviconFor(site){ try{ const h=new URL((""+site).startsWith("http")?site:"https://"+site).hostname.replace(/^www\./,""); return h?"https://www.google.com/s2/favicons?sz=128&domain="+encodeURIComponent(h):""; }catch(e){ return ""; } }
+  function openBrandCapture(d){
+    d=d||{}; _capBrand=d; _capNote=0;
+    const box=document.getElementById("modalBox"); box.classList.remove("wide");
+    const ini=esc((d.entreprise||"?").trim().slice(0,1).toUpperCase());
+    const logo=d.logo||(d.site?faviconFor(d.site):"");
+    const secs=mergedSectors();
+    box.innerHTML=`<div class="bcap">
+      <button class="bcap-x" onclick="closeModal()" aria-label="Fermer">✕</button>
+      <div class="bcap-head">
+        <div class="bcap-logo ${logo?"":"mono"}">${logo?`<img src="${logo}" alt="" onerror="this.parentElement.classList.add('mono');this.parentElement.textContent='${ini}';">`:ini}</div>
+        <input class="bcap-name" id="bc-entreprise" value="${esc(d.entreprise||"")}" placeholder="Nom de l'entreprise" autocomplete="off">
+      </div>
+      <div class="bcap-info" id="bc-gouv"></div>
+      <div class="bcap-grid">
+        <div class="bcap-cell"><span class="bcap-lab">${ic("building")} Secteur</span><input id="bc-secteur" list="__bcsec" value="${esc(d.secteur||"")}" placeholder="—" autocomplete="off"><datalist id="__bcsec">${secs.map(o=>`<option value="${esc(o)}"></option>`).join("")}</datalist></div>
+        <div class="bcap-cell"><span class="bcap-lab">${ic("pin")} Ville</span><input id="bc-ville" value="${esc(d.ville||"")}" placeholder="—" autocomplete="off"></div>
+      </div>
+      <div class="bcap-cell full"><span class="bcap-lab">${ic("link")} Site</span><input id="bc-site" value="${esc(d.site||"")}" placeholder="—" autocomplete="off"></div>
+      <div class="bcap-cell full"><span class="bcap-lab">${ic("doc")} Description</span><textarea id="bc-description" rows="2" placeholder="Ce que fait l'entreprise…">${esc(d.description||"")}</textarea></div>
+      <details class="bcap-more"><summary>Détails <span>(facultatif)</span></summary>
+        <div class="bcap-grid">
+          <div class="bcap-cell"><span class="bcap-lab">Statut</span><select id="bc-statut"><option>À explorer</option><option>À postuler</option><option>Postulé</option></select></div>
+          <div class="bcap-cell"><span class="bcap-lab">Ma note</span><div class="star-input" id="bc-stars">${[1,2,3,4,5].map(n=>`<button type="button" class="star-btn" data-n="${n}" onclick="bcapStar(${n})">${ic("star")}</button>`).join("")}</div></div>
+        </div>
+        <div class="bcap-cell full"><span class="bcap-lab">Pourquoi / notes</span><textarea id="bc-pourquoi" rows="2" placeholder="Pourquoi cette boîte t'intéresse…"></textarea></div>
+      </details>
+      <div class="bcap-actions">
+        <button class="btn ghost" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-validate bcap-save" onclick="saveBrandCapture()">${ic("check")}<span>Ajouter aux marques</span></button>
+      </div>
+    </div>`;
+    document.getElementById("modalBg").classList.add("open");
+    enrichBrandCapture(d);
+  }
+  function bcapStar(n){ _capNote=(_capNote===n?0:n); const box=document.getElementById("bc-stars"); if(box)box.querySelectorAll(".star-btn").forEach(b=>b.classList.toggle("on",parseInt(b.dataset.n)<=_capNote)); }
+  async function enrichBrandCapture(d){
+    const strip=document.getElementById("bc-gouv"); if(!strip)return;
+    const name=d&&d.entreprise; if(!name){ strip.innerHTML=""; return; }
+    strip.innerHTML='<span class="bcap-src load"><span class="spinner sp-s"></span> Recherche annuaire officiel…</span>';
+    let data=null; try{ data=await fetchCompany(name); }catch(e){}
+    if(!document.getElementById("bc-gouv"))return;                     // modale fermée entre-temps
+    const fs=document.getElementById("bc-secteur"), fv=document.getElementById("bc-ville");
+    if(data){                                                          // entreprise FR trouvée à l'annuaire = source officielle fiable
+      if(fs && !fs.value && data.activite){ const sc=detectSector({entreprise:name,description:data.activite}); fs.value=sc.key!=="Autre"?sc.key:(""+data.activite).slice(0,42); }
+      if(fv && !fv.value && data.ville_siege) fv.value=data.ville_siege;
+      const bits=[];
+      if(data.effectif && data.effectif!=="Non renseigné" && data.effectif!=="n.c.") bits.push(`<span class="bcap-chip">${ic("building")} ${esc(data.effectif)}</span>`);
+      if(data.activite) bits.push(`<span class="bcap-chip">${ic("layers")} ${esc(data.activite)}</span>`);
+      if(data.date_creation) bits.push(`<span class="bcap-chip">${ic("calendar")} depuis ${esc((""+data.date_creation).slice(0,4))}</span>`);
+      strip.innerHTML=`<span class="bcap-src ok">${ic("check")} Annuaire officiel (INSEE)</span>`+bits.join("");
+    } else {                                                           // étranger : on montre les indices du site (JSON-LD) s'il y en a, sinon note discrète
+      const bits=[];
+      if(d.size) bits.push(`<span class="bcap-chip">${ic("building")} ${esc((""+d.size).slice(0,24))} salariés</span>`);
+      if(d.industry) bits.push(`<span class="bcap-chip">${ic("layers")} ${esc((""+d.industry).slice(0,40))}</span>`);
+      strip.innerHTML=bits.length?(`<span class="bcap-src ok">${ic("check")} Infos du site</span>`+bits.join("")):`<span class="bcap-src none">${ic("info")} Pas de fiche officielle (entreprise étrangère) — complète à la main si besoin</span>`;
+    }
+  }
+  async function saveBrandCapture(){
+    const g=id=>((document.getElementById(id)||{}).value||"").trim();
+    const entreprise=g("bc-entreprise");
+    if(!entreprise){ flashCenter("Le nom de l'entreprise est requis.","info"); return; }
+    if(!sb){ flashCenter("Pas de connexion à la base.","info"); return; }
+    let site=g("bc-site"); if(isAtsHost(site)) site="";
+    const obj={ entreprise, site:site||null, secteur:g("bc-secteur")||null, ville:g("bc-ville")||null,
+      description:g("bc-description")||null, logo:(_capBrand&&_capBrand.logo)||null,
+      statut:g("bc-statut")||"À explorer", pourquoi:g("bc-pourquoi")||null, note:_capNote||null };
+    const btn=document.querySelector(".bcap-save"); if(btn){ btn.disabled=true; btn.innerHTML='<span class="spinner sp-s"></span> Ajout…'; }
+    const res=await _saveRowWithSchemaRetry("entreprises_reve", Object.assign({},obj), null);
+    if(res && res.error){ if(btn){ btn.disabled=false; btn.innerHTML=ic("check")+"<span>Ajouter aux marques</span>"; } flashCenter("Échec : "+(res.error.message||res.error),"info"); return; }
+    if(window._captureMode){ flashCenter("Marque ajoutée ✓"); captureFinish(); return; }   // ferme la pop-up de capture
+    closeModal(); flashCenter("« "+entreprise+" » ajoutée ✓");
+    try{ await loadAll(); refreshAll(); }catch(e){}
   }
 
   // ===== FORMATAGE DESCRIPTION : Niveau 1 (algo garanti) =====
@@ -5967,9 +6082,15 @@
     if(sb){ try{ await sb.from("pipeline").update(patch).eq("id",p.id); }catch(e){} }
     return true;
   }
+  // ===== HUMAN-IN-THE-LOOP : l'app SUGGÈRE le changement de statut (badge), l'utilisateur valide. =====
+  let _mailSuggest=null;
+  function mailSuggest(){ if(!_mailSuggest){ try{_mailSuggest=JSON.parse(localStorage.getItem("st_mail_suggest")||"{}")||{};}catch(e){_mailSuggest={};} } return _mailSuggest; }
+  function saveMailSuggest(){ try{ localStorage.setItem("st_mail_suggest",JSON.stringify(mailSuggest())); }catch(e){} }
+  function mailSuggestFor(pid){ return mailSuggest()[String(pid)]||null; }
+  function mailSuggestCount(){ return Object.keys(mailSuggest()).length; }
   async function applyMailAutomations(){
     let done; try{ done=new Set(JSON.parse(localStorage.getItem("st_mail_auto")||"[]")); }catch(e){ done=new Set(); }
-    let n=0, touched=false;
+    let nBlind=0, nSug=0, touched=false, sugTouched=false; const sug=mailSuggest();
     for(const m of syncedMail){
       if(done.has(m.id)) continue;
       done.add(m.id); touched=true;
@@ -5978,11 +6099,53 @@
       const target=NATURE_STATUS[((m._nature||{}).key)]; if(!target) continue;
       const p=pipeline.find(x=>String(x.id)===String(mt.ref&&mt.ref.id)); if(!p) continue;
       if(p.statut==="Refusé"||p.statut==="Non intéressé") continue;       // dossier clos : on ne réanime pas
-      const apply = target==="Refusé" ? true : (STATUS_RANK[target]||0)>(STATUS_RANK[p.statut]||0);  // jamais de régression
-      if(apply && await _autoSetPipeStatus(p,target)){ autoFlags().add(String(p.id)); n++; }
+      const forward = target==="Refusé" ? true : (STATUS_RANK[target]||0)>(STATUS_RANK[p.statut]||0);  // jamais de régression
+      if(!forward) continue;
+      if(target==="Envoyé"){                                             // simple accusé de réception = faible enjeu -> auto conservé (souvent no-op)
+        if(await _autoSetPipeStatus(p,target)) nBlind++;
+        continue;
+      }
+      // statuts à ENJEU (Screening / Entretien / Offre reçue / Refusé) -> SUGGESTION, pas d'application aveugle
+      sug[String(p.id)]={ status:target, nature:(m._nature&&m._nature.key)||"", at:new Date().toISOString(),
+        email:{ subject:m.subject||"", from_name:m.from_name||"", from_email:m.from_email||"", received_at:m.received_at||"", body:(""+(m.body||"")).slice(0,4000) } };
+      sugTouched=true; nSug++;
     }
     if(touched){ try{ localStorage.setItem("st_mail_auto",JSON.stringify([...done])); }catch(e){} }
-    if(n){ saveAutoFlags(); refreshAll(); flashCenter(n+" candidature(s) mise(s) à jour auto 🤖","info"); }
+    if(sugTouched) saveMailSuggest();
+    if(nBlind||nSug) refreshAll();
+    if(nSug) flashCenter(nSug+" suggestion(s) de statut à valider 💡","info");
+  }
+  // Ouvre la fiche de suggestion : l'e-mail + Valider / Ignorer
+  function openMailSuggest(pid){
+    const p=pipeline.find(x=>String(x.id)===String(pid)), s=mailSuggestFor(pid);
+    if(!p||!s){ closeModal(); return; }
+    const stLabel=kLabel((KCOLS.find(c=>c.key===s.status)||{label:s.status}).label);
+    const curLabel=kLabel((KCOLS.find(c=>c.key===p.statut)||{label:p.statut}).label);
+    const e=s.email||{}; const when=e.received_at?new Date(e.received_at).toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"}):"";
+    const box=document.getElementById("modalBox"); box.classList.remove("wide");
+    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("bell")} Suggestion de statut</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">D'après un e-mail reçu, cette candidature passerait à <b style="color:${pipeColor(s.status)}">${esc(stLabel)}</b>. Rien n'est modifié sans ton feu vert.</p>
+      <div class="ms-offer">${ic("send")} <b>${esc(p.poste||"—")}</b> · ${esc(p.entreprise||"")} <span class="ms-cur">actuel : ${esc(curLabel)}</span></div>
+      <div class="ms-mail">
+        <div class="ms-mail-head"><b>${esc(e.from_name||e.from_email||"Expéditeur")}</b>${when?` <span class="ms-date">· ${when}</span>`:""}</div>
+        <div class="ms-subj">${esc(e.subject||"(sans objet)")}</div>
+        <div class="ms-body">${esc((e.body||"").slice(0,1600))}</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn ghost" onclick="dismissMailSuggest('${esc(String(pid))}')">${ic("ban")}<span>Ignorer</span></button>
+        <button class="btn btn-validate" onclick="validateMailSuggest('${esc(String(pid))}')">${ic("check")}<span>Valider → ${esc(stLabel)}</span></button>
+      </div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  async function validateMailSuggest(pid){
+    const p=pipeline.find(x=>String(x.id)===String(pid)), s=mailSuggestFor(pid);
+    if(p&&s){ try{ await _autoSetPipeStatus(p,s.status); }catch(e){} }
+    delete mailSuggest()[String(pid)]; saveMailSuggest();
+    closeModal(); refreshAll(); flashCenter("Statut mis à jour ✓");
+  }
+  function dismissMailSuggest(pid){
+    delete mailSuggest()[String(pid)]; saveMailSuggest();
+    closeModal(); refreshAll(); flashCenter("Suggestion ignorée","info");
   }
   async function addPastedEmail(){
     const ta=document.getElementById("mailPasteInput"); const raw=ta?ta.value:"";
@@ -6396,26 +6559,12 @@ alter table emails_sync disable row level security;</pre>
       let nom=cleanBrandName(nomRaw);
       history.replaceState({},"",window.location.pathname);
       setView("reve");
-      const sec=detectSector({entreprise:nom,description:site+" "+descB});
-      let secteur=sec.key==="Autre"?"":sec.key;
-      // Niveau 1 (auto) : description courte propre depuis la meta scrappée (sans IA)
+      const cityB=params.get("brandCity")||"", sizeB=params.get("brandSize")||"", indB=params.get("brandSectorHint")||"";
+      const sec=detectSector({entreprise:nom,description:indB+" "+site+" "+descB});
+      const secteur=sec.key==="Autre"?"":sec.key;
       const descN1=cleanBrandDesc(descB);
-      openModal("reve",{entreprise:nom,site:site,secteur:secteur,ville:"",description:descN1,logo:logoB});
-      // Enrichissement IA en ARRIÈRE-PLAN (Niveau 2) : complète le formulaire ouvert sans le bloquer (boussole pendant ce temps)
-      if(AI_ASSIST) showCaptureLoader("Analyse et optimisation en cours…");
-      (async()=>{
-        try{
-          const aj=await aiSort({mode:"brand", url:site, text:(nom+"\n"+descB).slice(0,4000)});
-          if(!(aj&&aj.brand)) return;
-          const b=aj.brand, g=id=>document.getElementById(id);
-          const fE=g("m-entreprise"), fS=g("m-secteur"), fV=g("m-ville"), fD=g("m-description");
-          if(b.entreprise && b.entreprise.length<=60 && fE && fE.value===nom) fE.value=b.entreprise;
-          if(b.secteur && fS && (!fS.value||fS.value===secteur)){ for(const op of fS.options){ if(op.value===b.secteur||op.text===b.secteur){fS.value=op.value;break;} } }
-          if(b.ville && fV && !fV.value) fV.value=b.ville;
-          // description IA = phrase courte et nette : remplace le Niveau 1 s'il est vide, trop long ou brouillon
-          if(b.description && fD && (!fD.value || fD.value.length>200)) fD.value=b.description;
-        } finally { hideCaptureLoader(); }
-      })();
+      // Pop-up épurée : enrichissement FIABLE (annuaire officiel FR + indices JSON-LD du site), plus d'IA qui invente
+      openBrandCapture({entreprise:nom, site:site, secteur:secteur, ville:cityB, description:descN1, logo:logoB, size:sizeB, industry:indB});
     }
     // NB : on ne lance plus la recherche API automatiquement à l'ouverture
     // (économise les quotas) — l'écran "Trouver" invite à cliquer "Chercher".

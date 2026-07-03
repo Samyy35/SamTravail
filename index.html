@@ -728,16 +728,20 @@
   .marker-cluster-small div,.marker-cluster-medium div,.marker-cluster-large div{background:#2c3d63!important;color:#fff!important;font-family:var(--font)!important;font-weight:700!important;}
   /* Export PDF natif (impression) : zone dédiée, isolée à l'impression, format A4 propre */
   #pdfPrintArea{display:none;}
-  /* CV : rendu ALIGNÉ sur l'éditeur (WYSIWYG). Marges via padding (l'@page reste à 0 -> pas d'en-tête/pied du navigateur). */
-  .pdf-doc{font-size:11pt;line-height:1.3;color:#1a1a1a;font-family:'Calibri','Segoe UI','Aptos',Arial,sans-serif;padding:1.4cm 1.5cm;}
-  .pdf-doc h1,.pdf-body h1{font-size:20pt;font-weight:700;margin:.1em 0 .15em;line-height:1.1;letter-spacing:.5pt;}
-  .pdf-doc h2,.pdf-body h2{font-size:12.5pt;font-weight:700;letter-spacing:.6pt;text-transform:uppercase;margin:.7em 0 .3em;padding-bottom:2pt;border-bottom:1px solid #b9b9b9;}
-  .pdf-doc h3,.pdf-body h3{font-size:11pt;font-weight:700;margin:.5em 0 .15em;}
-  .pdf-doc .pdf-meta{color:#555;font-size:9.5pt;margin-bottom:12pt;}
-  .pdf-doc p,.pdf-body p{margin:0 0 6pt;text-align:left;}
-  .pdf-body ul{list-style:disc outside;margin:.25em 0 6pt;padding-left:22pt;} .pdf-body ol{list-style:decimal outside;margin:.25em 0 6pt;padding-left:22pt;} .pdf-body li{margin:0 0 2pt;}
+  /* CV : rendu MINIMAL et serré, on laisse parler les styles collés depuis Word (WYSIWYG). Marges via padding (@page à 0 -> pas d'en-tête navigateur). */
+  .pdf-doc{font-size:11pt;line-height:1.15;color:#000;font-family:Calibri,'Segoe UI',Arial,sans-serif;padding:1.2cm 1.3cm;}
+  .pdf-doc.compact{line-height:1.02;padding:0.9cm 1.1cm;}
+  .pdf-doc h1,.pdf-body h1{font-size:18pt;font-weight:700;margin:0 0 2pt;line-height:1.1;}
+  .pdf-doc h2,.pdf-body h2{font-size:12pt;font-weight:700;margin:7pt 0 2pt;line-height:1.1;}
+  .pdf-doc h3,.pdf-body h3{font-size:11pt;font-weight:700;margin:5pt 0 1pt;}
+  .pdf-doc .pdf-meta{color:#555;font-size:9.5pt;margin-bottom:8pt;}
+  .pdf-doc p,.pdf-body p{margin:0 0 4pt;text-align:left;}
+  .pdf-doc.compact p,.pdf-doc.compact .pdf-body p{margin:0 0 2pt;} .pdf-doc.compact h2{margin:4pt 0 1pt;}
+  .pdf-body ul{list-style:disc outside;margin:2pt 0 4pt;padding-left:20pt;} .pdf-body ol{list-style:decimal outside;margin:2pt 0 4pt;padding-left:20pt;} .pdf-body li{margin:0 0 1pt;}
+  .pdf-doc.compact ul,.pdf-doc.compact ol{margin:1pt 0 2pt;}
   .pdf-body strong,.pdf-body b{font-weight:700;}
-  .cv-acc-zone{background:rgba(255,205,0,.32);border-radius:3px;box-shadow:0 0 0 1.5px rgba(200,150,0,.45);}
+  .pdf-doc>*:first-child,.pdf-body>*:first-child{margin-top:0!important;padding-top:0!important;}
+  .cv-acc-zone{background:rgba(255,214,0,.35);}
   /* Éditeur d'accroche « façon Word » (contenteditable) */
   .rich-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:5px;border:1px solid var(--border);border-bottom:none;border-radius:9px 9px 0 0;background:var(--surface-2);}
   .rt-btn{min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text-dim);cursor:pointer;border-radius:6px;font-size:14px;font-family:var(--font);padding:0 6px;}
@@ -754,6 +758,10 @@
   .cved-fallback{min-height:340px;max-height:52vh;background:#fff;color:#151515;}
   .cved-modes{display:inline-flex;gap:4px;}
   .cved-mark{border-color:var(--gold)!important;} .cved-mark .ic{color:var(--gold);}
+  #cvCompactBtn.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .cv-fit{font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;}
+  .cv-fit .ic{width:14px;height:14px;}
+  .cv-fit.ok{color:var(--green);} .cv-fit.over{color:var(--red);}
   .cv-docx-view{max-height:58vh;overflow:auto;background:#e9e9ec;border:1px solid var(--border);border-radius:8px;padding:12px;}
   .cv-docx-view .docx-wrapper{background:transparent;padding:0;box-shadow:none;gap:12px;}
   .cv-docx-view section.docx{box-shadow:0 1px 6px rgba(0,0,0,.18);}
@@ -1382,7 +1390,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v87</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v89</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -3671,7 +3679,18 @@
     if(btn){ btn.disabled=true; btn.innerHTML='<span class="spinner sp-s"></span> Recherche…'; }
     const aj=await aiSort({mode:"sourcing",secteur,ville,poste,exclude:[..._sourcingSeen].slice(-60)}, 20000);
     if(btn){ btn.disabled=false; btn.innerHTML=ic("sparkle")+"<span>Découvrir avec l'IA du site</span>"; }
-    if(!aj || !aj.companies){ if(res)res.innerHTML='<div class="empty">'+(aj&&aj.reason?("IA indisponible ("+esc(aj.reason)+(aj.status?(" "+aj.status):"")+")"):(aj===null?"IA hors délai":"Aucun résultat"))+' — utilise le prompt externe ci-dessous.</div>'; return; }
+    if(!aj || !aj.companies){
+      let why;
+      if(aj===null) why="IA hors délai (réessaie dans un instant)";
+      else if(aj.reason==="empty") why="l'IA n'a rien renvoyé d'exploitable (réessaie)";
+      else if(aj.reason==="no_key") why="clé IA absente côté serveur (Réglages Vercel)";
+      else if(aj.reason==="ai_error") why="IA indisponible"+(aj.status?(" "+aj.status):"")+(aj.detail?(" — "+esc(aj.detail)):"");
+      else if(aj.reason) why="IA indisponible ("+esc(aj.reason)+")";
+      else why="Aucun résultat";
+      if(res)res.innerHTML='<div class="empty">'+why+' — utilise le <b>prompt à copier</b> juste en dessous (illimité, 0€).</div>';
+      const det=document.querySelector('#modalBox details'); if(det)det.open=true;   // déplie le prompt externe (fallback qui marche)
+      return;
+    }
     const fresh=aj.companies.filter(c=>c&&c.nom && !_sourcingSeen.has(normCompany(c.nom)));
     fresh.forEach(c=>_sourcingSeen.add(normCompany(c.nom)));
     if(fresh.length) saveSourcingSeen();
@@ -3891,9 +3910,9 @@
         toolbar:"undo redo | blocks | bold italic underline | forecolor | alignleft aligncenter alignright alignjustify | bullist numlist | link table pagebreak | removeformat",
         block_formats:"Paragraphe=p; Titre 1=h1; Titre 2=h2; Titre 3=h3",
         entity_encoding:"raw",
-        content_style:"body{font-family:Calibri,'Segoe UI','Aptos',Arial,sans-serif;font-size:11pt;line-height:1.3;color:#1a1a1a;max-width:800px;margin:14px auto;padding:0 12px;} h1{font-size:20pt;font-weight:700;letter-spacing:.5px;margin:.1em 0 .15em;} h2{font-size:12.5pt;font-weight:700;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid #b9b9b9;padding-bottom:2px;margin:.7em 0 .3em;} h3{font-size:11pt;font-weight:700;margin:.5em 0 .15em;} ul,ol{margin:.25em 0 .3em 1em;padding-left:20px;} li{margin:0 0 2px;} p{margin:0 0 6pt;} .cv-acc-zone{background:rgba(255,205,0,.32);border-radius:3px;box-shadow:0 0 0 1.5px rgba(200,150,0,.45);padding:0 1px;}",
+        content_style:"body{font-family:Calibri,'Segoe UI','Aptos',Arial,sans-serif;font-size:11pt;line-height:1.15;color:#000;max-width:760px;margin:12px auto;padding:0 14px;} h1{font-size:18pt;font-weight:700;margin:0 0 2pt;} h2{font-size:12pt;font-weight:700;margin:7pt 0 2pt;} h3{font-size:11pt;font-weight:700;margin:5pt 0 1pt;} ul,ol{margin:2pt 0 4pt;padding-left:20px;} li{margin:0 0 1px;} p{margin:0 0 4pt;} body>*:first-child{margin-top:0;} .cv-acc-zone{background:rgba(255,214,0,.4);}",
         browser_spellcheck:true, paste_block_drop:false,
-        init_instance_callback:(ed)=>{ try{ ed.setContent(html||""); }catch(e){} const s2=document.getElementById("cvedStatus"); if(s2)s2.innerHTML=(statusExtra||(ic("check")+" Éditeur prêt — édite comme dans Word, puis exporte.")); }
+        init_instance_callback:(ed)=>{ try{ ed.setContent(html||""); }catch(e){} const s2=document.getElementById("cvedStatus"); if(s2)s2.innerHTML=(statusExtra||(ic("check")+" Éditeur prêt — édite comme dans Word, puis exporte.")); try{ ed.on("input NodeChange",()=>{ clearTimeout(window._cvFitT); window._cvFitT=setTimeout(function(){try{cvEdCheckFit();}catch(e){}},500); }); }catch(e){} }
       });
     }).catch(()=>{
       if(_cvEd)_cvEd.fallback=true;
@@ -3943,7 +3962,9 @@
     box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("doc")} Ton CV pour cette offre${titleBits}</h3><button class="x" onclick="closeModal()">✕</button></div>
       <p class="modal-sub">L'accroche est déjà en place dans ton CV. Retouche si besoin, puis <b>télécharge le PDF</b>.${noZone?' <span class="cv-over">Astuce : dans Mon profil, définis ta « zone accroche » pour qu\'elle se place au bon endroit.</span>':''}</p>
       <div class="cved-bar">${langBtns}
+        <button class="btn ghost sm" id="cvCompactBtn" onclick="cvEdToggleCompact()" title="Resserre l'interligne pour tenir sur 1 page">${ic("layers")}<span>Compact</span></button>
         <button class="btn ghost sm" onclick="cvEdReset()" title="Remettre le CV modèle + l'accroche à jour">${ic("undo")}<span>Réinitialiser</span></button>
+        <span class="cv-fit" id="cvFit"></span>
         <span class="draft-status" id="cvedStatus"></span></div>
       <div id="cvedWrap"><textarea id="cvEditor"></textarea></div>
       <div class="modal-actions"><button class="btn danger" onclick="closeModal()">Fermer</button>
@@ -3952,6 +3973,7 @@
         <button class="btn btn-validate" onclick="cvEdExportPdf()" title="PDF net, texte lisible par les ATS">${ic("doc")}<span>Télécharger le PDF</span></button></div>`;
     document.getElementById("modalBg").classList.add("open");
     mountCvTiny(startHtml, ic("check")+" CV prêt — retouche si besoin, puis « Télécharger le PDF ».");
+    setTimeout(cvEdCheckFit, 1300);
   }
   // (v87 : docx-preview / rendu « Fidèle » retiré — un seul éditeur HTML, plus simple et fiable)
   function accrocheInline(accHtml){
@@ -4052,6 +4074,7 @@
     if(_cvEd.fallback){ const e=document.getElementById("cvEditorCE"); if(e)e.innerHTML=html; }
     else { try{ const ed=tinymce.get("cvEditor"); if(ed)ed.setContent(html); }catch(e){} }
     const st=document.getElementById("cvedStatus"); if(st)st.innerHTML=ic("check")+" CV + accroche refusionnés.";
+    setTimeout(cvEdCheckFit,150);
   }
   function cvEdInsertAccroche(){
     if(!_cvEd)return;
@@ -4059,11 +4082,34 @@
     if(_cvEd.fallback){ const e=document.getElementById("cvEditorCE"); if(e){ e.focus(); try{document.execCommand("insertHTML",false,acc);}catch(x){e.innerHTML+=acc;} } return; }
     try{ const ed=tinymce.get("cvEditor"); if(ed){ ed.focus(); ed.insertContent(acc); } }catch(e){}
   }
+  // Retire les paragraphes vides en tête/pied (l'« espace » au-dessus du CV)
+  function cvTrimHtml(html){
+    return (html||"").replace(/^(?:\s*<p[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>)+/i,"").replace(/(?:<p[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>\s*)+$/i,"").trim();
+  }
+  // Mesure le nb de pages RÉEL d'un CV HTML rendu à la largeur A4 (identique à l'impression)
+  function cvMeasurePages(html, compact){
+    let p=document.getElementById("cvFitProbe");
+    if(!p){ p=document.createElement("div"); p.id="cvFitProbe"; p.style.cssText="position:fixed;left:-9999px;top:0;visibility:hidden;z-index:-1;"; document.body.appendChild(p); }
+    p.innerHTML='<div class="pdf-doc'+(compact?" compact":"")+'" style="width:21cm;box-sizing:border-box;"><div class="pdf-body">'+html+"</div></div>";
+    const h=p.firstChild.scrollHeight, pageH=29.7*37.7952;   // A4 en px (~1123)
+    return { pages:Math.max(1,Math.ceil((h-8)/pageH)), h:Math.round(h) };
+  }
+  function cvEdCheckFit(){
+    const el=document.getElementById("cvFit"); if(!el||!_cvEd)return;
+    const r=cvMeasurePages(cvTrimHtml(cvStripZone(cvEdGetHtml())), !!_cvEd.compact);
+    if(r.pages<=1){ el.className="cv-fit ok"; el.innerHTML=ic("check")+" Tient sur 1 page"; }
+    else { el.className="cv-fit over"; el.innerHTML=ic("alert")+" "+r.pages+" pages — active « Compact » ou raccourcis l'accroche"; }
+  }
+  function cvEdToggleCompact(){
+    if(!_cvEd)return; _cvEd.compact=!_cvEd.compact;
+    const b=document.getElementById("cvCompactBtn"); if(b)b.classList.toggle("on",_cvEd.compact);
+    cvEdCheckFit();
+  }
   function cvEdExportPdf(){
-    const html=cvStripZone(cvEdGetHtml());
+    const html=cvTrimHtml(cvStripZone(cvEdGetHtml()));
     if(!html.replace(/<[^>]*>/g,"").trim()){ flashCenter("L'éditeur est vide.","info"); return; }
     let area=document.getElementById("pdfPrintArea"); if(!area){ area=document.createElement("div"); area.id="pdfPrintArea"; document.body.appendChild(area); }
-    area.innerHTML=`<div class="pdf-doc"><div class="pdf-body">${html}</div></div>`;
+    area.innerHTML=`<div class="pdf-doc${_cvEd&&_cvEd.compact?" compact":""}"><div class="pdf-body">${html}</div></div>`;
     // supprime l'en-tête/pied du navigateur : @page marge 0 (les marges sont dans .pdf-doc) + titre vidé le temps de l'impression
     const prevTitle=document.title; document.title=" ";
     let ps=document.getElementById("tmpPageStyle"); if(!ps){ ps=document.createElement("style"); ps.id="tmpPageStyle"; document.head.appendChild(ps); }

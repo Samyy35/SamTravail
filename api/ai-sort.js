@@ -90,6 +90,31 @@ async function callAI(base, key, model, messages, maxTokens, opts) {
   return { status: r.status, ok: r.ok, raw: raw, parsed: parsed };
 }
 
+// Extraction ROBUSTE d'une liste d'entreprises depuis la reponse IA
+// (tolere les ```fences```, la prose autour, et un JSON TRONQUE par max_tokens).
+function parseCompanies(content) {
+  let s = ("" + (content || "")).replace(/```json|```/gi, "").trim();
+  const i = s.indexOf("{"); if (i > 0) s = s.slice(i);
+  const safe = (x) => { try { return JSON.parse(x); } catch (e) { return null; } };
+  // 1) parse direct
+  let d = safe(s);
+  if (d && Array.isArray(d.companies)) return d.companies;
+  // 2) reparation d'un tableau tronque : on coupe au dernier "}" complet puis on referme
+  const a = s.indexOf("[");
+  if (a >= 0) {
+    const frag = s.slice(a);
+    const last = frag.lastIndexOf("}");
+    if (last > 0) {
+      d = safe('{"companies":' + frag.slice(0, last + 1) + "]}");
+      if (d && Array.isArray(d.companies)) return d.companies;
+    }
+  }
+  // 3) dernier recours : on recupere chaque objet contenant "nom"
+  const out = []; const re = /\{[^{}]*?"nom"\s*:\s*"[^"]+"[^{}]*?\}/g; let m;
+  while ((m = re.exec(s))) { const o = safe(m[0]); if (o && o.nom) out.push(o); }
+  return out;
+}
+
 module.exports = async function handler(req, res) {
   const key = process.env.AI_KEY;
   const base = (process.env.AI_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/$/, "");
@@ -136,8 +161,8 @@ module.exports = async function handler(req, res) {
   const text = ("" + (body.text || "")).slice(0, 6000);
   const url = "" + (body.url || "");
   const mode = "" + (body.mode || "offer");
-  // le mode "draft" travaille à partir de "context", le mode "format" à partir de "description"
-  if (mode !== "draft" && mode !== "format" && !text.trim()) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
+  // le mode "draft" travaille à partir de "context", "format" de "description", "sourcing" de secteur/ville/poste (pas de "text")
+  if (mode !== "draft" && mode !== "format" && mode !== "sourcing" && !text.trim()) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
 
   const clean = (v) => ("" + (v == null ? "" : v)).replace(/\s+/g, " ").trim().slice(0, 200);
 
@@ -217,25 +242,28 @@ module.exports = async function handler(req, res) {
     const exclude = Array.isArray(body.exclude) ? body.exclude.slice(0, 60).map(x => ("" + x).slice(0, 40)).filter(Boolean).join(", ") : "";
     const sysS =
       "Tu es un expert du sourcing d'entreprises pour la recherche d'emploi (France/Europe). " +
-      'Reponds UNIQUEMENT par un objet JSON valide : {"companies":[{"nom":"","ville":"","site":"","contexte":""}]}. ' +
-      "Propose 15 entreprises PERTINENTES et VARIEES (PME, ETI, scale-ups, filiales en croissance ou qui recrutent), PAS seulement les grands groupes connus. " +
-      "'site' = URL du site carriere si tu la connais, sinon le site officiel probable (jamais d'URL inventee farfelue). " +
-      "'contexte' = une phrase courte (activite + pourquoi c'est pertinent). N'invente aucun fait.";
+      'Reponds UNIQUEMENT par un objet JSON valide et COMPACT, sans aucun texte autour : {"companies":[{"nom":"","ville":"","site":"","contexte":""}]}. ' +
+      "Propose EXACTEMENT 12 entreprises PERTINENTES et VARIEES (PME, ETI, scale-ups, filiales en croissance ou qui recrutent), PAS seulement les grands groupes connus. " +
+      "'site' = domaine officiel probable (ex: entreprise.com), jamais d'URL inventee farfelue. " +
+      "'contexte' = UNE phrase courte (12 mots max : activite + pourquoi pertinent). N'invente aucun fait.";
     const usrS = "Secteur: " + secteur + "\nVille/region: " + ville + "\nType de poste: " + poste +
       (exclude ? ("\n\nNe propose AUCUNE de ces entreprises deja proposees: " + exclude) : "");
     try {
       const out = await callAI(base, key, model,
-        [{ role: "system", content: sysS }, { role: "user", content: usrS }], 1400);
-      if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
-      let c = (out.parsed && out.parsed.choices && out.parsed.choices[0] && out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
-      c = ("" + c).replace(/```json|```/g, "").trim();
-      let d = {}; try { d = JSON.parse(c); } catch (e) {}
-      const list = Array.isArray(d.companies) ? d.companies.slice(0, 20).map(x => ({
+        [{ role: "system", content: sysS }, { role: "user", content: usrS }], 2400);
+      if (!out.ok) {
+        res.status(200).json({ ok: false, reason: "ai_error", status: out.status,
+          detail: diagnose(out.status, (out.parsed && out.parsed.error && out.parsed.error.message) || out.raw) });
+        return;
+      }
+      const content = (out.parsed && out.parsed.choices && out.parsed.choices[0] && out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
+      const list = parseCompanies(content).map(x => ({
         nom: clean(x && x.nom), ville: clean(x && x.ville), site: clean(x && x.site),
         contexte: ("" + ((x && x.contexte) || "")).replace(/\s+/g, " ").trim().slice(0, 180),
-      })).filter(x => x.nom) : [];
+      })).filter(x => x.nom).slice(0, 20);
+      if (!list.length) { res.status(200).json({ ok: false, reason: "empty", got: ("" + content).slice(0, 140) }); return; }
       res.status(200).json({ ok: true, companies: list });
-    } catch (e) { res.status(200).json({ ok: false, reason: "ai_error" }); }
+    } catch (e) { res.status(200).json({ ok: false, reason: "ai_error", detail: ("" + (e && e.message || e)).slice(0, 140) }); }
     return;
   }
 

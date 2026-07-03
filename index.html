@@ -728,16 +728,16 @@
   .marker-cluster-small div,.marker-cluster-medium div,.marker-cluster-large div{background:#2c3d63!important;color:#fff!important;font-family:var(--font)!important;font-weight:700!important;}
   /* Export PDF natif (impression) : zone dédiée, isolée à l'impression, format A4 propre */
   #pdfPrintArea{display:none;}
-  /* CV/accroche : rendu dense « façon CV » (sans-serif, hiérarchie de tailles, sections soulignées, 1 page) */
-  .pdf-doc{font-size:10.5pt;line-height:1.3;color:#1a1a1a;font-family:'Calibri','Segoe UI','Aptos',Arial,sans-serif;}
-  .pdf-doc h1{font-size:20pt;font-weight:700;margin:0 0 3pt;line-height:1.1;letter-spacing:.5pt;}
-  .pdf-doc h2,.pdf-body h2{font-size:11.5pt;font-weight:700;letter-spacing:.6pt;text-transform:uppercase;margin:11pt 0 4pt;padding-bottom:2pt;border-bottom:1px solid #b9b9b9;}
-  .pdf-doc h3,.pdf-body h3{font-size:10.5pt;font-weight:700;margin:7pt 0 2pt;}
+  /* CV : rendu ALIGNÉ sur l'éditeur (WYSIWYG). Marges via padding (l'@page reste à 0 -> pas d'en-tête/pied du navigateur). */
+  .pdf-doc{font-size:11pt;line-height:1.3;color:#1a1a1a;font-family:'Calibri','Segoe UI','Aptos',Arial,sans-serif;padding:1.4cm 1.5cm;}
+  .pdf-doc h1,.pdf-body h1{font-size:20pt;font-weight:700;margin:.1em 0 .15em;line-height:1.1;letter-spacing:.5pt;}
+  .pdf-doc h2,.pdf-body h2{font-size:12.5pt;font-weight:700;letter-spacing:.6pt;text-transform:uppercase;margin:.7em 0 .3em;padding-bottom:2pt;border-bottom:1px solid #b9b9b9;}
+  .pdf-doc h3,.pdf-body h3{font-size:11pt;font-weight:700;margin:.5em 0 .15em;}
   .pdf-doc .pdf-meta{color:#555;font-size:9.5pt;margin-bottom:12pt;}
-  .pdf-doc p,.pdf-body p{margin:0 0 5pt;text-align:left;}
-  .pdf-body ul{margin:0 0 5pt;padding-left:15pt;} .pdf-body li{margin:0 0 2pt;}
-  .pdf-body h1{font-size:20pt;font-weight:700;margin:0 0 3pt;letter-spacing:.5pt;}
+  .pdf-doc p,.pdf-body p{margin:0 0 6pt;text-align:left;}
+  .pdf-body ul{list-style:disc outside;margin:.25em 0 6pt;padding-left:22pt;} .pdf-body ol{list-style:decimal outside;margin:.25em 0 6pt;padding-left:22pt;} .pdf-body li{margin:0 0 2pt;}
   .pdf-body strong,.pdf-body b{font-weight:700;}
+  .cv-acc-zone{background:rgba(255,205,0,.32);border-radius:3px;box-shadow:0 0 0 1.5px rgba(200,150,0,.45);}
   /* Éditeur d'accroche « façon Word » (contenteditable) */
   .rich-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:2px;padding:5px;border:1px solid var(--border);border-bottom:none;border-radius:9px 9px 0 0;background:var(--surface-2);}
   .rt-btn{min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--text-dim);cursor:pointer;border-radius:6px;font-size:14px;font-family:var(--font);padding:0 6px;}
@@ -753,10 +753,17 @@
   #cvedWrap .tox-tinymce{border:1px solid var(--border)!important;border-radius:10px;}
   .cved-fallback{min-height:340px;max-height:52vh;background:#fff;color:#151515;}
   .cved-modes{display:inline-flex;gap:4px;}
+  .cved-mark{border-color:var(--gold)!important;} .cved-mark .ic{color:var(--gold);}
   .cv-docx-view{max-height:58vh;overflow:auto;background:#e9e9ec;border:1px solid var(--border);border-radius:8px;padding:12px;}
   .cv-docx-view .docx-wrapper{background:transparent;padding:0;box-shadow:none;gap:12px;}
   .cv-docx-view section.docx{box-shadow:0 1px 6px rgba(0,0,0,.18);}
   .cv-docx-empty{padding:26px 18px;text-align:center;color:var(--text-dim);font-size:13px;line-height:1.5;}
+  .accroche-count{font-size:11.5px;margin:5px 2px 0;color:var(--text-mute);display:flex;align-items:center;gap:5px;}
+  .accroche-count .ic{width:13px;height:13px;flex-shrink:0;}
+  .accroche-count.warn{color:var(--gold);}
+  .accroche-count.over{color:var(--red);font-weight:600;}
+  .cv-over{color:var(--red);font-weight:600;}
+  .cv-ok1{color:var(--green);}
   @media print{
     #pdfPrintArea.pdf-docx .docx-wrapper{background:transparent!important;padding:0!important;}
     #pdfPrintArea.pdf-docx section.docx{box-shadow:none!important;margin:0 auto!important;}
@@ -792,7 +799,8 @@
     .modal-bg,.sidebar,header{display:none!important;}
     #pdfPrintArea,#pdfPrintArea *{visibility:visible!important;}
     #pdfPrintArea{display:block!important;position:absolute;left:0;top:0;width:100%;}
-    @page{size:A4;margin:1.4cm 1.5cm;}
+    .cv-acc-zone{background:transparent!important;box-shadow:none!important;}
+    @page{size:A4;margin:0;}
   }
   .modal h3{font-family:var(--display);font-size:19px;margin-bottom:16px;}
   .modal .field{margin-bottom:13px;min-width:0;}
@@ -1374,7 +1382,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v85</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v87</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -3751,15 +3759,16 @@
       </div>
       <label class="prof-lab">Accroche <span class="prof-hint">— génère avec l'IA, écris-la, ou <b>colle ici</b> le texte d'une IA externe (ChatGPT / Claude)</span></label>
       ${richToolbar()}
-      <div class="draft-area rich-edit" id="lettreText" contenteditable="true" data-ph="Écris ton accroche, génère-la avec l'IA, ou colle ici le résultat d'une IA externe…">${lettreHtmlFor(c.key)}</div>
-      <button class="btn primary cved-cta" onclick="cvEdFromLettre()" title="Ouvre le CV complet (accroche déjà insérée) dans l'éditeur pour l'ajuster et l'exporter en PDF">${ic("doc")}<span>Éditer le CV (accroche insérée) →</span></button>
+      <div class="draft-area rich-edit" id="lettreText" contenteditable="true" oninput="updateAccrocheCount()" data-ph="Écris ton accroche, génère-la avec l'IA, ou colle ici le résultat d'une IA externe…">${lettreHtmlFor(c.key)}</div>
+      <div class="accroche-count" id="accrocheCount"></div>
       <div class="modal-actions">
         <button class="btn danger" onclick="closeModal()">Fermer</button>
-        <button class="btn ghost" id="lettreCopyBtn" onclick="copyLettre()">${ic("link")}<span>Copier</span></button>
-        <button class="btn ghost" onclick="dlLettre()" title="CV Word (.docx) d'origine + accroche en page suivante">${ic("download")}<span>.docx</span></button>
-        <button class="btn btn-validate" onclick="saveLettre()">${ic("check")}<span>Enregistrer l'accroche</span></button>
+        <button class="btn ghost sm" id="lettreCopyBtn" onclick="copyLettre()">${ic("link")}<span>Copier</span></button>
+        <button class="btn ghost sm" onclick="saveLettre()" title="Garder cette accroche pour l'offre">${ic("save")}<span>Enregistrer l'accroche</span></button>
+        <button class="btn btn-validate" onclick="cvEdFromLettre()" title="Ouvre ton CV avec l'accroche en place, prêt à télécharger en PDF">${ic("doc")}<span>Mon CV en PDF →</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
+    updateAccrocheCount();
   }
   async function genLettre(){
     const c=_lettreCtx; if(!c)return;
@@ -3853,22 +3862,25 @@
     const base=c.lang==="en"?userIntroEn:userIntro;
     return textToHtml(base||"");
   }
-  // Document fusionné = CV modèle (bonne langue) avec {{accroche}} remplacée ; sinon accroche au-dessus du CV ; sinon accroche seule
+  // Zone accroche = <span class="cv-acc-zone">…</span> (définie par SÉLECTION dans l'éditeur). Remplacement STRICT de son contenu.
+  const ACC_ZONE_RX=/(<(\w+)[^>]*class="[^"]*cv-acc-zone[^"]*"[^>]*>)[\s\S]*?(<\/\2>)/i;
+  function cvHasZone(html){ return ACC_ZONE_RX.test(html||"")||/\{\{\s*accroche\s*\}\}/i.test(html||""); }
   function cvMergedHtml(c){
     const tpl=(c.lang==="en"?userCvHtmlEn:userCvHtml)||userCvHtml||"";
-    const acc=cvAccrocheHtml(c);
+    const acc=accrocheInline(cvAccrocheHtml(c));
     if(tpl.replace(/<[^>]*>/g,"").trim()){
-      if(/\{\{\s*accroche\s*\}\}/i.test(tpl)) return tpl.replace(/\{\{\s*accroche\s*\}\}/gi,acc);
-      return acc+"<p></p>"+tpl;
+      if(ACC_ZONE_RX.test(tpl)) return tpl.replace(ACC_ZONE_RX,"$1"+acc+"$3");                                          // remplace le CONTENU de la zone (garde la balise + son style)
+      if(/\{\{\s*accroche\s*\}\}/i.test(tpl)) return tpl.replace(/\{\{\s*accroche\s*\}\}/gi,'<span class="cv-acc-zone">'+acc+"</span>"); // repli ancienne balise
+      return '<p class="cv-acc-zone">'+acc+"</p>"+tpl;                                                                  // aucune zone -> accroche en tête (marquée)
     }
-    return acc;
+    return '<p class="cv-acc-zone">'+acc+"</p>";
   }
   function cvEdGetHtml(){
     if(_cvEd&&_cvEd.fallback){ const e=document.getElementById("cvEditorCE"); return e?e.innerHTML:""; }
     try{ const ed=window.tinymce&&tinymce.get("cvEditor"); if(ed) return ed.getContent(); }catch(e){}
     const t=document.getElementById("cvEditor"); return t?t.value:"";
   }
-  function mountCvTiny(html){
+  function mountCvTiny(html, statusExtra){
     const st=document.getElementById("cvedStatus"); if(st)st.innerHTML='<span class="spinner sp-s"></span> Chargement de l’éditeur…';
     loadTinyMCE().then(()=>{
       try{ tinymce.remove("#cvEditor"); }catch(e){}
@@ -3879,9 +3891,9 @@
         toolbar:"undo redo | blocks | bold italic underline | forecolor | alignleft aligncenter alignright alignjustify | bullist numlist | link table pagebreak | removeformat",
         block_formats:"Paragraphe=p; Titre 1=h1; Titre 2=h2; Titre 3=h3",
         entity_encoding:"raw",
-        content_style:"body{font-family:Calibri,'Segoe UI','Aptos',Arial,sans-serif;font-size:11pt;line-height:1.3;color:#1a1a1a;max-width:800px;margin:14px auto;padding:0 12px;} h1{font-size:20pt;font-weight:700;letter-spacing:.5px;margin:.1em 0 .15em;} h2{font-size:12.5pt;font-weight:700;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid #b9b9b9;padding-bottom:2px;margin:.7em 0 .3em;} h3{font-size:11pt;font-weight:700;margin:.5em 0 .15em;} ul,ol{margin:.25em 0 .3em 1em;} li{margin:0 0 2px;} p{margin:0 0 6pt;}",
+        content_style:"body{font-family:Calibri,'Segoe UI','Aptos',Arial,sans-serif;font-size:11pt;line-height:1.3;color:#1a1a1a;max-width:800px;margin:14px auto;padding:0 12px;} h1{font-size:20pt;font-weight:700;letter-spacing:.5px;margin:.1em 0 .15em;} h2{font-size:12.5pt;font-weight:700;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid #b9b9b9;padding-bottom:2px;margin:.7em 0 .3em;} h3{font-size:11pt;font-weight:700;margin:.5em 0 .15em;} ul,ol{margin:.25em 0 .3em 1em;padding-left:20px;} li{margin:0 0 2px;} p{margin:0 0 6pt;} .cv-acc-zone{background:rgba(255,205,0,.32);border-radius:3px;box-shadow:0 0 0 1.5px rgba(200,150,0,.45);padding:0 1px;}",
         browser_spellcheck:true, paste_block_drop:false,
-        init_instance_callback:(ed)=>{ try{ ed.setContent(html||""); }catch(e){} const s2=document.getElementById("cvedStatus"); if(s2)s2.innerHTML=ic("check")+" Éditeur prêt — édite comme dans Word, puis « Exporter PDF »."; }
+        init_instance_callback:(ed)=>{ try{ ed.setContent(html||""); }catch(e){} const s2=document.getElementById("cvedStatus"); if(s2)s2.innerHTML=(statusExtra||(ic("check")+" Éditeur prêt — édite comme dans Word, puis exporte.")); }
       });
     }).catch(()=>{
       if(_cvEd)_cvEd.fallback=true;
@@ -3890,7 +3902,7 @@
       const st2=document.getElementById("cvedStatus"); if(st2)st2.innerHTML=ic("alert")+" Éditeur avancé indisponible (réseau) — éditeur simple activé (l'export PDF reste net).";
     });
   }
-  async function openCvEditor(o){
+  function openCvEditor(o){
     if(typeof o==="string"){ try{o=JSON.parse(o);}catch(e){return;} }
     if(!o)return;
     try{ if(window.tinymce&&tinymce.remove)tinymce.remove(); }catch(e){}
@@ -3901,84 +3913,47 @@
       const lang=o.lang||profLang||"fr";
       _cvEd={ mode, lang, fallback:false };
       const startHtml=(lang==="en"?userCvHtmlEn:userCvHtml)||"<p><br></p>";
-      box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("doc")} CV modèle — ${lang==="en"?"Anglais":"Français"}</h3><button class="x" onclick="closeModal()">✕</button></div>
-        <p class="modal-sub">Importe ton CV <b>.docx</b> : il sert au <b>rendu fidèle</b> (identique à Word) sur chaque candidature. Pour cela, place la balise <b>{{accroche}}</b> dans ton fichier Word, là où l'accroche doit apparaître. L'éditeur ci-dessous est un aperçu / repli éditable.</p>
+      const zone=cvHasZone(startHtml);
+      box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("doc")} Mon CV modèle — ${lang==="en"?"Anglais":"Français"}</h3><button class="x" onclick="closeModal()">✕</button></div>
+        <p class="modal-sub"><b>Colle ton CV depuis Word</b> (Ctrl+A / Ctrl+C dans Word → Ctrl+V ici : la mise en page est conservée). Puis <b>surligne ton paragraphe d'accroche</b> et clique <b>« C'est mon accroche »</b> : cette zone sera remplacée automatiquement à chaque candidature.</p>
         <div class="cved-bar"><span class="cved-lang">Langue : <button class="vers-btn ${lang==="fr"?"on":""}" id="cvedLang-fr" onclick="cvEdSetLang('fr')">FR</button><button class="vers-btn ${lang==="en"?"on":""}" id="cvedLang-en" onclick="cvEdSetLang('en')">EN</button></span>
-          <label class="btn ghost sm" for="cvedFile">${ic("download")}<span>Importer .docx</span></label>
+          <button class="btn sm cved-mark" onmousedown="event.preventDefault()" onclick="cvEdMarkAccroche()" title="Surligne ton accroche dans le CV puis clique ici">${ic("star")}<span>C'est mon accroche</span></button>
+          <label class="btn ghost sm" for="cvedFile" title="Sinon, importer un fichier .docx (mise en page approximative)">${ic("download")}<span>Importer .docx</span></label>
           <input type="file" id="cvedFile" accept=".docx,.txt,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" style="display:none" onchange="cvEdImportDocx(this)">
-          <button class="btn ghost sm" onmousedown="event.preventDefault()" onclick="cvEdInsertMarker()" title="Insère la balise {{accroche}} au curseur (repli HTML)">${ic("plus")}<span>Insérer {{accroche}}</span></button>
           <span class="draft-status" id="cvedStatus"></span></div>
         <div id="cvedWrap"><textarea id="cvEditor"></textarea></div>
         <div class="modal-actions"><button class="btn danger" onclick="openProfil()">← Retour au profil</button>
           <button class="btn ghost" onclick="cvEdExportPdf()" title="Aperçu / impression PDF">${ic("eye")}<span>Aperçu PDF</span></button>
           <button class="btn btn-validate" onclick="cvEdSave()">${ic("check")}<span>Enregistrer le modèle</span></button></div>`;
       document.getElementById("modalBg").classList.add("open");
-      mountCvTiny(startHtml);
+      mountCvTiny(startHtml, zone?(ic("check")+" Zone accroche définie ✓. Édite librement, puis Enregistre."):(ic("info")+" Colle ton CV, surligne ton accroche puis clique « C'est mon accroche »."));
       return;
     }
 
-    // ---- offer ----
+    // ---- offer : un seul éditeur (CV modèle + accroche fusionnés), export PDF net (lisible ATS) ----
     const key=o.key||lettreKey(o);
     const lang=o.lang||detectLang(o.desc||o.description||"", o.lieu||o.ville||"");
-    _cvEd={ mode:"offer", key, poste:(o.poste||o.titre||""), entreprise:(o.entreprise||""), lieu:(o.lieu||o.ville||""), desc:(o.description||o.desc||""), lang, fallback:false, docMode:"html" };
-    await loadCvDocx();
-    const hasDocx=!!cvDocxFor(lang);
-    _cvEd.docMode=(o._forceMode==="html")?"html":(hasDocx?"docx":"html");
+    _cvEd={ mode:"offer", key, poste:(o.poste||o.titre||""), entreprise:(o.entreprise||""), lieu:(o.lieu||o.ville||""), desc:(o.description||o.desc||""), lang, fallback:false };
     const saved=lettres[String(key)];
+    const tpl=(lang==="en"?userCvHtmlEn:userCvHtml)||userCvHtml||"";
+    const startHtml=(saved&&saved.docHtml&&saved.docLang===lang)?saved.docHtml:cvMergedHtml(_cvEd);
     const titleBits=`${_cvEd.poste?" — "+esc(_cvEd.poste):""}${_cvEd.entreprise?" · "+esc(_cvEd.entreprise):""}`;
     const langBtns=`<span class="cved-lang">Langue : <button class="vers-btn ${lang==="fr"?"on":""}" id="cvedLang-fr" onclick="cvEdSetLang('fr')">FR</button><button class="vers-btn ${lang==="en"?"on":""}" id="cvedLang-en" onclick="cvEdSetLang('en')">EN</button></span>`;
-    const modeToggle=hasDocx?`<span class="cved-modes"><button class="vers-btn ${_cvEd.docMode==="docx"?"on":""}" id="cvedMode-docx" onclick="cvEdSetDocMode('docx')" title="Identique à ton CV Word">Fidèle</button><button class="vers-btn ${_cvEd.docMode==="html"?"on":""}" id="cvedMode-html" onclick="cvEdSetDocMode('html')" title="Éditeur libre (approximatif)">Éditeur</button></span>`:"";
-
-    if(_cvEd.docMode==="docx"){
-      box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("doc")} Éditeur CV${titleBits}</h3><button class="x" onclick="closeModal()">✕</button></div>
-        <p class="modal-sub">Ton CV Word affiché à l'identique, l'accroche injectée à la place de <b>{{accroche}}</b>. Le corps du CV se modifie dans Word ; l'accroche se règle via « Candidature ».</p>
-        <div class="cved-bar">${langBtns}${modeToggle}<span class="draft-status" id="cvedStatus"></span></div>
-        <div id="cvDocxView" class="cv-docx-view"></div>
-        <div class="modal-actions"><button class="btn danger" onclick="closeModal()">Fermer</button>
-          <button class="btn ghost" onclick="cvEdDownloadDocx()" title="CV Word + accroche — 100% identique">${ic("download")}<span>.docx (identique)</span></button>
-          <button class="btn ghost" onclick="cvEdExportPdf()" title="Impression PDF du rendu fidèle">${ic("doc")}<span>Exporter PDF</span></button>
-          <button class="btn btn-validate" onclick="cvEdSave()">${ic("check")}<span>Enregistrer</span></button></div>`;
-      document.getElementById("modalBg").classList.add("open");
-      mountCvDocx();
-      return;
-    }
-
-    // offer + éditeur HTML (TinyMCE fusion)
-    const startHtml=(saved&&saved.docHtml&&saved.docLang===lang)?saved.docHtml:cvMergedHtml(_cvEd);
-    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("doc")} Éditeur CV${titleBits}</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">Ton CV modèle et ton accroche fusionnés, à retoucher puis exporter en PDF net (A4).${hasDocx?"":" <span style=\"opacity:.7\">Astuce : importe ton CV .docx dans Mon profil pour un rendu identique à Word.</span>"}</p>
-      <div class="cved-bar">${langBtns}${modeToggle}
-        <button class="btn ghost sm" onmousedown="event.preventDefault()" onclick="cvEdInsertAccroche()" title="Insère l'accroche au curseur">${ic("plus")}<span>Insérer l'accroche</span></button>
-        <button class="btn ghost sm" onclick="cvEdReset()" title="Refusionner CV + accroche">${ic("undo")}<span>Réinitialiser</span></button>
+    const noZone=(tpl.replace(/<[^>]*>/g,"").trim() && !cvHasZone(tpl));
+    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("doc")} Ton CV pour cette offre${titleBits}</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">L'accroche est déjà en place dans ton CV. Retouche si besoin, puis <b>télécharge le PDF</b>.${noZone?' <span class="cv-over">Astuce : dans Mon profil, définis ta « zone accroche » pour qu\'elle se place au bon endroit.</span>':''}</p>
+      <div class="cved-bar">${langBtns}
+        <button class="btn ghost sm" onclick="cvEdReset()" title="Remettre le CV modèle + l'accroche à jour">${ic("undo")}<span>Réinitialiser</span></button>
         <span class="draft-status" id="cvedStatus"></span></div>
       <div id="cvedWrap"><textarea id="cvEditor"></textarea></div>
       <div class="modal-actions"><button class="btn danger" onclick="closeModal()">Fermer</button>
-        <button class="btn ghost" onclick="cvEdExportPdf()" title="Impression PDF native A4">${ic("doc")}<span>Exporter PDF</span></button>
-        <button class="btn btn-validate" onclick="cvEdSave()">${ic("check")}<span>Enregistrer le CV</span></button></div>`;
+        <button class="btn ghost" onclick="cvEdSave()" title="Enregistrer ce CV pour l'offre">${ic("save")}<span>Enregistrer</span></button>
+        <button class="btn ghost sm" onclick="cvEdDownloadWord()" title="Télécharger en Word (.doc)">${ic("download")}<span>Word</span></button>
+        <button class="btn btn-validate" onclick="cvEdExportPdf()" title="PDF net, texte lisible par les ATS">${ic("doc")}<span>Télécharger le PDF</span></button></div>`;
     document.getElementById("modalBg").classList.add("open");
-    mountCvTiny(startHtml);
+    mountCvTiny(startHtml, ic("check")+" CV prêt — retouche si besoin, puis « Télécharger le PDF ».");
   }
-  // ===== Rendu FIDÈLE (docx-preview) : affiche le .docx exactement + injecte l'accroche au marqueur {{accroche}} =====
-  let _docxPrevPromise=null;
-  function loadDocxPreview(){
-    if(window.docx&&window.docx.renderAsync) return Promise.resolve(window.docx);
-    if(_docxPrevPromise) return _docxPrevPromise;
-    _docxPrevPromise=loadJSZip().then(()=>new Promise((res,rej)=>{
-      const s=document.createElement("script");
-      s.src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js";
-      s.onload=()=>res(window.docx);
-      s.onerror=()=>{ _docxPrevPromise=null; rej(new Error("docx-preview")); };
-      document.head.appendChild(s);
-      setTimeout(()=>{ if(!(window.docx&&window.docx.renderAsync)){ _docxPrevPromise=null; rej(new Error("docx-preview-timeout")); } },12000);
-    }));
-    return _docxPrevPromise;
-  }
-  function cvAccrocheText(c){
-    const saved=lettres[String(c.key)];
-    if(saved&&saved.texte) return saved.texte;
-    if(saved&&saved.html) return htmlToText(saved.html);
-    return (c.lang==="en"?userIntroEn:userIntro)||"";
-  }
+  // (v87 : docx-preview / rendu « Fidèle » retiré — un seul éditeur HTML, plus simple et fiable)
   function accrocheInline(accHtml){
     // texte brut par ligne (échappé) -> l'accroche hérite TOUJOURS du style du CV (police/taille), même collée d'une IA externe
     const d=document.createElement("div"); d.innerHTML=accHtml||"";
@@ -3986,78 +3961,42 @@
     if(!lines.length){ const t=(d.textContent||"").trim(); if(t)lines=[esc(t)]; }
     return lines.join("<br>");
   }
-  // Remplace le marqueur {{accroche}} dans le DOM rendu par docx-preview (hérite du style du paragraphe Word)
-  function injectAccrocheIntoRender(container, accHtml){
-    if(!container) return false;
-    const inline=accrocheInline(accHtml); let done=false;
-    const rx=/\{\{\s*accroche\s*\}\}/i;
-    Array.from(container.querySelectorAll("p")).forEach(p=>{
-      if(done||!rx.test(p.textContent||"")) return;
-      const before=p.innerHTML, after=before.replace(/\{\{\s*accroche\s*\}\}/gi, inline);
-      if(after!==before){ p.innerHTML=after; }        // marqueur dans un run -> hérite automatiquement du style de ce run (police/taille)
-      else { const sp=p.querySelector("span"); p.innerHTML=sp?`<span class="${sp.className||""}" style="${sp.getAttribute("style")||""}">${inline}</span>`:inline; } // scindé -> garde le style du 1er run
-      done=true;
-    });
-    if(!done){ Array.from(container.querySelectorAll("*")).forEach(el=>{ if(done||el.children.length) return; if(rx.test(el.textContent||"")){ el.innerHTML=inline; done=true; } }); }
-    return done;
-  }
-  async function renderDocxFaithful(container, b64, accHtml){
-    await loadDocxPreview();
-    container.innerHTML="";
-    await docx.renderAsync(b64ToU8(b64), container, null, {className:"docx", inWrapper:true, breakPages:true, ignoreLastRenderedPageBreak:true, experimental:true});
-    return accHtml ? injectAccrocheIntoRender(container, accHtml) : true;   // renvoie si le marqueur a été trouvé/remplacé
-  }
-  // Injection de l'accroche directement dans le .docx (100% identique) — remplace le paragraphe marqueur, garde son style (pPr)
-  async function injectAccrocheDocx(b64, accText){
-    const JZ=await loadJSZip();
-    const zip=await JZ.loadAsync(b64ToU8(b64));
-    let xml=await zip.file("word/document.xml").async("string");
-    const lines=(""+accText).split(/\n+/).map(t=>t.trim()).filter(Boolean);
-    let hit=false;
-    xml=xml.replace(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/g,(para)=>{
-      if(hit) return para;
-      const text=para.replace(/<[^>]+>/g,"");
-      if(!/\{\{\s*accroche\s*\}\}/i.test(text)) return para;
-      hit=true;
-      const pPr=(para.match(/<w:pPr>[\s\S]*?<\/w:pPr>/)||[""])[0];
-      const rPr=(para.match(/<w:r\b[^>]*>\s*(<w:rPr>[\s\S]*?<\/w:rPr>)/)||[,""])[1]||"";   // formatage du run marqueur (police/taille) -> l'accroche l'hérite
-      const runs=(lines.length?lines:[""]).map((t,i)=>(i?'<w:r>'+rPr+'<w:br/></w:r>':'')+'<w:r>'+rPr+'<w:t xml:space="preserve">'+xmlEsc(t)+'</w:t></w:r>').join('');
-      return "<w:p>"+pPr+runs+"</w:p>";
-    });
-    zip.file("word/document.xml",xml);
-    return await zip.generateAsync({type:"blob",compression:"DEFLATE",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
-  }
-  function mountCvDocx(){
-    const view=document.getElementById("cvDocxView"); if(!view||!_cvEd)return;
+  function cvStripZone(html){ return (html||"").replace(/\bcv-acc-zone\b/g,""); }   // retire le surlignage pour l'export
+  // Sélection dans l'éditeur -> ZONE ACCROCHE (surlignée), remplacée à chaque candidature. Zéro balise à taper.
+  function cvEdMarkAccroche(){
     const st=document.getElementById("cvedStatus");
-    const dx=cvDocxFor(_cvEd.lang);
-    if(!dx||!dx.b64){ view.innerHTML=`<div class="cv-docx-empty">${ic("info")} Aucun CV Word pour cette langue. Importe-le dans <b>Mon profil → Éditer le CV modèle</b>, ou bascule sur « Éditeur ».</div>`; if(st)st.textContent=""; return; }
-    if(st)st.innerHTML='<span class="spinner sp-s"></span> Rendu fidèle du CV…';
-    renderDocxFaithful(view, dx.b64, cvAccrocheHtml(_cvEd)).then((injected)=>{
-      if(!st)return;
-      if(injected) st.innerHTML=ic("check")+" Rendu fidèle — accroche injectée. Exporte en PDF ou télécharge le .docx.";
-      else st.innerHTML=ic("alert")+" CV affiché, mais <b>aucune balise {{accroche}}</b> dans ton Word : ouvre-le dans Word, remplace ton paragraphe d'accroche par <b>{{accroche}}</b>, puis réimporte-le (Profil → Éditer le CV modèle).";
-    }).catch(err=>{ if(st)st.innerHTML=ic("alert")+" Rendu indisponible ("+esc((err&&err.message)||err)+") — bascule sur « Éditeur » ou télécharge le .docx."; });
+    const warn=()=>{ if(st)st.innerHTML=ic("alert")+" Clique d'abord DANS ton paragraphe d'accroche (dans le CV), puis « C'est mon accroche »."; };
+    if(_cvEd&&_cvEd.fallback){
+      const e=document.getElementById("cvEditorCE"); if(!e)return;
+      const sel=window.getSelection(); let n=sel&&sel.anchorNode, block=null;
+      while(n&&n!==e){ if(n.nodeType===1&&/^(P|DIV|LI|H1|H2|H3|TD)$/.test(n.tagName)){ block=n; break; } n=n.parentNode; }
+      if(!block||!e.contains(block)){ warn(); return; }
+      e.querySelectorAll(".cv-acc-zone").forEach(z=>z.classList.remove("cv-acc-zone"));
+      block.classList.add("cv-acc-zone");
+      if(st)st.innerHTML=ic("check")+" Zone accroche définie ✓ — pense à Enregistrer.";
+      return;
+    }
+    const ed=window.tinymce&&tinymce.get("cvEditor"); if(!ed)return;
+    const block=ed.dom.getParent(ed.selection.getNode(),"p,div,li,h1,h2,h3,td");
+    if(!block){ warn(); return; }
+    Array.prototype.forEach.call(ed.getBody().querySelectorAll(".cv-acc-zone"),function(z){ ed.dom.removeClass(z,"cv-acc-zone"); });
+    ed.dom.addClass(block,"cv-acc-zone");
+    ed.nodeChanged();
+    if(st)st.innerHTML=ic("check")+" Zone accroche définie ✓ (paragraphe surligné) — remplacé à chaque candidature. Pense à Enregistrer.";
   }
-  function cvEdSetDocMode(m){
-    if(!_cvEd||_cvEd.docMode===m) return;
-    openCvEditor({ key:_cvEd.key, poste:_cvEd.poste, entreprise:_cvEd.entreprise, lieu:_cvEd.lieu, desc:_cvEd.desc, lang:_cvEd.lang, _forceMode:m });
-  }
-  async function cvEdDownloadDocx(){
-    const c=_cvEd; if(!c)return;
-    const dx=cvDocxFor(c.lang); if(!dx||!dx.b64){ flashCenter("Aucun CV Word pour cette langue.","info"); return; }
-    const st=document.getElementById("cvedStatus"); if(st)st.innerHTML='<span class="spinner sp-s"></span> Assemblage du .docx…';
-    try{
-      const blob=await injectAccrocheDocx(dx.b64, cvAccrocheText(c));
-      const safe=(s)=>(s||"").toString().replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,40);
-      const url=URL.createObjectURL(blob); const a=document.createElement("a");
-      a.href=url; a.download="CV_"+safe(c.entreprise)+"_"+safe(c.poste)+".docx";
-      document.body.appendChild(a); a.click();
-      setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){} a.remove();},600);
-      if(st)st.innerHTML=ic("check")+" CV Word téléchargé (identique + accroche). Ouvre-le dans Word → « Enregistrer en PDF » pour un PDF parfait.";
-      const prev=lettres[String(c.key)]||{}; lettres[String(c.key)]=Object.assign({},prev,{docMode:"docx",docLang:c.lang,entreprise:c.entreprise||prev.entreprise||"",poste:c.poste||prev.poste||"",updated_at:new Date().toISOString()}); await saveLettres();
-      try{renderVeille&&renderVeille();}catch(e){}
-    }catch(e){ if(st)st.innerHTML=ic("alert")+" Assemblage impossible : "+esc((e&&e.message)||e); }
+
+
+  // Export Word (.doc) du CV fusionné (texte, lisible ATS) — secondaire ; le PDF reste le principal
+  function cvEdDownloadWord(){
+    const html=cvStripZone(cvEdGetHtml());
+    const c=_cvEd||{}; const safe=(s)=>(s||"").toString().replace(/[^a-zA-Z0-9_-]+/g,"_").slice(0,40);
+    const doc="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><style>@page{margin:1.4cm 1.5cm}body{font-family:Calibri,Arial,sans-serif;font-size:11pt;line-height:1.3;color:#1a1a1a}h1{font-size:20pt;margin:.1em 0}h2{font-size:12.5pt;text-transform:uppercase;border-bottom:1px solid #b9b9b9;margin:.6em 0 .3em}h3{font-size:11pt;margin:.4em 0 .1em}ul{padding-left:20pt}li{margin:0 0 2pt}p{margin:0 0 6pt}</style></head><body>"+html+"</body></html>";
+    const blob=new Blob(["﻿",doc],{type:"application/msword"});
+    const url=URL.createObjectURL(blob); const a=document.createElement("a");
+    a.href=url; a.download="CV_"+safe(c.entreprise)+"_"+safe(c.poste)+".doc";
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){} a.remove();},600);
+    const st=document.getElementById("cvedStatus"); if(st)st.innerHTML=ic("check")+" CV Word (.doc) téléchargé — ouvrable dans Word, lisible par les ATS.";
   }
   function openCvModelEditor(){ captureProfLang(); openCvEditor({mode:"template", lang:profLang}); }
   async function cvEdImportDocx(input){
@@ -4070,11 +4009,7 @@
         const buf=await f.arrayBuffer();
         const r=await mammoth.convertToHtml({arrayBuffer:buf});
         html=(r&&r.value)||"";
-        try{ await saveCvDocx(_cvEd?_cvEd.lang:"fr", {name:f.name,b64:bufToB64(buf)}); }catch(e){}   // garde le .docx original par langue (rendu fidèle + téléchargement)
-        const hasMk=/\{\{\s*accroche\s*\}\}/i.test(html);
-        if(st)st.innerHTML=hasMk
-          ? ic("check")+" CV importé — balise <b>{{accroche}}</b> détectée ✓. Rendu fidèle prêt : l'accroche s'insérera ici sur chaque candidature."
-          : ic("alert")+" CV importé, mais <b>aucune balise {{accroche}}</b> : dans Word, remplace ton paragraphe d'accroche par <b>{{accroche}}</b> puis réimporte (sinon l'accroche ne pourra pas s'insérer).";
+        if(st)st.innerHTML=ic("check")+" CV importé (.docx). <b>Astuce</b> : le copier-coller depuis Word conserve encore mieux la mise en page. Surligne ensuite ton accroche et clique « C'est mon accroche ».";
       } else if(/\.txt$/i.test(f.name)){
         const t=await f.text(); html=textToHtml(t);
         if(st)st.innerHTML=ic("check")+" Texte importé.";
@@ -4096,7 +4031,6 @@
   function cvEdSetLang(l){
     if(!_cvEd)return;
     ["fr","en"].forEach(x=>{ const b=document.getElementById("cvedLang-"+x); if(b)b.classList.toggle("on",x===l); });
-    if(_cvEd.mode==="offer" && _cvEd.docMode==="docx"){ _cvEd.lang=l; mountCvDocx(); return; }   // rendu fidèle : re-render dans la nouvelle langue
     if(_cvEd.mode==="template"){
       const cur=cvEdGetHtml();                                        // capture la langue affichée avant bascule
       if(_cvEd.lang==="en")userCvHtmlEn=cur; else userCvHtml=cur;
@@ -4126,24 +4060,15 @@
     try{ const ed=tinymce.get("cvEditor"); if(ed){ ed.focus(); ed.insertContent(acc); } }catch(e){}
   }
   function cvEdExportPdf(){
-    if(_cvEd && _cvEd.docMode==="docx"){                              // rendu fidèle -> impression du .docx (marges gérées par le doc)
-      const dx=cvDocxFor(_cvEd.lang); if(!dx||!dx.b64){ flashCenter("Aucun CV Word pour cette langue.","info"); return; }
-      let area=document.getElementById("pdfPrintArea"); if(!area){ area=document.createElement("div"); area.id="pdfPrintArea"; document.body.appendChild(area); }
-      const st=document.getElementById("cvedStatus"); if(st)st.innerHTML='<span class="spinner sp-s"></span> Préparation du PDF…';
-      renderDocxFaithful(area, dx.b64, cvAccrocheHtml(_cvEd)).then(()=>{
-        area.classList.add("pdf-docx");
-        let ps=document.getElementById("tmpPageStyle"); if(!ps){ ps=document.createElement("style"); ps.id="tmpPageStyle"; document.head.appendChild(ps); }
-        ps.textContent="@media print{@page{size:A4;margin:0.4cm;}}";   // le .docx apporte ses propres marges
-        if(st)st.innerHTML=ic("check")+" PDF prêt.";
-        setTimeout(()=>{ try{ window.print(); }catch(e){} setTimeout(()=>{ if(ps)ps.textContent=""; area.classList.remove("pdf-docx"); },700); },100);
-      }).catch(()=>{ if(st)st.innerHTML=ic("alert")+" Rendu impossible — télécharge le .docx à la place."; });
-      return;
-    }
-    const html=cvEdGetHtml();
+    const html=cvStripZone(cvEdGetHtml());
     if(!html.replace(/<[^>]*>/g,"").trim()){ flashCenter("L'éditeur est vide.","info"); return; }
     let area=document.getElementById("pdfPrintArea"); if(!area){ area=document.createElement("div"); area.id="pdfPrintArea"; document.body.appendChild(area); }
     area.innerHTML=`<div class="pdf-doc"><div class="pdf-body">${html}</div></div>`;
-    setTimeout(()=>{ try{ window.print(); }catch(e){} },60);
+    // supprime l'en-tête/pied du navigateur : @page marge 0 (les marges sont dans .pdf-doc) + titre vidé le temps de l'impression
+    const prevTitle=document.title; document.title=" ";
+    let ps=document.getElementById("tmpPageStyle"); if(!ps){ ps=document.createElement("style"); ps.id="tmpPageStyle"; document.head.appendChild(ps); }
+    ps.textContent="@media print{@page{size:A4;margin:0;}}";
+    setTimeout(()=>{ try{ window.print(); }catch(e){} setTimeout(()=>{ document.title=prevTitle; if(ps)ps.textContent=""; },600); },80);
   }
   async function cvEdSave(){
     const c=_cvEd; if(!c)return;
@@ -4153,14 +4078,6 @@
       userCV=htmlToText(userCvHtml||userCvHtmlEn).slice(0,8000);      // texte du CV pour nourrir l'IA
       await saveProfilData();
       const st=document.getElementById("cvedStatus"); if(st)st.innerHTML=ic("check")+" Modèle CV enregistré ("+(c.lang==="en"?"EN":"FR")+").";
-      return;
-    }
-    if(c.docMode==="docx"){                                          // rendu fidèle : on relie juste le doc à l'offre
-      const prev0=lettres[String(c.key)]||{};
-      lettres[String(c.key)]=Object.assign({}, prev0, { docMode:"docx", docLang:c.lang, entreprise:c.entreprise||prev0.entreprise||"", poste:c.poste||prev0.poste||"", updated_at:new Date().toISOString() });
-      await saveLettres();
-      const st=document.getElementById("cvedStatus"); if(st)st.innerHTML=ic("check")+" CV (rendu fidèle) relié à l'offre — dans « Mes documents ».";
-      try{ renderVeille&&renderVeille(); }catch(e){}
       return;
     }
     const prev=lettres[String(c.key)]||{};
@@ -5756,6 +5673,7 @@
     try{localStorage.setItem("st_name",userName);}catch(e){}
     await saveProfilData();
     closeModal(); initDate();
+    flashCenter("Profil enregistré ✓");
   }
   // ===== Prompt d'accroche éditable (Réglages) =====
   function openPromptAccroche(){

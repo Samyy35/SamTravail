@@ -2,11 +2,35 @@
 // Cascade : JSON-LD (JobPosting schema.org) -> Open Graph -> <title>
 // Sans dépendance externe (parsing regex).
 
+// Verification d'identite SANS aucune dependance npm (pas de package.json dans ce repo) : un simple
+// fetch vers l'endpoint Auth de Supabase. SUPABASE_URL/ANON_KEY sont les memes valeurs PUBLIQUES que
+// celles deja visibles dans index.html (l'anon key est concue pour etre publique) — rien de secret ici.
+const SUPABASE_URL = "https://vjvidltlrqxssigxboqy.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_yMT8GmHQ_ooUC1wxHtv-dQ_TMjEz3JL";
+async function verifyUser(req) {
+  const auth = req.headers.authorization || "";
+  const token = auth.indexOf("Bearer ") === 0 ? auth.slice(7) : "";
+  if (!token) return null;
+  try {
+    const r = await fetch(SUPABASE_URL + "/auth/v1/user", {
+      headers: { Authorization: "Bearer " + token, apikey: SUPABASE_ANON_KEY },
+    });
+    if (!r.ok) return null;
+    const u = await r.json();
+    return u && u.id ? u : null;
+  } catch (e) { return null; }
+}
+
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   if (req.method === "OPTIONS") return res.status(200).end();
+
+  // Empeche un curl/script direct (hors navigateur, donc CORS n'aide pas) d'utiliser cet endpoint
+  // comme proxy de fetch ouvert.
+  const user = await verifyUser(req);
+  if (!user) return res.status(401).json({ ok: false, error: "unauthorized" });
 
   try {
     const url = ((req.query && req.query.url) || (req.body && req.body.url) || "").trim();

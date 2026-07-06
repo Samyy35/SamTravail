@@ -115,6 +115,25 @@ function parseCompanies(content) {
   return out;
 }
 
+// Verification d'identite SANS aucune dependance npm (pas de package.json dans ce repo) : un simple
+// fetch vers l'endpoint Auth de Supabase. SUPABASE_URL/ANON_KEY sont les memes valeurs PUBLIQUES que
+// celles deja visibles dans index.html (l'anon key est concue pour etre publique) — rien de secret ici.
+const SUPABASE_URL = "https://vjvidltlrqxssigxboqy.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_yMT8GmHQ_ooUC1wxHtv-dQ_TMjEz3JL";
+async function verifyUser(req) {
+  const auth = req.headers.authorization || "";
+  const token = auth.indexOf("Bearer ") === 0 ? auth.slice(7) : "";
+  if (!token) return null;
+  try {
+    const r = await fetch(SUPABASE_URL + "/auth/v1/user", {
+      headers: { Authorization: "Bearer " + token, apikey: SUPABASE_ANON_KEY },
+    });
+    if (!r.ok) return null;
+    const u = await r.json();
+    return u && u.id ? u : null;
+  } catch (e) { return null; }
+}
+
 module.exports = async function handler(req, res) {
   const key = process.env.AI_KEY;
   const base = (process.env.AI_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/$/, "");
@@ -153,6 +172,10 @@ module.exports = async function handler(req, res) {
 
   // ---------- MODE NORMAL (appele par l'app) ----------
   if (req.method !== "POST") { res.status(405).json({ ok: false, reason: "method" }); return; }
+  // Empeche un curl/script direct (hors navigateur, donc CORS n'aide pas) de consommer le quota IA :
+  // le mode GET selftest ci-dessus reste ouvert (diagnostic manuel via l'URL dans un navigateur).
+  const user = await verifyUser(req);
+  if (!user) { res.status(401).json({ ok: false, reason: "unauthorized" }); return; }
   if (!key) { res.status(200).json({ ok: false, reason: "no_key" }); return; }
 
   let body = req.body;

@@ -6717,9 +6717,19 @@ alter table emails_sync disable row level security;</pre>
         ${mt?`<button class="pdact" onclick='openMatchedOffer("${esc(m.id)}")'>${ic("link")} Voir l'offre liée</button>`:""}
         <button class="pdact" onclick='deleteSyncedMail("${esc(m.id)}");closeModal()'>${ic("trash")} Supprimer</button>
       </div>
-      <div class="mzg-body"><div class="mzg-body-text">${esc(m.body||"(corps du message indisponible)")}</div></div>
+      <div class="mzg-body">
+    <div class="email-reader-wrapper" style="width: 100%; border: 1px solid var(--border); border-radius: 12px; background: #ffffff; overflow: hidden; margin-top: 16px;">
+        <iframe 
+          id="email-iframe" 
+          sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" 
+          scrolling="no" 
+          style="width: 100%; border: none; min-height: 400px; display: block;">
+        </iframe>
+    </div>
+</div>
       <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
     document.getElementById("modalBg").classList.add("open");
+    renderRichEmail(m.body); 
   }
   window.addEventListener("focus",refreshMailOnFocus);
   document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible")refreshMailOnFocus(); });
@@ -7119,6 +7129,35 @@ Thales est une entreprise Handi-Engagée et reconnait tous les talents. La diver
       ]
     });
     d.drive();
+  }
+  // ===== GESTION AFFICHAGE E-MAILS HTML (IFRAME) =====
+  function renderRichEmail(htmlContent) {
+    const iframe = document.getElementById('email-iframe');
+    if (!iframe) return;
+
+    // Fallback propre si le contenu est vide
+    const contentToRender = htmlContent || "<p style='font-family: sans-serif; color: #666; padding: 20px;'>Contenu indisponible ou au format texte brut uniquement.</p>";
+
+    iframe.srcdoc = contentToRender;
+
+    iframe.onload = () => {
+      try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        
+        // Nettoyage de base pour forcer un affichage propre
+        iframeDoc.body.style.margin = "0";
+        iframeDoc.body.style.fontFamily = "system-ui, -apple-system, sans-serif";
+        iframeDoc.body.style.overflowY = "hidden"; // Empêche le double scroll interne
+        
+        // Ajustement automatique de la hauteur
+        const newHeight = iframeDoc.documentElement.scrollHeight;
+        iframe.style.height = newHeight + 'px';
+      } catch (e) {
+        console.warn("Sécurité : Impossible de redimensionner l'Iframe automatiquement.", e);
+        iframe.style.height = "600px"; 
+        iframe.style.overflowY = "auto";
+      }
+    };
   }
 </script>
 </body>

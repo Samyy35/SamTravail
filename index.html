@@ -1441,36 +1441,44 @@
   #veille-grid.ultra .ocard-logo{width:30px;height:30px;font-size:14px;}
   #veille-grid.ultra .ocard-title{font-size:13.5px;}
   /* ===== PILIER 1 : STYLE VISITE GUIDÉE, MINI-NAVIGATEUR & BANNIÈRE ===== */
-  .driver-popover { background-color: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border-light) !important; border-radius: 16px !important; box-shadow: var(--shadow-lg) !important; font-family: var(--font) !important; max-width: 460px !important; }
-  .driver-popover-title { font-family: var(--display) !important; font-size: 19px !important; font-weight: 700 !important; margin-bottom: 12px !important; color: var(--text) !important; }
-  .driver-popover-description { font-size: 13.5px !important; color: var(--text-dim) !important; line-height: 1.55 !important; margin-bottom: 20px !important; }
-  .driver-popover-footer button { background-color: var(--surface-2) !important; border: 1px solid var(--border) !important; color: var(--text) !important; border-radius: 9px !important; font-weight: 600 !important; padding: 7px 14px !important; transition: 0.15s; font-family: var(--font) !important; text-shadow: none !important;}
+  .driver-popover { background-color: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border-light) !important; border-radius: 20px !important; box-shadow: var(--shadow-lg) !important; font-family: var(--font) !important; max-width: 540px !important; padding: 24px !important; }
+  .driver-popover-title { font-family: var(--display) !important; font-size: 24px !important; font-weight: 800 !important; margin-bottom: 16px !important; color: var(--text) !important; letter-spacing: -0.02em; }
+  .driver-popover-description { font-size: 15.5px !important; color: var(--text-dim) !important; line-height: 1.65 !important; margin-bottom: 24px !important; }
+  
+  /* Harmonisation des espacements dans le texte (listes à puces) */
+  .driver-popover-description ul { margin-top: 16px !important; margin-bottom: 20px !important; padding-left: 24px !important; }
+  .driver-popover-description li { margin-bottom: 10px !important; }
+  
+  /* Agrandissement des boutons du pied de page */
+  .driver-popover-footer { margin-top: 12px !important; }
+  .driver-popover-footer button { background-color: var(--surface-2) !important; border: 1px solid var(--border) !important; color: var(--text) !important; border-radius: 10px !important; font-weight: 600 !important; font-size: 14.5px !important; padding: 10px 20px !important; transition: 0.15s; font-family: var(--font) !important; text-shadow: none !important;}
   .driver-popover-footer button:hover { background-color: var(--surface-3) !important; }
   .driver-popover-footer .driver-popover-next-btn { background-color: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
   .driver-popover-footer .driver-popover-next-btn:hover { background-color: var(--accent-h) !important; }
-  .driver-popover-progress-text { color: var(--text-mute) !important; font-size: 12px !important; font-weight: 600 !important; }
+  .driver-popover-progress-text { color: var(--text-mute) !important; font-size: 14px !important; font-weight: 600 !important; }
   
   /* Bannière Créer mon compte (Mode Démo) */
-  .guest-banner { background: linear-gradient(135deg, var(--accent), var(--purple)); color: #fff; padding: 16px 22px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(255,111,94,0.25); animation: fade 0.4s ease; }
-  .guest-banner h3 { margin: 0 0 4px; font-family: var(--display); font-size: 17px; display: flex; align-items: center; gap: 8px; font-weight: 700; }
-  .guest-banner p { margin: 0; font-size: 13px; opacity: 0.9; line-height: 1.45; }
+  .guest-banner { background: linear-gradient(135deg, var(--accent), var(--purple)); color: #fff; padding: 18px 26px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(255,111,94,0.25); animation: fade 0.4s ease; }
+  .guest-banner h3 { margin: 0 0 6px; font-family: var(--display); font-size: 19px; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .guest-banner p { margin: 0; font-size: 14.5px; opacity: 0.95; line-height: 1.5; }
+  .guest-banner button { font-size: 15px !important; padding: 10px 22px !important; border-radius: 10px !important; }
   @media(max-width: 680px) { .guest-banner { flex-direction: column; align-items: stretch; text-align: left; } }
   
-  /* Animations des VRAIS mini-navigateurs */
-  .dv { border:1px solid var(--border); border-radius:10px; overflow:hidden; background:#fff; margin-top:16px; box-shadow:0 8px 20px rgba(0,0,0,0.08); display:flex; flex-direction:column; }
+  /* Animations des VRAIS mini-navigateurs - Échelles ajustées pour 540px */
+  .dv { border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#fff; margin-top:20px; box-shadow:0 10px 25px rgba(0,0,0,0.08); display:flex; flex-direction:column; }
   .dv-top { background:#f3f4f6; border-bottom:1px solid #e5e7eb; display:flex; flex-direction:column; }
-  .dv-tabs { display:flex; align-items:center; padding:8px 12px 0; gap:12px; }
-  .dv-dots { display:flex; gap:6px; }
-  .dv-dots span { display:inline-block; width:10px; height:10px; border-radius:50%; }
+  .dv-tabs { display:flex; align-items:center; padding:10px 16px 0; gap:14px; }
+  .dv-dots { display:flex; gap:8px; }
+  .dv-dots span { display:inline-block; width:12px; height:12px; border-radius:50%; }
   .dv-dots span:nth-child(1){background:#ff5f56;} .dv-dots span:nth-child(2){background:#ffbd2e;} .dv-dots span:nth-child(3){background:#27c93f;}
-  .dv-tab { background:#fff; padding:5px 14px; border-radius:8px 8px 0 0; font-size:11px; color:#374151; font-weight:600; display:flex; align-items:center; gap:6px; box-shadow:0 1px 0 #fff; margin-bottom:-1px; }
-  .dv-nav { display:flex; align-items:center; padding:6px 12px; gap:12px; background:#fff; border-bottom:1px solid #e5e7eb; }
-  .dv-url { flex:1; background:#f3f4f6; border-radius:12px; height:22px; }
-  .dv-bookmarks { display:flex; align-items:center; padding:6px 12px; background:#fff; border-bottom:1px solid #e5e7eb; }
-  .dv-bm { display:inline-flex; align-items:center; font-size:10px; background:var(--accent-soft); color:var(--accent); padding:3px 8px; border-radius:99px; font-weight:bold; position:relative; border:1px solid var(--accent); }
-  .dv-body { padding:16px; position:relative; }
-  .dv-cursor { position:absolute; left:60px; top:30px; font-size:22px; animation:dvClick 3s cubic-bezier(.2,.8,.3,1) infinite; z-index:10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-  @keyframes dvClick { 0%{transform:translate(40px, 40px); opacity:0;} 15%{transform:translate(40px, 40px); opacity:1;} 40%{transform:translate(0,0); opacity:1;} 50%{transform:scale(0.85); opacity:1;} 70%{transform:scale(1); opacity:1;} 100%{transform:translate(40px, 40px); opacity:0;} }
+  .dv-tab { background:#fff; padding:6px 18px; border-radius:10px 10px 0 0; font-size:12.5px; color:#374151; font-weight:600; display:flex; align-items:center; gap:8px; box-shadow:0 1px 0 #fff; margin-bottom:-1px; }
+  .dv-nav { display:flex; align-items:center; padding:8px 16px; gap:16px; background:#fff; border-bottom:1px solid #e5e7eb; }
+  .dv-url { flex:1; background:#f3f4f6; border-radius:14px; height:26px; }
+  .dv-bookmarks { display:flex; align-items:center; padding:8px 16px; background:#fff; border-bottom:1px solid #e5e7eb; }
+  .dv-bm { display:inline-flex; align-items:center; font-size:11.5px; background:var(--accent-soft); color:var(--accent); padding:4px 12px; border-radius:99px; font-weight:bold; position:relative; border:1px solid var(--accent); }
+  .dv-body { padding:20px 24px; position:relative; }
+  .dv-cursor { position:absolute; left:75px; top:40px; font-size:26px; animation:dvClick 3s cubic-bezier(.2,.8,.3,1) infinite; z-index:10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+  @keyframes dvClick { 0%{transform:translate(50px, 50px); opacity:0;} 15%{transform:translate(50px, 50px); opacity:1;} 40%{transform:translate(0,0); opacity:1;} 50%{transform:scale(0.85); opacity:1;} 70%{transform:scale(1); opacity:1;} 100%{transform:translate(50px, 50px); opacity:0;} }
 </style>
 </head>
 <body>
@@ -6903,7 +6911,7 @@ alter table emails_sync disable row level security;</pre>
       return j || null;                          // renvoie la réponse (même ok:false) pour diagnostic ; null = réseau/délai
     }catch(e){ return null; }
   }
-    // ===== PILIER 1 : SANDBOX & VISITE GUIDÉE (V4 - Démo Parfaite) =====
+  // ===== PILIER 1 : SANDBOX & VISITE GUIDÉE (V5 - Scénario Complet & IA) =====
   let isGuest = false;
 
   window.exitGuestMode = function() {
@@ -6915,7 +6923,6 @@ alter table emails_sync disable row level security;</pre>
     isGuest = true;
     document.getElementById('authGate').style.display = 'none';
     
-    // 1. Bannière de création de compte visible pendant tout le mode Démo
     if (!document.getElementById('guestBanner')) {
       const banner = document.createElement('div');
       banner.id = 'guestBanner';
@@ -6923,7 +6930,7 @@ alter table emails_sync disable row level security;</pre>
       banner.innerHTML = `
         <div style="flex:1;">
           <h3>${ic("sparkle")} Mode Démo activé</h3>
-          <p>Joue avec l'interface ! Tes données de test sont enregistrées localement.<br>Pour connecter ta vraie boîte mail, utiliser l'IA de personnalisation de CV et ne rien perdre, passe sur un compte sécurisé.</p>
+          <p>Explore l'outil ! Tes données de test sont enregistrées localement.<br>Pour connecter ta boîte mail, utiliser l'IA de CV et ne rien perdre, passe sur un compte sécurisé.</p>
         </div>
         <button onclick="exitGuestMode()" class="btn" style="background:#fff;color:var(--accent);font-weight:800;flex-shrink:0;">Créer mon compte</button>
       `;
@@ -6934,19 +6941,25 @@ alter table emails_sync disable row level security;</pre>
 
     const guestInit = localStorage.getItem('st_guest_init');
     if (!guestInit) {
-      reve = [
-        { id: "demo_reve_1", entreprise: "Doctolib", secteur: "Pharma / Santé", note: 5, derniere_visite: new Date().toISOString() },
-        { id: "demo_reve_2", entreprise: "Qonto", secteur: "Conseil / Tech", note: 4, derniere_visite: new Date(Date.now() - 86400000 * 2).toISOString() },
-        { id: "demo_reve_4", entreprise: "LVMH", secteur: "Luxe / Cosmétique", note: 4, derniere_visite: null }
-      ];
+      // Données enrichies : Coordonnées GPS pour la carte, descriptions pour l'IA
       statusMap = {
-        "demo_o1": { statut: "super", offer: { id: "demo_o1", titre: "Senior Product Manager", entreprise: "PayFit", lieu: "Paris", typeContrat: "CDI", salaire: "65k-75k", source: "LinkedIn", dateCreation: new Date().toISOString() } },
-        "demo_o2": { statut: "apostuler", offer: { id: "demo_o2", titre: "Product Owner", entreprise: "Doctolib", lieu: "Nantes", typeContrat: "CDI", source: "Welcome to the Jungle", dateCreation: new Date().toISOString() } }
+        "demo_o1": { statut: "super", offer: { id: "demo_o1", titre: "Senior Product Manager", entreprise: "PayFit", lieu: "Paris", lat: 48.8566, lon: 2.3522, typeContrat: "CDI", salaire: "65k-75k", source: "LinkedIn", dateCreation: new Date().toISOString(), description: "Vos missions : Définir la vision produit, collaborer avec l'ingénierie et le design, analyser les KPIs. Profil : 5+ années d'expérience en PM, forte appétence technique, méthodologie Scrum." } },
+        "demo_o2": { statut: "apostuler", offer: { id: "demo_o2", titre: "Product Owner", entreprise: "Doctolib", lieu: "Nantes", lat: 47.2184, lon: -1.5536, typeContrat: "CDI", source: "Welcome to the Jungle", dateCreation: new Date().toISOString(), description: "Vous gérerez le backlog, rédigerez les user stories, et mènerez les rituels agiles au sein de l'équipe Patient Experience." } },
+        "demo_o3": { statut: "reflexion", offer: { id: "demo_o3", titre: "Head of Product", entreprise: "Qonto", lieu: "Lyon", lat: 45.764, lon: 4.8357, typeContrat: "CDI", source: "Site Carrière", dateCreation: new Date().toISOString(), description: "Leadership d'une équipe de 10 PMs." } }
       };
       pipeline = [
         { id: "demo_p1", poste: "Product Builder", entreprise: "Alan", ville: "Paris", statut: "Entretien", niveau_envie: 5, date_envoi: new Date(Date.now() - 86400000 * 12).toISOString() },
         { id: "demo_p3", poste: "Product Manager", entreprise: "Lydia", ville: "Paris", statut: "Envoyé", niveau_envie: 3, date_envoi: new Date(Date.now() - 86400000 * 15).toISOString() } 
       ];
+      reve = [
+        { id: "demo_reve_1", entreprise: "Doctolib", secteur: "Pharma / Santé", note: 5, derniere_visite: new Date().toISOString() },
+        { id: "demo_reve_2", entreprise: "Qonto", secteur: "Conseil / Tech", note: 4, derniere_visite: new Date(Date.now() - 86400000 * 2).toISOString() }
+      ];
+      // NOUVEAU : Données pour peupler toutes les vues
+      entretiens = [ { id: "demo_ent_1", pipeline_id: "demo_p1", date: new Date().toISOString().slice(0,16), type: "Visio", notes: "Excellent fit culturel. Préparer des questions sur l'acquisition B2B pour le prochain tour." } ];
+      reseau = [ { id: "demo_res_1", nom: "Claire Martin", poste: "Talent Acquisition", entreprise: "Alan", email: "claire@alan.com", statut: "Contacté", date: new Date().toISOString() } ];
+      emails = [ { id: "demo_mail_1", thread_id: "t1", pipeline_id: "demo_p1", subject: "Suite à votre candidature chez Alan", snippet: "Bonjour, nous aimerions planifier un premier échange en visio...", date: new Date().toISOString(), is_from_me: false, is_read: true } ];
+
       saveGuestData();
       localStorage.setItem('st_guest_init', '1');
     } else {
@@ -6954,6 +6967,9 @@ alter table emails_sync disable row level security;</pre>
         statusMap = JSON.parse(localStorage.getItem('st_guest_status')) || {};
         pipeline = JSON.parse(localStorage.getItem('st_guest_pipe')) || [];
         reve = JSON.parse(localStorage.getItem('st_guest_reve')) || [];
+        entretiens = JSON.parse(localStorage.getItem('st_guest_entretiens')) || [];
+        reseau = JSON.parse(localStorage.getItem('st_guest_reseau')) || [];
+        emails = JSON.parse(localStorage.getItem('st_guest_emails')) || [];
       } catch(e) {}
     }
     
@@ -6961,6 +6977,7 @@ alter table emails_sync disable row level security;</pre>
     if (typeof renderVeille === "function") renderVeille();
     if (typeof renderPipeline === "function") renderPipeline();
     if (typeof renderReve === "function") renderReve();
+    if (typeof renderMessagerie === "function") renderMessagerie();
     
     setTimeout(startTour, 600);
   }
@@ -6970,6 +6987,9 @@ alter table emails_sync disable row level security;</pre>
     localStorage.setItem('st_guest_status', JSON.stringify(statusMap));
     localStorage.setItem('st_guest_pipe', JSON.stringify(pipeline));
     localStorage.setItem('st_guest_reve', JSON.stringify(reve));
+    localStorage.setItem('st_guest_entretiens', JSON.stringify(entretiens));
+    localStorage.setItem('st_guest_reseau', JSON.stringify(reseau));
+    localStorage.setItem('st_guest_emails', JSON.stringify(emails));
   }
 
   window.addEventListener('beforeunload', saveGuestData);
@@ -6987,51 +7007,59 @@ alter table emails_sync disable row level security;</pre>
         { 
           popover: { 
             title: 'Bienvenue sur Sam\'Travail 🚀', 
-            description: 'Ta recherche d\'emploi sur pilote automatique.<br><br><ul style="margin-left: 20px; margin-bottom: 10px;"><li><b>Récupère</b> toutes les infos de tes annonces favorites (quel que soit le site)</li><li><b>Centralise</b> tes candidatures via un suivi intelligent</li><li><b>Gère</b> ton réseau de marques cibles et découvres-en de nouvelles</li><li><b>Suis</b> tes e-mails et génère des <b>CV sur-mesure</b></li></ul>Lançons la démo pour voir comment ça marche !' 
+            description: 'Ta recherche d\'emploi sur pilote automatique.<br><br><ul style="margin-left: 20px; margin-bottom: 10px;"><li><b>Récupère</b> toutes les infos de tes annonces favorites (quel que soit le site)</li><li><b>Génère ton CV et tes accroches</b> sur-mesure grâce à l\'IA</li><li><b>Centralise</b> tes candidatures et gère ton réseau de marques</li><li><b>Suis</b> tes e-mails de recruteurs dans un espace dédié</li></ul>Lançons la démo !' 
           },
           onHighlightStarted: () => { if(typeof setView === "function") setView('aujourdhui'); }
         },
         { 
           popover: { 
             title: '1. Capturer depuis n\'importe où', 
-            description: 'Tu cherches tes annonces normalement (Indeed, LinkedIn, Welcome to the Jungle...). Quand l\'une d\'elles te plaît, tu ouvres tes favoris et tu cliques sur <b>Sam\'Travail</b>.<br><div class="dv"><div class="dv-top"><div class="dv-tabs"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-tab">💼 Offre d\'emploi</div></div><div class="dv-nav"><div class="dv-url"></div></div><div class="dv-bookmarks"><span class="dv-bm">🔗 Sam\'Travail <span class="dv-cursor">👆</span></span></div></div><div class="dv-body"><strong style="font-size:16px;color:#111;">Product Manager (H/F)</strong><br><span style="font-size:12px;color:var(--accent);">TechCorp Solutions</span><br><div style="height:6px;background:#e5e7eb;width:80%;margin-top:12px;border-radius:3px;"></div></div></div>' 
+            description: 'Tu cherches tes annonces normalement (Indeed, LinkedIn, Welcome to the Jungle...). Quand l\'une d\'elles te plaît, tu cliques sur <b>Sam\'Travail</b> dans tes favoris.<br><div class="dv"><div class="dv-top"><div class="dv-tabs"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-tab">💼 Offre d\'emploi</div></div><div class="dv-nav"><div class="dv-url"></div></div><div class="dv-bookmarks"><span class="dv-bm">🔗 Sam\'Travail <span class="dv-cursor">👆</span></span></div></div><div class="dv-body"><strong style="font-size:16px;color:#111;">Product Manager (H/F)</strong><br><span style="font-size:12px;color:var(--accent);">PayFit · Paris</span></div></div>' 
           } 
         },
         { 
           element: '#view-offres .sec-head', 
-          popover: { title: '2. Centraliser et Trier', description: 'Toutes tes offres (Indeed, sites carrières, etc.) arrivent au même endroit. L\'outil calcule un <b>score de match</b>. Tu les compares et décides : Coup de cœur, À postuler, ou Ignorer.', side: 'bottom' },
+          popover: { title: '2. Centraliser et Trier', description: 'Toutes tes offres arrivent ici. L\'outil calcule un <b>score de match</b>. Tu peux les comparer et décider : Coup de cœur, À postuler, ou Ignorer.', side: 'bottom' },
+          onHighlightStarted: () => { if(typeof setView === "function") setView('offres'); }
+        },
+        { 
+          popover: { 
+            title: '3. Le Super-Pouvoir : L\'IA', 
+            description: 'Quand tu ouvres une offre, une zone magique apparaît. <b>Dépose ton CV de base</b> : l\'IA analyse la description du poste et réécrit instantanément tes expériences pour correspondre parfaitement aux attentes !<br><div class="dv" style="margin-top:16px; padding:12px; display:flex; flex-direction:column; gap:10px;"><div style="border: 2px dashed var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 16px; text-align: center;"><div style="font-size:24px; margin-bottom:8px;">📄</div><strong style="color:var(--accent);">Glisse ton CV PDF ici</strong></div><div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 12.5px;"><span style="color:var(--gold);">✨ Accroche sur-mesure générée :</span><br><i style="color:#475569;">"Fort de mes 5 ans d'expérience en PM, je maîtrise les rituels Scrum et la vision Produit attendus pour ce poste chez PayFit..."</i></div></div>',
+            side: 'bottom'
+          },
           onHighlightStarted: () => { if(typeof setView === "function") setView('offres'); }
         },
         { 
           element: '#view-pipeline .add-bar', 
-          popover: { title: '3. Le Suivi Intelligent', description: 'Une fois postulée, l\'offre passe dans ton Kanban. Glisse tes candidatures d\'étape en étape. L\'outil t\'indique les <b>relances à faire en rouge</b> (comme ici pour Lydia).', side: 'bottom' },
+          popover: { title: '4. Le Suivi Intelligent', description: 'Une fois postulée, l\'offre passe dans ton Kanban. Glisse tes candidatures d\'étape en étape. L\'outil t\'indique les <b>relances à faire en rouge</b> (comme ici pour Lydia).', side: 'bottom' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('pipeline'); }
         },
         { 
           popover: { 
-            title: '4. Cibler des Entreprises', 
-            description: 'Sur le site institutionnel d\'une boîte qui te fait rêver, clique sur notre <b>second favori</b> pour l\'ajouter à tes marques cibles avec son logo.<br><div class="dv"><div class="dv-top"><div class="dv-tabs"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-tab">🏢 LVMH - Talents</div></div><div class="dv-nav"><div class="dv-url"></div></div><div class="dv-bookmarks"><span class="dv-bm" style="color:var(--gold);border-color:var(--gold);background:#fef3c7;">🔖 Sam\'Marque <span class="dv-cursor">👆</span></span></div></div><div class="dv-body"><strong style="font-size:16px;color:#111;">Groupe LVMH</strong><br><span style="font-size:12px;color:#6b7280;">Site Officiel Carrières</span></div></div>' 
+            title: '5. Cibler des Entreprises', 
+            description: '<b>💡 Astuce :</b> Rends-toi sur la page <i>"Carrières / Jobs"</i> du site institutionnel d\'une boîte qui te fait rêver, et clique sur notre second favori pour l\'ajouter à ton radar avec son logo !<br><div class="dv"><div class="dv-top"><div class="dv-tabs"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-tab">🏢 LVMH - Talents</div></div><div class="dv-nav"><div class="dv-url"></div></div><div class="dv-bookmarks"><span class="dv-bm" style="color:var(--gold);border-color:var(--gold);background:#fef3c7;">🔖 Sam\'Marque <span class="dv-cursor">👆</span></span></div></div><div class="dv-body"><strong style="font-size:16px;color:#111;">Groupe LVMH</strong><br><span style="font-size:12px;color:#6b7280;">Espace Candidats</span></div></div>' 
           } 
         },
         { 
           element: '#view-reve .add-bar', 
-          popover: { title: '5. Découvrir et Suivre', description: 'Garde un œil sur tes marques cibles et le temps écoulé depuis ta <b>dernière visite</b>. Surtout, l\'IA peut t\'en <b>suggérer de nouvelles</b> basées sur tes préférences !', side: 'bottom' },
+          popover: { title: '6. Ton Réseau de Marques', description: 'Garde un œil sur tes marques cibles et le temps écoulé depuis ta dernière visite. L\'IA peut t\'en <b>découvrir de nouvelles</b> basées sur ton profil !', side: 'bottom' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('reve'); }
         },
         { 
           element: '#view-messagerie .add-bar', 
-          popover: { title: '6. E-mails & CV 100% sur-mesure', description: 'Un espace dédié pour suivre tes e-mails de candidatures. Et point fort : l\'IA génère une <b>accroche et un CV personnalisés</b> qui reprennent les critères exacts de l\'annonce !', side: 'bottom' },
+          popover: { title: '7. Suivi des E-mails', description: 'Fini les e-mails de recruteurs perdus dans les spams. Cet espace dédié centralise tes conversations et les <b>relie directement à la bonne offre</b> du Kanban.', side: 'bottom' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('messagerie'); }
         },
         { 
           element: '#sidebar', 
-          popover: { title: '7. La Boîte à Outils', description: 'L\'application regorge d\'outils : une Carte géographique de tes candidatures, des Statistiques de conversion, un suivi de ton Réseau...' },
+          popover: { title: '8. La Boîte à Outils', description: 'Explore le menu : une <b>Carte</b> de tes opportunités (grâce aux données GPS), tes notes d\'<b>Entretiens</b>, ton <b>Réseau</b>, et même un moteur de recherche intégré connecté à l\'API <b>France Travail</b> !' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('carte'); }
         },
         { 
           popover: { 
-            title: 'À toi de tester !', 
-            description: 'Explore la démo librement. Quand tu es prêt à connecter ta propre clé IA, synchroniser ta boîte mail, et sauvegarder tes données pour de vrai...<br><br><b>Utilise la bannière en haut de l\'écran pour créer ton compte !</b>' 
+            title: 'À toi de jouer !', 
+            description: 'Explore l\'application librement avec ces données fictives. <br><br>Quand tu es prêt, <b>utilise la bannière en haut de l\'écran pour créer ton compte gratuit</b>, connecter ta propre clé IA et synchroniser ta boîte mail !' 
           },
           onHighlightStarted: () => { if(typeof setView === "function") setView('aujourdhui'); }
         }

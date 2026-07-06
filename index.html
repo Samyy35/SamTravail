@@ -20,6 +20,9 @@
 <!-- Driver.js pour la visite guidée (Pilier 1) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
 <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<!-- Driver.js pour la visite guidée (Pilier 1) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
 <!-- Typo : police système (SF Pro sur iOS/Mac), pas de dépendance externe -->
 <style>
   :root{
@@ -1438,6 +1441,23 @@
   #veille-grid.ultra .ocard-logo{width:30px;height:30px;font-size:14px;}
   #veille-grid.ultra .ocard-title{font-size:13.5px;}
 </style>
+/* ===== PILIER 1 : STYLE VISITE GUIDÉE & MINI-NAVIGATEUR ===== */
+.driver-popover { background-color: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border-light) !important; border-radius: 16px !important; box-shadow: var(--shadow-lg) !important; font-family: var(--font) !important; max-width: 400px !important; }
+.driver-popover-title { font-family: var(--display) !important; font-size: 19px !important; font-weight: 700 !important; margin-bottom: 12px !important; color: var(--text) !important; }
+.driver-popover-description { font-size: 13.5px !important; color: var(--text-dim) !important; line-height: 1.55 !important; margin-bottom: 16px !important; }
+.driver-popover-footer button { background-color: var(--surface-2) !important; border: 1px solid var(--border) !important; color: var(--text) !important; border-radius: 9px !important; font-weight: 600 !important; padding: 7px 14px !important; transition: 0.15s; font-family: var(--font) !important; text-shadow: none !important;}
+.driver-popover-footer button:hover { background-color: var(--surface-3) !important; }
+.driver-popover-footer .driver-popover-next-btn { background-color: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
+.driver-popover-footer .driver-popover-next-btn:hover { background-color: var(--accent-h) !important; }
+.driver-popover-progress-text { color: var(--text-mute) !important; font-size: 12px !important; font-weight: 600 !important; }
+/* Animations des mini-navigateurs (Favoris) */
+.dv { border:1px solid var(--border); border-radius:6px; overflow:hidden; background:var(--surface); margin-top:14px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+.dv-top { background:var(--surface-2); padding:6px; display:flex; gap:6px; border-bottom:1px solid var(--border); align-items:center; }
+.dv-dots span { display:inline-block; width:8px; height:8px; border-radius:50%; background:#d1d5db; }
+.dv-bm { display:inline-flex; align-items:center; font-size:10px; background:var(--accent-soft); color:var(--accent); padding:2px 6px; border-radius:4px; font-weight:bold; position:relative; }
+.dv-body { padding:12px; }
+.dv-cursor { position:absolute; left:60px; top:15px; font-size:18px; animation:dvClick 3s infinite ease-in-out; z-index:10; }
+@keyframes dvClick { 0%{transform:translate(30px, 30px); opacity:0;} 20%{transform:translate(0,0); opacity:1;} 50%{transform:scale(0.85); opacity:1;} 80%{transform:scale(1); opacity:1;} 100%{transform:translate(30px, 30px); opacity:0;} }
 </head>
 <body>
 <div id="authGate" class="auth-gate" style="display:none;">
@@ -1450,6 +1470,9 @@
       <div class="auth-field"><input class="crit-in" id="authPassword" type="password" placeholder="Mot de passe" autocomplete="current-password" required /></div>
       <div class="auth-error" id="authError" style="display:none;"></div>
       <button type="submit" class="btn btn-validate" id="authSubmitBtn">Se connecter</button>
+      <div style="text-align: center; margin-top: 14px;">
+  <button type="button" class="btn quiet sm" onclick="startGuestMode()" style="width: 100%;">Continuer en mode invité (Démo)</button>
+</div>
       <div style="text-align: center; margin-top: 14px;">
         <button type="button" class="btn quiet sm" onclick="startGuestMode()" style="width: 100%;">Continuer en mode invité (Démo)</button>
       </div>
@@ -6869,7 +6892,7 @@ alter table emails_sync disable row level security;</pre>
       return j || null;                          // renvoie la réponse (même ok:false) pour diagnostic ; null = réseau/délai
     }catch(e){ return null; }
   }
-  // ===== PILIER 1 : SANDBOX & VISITE GUIDÉE =====
+    // ===== PILIER 1 : SANDBOX & VISITE GUIDÉE (V3) =====
   let isGuest = false;
 
   function startGuestMode() {
@@ -6878,14 +6901,19 @@ alter table emails_sync disable row level security;</pre>
     
     const guestInit = localStorage.getItem('st_guest_init');
     if (!guestInit) {
+      // Données de démo riches pour soutenir le scénario
+      reve = [
+        { id: "demo_reve_1", entreprise: "Doctolib", secteur: "Pharma / Santé", note: 5, derniere_visite: new Date().toISOString() },
+        { id: "demo_reve_2", entreprise: "Qonto", secteur: "Conseil / Tech", note: 4, derniere_visite: new Date().toISOString() },
+        { id: "demo_reve_4", entreprise: "LVMH", secteur: "Luxe / Cosmétique", note: 4, derniere_visite: null }
+      ];
       statusMap = {
-        "demo_offer_1": { statut: "apostuler", offer: { id: "demo_offer_1", titre: "Product Manager", entreprise: "Qonto", lieu: "Paris", typeContrat: "CDI", salaire: "50k-60k", source: "Welcome to the Jungle", dateCreation: new Date().toISOString() }, updated_at: new Date().toISOString() }
+        "demo_o1": { statut: "super", offer: { id: "demo_o1", titre: "Senior Product Manager", entreprise: "PayFit", lieu: "Paris", typeContrat: "CDI", salaire: "65k-75k", source: "LinkedIn", dateCreation: new Date().toISOString() } },
+        "demo_o2": { statut: "apostuler", offer: { id: "demo_o2", titre: "Product Owner", entreprise: "Doctolib", lieu: "Nantes", typeContrat: "CDI", source: "Welcome to the Jungle", dateCreation: new Date().toISOString() } }
       };
       pipeline = [
-        { id: "demo_pipe_1", poste: "Product Builder", entreprise: "Alan", statut: "Screening", niveau_envie: 5, date_envoi: new Date().toISOString().slice(0,10) }
-      ];
-      reve = [
-        { id: "demo_reve_1", entreprise: "Doctolib", secteur: "Pharma / Santé", note: 5, derniere_visite: new Date().toISOString() }
+        { id: "demo_p1", poste: "Product Builder", entreprise: "Alan", ville: "Paris", statut: "Entretien", niveau_envie: 5, date_envoi: new Date(Date.now() - 86400000 * 12).toISOString() },
+        { id: "demo_p3", poste: "Product Manager", entreprise: "Lydia", ville: "Paris", statut: "Envoyé", niveau_envie: 3, date_envoi: new Date(Date.now() - 86400000 * 15).toISOString() } 
       ];
       saveGuestData();
       localStorage.setItem('st_guest_init', '1');
@@ -6912,7 +6940,6 @@ alter table emails_sync disable row level security;</pre>
     localStorage.setItem('st_guest_reve', JSON.stringify(reve));
   }
 
-  // Sauvegarde automatique et silencieuse (remplace la modification fastidieuse des requêtes base de données)
   window.addEventListener('beforeunload', saveGuestData);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') saveGuestData();
@@ -6921,16 +6948,60 @@ alter table emails_sync disable row level security;</pre>
   function startTour() {
     if(!window.driver || !window.driver.js) return;
     const driver = window.driver.js.driver;
+    
     const d = driver({
-      showProgress: true,
-      nextBtnText: 'Suivant',
-      prevBtnText: 'Précédent',
-      doneBtnText: 'Terminer',
+      showProgress: true, allowClose: true, nextBtnText: 'Suivant', prevBtnText: 'Précédent', doneBtnText: 'Créer mon compte',
       steps: [
-        { popover: { title: 'Bienvenue 👋', description: 'Ceci est ton espace personnel de recherche d\'emploi. Faisons un tour rapide.' } },
-        { element: '#view-aujourdhui .cockpit', popover: { title: '1. Le Cockpit', description: 'Ici, tu as une vue directe sur ce qui demande ton attention aujourd\'hui.' } },
-        { element: '#bmSetup', popover: { title: '2. Le Bookmarklet', description: 'Glisse ce bouton dans tes favoris. Quand tu es sur une offre, clique dessus pour l\'aspirer ici !', side: "bottom" } },
-        { element: '#nav [data-view="pipeline"]', popover: { title: '3. Le Suivi', description: 'Une fois que tu postules, fais avancer tes offres ici de "Envoyé" à "Offre reçue".' } }
+        { 
+          popover: { 
+            title: 'Bienvenue sur Sam\'Travail 🚀', 
+            description: 'Ta recherche d\'emploi sur pilote automatique.<br><br><ul style="margin-left: 20px; margin-bottom: 10px;"><li><b>Aspire</b> des offres depuis n\'importe quel site</li><li><b>Trie</b> et postule via un suivi intelligent</li><li><b>Gère</b> ton réseau de marques cibles</li><li><b>Centralise</b> tes documents et e-mails</li></ul>Lançons la démo pour voir comment ça marche !' 
+          },
+          onHighlightStarted: () => { if(typeof setView === "function") setView('aujourdhui'); }
+        },
+        { 
+          popover: { 
+            title: '1. Trouver et Aspirer', 
+            description: 'Tu cherches tes offres normalement sur Google, LinkedIn ou Welcome to the Jungle. Quand une offre te plaît, tu cliques sur notre <b>favori magique</b>.<br><div class="dv"><div class="dv-top"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-bm">🔗 Sam\'Travail <span class="dv-cursor">👆</span></div></div><div class="dv-body"><strong style="font-size:14px;color:#111;">Product Manager (H/F)</strong><br><span style="font-size:11px;color:var(--accent);">TechCorp Solutions</span><br><div style="height:4px;background:#e5e7eb;width:80%;margin-top:8px;border-radius:2px;"></div></div></div>' 
+          } 
+        },
+        { 
+          element: '#view-offres .sec-head', 
+          popover: { title: '2. Trier les offres', description: 'Les offres aspirées arrivent ici, formatées et enrichies. Tu peux les comparer, voir leur score de match, et décider : Coup de cœur, À postuler, ou Ignorer.' },
+          onHighlightStarted: () => { if(typeof setView === "function") setView('offres'); }
+        },
+        { 
+          element: '#view-pipeline .add-bar', 
+          popover: { title: '3. Suivre comme un Pro', description: 'Une fois postulée, l\'offre passe dans ton Kanban. Tu la glisses vers "Entretien" ou "Offre reçue". Les relances à faire apparaissent en rouge (comme ici pour Lydia).' },
+          onHighlightStarted: () => { if(typeof setView === "function") setView('pipeline'); }
+        },
+        { 
+          popover: { 
+            title: '4. Cibler des Marques', 
+            description: 'Tu parcours le site institutionnel d\'une boîte qui te fait rêver ? Clique sur notre <b>second favori</b> pour l\'ajouter à ton carnet d\'adresses, avec son logo.<br><div class="dv"><div class="dv-top"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-bm" style="color:var(--gold);border-color:var(--gold);background:#fef3c7;">🔖 Sam\'Marque <span class="dv-cursor">👆</span></div></div><div class="dv-body"><strong style="font-size:14px;color:#111;">Groupe LVMH</strong><br><span style="font-size:11px;color:#6b7280;">Site Carrières & Talents</span></div></div>' 
+          } 
+        },
+        { 
+          element: '#view-reve .add-bar', 
+          popover: { title: '5. Tes Marques cibles', description: 'Ici, tu retrouves tes entreprises rêvées triées par secteur. Le bouton <b>Ouvrir en lot</b> permet d\'ouvrir tous leurs sites carrières d\'un seul clic pour ta veille matinale.' },
+          onHighlightStarted: () => { if(typeof setView === "function") setView('reve'); }
+        },
+        { 
+          element: '#sidebar', 
+          popover: { title: '6. La Boîte à outils', description: 'Sam\'Travail centralise tout. Tu as une <b>Carte</b> pour visualiser tes candidatures en France, des <b>Statistiques</b> complètes, et tes notes d\'<b>Entretiens</b>.' },
+          onHighlightStarted: () => { if(typeof setView === "function") setView('carte'); }
+        },
+        { 
+          element: '#view-messagerie .add-bar', 
+          popover: { title: '7. L\'Automatisation E-mail', description: 'L\'outil peut se lier à ta boîte mail. Si un recruteur répond, Sam\'Travail lit le mail et met automatiquement à jour le statut dans ton Kanban !' },
+          onHighlightStarted: () => { if(typeof setView === "function") setView('messagerie'); }
+        },
+        { 
+          popover: { 
+            title: 'À toi de jouer !', 
+            description: 'Tu es actuellement en <b>Mode Démo</b>. <br><br>Pour passer à la vitesse supérieure, connecter ta propre clé IA (pour formater tes CV) et brancher ta boîte mail, tu dois déployer ton propre environnement sécurisé.<br><br><b>Rafraîchis la page</b> et connecte-toi pour commencer !' 
+          } 
+        }
       ]
     });
     d.drive();

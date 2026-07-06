@@ -17,6 +17,9 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<!-- Driver.js pour la visite guidée (Pilier 1) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
 <!-- Typo : police système (SF Pro sur iOS/Mac), pas de dépendance externe -->
 <style>
   :root{
@@ -1447,6 +1450,9 @@
       <div class="auth-field"><input class="crit-in" id="authPassword" type="password" placeholder="Mot de passe" autocomplete="current-password" required /></div>
       <div class="auth-error" id="authError" style="display:none;"></div>
       <button type="submit" class="btn btn-validate" id="authSubmitBtn">Se connecter</button>
+      <div style="text-align: center; margin-top: 14px;">
+        <button type="button" class="btn quiet sm" onclick="startGuestMode()" style="width: 100%;">Continuer en mode invité (Démo)</button>
+      </div>
     </form>
   </div>
 </div>
@@ -6862,6 +6868,72 @@ alter table emails_sync disable row level security;</pre>
       const j = await r.json();
       return j || null;                          // renvoie la réponse (même ok:false) pour diagnostic ; null = réseau/délai
     }catch(e){ return null; }
+  }
+  // ===== PILIER 1 : SANDBOX & VISITE GUIDÉE =====
+  let isGuest = false;
+
+  function startGuestMode() {
+    isGuest = true;
+    document.getElementById('authGate').style.display = 'none';
+    
+    const guestInit = localStorage.getItem('st_guest_init');
+    if (!guestInit) {
+      statusMap = {
+        "demo_offer_1": { statut: "apostuler", offer: { id: "demo_offer_1", titre: "Product Manager", entreprise: "Qonto", lieu: "Paris", typeContrat: "CDI", salaire: "50k-60k", source: "Welcome to the Jungle", dateCreation: new Date().toISOString() }, updated_at: new Date().toISOString() }
+      };
+      pipeline = [
+        { id: "demo_pipe_1", poste: "Product Builder", entreprise: "Alan", statut: "Screening", niveau_envie: 5, date_envoi: new Date().toISOString().slice(0,10) }
+      ];
+      reve = [
+        { id: "demo_reve_1", entreprise: "Doctolib", secteur: "Pharma / Santé", note: 5, derniere_visite: new Date().toISOString() }
+      ];
+      saveGuestData();
+      localStorage.setItem('st_guest_init', '1');
+    } else {
+      try {
+        statusMap = JSON.parse(localStorage.getItem('st_guest_status')) || {};
+        pipeline = JSON.parse(localStorage.getItem('st_guest_pipe')) || [];
+        reve = JSON.parse(localStorage.getItem('st_guest_reve')) || [];
+      } catch(e) {}
+    }
+    
+    if (typeof renderCockpit === "function") renderCockpit();
+    if (typeof renderVeille === "function") renderVeille();
+    if (typeof renderPipeline === "function") renderPipeline();
+    if (typeof renderReve === "function") renderReve();
+    
+    setTimeout(startTour, 600);
+  }
+
+  function saveGuestData() {
+    if (!isGuest) return;
+    localStorage.setItem('st_guest_status', JSON.stringify(statusMap));
+    localStorage.setItem('st_guest_pipe', JSON.stringify(pipeline));
+    localStorage.setItem('st_guest_reve', JSON.stringify(reve));
+  }
+
+  // Sauvegarde automatique et silencieuse (remplace la modification fastidieuse des requêtes base de données)
+  window.addEventListener('beforeunload', saveGuestData);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') saveGuestData();
+  });
+
+  function startTour() {
+    if(!window.driver || !window.driver.js) return;
+    const driver = window.driver.js.driver;
+    const d = driver({
+      showProgress: true,
+      nextBtnText: 'Suivant',
+      prevBtnText: 'Précédent',
+      doneBtnText: 'Terminer',
+      steps: [
+        { popover: { title: 'Bienvenue 👋', description: 'Ceci est ton espace personnel de recherche d\'emploi. Faisons un tour rapide.' } },
+        { element: '#view-aujourdhui .cockpit', popover: { title: '1. Le Cockpit', description: 'Ici, tu as une vue directe sur ce qui demande ton attention aujourd\'hui.' } },
+        { element: '#bmSetup', popover: { title: '2. Le Bookmarklet', description: 'Glisse ce bouton dans tes favoris. Quand tu es sur une offre, clique dessus pour l\'aspirer ici !', side: "bottom" } },
+        { element: '#nav [data-view="pipeline"]', popover: { title: '3. Le Suivi', description: 'Une fois que tu postules, fais avancer tes offres ici de "Envoyé" à "Offre reçue".' } }
+      ]
+    });
+    d.drive();
   }
 </script>
 </body>

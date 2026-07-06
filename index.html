@@ -6911,18 +6911,28 @@ alter table emails_sync disable row level security;</pre>
       return j || null;                          // renvoie la réponse (même ok:false) pour diagnostic ; null = réseau/délai
     }catch(e){ return null; }
   }
-  // ===== PILIER 1 : SANDBOX & VISITE GUIDÉE (V5 - Scénario Complet & IA) =====
+  // ===== PILIER 1 : SANDBOX & VISITE GUIDÉE (V8 - Prêt pour Production) =====
   let isGuest = false;
 
   window.exitGuestMode = function() {
     isGuest = false;
-    document.getElementById('authGate').style.display = 'flex';
+    // Le reload nettoie toute la mémoire : le bandeau disparaît et la vraie synchro e-mail est restaurée !
+    window.location.reload(); 
   };
 
   function startGuestMode() {
     isGuest = true;
     document.getElementById('authGate').style.display = 'none';
     
+    // Blocage strict temporaire de la synchro automatique pour la session Démo
+    if (typeof syncEmails !== "undefined") window.syncEmails = function() { console.log("Sync bloquée (Démo)"); };
+    if (typeof initGoogleAuth !== "undefined") window.initGoogleAuth = function() { console.log("Auth bloquée (Démo)"); };
+    if (typeof handleAuthClick !== "undefined") window.handleAuthClick = function() { alert("La connexion réelle est désactivée en mode Démo."); };
+    const style = document.createElement('style');
+    style.innerHTML = `iframe[src*="google"], .g_id_signin { display: none !important; }`;
+    document.head.appendChild(style);
+
+    // Injection de la bannière
     if (!document.getElementById('guestBanner')) {
       const banner = document.createElement('div');
       banner.id = 'guestBanner';
@@ -6941,24 +6951,68 @@ alter table emails_sync disable row level security;</pre>
 
     const guestInit = localStorage.getItem('st_guest_init');
     if (!guestInit) {
-      // Données enrichies : Coordonnées GPS pour la carte, descriptions pour l'IA
+      // DONNÉES ENRICHIES (Avec la vraie description complète de Thales)
       statusMap = {
-        "demo_o1": { statut: "super", offer: { id: "demo_o1", titre: "Senior Product Manager", entreprise: "PayFit", lieu: "Paris", lat: 48.8566, lon: 2.3522, typeContrat: "CDI", salaire: "65k-75k", source: "LinkedIn", dateCreation: new Date().toISOString(), description: "Vos missions : Définir la vision produit, collaborer avec l'ingénierie et le design, analyser les KPIs. Profil : 5+ années d'expérience en PM, forte appétence technique, méthodologie Scrum." } },
-        "demo_o2": { statut: "apostuler", offer: { id: "demo_o2", titre: "Product Owner", entreprise: "Doctolib", lieu: "Nantes", lat: 47.2184, lon: -1.5536, typeContrat: "CDI", source: "Welcome to the Jungle", dateCreation: new Date().toISOString(), description: "Vous gérerez le backlog, rédigerez les user stories, et mènerez les rituels agiles au sein de l'équipe Patient Experience." } },
-        "demo_o3": { statut: "reflexion", offer: { id: "demo_o3", titre: "Head of Product", entreprise: "Qonto", lieu: "Lyon", lat: 45.764, lon: 4.8357, typeContrat: "CDI", source: "Site Carrière", dateCreation: new Date().toISOString(), description: "Leadership d'une équipe de 10 PMs." } }
+        "demo_o1": { statut: "super", offer: { id: "demo_o1", titre: "Master Planner Supply Chain", entreprise: "Thales", lieu: "Vendôme", lat: 47.795, lon: 1.066, typeContrat: "CDI", salaire: "50k-65k", source: "LinkedIn", dateCreation: new Date().toISOString(), description: `Lieu :
+Vendôme, France
+L'entreprise :
+Thales est un leader mondial des hautes technologies spécialisé dans trois secteurs d'activité : Défense & Sécurité, Aéronautique & Spatial, et Cyber & Digital.
+Le Groupe développe des produits et solutions qui contribuent à un monde plus sûr, plus respectueux de l'environnement et plus inclusif.
+Thales investit près de 4 milliards d'euros par an en Recherche & Développement, notamment dans des domaines clés de l'innovation tels que l'IA, la cybersécurité, le quantique, les technologies du cloud et la 6G.
+Thales compte près de 81 000 collaborateurs dans 68 pays.
+Le site de Vendôme est référent pour la production avionique et est facilement accessible en TGV depuis Paris et Tours.
+Avantages :
+Une réussite portée par notre excellence technologique, votre expérience et notre ambition partagée
+Un package de rémunération attractif
+Un développement des compétences en continu : parcours de formation, académies et communautés internes
+Un environnement inclusif, bienveillant et respectant l'équilibre des collaborateurs
+Un engagement sociétal et environnemental reconnu
+Missions :
+Prendre part à la planification stratégique des activités de production :
+Établir un Plan de Production (PDP) adapté aux besoins clients, aux contraintes industrielles et financières.
+Planifier et ordonnancer les activités pour garantir un flux continu et optimisé.
+Identifier et traiter les inadéquations entre capacité et demande, tout en alertant les parties prenantes.
+Superviser et optimiser les flux internes et externes via des outils Lean et le Value Stream Mapping (VSM).
+Accompagner les équipes dans l'adoption des bonnes pratiques supply chain et gérer les projets d'amélioration continue.
+Profil recherché :
+Titulaire d'un Bac+5 en supply chain.
+Expérience significative en planification (Master Planner, Demand Planner, S&OP Manager).
+Maîtrise des outils ERP (notamment SAP) et des méthodes FCTL.
+Expertise dans l'amélioration supply chain (Lean, VSM, gestion des flux produits).
+Organisation, rigueur, aisance relationnelle et esprit d'équipe.
+Conditions :
+Thales est une entreprise Handi-Engagée et reconnait tous les talents. La diversité est notre meilleur atout.` } },
+        "demo_o2": { statut: "apostuler", offer: { id: "demo_o2", titre: "Product Owner Expérimenté", entreprise: "Doctolib", lieu: "Nantes", lat: 47.2184, lon: -1.5536, typeContrat: "CDI", source: "Welcome to the Jungle", dateCreation: new Date().toISOString(), description: "En tant que Product Owner chez Doctolib, votre mission est de simplifier le quotidien du personnel soignant.\n\nResponsabilités :\n- Définir la roadmap produit en lien avec les utilisateurs.\n- Gérer le backlog, rédiger les user stories et animer les sprints.\n- Travailler étroitement avec les développeurs et les UX designers.\n\nProfil : Au moins 3 ans d'expérience en produit logiciel. Vous êtes orienté data et avez une forte empathie pour les utilisateurs." } },
+        "demo_o3": { statut: "apostuler", offer: { id: "demo_o3", titre: "Product Builder No-Code", entreprise: "Back Market", lieu: "Bordeaux", lat: 44.8378, lon: -0.5792, typeContrat: "CDI", source: "Site Carrière", dateCreation: new Date().toISOString(), description: "Rejoignez la licorne de l'économie circulaire !\nVotre mission : développer des outils internes pour rendre nos équipes opérationnelles 10x plus rapides.\n\nMissions : Automatisation des process via Make/Zapier. Création d'interfaces sur Airtable et Retool.\nProfil : Esprit logique, capacité à résoudre des problèmes complexes, et excellente communication." } },
+        "demo_o4": { statut: "reflexion", offer: { id: "demo_o4", titre: "Head of Product", entreprise: "Qonto", lieu: "Lyon", lat: 45.764, lon: 4.8357, typeContrat: "CDI", source: "LinkedIn", dateCreation: new Date().toISOString(), description: "Rejoignez la Fintech européenne B2B de référence.\n\nEn tant que Head of Product, vous dirigerez une équipe de 10 PMs travaillant sur le \"Core Banking\".\nVous définirez les OKRs, coacherez vos équipes et vous assurerez de l'excellence de la livraison." } }
       };
+      
       pipeline = [
         { id: "demo_p1", poste: "Product Builder", entreprise: "Alan", ville: "Paris", statut: "Entretien", niveau_envie: 5, date_envoi: new Date(Date.now() - 86400000 * 12).toISOString() },
-        { id: "demo_p3", poste: "Product Manager", entreprise: "Lydia", ville: "Paris", statut: "Envoyé", niveau_envie: 3, date_envoi: new Date(Date.now() - 86400000 * 15).toISOString() } 
+        { id: "demo_p2", poste: "Product Manager", entreprise: "Lydia", ville: "Paris", statut: "Envoyé", niveau_envie: 3, date_envoi: new Date(Date.now() - 86400000 * 15).toISOString() },
+        { id: "demo_p3", poste: "PM Payment", entreprise: "Swile", ville: "Montpellier", statut: "Screening", niveau_envie: 4, date_envoi: new Date(Date.now() - 86400000 * 3).toISOString() },
+        { id: "demo_p4", poste: "Senior PM", entreprise: "Sorare", ville: "Remote", statut: "Offre", niveau_envie: 5, date_envoi: new Date(Date.now() - 86400000 * 25).toISOString() }
       ];
+      
       reve = [
         { id: "demo_reve_1", entreprise: "Doctolib", secteur: "Pharma / Santé", note: 5, derniere_visite: new Date().toISOString() },
-        { id: "demo_reve_2", entreprise: "Qonto", secteur: "Conseil / Tech", note: 4, derniere_visite: new Date(Date.now() - 86400000 * 2).toISOString() }
+        { id: "demo_reve_2", entreprise: "Qonto", secteur: "Fintech", note: 4, derniere_visite: new Date(Date.now() - 86400000 * 2).toISOString() },
+        { id: "demo_reve_3", entreprise: "LVMH", secteur: "Luxe", note: 5, derniere_visite: null }
       ];
-      // NOUVEAU : Données pour peupler toutes les vues
-      entretiens = [ { id: "demo_ent_1", pipeline_id: "demo_p1", date: new Date().toISOString().slice(0,16), type: "Visio", notes: "Excellent fit culturel. Préparer des questions sur l'acquisition B2B pour le prochain tour." } ];
-      reseau = [ { id: "demo_res_1", nom: "Claire Martin", poste: "Talent Acquisition", entreprise: "Alan", email: "claire@alan.com", statut: "Contacté", date: new Date().toISOString() } ];
-      emails = [ { id: "demo_mail_1", thread_id: "t1", pipeline_id: "demo_p1", subject: "Suite à votre candidature chez Alan", snippet: "Bonjour, nous aimerions planifier un premier échange en visio...", date: new Date().toISOString(), is_from_me: false, is_read: true } ];
+      
+      entretiens = [ 
+        { id: "demo_ent_1", pipeline_id: "demo_p1", date: new Date(Date.now() + 86400000 * 2).toISOString().slice(0,16), type: "Visio", notes: "Préparer des questions sur l'acquisition B2B pour le prochain tour avec le CPO." },
+        { id: "demo_ent_2", pipeline_id: "demo_p3", date: new Date(Date.now() - 86400000 * 1).toISOString().slice(0,16), type: "Téléphone", notes: "Premier échange RH très positif. Attente de la prochaine étape technique." }
+      ];
+      
+      reseau = [ 
+        { id: "demo_res_1", nom: "Claire Martin", poste: "Talent Acquisition", entreprise: "Alan", email: "claire@alan.com", statut: "Contacté", date: new Date().toISOString() } 
+      ];
+      
+      emails = [ 
+        { id: "demo_mail_1", thread_id: "t1", pipeline_id: "demo_p1", subject: "Suite à votre candidature chez Alan", snippet: "Bonjour, nous aimerions planifier un premier échange en visio...", date: new Date().toISOString(), is_from_me: false, is_read: true },
+        { id: "demo_mail_2", thread_id: "t2", pipeline_id: "demo_p4", subject: "Proposition d'embauche - Sorare", snippet: "Félicitations ! Nous avons le plaisir de vous faire une offre...", date: new Date().toISOString(), is_from_me: false, is_read: false }
+      ];
 
       saveGuestData();
       localStorage.setItem('st_guest_init', '1');
@@ -7014,25 +7068,24 @@ alter table emails_sync disable row level security;</pre>
         { 
           popover: { 
             title: '1. Capturer depuis n\'importe où', 
-            description: 'Tu cherches tes annonces normalement (Indeed, LinkedIn, Welcome to the Jungle...). Quand l\'une d\'elles te plaît, tu cliques sur <b>Sam\'Travail</b> dans tes favoris.<br><div class="dv"><div class="dv-top"><div class="dv-tabs"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-tab">💼 Offre d\'emploi</div></div><div class="dv-nav"><div class="dv-url"></div></div><div class="dv-bookmarks"><span class="dv-bm">🔗 Sam\'Travail <span class="dv-cursor">👆</span></span></div></div><div class="dv-body"><strong style="font-size:16px;color:#111;">Product Manager (H/F)</strong><br><span style="font-size:12px;color:var(--accent);">PayFit · Paris</span></div></div>' 
+            description: 'Tu cherches tes annonces normalement (Indeed, LinkedIn...). Quand l\'une d\'elles te plaît, tu cliques sur <b>Sam\'Travail</b> dans tes favoris.<br><div class="dv"><div class="dv-top"><div class="dv-tabs"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-tab">💼 Offre d\'emploi</div></div><div class="dv-nav"><div class="dv-url"></div></div><div class="dv-bookmarks"><span class="dv-bm">🔗 Sam\'Travail <span class="dv-cursor">👆</span></span></div></div><div class="dv-body"><strong style="font-size:16px;color:#111;">Master Planner Supply Chain</strong><br><span style="font-size:12px;color:var(--accent);">Thales · Vendôme</span></div></div>' 
           } 
         },
         { 
-          element: '#view-offres .sec-head', 
-          popover: { title: '2. Centraliser et Trier', description: 'Toutes tes offres arrivent ici. L\'outil calcule un <b>score de match</b>. Tu peux les comparer et décider : Coup de cœur, À postuler, ou Ignorer.', side: 'bottom' },
+          element: '#view-offres', 
+          popover: { title: '2. Centraliser et Trier', description: 'Toutes tes offres (dont l\'offre Thales) arrivent ici. L\'outil calcule un <b>score de match</b> basé sur les descriptions. Compare et décide : Coup de cœur, À postuler, ou Ignorer.', align: 'center' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('offres'); }
         },
         { 
           popover: { 
             title: '3. Le Super-Pouvoir : L\'IA', 
-            description: 'Quand tu ouvres une offre, une zone magique apparaît. <b>Dépose ton CV de base</b> : l\'IA analyse la description du poste et réécrit instantanément tes expériences pour correspondre parfaitement aux attentes !<br><div class="dv" style="margin-top:16px; padding:12px; display:flex; flex-direction:column; gap:10px;"><div style="border: 2px dashed var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 16px; text-align: center;"><div style="font-size:24px; margin-bottom:8px;">📄</div><strong style="color:var(--accent);">Glisse ton CV PDF ici</strong></div><div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 12.5px;"><span style="color:var(--gold);">✨ Accroche sur-mesure générée :</span><br><i style="color:#475569;">"Fort de mes 5 ans d\'expérience en PM, je maîtrise les rituels Scrum et la vision Produit attendus pour ce poste chez PayFit..."</i></div></div>',
-            side: 'bottom'
+            description: 'Ouvre ton offre Thales : une zone magique apparaît. <b>Dépose ton CV de base</b> : l\'IA analyse la longue description du poste et réécrit instantanément tes expériences !<br><div class="dv" style="margin-top:16px; padding:12px; display:flex; flex-direction:column; gap:10px;"><div style="border: 2px dashed var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 16px; text-align: center;"><div style="font-size:24px; margin-bottom:8px;">📄</div><strong style="color:var(--accent);">Glisse ton CV PDF ici</strong></div><div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 13.5px;"><span style="color:var(--gold);">✨ Accroche sur-mesure générée :</span><br><i style="color:#475569;">"Fort de mon expertise sur l\'outil ERP SAP, je suis prêt à optimiser le Plan de Production de Vendôme et à déployer la méthode Value Stream Mapping (VSM)..."</i></div></div>',
           },
           onHighlightStarted: () => { if(typeof setView === "function") setView('offres'); }
         },
         { 
-          element: '#view-pipeline .add-bar', 
-          popover: { title: '4. Le Suivi Intelligent', description: 'Une fois postulée, l\'offre passe dans ton Kanban. Glisse tes candidatures d\'étape en étape. L\'outil t\'indique les <b>relances à faire en rouge</b> (comme ici pour Lydia).', side: 'bottom' },
+          element: '#view-pipeline', 
+          popover: { title: '4. Le Suivi Intelligent', description: 'Une fois postulées, tes offres passent dans ce Kanban. L\'outil t\'indique les <b>relances à faire en rouge</b> (comme ici pour Lydia) pour ne rater aucune opportunité.', align: 'center' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('pipeline'); }
         },
         { 
@@ -7042,18 +7095,18 @@ alter table emails_sync disable row level security;</pre>
           } 
         },
         { 
-          element: '#view-reve .add-bar', 
-          popover: { title: '6. Ton Réseau de Marques', description: 'Garde un œil sur tes marques cibles et le temps écoulé depuis ta dernière visite. L\'IA peut t\'en <b>découvrir de nouvelles</b> basées sur ton profil !', side: 'bottom' },
+          element: '#view-reve', 
+          popover: { title: '6. Ton Réseau de Marques', description: 'Garde un œil sur tes marques cibles. L\'IA peut même t\'en <b>découvrir de nouvelles</b> basées sur ton profil !', align: 'center' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('reve'); }
         },
         { 
-          element: '#view-messagerie .add-bar', 
-          popover: { title: '7. Suivi des E-mails', description: 'Fini les e-mails de recruteurs perdus dans les spams. Cet espace dédié centralise tes conversations et les <b>relie directement à la bonne offre</b> du Kanban.', side: 'bottom' },
+          element: '#view-messagerie', 
+          popover: { title: '7. Suivi des E-mails', description: 'Cet espace dédié centralise tes conversations avec les recruteurs (ex: Alan, Sorare) et les <b>relie directement à la bonne offre</b> du Kanban.', align: 'center' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('messagerie'); }
         },
         { 
           element: '#sidebar', 
-          popover: { title: '8. La Boîte à Outils', description: 'Explore le menu : une <b>Carte</b> de tes opportunités (grâce aux données GPS), tes notes d\'<b>Entretiens</b>, ton <b>Réseau</b>, et même un moteur de recherche intégré connecté à l\'API <b>France Travail</b> !' },
+          popover: { title: '8. La Boîte à Outils', description: 'Explore le menu de gauche : tes notes d\'<b>Entretiens</b>, ton <b>Réseau</b>, une <b>Carte</b> de tes opportunités, et même un moteur de recherche connecté à <b>France Travail</b> !' },
           onHighlightStarted: () => { if(typeof setView === "function") setView('carte'); }
         },
         { 

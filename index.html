@@ -1479,34 +1479,48 @@
   .dv-body { padding:20px 24px; position:relative; }
   .dv-cursor { position:absolute; left:75px; top:40px; font-size:26px; animation:dvClick 3s cubic-bezier(.2,.8,.3,1) infinite; z-index:10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
   @keyframes dvClick { 0%{transform:translate(50px, 50px); opacity:0;} 15%{transform:translate(50px, 50px); opacity:1;} 40%{transform:translate(0,0); opacity:1;} 50%{transform:scale(0.85); opacity:1;} 70%{transform:scale(1); opacity:1;} 100%{transform:translate(50px, 50px); opacity:0;} }
-/* ===== WIZARD "APPLE STYLE" (Pills & Animations) ===== */
-  #wizardModal { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: opacity 0.3s; }
-  .wiz-box { background: var(--surface); border-radius: 24px; width: 100%; max-width: 540px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); position: relative; overflow: hidden; }
-  .wiz-header { text-align: center; margin-bottom: 24px; }
-  .wiz-title { font-family: var(--display); font-size: 26px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.02em; }
-  .wiz-subtitle { font-size: 14.5px; color: var(--text-mute); }
+/* ===== WIZARD "APPLE STYLE" V4 (Tree & Premium) ===== */
+  #wizardModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9999; align-items: center !important; justify-content: center !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: opacity 0.3s ease; }
   
-  /* Les petits points de progression */
-  .wiz-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; }
-  .wiz-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-  .wiz-dot.active { background: var(--accent); width: 24px; }
+  .wiz-box { background: rgba(255, 255, 255, 0.85); border-radius: 32px; width: 90vw; max-width: 800px; max-height: 85vh; padding: 40px; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.5); display: flex; flex-direction: column; overflow: hidden; }
+  
+  /* En-tête fixe */
+  .wiz-header { text-align: center; margin-bottom: 24px; flex-shrink: 0; }
+  .wiz-title { font-family: var(--display, system-ui); font-size: 32px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.03em; color: #111; }
+  .wiz-subtitle { font-size: 16px; color: #555; }
+  
+  .wiz-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-shrink: 0; }
+  .wiz-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.1); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .wiz-dot.active { background: var(--accent, #ff5f56); width: 32px; }
 
-  /* Les étapes */
-  .wiz-step { display: none; animation: slideUp 0.4s ease forwards; }
-  .wiz-step.active { display: block; }
+  /* Corps scrollable (Évite de casser l'écran) */
+  .wiz-step { display: none; flex-direction: column; flex-grow: 1; overflow: hidden; animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  .wiz-step.active { display: flex; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Le design des bulles (Pills) */
-  .wiz-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 32px; }
-  .wiz-pill { padding: 12px 24px; border-radius: 30px; border: 2px solid var(--border-light); background: var(--surface-2); color: var(--text); font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); user-select: none; }
-  .wiz-pill:hover { transform: scale(1.05); border-color: var(--accent-soft); }
-  .wiz-pill.selected { background: var(--accent); color: #fff; border-color: var(--accent); transform: scale(1.1); box-shadow: 0 8px 16px rgba(var(--accent-rgb, 0,0,0), 0.25); }
+  .wiz-content-scroll { overflow-y: auto; overflow-x: hidden; padding: 10px; margin: 0 -10px; flex-grow: 1; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.2) transparent; }
+  .wiz-content-scroll::-webkit-scrollbar { width: 6px; }
+  .wiz-content-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
 
-  .wiz-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 24px; }
-  .wiz-btn-back { background: transparent; border: none; color: var(--text-mute); font-weight: 600; cursor: pointer; font-size: 14px; }
-  .wiz-btn-back:hover { color: var(--text); }
-  .wiz-btn-next { background: var(--text); color: var(--surface); border: none; border-radius: 12px; padding: 12px 28px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
-  .wiz-btn-next:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  /* Input magique & Titres de l'arbre */
+  .wiz-custom-input { width: 100%; padding: 16px 24px; border-radius: 20px; border: 1.5px solid rgba(0,0,0,0.1); margin-bottom: 16px; font-family: inherit; font-size: 15px; background: rgba(255,255,255,0.5); color: #111; transition: 0.2s; outline: none; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+  .wiz-custom-input:focus { border-color: var(--accent, #ff5f56); background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+  .wiz-group-title { font-size: 15px; font-weight: 700; color: #333; margin: 16px 0 12px 8px; display: flex; align-items: center; gap: 8px; }
+  .wiz-group-title::before { content: "↳"; color: var(--accent, #ff5f56); font-weight: bold; font-size: 18px; }
+
+  /* Les Pilules */
+  .wiz-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  .wiz-pill { padding: 12px 20px; border-radius: 40px; border: 1px solid rgba(0,0,0,0.08); background: #fff; color: #222; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; user-select: none; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: inline-flex; align-items: center; }
+  .wiz-pill:hover { transform: scale(1.02); border-color: rgba(0,0,0,0.2); }
+  .wiz-pill.selected { background: var(--accent, #ff5f56); color: #fff; border-color: var(--accent, #ff5f56); transform: scale(1.05); box-shadow: 0 8px 16px rgba(var(--accent-rgb, 255,95,86), 0.3); }
+
+  /* Footer fixe */
+  .wiz-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 24px; margin-top: 16px; flex-shrink: 0; }
+  .wiz-btn-back { background: transparent; border: none; color: #777; font-weight: 600; cursor: pointer; font-size: 16px; padding: 10px; transition: 0.2s; }
+  .wiz-btn-back:hover { color: #111; }
+  .wiz-btn-next { background: #111; color: #fff; border: none; border-radius: 20px; padding: 16px 36px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+  .wiz-btn-next:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.25); background: #000; }
   /* ===== SCORE V2 TOOLTIP ===== */
   .match-badge { position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; cursor: help; border: 1px solid transparent; }
   .match-badge.score-high { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
@@ -1524,7 +1538,7 @@
 </style>
 </head>
 <body>
- <div id="wizardModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center;">
+<div id="wizardModal">
     <div class="wiz-box">
       <div class="wiz-dots" id="wizDots">
         <div class="wiz-dot active"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div>
@@ -1532,76 +1546,72 @@
 
       <div class="wiz-step active" id="wStep1">
         <div class="wiz-header">
-          <div class="wiz-title">Quelles langues parles-tu ?</div>
-          <div class="wiz-subtitle">Critère éliminatoire pour l'algorithme.</div>
+          <div class="wiz-title">Quelles langues maîtrises-tu ?</div>
+          <div class="wiz-subtitle">L'algorithme filtrera les offres incompatibles.</div>
         </div>
-        <div class="wiz-grid">
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Français</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Anglais</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Espagnol</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Allemand</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Italien</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Néerlandais</div>
+        <div class="wiz-content-scroll">
+          <input type="text" class="wiz-custom-input" placeholder="🗣️ Une autre langue ? Tape ici et fais Entrée..." onkeypress="addCustomPill(event, 'gridLangues')">
+          <div class="wiz-grid" id="gridLangues">
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Français</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Anglais</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Espagnol</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Allemand</div>
+          </div>
         </div>
       </div>
 
       <div class="wiz-step" id="wStep2">
         <div class="wiz-header">
           <div class="wiz-title">Où souhaites-tu travailler ?</div>
-          <div class="wiz-subtitle">Zone globale pour orienter le radar.</div>
+          <div class="wiz-subtitle">Choisis tes zones géographiques.</div>
         </div>
-        <div class="wiz-grid">
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Europe</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Amérique du Nord</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Asie-Pacifique</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Moyen-Orient</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">🌎 Remote Global</div>
+        <div class="wiz-content-scroll">
+          <div class="wiz-grid" id="gridRegions">
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Europe</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Amérique du Nord</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Asie</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Moyen-Orient</div>
+          </div>
         </div>
       </div>
 
       <div class="wiz-step" id="wStep3">
         <div class="wiz-header">
           <div class="wiz-title">Des pays en particulier ?</div>
-          <div class="wiz-subtitle">Affinaison géographique (Optionnel).</div>
+          <div class="wiz-subtitle">Affinaison selon tes régions (Optionnel).</div>
         </div>
-        <div class="wiz-grid">
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">France</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Belgique</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Suisse</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Canada</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Royaume-Uni</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Espagne</div>
-        </div>
+        <div class="wiz-content-scroll">
+          <input type="text" class="wiz-custom-input" placeholder="🌍 Ajoute un pays manuellement et fais Entrée..." onkeypress="addCustomPill(event, 'customPaysGrid')">
+          <div class="wiz-grid" id="customPaysGrid"></div> <div id="dynamicPaysContainer"></div> </div>
       </div>
 
       <div class="wiz-step" id="wStep4">
         <div class="wiz-header">
           <div class="wiz-title">Quels secteurs t'attirent ?</div>
-          <div class="wiz-subtitle">Pour extrapoler les cultures d'entreprise.</div>
+          <div class="wiz-subtitle">Sélectionne tes industries de prédilection.</div>
         </div>
-        <div class="wiz-grid">
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Tech & Logiciel</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Luxe & Cosmétique</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Pharma & Santé</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Industrie</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Énergie & Climat</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Finance & Banque</div>
+        <div class="wiz-content-scroll">
+          <div class="wiz-grid" id="gridSecteurs">
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Pharma, Santé & Sciences</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Supply Chain, Logistique & Transport</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Tech, Data & Logiciel</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Industrie, Aéronautique & Naval</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Retail, FMCG & Distribution</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Conseil, Stratégie & Audit</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Finance, Banque & Assurance</div>
+            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Énergie & Environnement</div>
+          </div>
         </div>
       </div>
 
       <div class="wiz-step" id="wStep5">
         <div class="wiz-header">
-          <div class="wiz-title">Tes cœurs de métier ?</div>
-          <div class="wiz-subtitle">L'IA déduira les mots-clés associés.</div>
+          <div class="wiz-title">Tes intitulés de postes ?</div>
+          <div class="wiz-subtitle">Ciblés selon tes secteurs de prédilection.</div>
         </div>
-        <div class="wiz-grid">
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Supply Chain</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Product Management</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Data & IA</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Sales & Business</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Marketing</div>
-          <div class="wiz-pill" onclick="this.classList.toggle('selected')">Opérations</div>
-        </div>
+        <div class="wiz-content-scroll">
+          <input type="text" class="wiz-custom-input" placeholder="💼 Un poste précis ? Tape ici et fais Entrée..." onkeypress="addCustomPill(event, 'customPostesGrid')">
+          <div class="wiz-grid" id="customPostesGrid"></div> <div id="dynamicPostesContainer"></div> </div>
       </div>
 
       <div class="wiz-footer">
@@ -7292,20 +7302,102 @@ function startTour() {
       }
     };
   }
- // ===== PILIER 2 : WIZARD V2 (APPLE STYLE) & EXTRAPOLATION =====
+ // ===== PILIER 2 : WIZARD V4 (ARBRE DE DÉCISION & KNOWLEDGE GRAPH) =====
   let wizCurrentStep = 1;
   const wizTotalSteps = 5;
   let userProfile = { languages: [], regions: [], countries: [], sectors: [], jobs: [], keywords: [] };
   
+  const taxonomy = {
+    regions: {
+      "Europe": ["France", "Belgique", "Suisse", "Royaume-Uni", "Allemagne", "Espagne", "Italie", "Pays-Bas", "Suède", "Luxembourg"],
+      "Amérique du Nord": ["États-Unis", "Canada", "Mexique"],
+      "Asie": ["Singapour", "Japon", "Chine", "Corée du Sud", "Hong Kong"],
+      "Moyen-Orient": ["Émirats Arabes Unis", "Qatar", "Arabie Saoudite"]
+    },
+    secteurs: {
+      "Pharma, Santé & Sciences": ["Pharmacien", "Chef de Produit Santé", "Biologiste", "Data Manager Clinique", "Ingénieur Qualité Santé", "Supply Planner Pharma"],
+      "Supply Chain, Logistique & Transport": ["Global Supply Planner", "Demand Planner", "Master Planner", "Ordonnanceur SAP", "Supply Chain Manager", "S&OP Manager", "Acheteur", "Pilote de Flux"],
+      "Tech, Data & Logiciel": ["Product Manager", "Product Owner", "Data Analyst", "Data Scientist", "Développeur Fullstack", "UX/UI Designer", "Scrum Master", "CTO"],
+      "Industrie, Aéronautique & Naval": ["Chef de Projet Planning", "Ingénieur Méthodes", "Responsable Production", "Ingénieur Qualité", "Lean Manager", "Chef de Projet Industriel"],
+      "Retail, FMCG & Distribution": ["Category Manager", "Retail Manager", "Directeur de Magasin", "Acheteur Retail", "Chef de Secteur"],
+      "Conseil, Stratégie & Audit": ["Consultant Stratégie", "Consultant Supply Chain", "Manager de Transition", "PMO", "Change Manager", "Auditeur Interne"],
+      "Finance, Banque & Assurance": ["Contrôleur de Gestion", "Analyste Financier", "M&A Analyst", "Directeur Financier (CFO)"],
+      "Énergie & Environnement": ["Chef de Projet EnR", "Ingénieur Transition", "Consultant RSE"]
+    }
+  };
+
   try { const saved = localStorage.getItem('st_user_profile'); if (saved) userProfile = JSON.parse(saved); } catch(e) {}
 
   function openWizard() {
     wizCurrentStep = 1;
     updateWizUI();
-    document.getElementById('wizardModal').style.display = 'flex';
+    document.getElementById('wizardModal').style.display = 'flex'; // Force le flex pour le centrage absolu
+  }
+
+  function extractWizData(stepId) {
+    return Array.from(document.getElementById(stepId).querySelectorAll('.wiz-pill.selected')).map(el => el.innerText);
+  }
+
+  function addCustomPill(event, gridId) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const val = event.target.value.trim();
+      if (val) {
+        const grid = document.getElementById(gridId);
+        const div = document.createElement('div');
+        div.className = 'wiz-pill selected'; 
+        div.innerText = val;
+        div.onclick = function() { this.classList.toggle('selected'); };
+        grid.insertBefore(div, grid.firstChild); 
+        event.target.value = ''; 
+      }
+    }
+  }
+
+  // Fonction génératrice de l'Arbre (Tree View)
+  function buildTree(containerId, sourceObj, parentSelections) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    
+    if (parentSelections.length === 0) {
+      container.innerHTML = '<div style="color:#777; font-size:14px; font-style:italic; text-align:center; padding: 20px;">Aucune catégorie sélectionnée précédemment.</div>';
+      return;
+    }
+
+    parentSelections.forEach(parent => {
+      if(sourceObj[parent]) {
+        // 1. Le Titre du groupe ("↳ En Europe")
+        const title = document.createElement('div');
+        title.className = 'wiz-group-title';
+        title.innerText = parent;
+        container.appendChild(title);
+        
+        // 2. La grille de mots associés
+        const grid = document.createElement('div');
+        grid.className = 'wiz-grid';
+        sourceObj[parent].forEach(child => {
+          const pill = document.createElement('div');
+          pill.className = 'wiz-pill';
+          pill.innerText = child;
+          pill.onclick = function() { this.classList.toggle('selected'); };
+          grid.appendChild(pill);
+        });
+        container.appendChild(grid);
+      }
+    });
   }
 
   function changeWizStep(dir) {
+    // Si on avance vers l'étape 3 (Génération de l'arbre des Pays)
+    if (wizCurrentStep === 2 && dir === 1) {
+      buildTree('dynamicPaysContainer', taxonomy.regions, extractWizData('wStep2'));
+    }
+    
+    // Si on avance vers l'étape 5 (Génération de l'arbre des Postes)
+    if (wizCurrentStep === 4 && dir === 1) {
+      buildTree('dynamicPostesContainer', taxonomy.secteurs, extractWizData('wStep4'));
+    }
+
     if (dir === 1 && wizCurrentStep === wizTotalSteps) {
       finishWizard();
       return;
@@ -7324,68 +7416,48 @@ function startTour() {
     document.getElementById('wizBtnNext').innerText = wizCurrentStep === wizTotalSteps ? 'Générer mon profil 🚀' : 'Continuer';
   }
 
-  function extractWizData(stepId) {
-    return Array.from(document.getElementById(stepId).querySelectorAll('.wiz-pill.selected')).map(el => el.innerText.toLowerCase());
-  }
-
   function finishWizard() {
     const btn = document.getElementById('wizBtnNext');
     btn.innerText = "Analyse algorithmique...";
     btn.style.background = "var(--accent)";
     
-    // Récupération des bulles sélectionnées
-    userProfile.languages = extractWizData('wStep1');
-    userProfile.regions = extractWizData('wStep2');
-    userProfile.countries = extractWizData('wStep3');
-    userProfile.sectors = extractWizData('wStep4');
-    userProfile.jobs = extractWizData('wStep5');
-
-    // EXTRAPOLATION : On crée une banque de mots-clés fusionnée pour le matching
-    userProfile.keywords = [...userProfile.regions, ...userProfile.countries, ...userProfile.sectors, ...userProfile.jobs];
+    // On extrait absolument toutes les pilules sélectionnées (Générées + Ajouts manuels)
+    const allSelected = Array.from(document.getElementById('wizardModal').querySelectorAll('.wiz-pill.selected'))
+                             .map(el => el.innerText.toLowerCase());
+                             
+    userProfile.languages = Array.from(document.getElementById('wStep1').querySelectorAll('.wiz-pill.selected')).map(el => el.innerText.toLowerCase());
+    userProfile.keywords = allSelected;
 
     setTimeout(() => {
       localStorage.setItem('st_user_profile', JSON.stringify(userProfile));
       document.getElementById('wizardModal').style.display = 'none';
-      btn.style.background = "var(--text)";
-      
-      // Mise à jour de l'interface
+      btn.style.background = "#111"; // Reset
       if (typeof renderOffres === "function") renderOffres();
-    }, 1200); // Petit délai pour simuler le calcul IA
+    }, 1200);
   }
 
-  // LE NOUVEAU SCORE CALCULATOR (Basé sur l'extrapolation)
   function calculateMatchScore(offer) {
     if (userProfile.keywords.length === 0 && userProfile.languages.length === 0) return { score: null, html: "Profil non configuré" };
     
-    let score = 0; 
-    let details = [];
+    let score = 0; let details = [];
     const textTarget = `${offer.titre || ""} ${offer.description || ""} ${offer.lieu || ""}`.toLowerCase();
     
-    // 1. DEALBREAKERS (Langues)
     if (userProfile.languages.length > 0) {
-      const missingLangs = userProfile.languages.filter(lang => !textTarget.includes(lang));
-      // Si une langue sélectionnée n'est pas dans l'offre (simplification) -> Malus lourd ou Dealbreaker
-      // Note: Dans la vraie vie, une offre française n'écrit pas toujours "français". On va plutôt valoriser.
       const foundLangs = userProfile.languages.filter(lang => textTarget.includes(lang));
       if (foundLangs.length > 0) details.push(`<span class="match-ok">✓ Langue cible détectée</span>`);
     }
 
-    // 2. EXTRAPOLATION (Mots-clés géographie, secteur, métier)
     let hits = 0;
     userProfile.keywords.forEach(kw => {
-      // Pour gérer les mots composés ou partiels (ex: "Supply Chain")
-      if (textTarget.includes(kw) || textTarget.includes(kw.split(' ')[0])) {
-        hits++;
-        score += 20;
-      }
+      if (textTarget.includes(kw) || textTarget.includes(kw.split(' ')[0])) { hits++; score += 20; }
     });
 
     if (hits > 2) details.push(`<span class="match-ok">✓ Parfaite adéquation métier/lieu</span>`);
     else if (hits > 0) details.push(`<span class="match-ok">✓ Quelques critères respectés</span>`);
     else details.push(`<span class="match-meh">✗ Profil très éloigné</span>`);
 
-    let finalScore = Math.min(Math.round((score / (userProfile.keywords.length * 15)) * 100) + 40, 99); // Formule douce
-    if (hits === 0) finalScore = Math.floor(Math.random() * 20) + 10; // Si rien ne matche, score très bas
+    let finalScore = Math.min(Math.round((score / (userProfile.keywords.length * 15)) * 100) + 40, 99);
+    if (hits === 0) finalScore = Math.floor(Math.random() * 20) + 10;
     
     return { score: finalScore, html: details.join('') };
   }

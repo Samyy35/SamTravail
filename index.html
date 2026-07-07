@@ -7113,12 +7113,17 @@ Thales est une entreprise Handi-Engagée et reconnait tous les talents. La diver
     if (document.visibilityState === 'hidden') saveGuestData();
   });
 
-  function startTour() {
+function startTour() {
     if(!window.driver || !window.driver.js) return;
     const driver = window.driver.js.driver;
     
     const d = driver({
       showProgress: true, allowClose: true, nextBtnText: 'Suivant', prevBtnText: 'Précédent', doneBtnText: 'C\'est compris !',
+      onDestroyStarted: () => {
+        // La magie opère ici : une fois la visite finie, on ouvre le profil !
+        if (isGuest) setTimeout(openWizard, 400);
+        d.destroy();
+      },
       steps: [
         { 
           popover: { 
@@ -7181,14 +7186,6 @@ Thales est une entreprise Handi-Engagée et reconnait tous les talents. La diver
       ]
     });
     d.drive();
-    const d = driver({
-      showProgress: true, allowClose: true, nextBtnText: 'Suivant', prevBtnText: 'Précédent', doneBtnText: 'C\'est compris !',
-      onDestroyStarted: () => {
-        // La magie opère ici : une fois la visite finie, on ouvre le profil !
-        if (isGuest) setTimeout(openWizard, 400);
-        d.destroy();
-      },
-      steps: [
   }
   // ===== GESTION AFFICHAGE E-MAILS HTML (IFRAME) =====
   function renderRichEmail(htmlContent) {

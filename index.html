@@ -1479,9 +1479,61 @@
   .dv-body { padding:20px 24px; position:relative; }
   .dv-cursor { position:absolute; left:75px; top:40px; font-size:26px; animation:dvClick 3s cubic-bezier(.2,.8,.3,1) infinite; z-index:10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
   @keyframes dvClick { 0%{transform:translate(50px, 50px); opacity:0;} 15%{transform:translate(50px, 50px); opacity:1;} 40%{transform:translate(0,0); opacity:1;} 50%{transform:scale(0.85); opacity:1;} 70%{transform:scale(1); opacity:1;} 100%{transform:translate(50px, 50px); opacity:0;} }
+/* ===== SCORE V2 TOOLTIP ===== */
+  .match-badge { position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; cursor: help; border: 1px solid transparent; }
+  .match-badge.score-high { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+  .match-badge.score-mid { background: #fef9c3; color: #166534; border-color: #fef08a; } /* Orange/Jaune */
+  .match-badge.score-low { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+  .match-badge.score-zero { background: #f3f4f6; color: #4b5563; border-color: #e5e7eb; }
+
+  .match-tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-lg); padding: 12px; border-radius: 8px; width: 240px; font-size: 12px; line-height: 1.5; color: var(--text); transition: 0.2s; z-index: 100; font-weight: normal; text-align: left; }
+  .match-badge:hover .match-tooltip { visibility: visible; opacity: 1; }
+  .match-tooltip span { display: block; margin-bottom: 4px; }
+  .match-tooltip span:last-child { margin-bottom: 0; }
+  .match-tooltip .dealbreaker { color: #dc2626; font-weight: 600; }
+  .match-tooltip .match-ok { color: #16a34a; }
+  .match-tooltip .match-meh { color: #6b7280; }
 </style>
 </head>
 <body>
+  <div id="wizardModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div class="modal-content" style="background: var(--surface); border-radius: 16px; width: 100%; max-width: 500px; padding: 24px; box-shadow: var(--shadow-lg);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-family: var(--display); font-size: 20px;">🎯 Mes Critères de Recherche</h2>
+        <button onclick="document.getElementById('wizardModal').style.display='none'" style="background:none; border:none; font-size: 24px; cursor: pointer; color: var(--text-mute);">&times;</button>
+      </div>
+      <p style="font-size: 13.5px; color: var(--text-dim); margin-bottom: 24px;">Renseigne tes préférences. L'algorithme attribuera un score de compatibilité à chaque offre aspirée.</p>
+      
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px;">📍 Localisation (Critère strict)</label>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="wizCity" class="inp" placeholder="Ex: Paris, Lyon..." style="flex: 1;">
+          <input type="number" id="wizRadius" class="inp" placeholder="Rayon (km)" value="30" style="width: 100px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px;">🗣️ Langues obligatoires (Critère strict)</label>
+        <div style="display: flex; gap: 12px; font-size: 13px; color: var(--text);">
+          <label><input type="checkbox" id="wizLangEn" value="anglais"> Anglais</label>
+          <label><input type="checkbox" id="wizLangEs" value="espagnol"> Espagnol</label>
+          <label><input type="checkbox" id="wizLangDe" value="allemand"> Allemand</label>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px;">💼 Mots-clés Métier (Critère bonus)</label>
+        <input type="text" id="wizJobs" class="inp" placeholder="Ex: Product Manager, Supply Chain... (séparés par virgules)" style="width: 100%;">
+      </div>
+
+      <div style="margin-bottom: 24px;">
+        <label style="display: block; font-weight: 600; font-size: 13px; margin-bottom: 8px;">💰 Salaire minimum ciblé (Critère bonus)</label>
+        <input type="number" id="wizSalary" class="inp" placeholder="Ex: 45000" style="width: 100%;">
+      </div>
+
+      <button class="btn primary" onclick="saveWizard()" style="width: 100%; justify-content: center;">Calculer mon Match Score</button>
+    </div>
+  </div>
 <div id="authGate" class="auth-gate" style="display:none;">
   <div class="auth-card">
     <div class="auth-brand"><span class="sb-logo">S</span><span>Sam'Travail</span></div>
@@ -7129,6 +7181,14 @@ Thales est une entreprise Handi-Engagée et reconnait tous les talents. La diver
       ]
     });
     d.drive();
+    const d = driver({
+      showProgress: true, allowClose: true, nextBtnText: 'Suivant', prevBtnText: 'Précédent', doneBtnText: 'C\'est compris !',
+      onDestroyStarted: () => {
+        // La magie opère ici : une fois la visite finie, on ouvre le profil !
+        if (isGuest) setTimeout(openWizard, 400);
+        d.destroy();
+      },
+      steps: [
   }
   // ===== GESTION AFFICHAGE E-MAILS HTML (IFRAME) =====
   function renderRichEmail(htmlContent) {
@@ -7158,6 +7218,113 @@ Thales est une entreprise Handi-Engagée et reconnait tous les talents. La diver
         iframe.style.overflowY = "auto";
       }
     };
+  }
+  // ===== PILIER 2 : WIZARD & MATCHING SCORE V2 =====
+  let userCriteria = { city: "", radius: 30, lat: null, lon: null, languages: [], jobs: [], minSalary: null };
+  try { const saved = localStorage.getItem('st_user_criteria'); if (saved) userCriteria = JSON.parse(saved); } catch(e) {}
+
+  function openWizard() {
+    document.getElementById('wizCity').value = userCriteria.city || "";
+    document.getElementById('wizRadius').value = userCriteria.radius || 30;
+    document.getElementById('wizJobs').value = (userCriteria.jobs || []).join(", ");
+    document.getElementById('wizSalary').value = userCriteria.minSalary || "";
+    document.getElementById('wizLangEn').checked = userCriteria.languages.includes("anglais");
+    document.getElementById('wizLangEs').checked = userCriteria.languages.includes("espagnol");
+    document.getElementById('wizLangDe').checked = userCriteria.languages.includes("allemand");
+    document.getElementById('wizardModal').style.display = 'flex';
+  }
+
+  async function saveWizard() {
+    const btn = document.querySelector('#wizardModal .btn.primary');
+    btn.innerText = "Calcul en cours...";
+    
+    userCriteria.city = document.getElementById('wizCity').value.trim();
+    userCriteria.radius = parseInt(document.getElementById('wizRadius').value) || 30;
+    userCriteria.minSalary = parseInt(document.getElementById('wizSalary').value) || null;
+    userCriteria.jobs = document.getElementById('wizJobs').value.split(',').map(j => j.trim().toLowerCase()).filter(j => j);
+    
+    userCriteria.languages = [];
+    if(document.getElementById('wizLangEn').checked) userCriteria.languages.push("anglais");
+    if(document.getElementById('wizLangEs').checked) userCriteria.languages.push("espagnol");
+    if(document.getElementById('wizLangDe').checked) userCriteria.languages.push("allemand");
+
+    // Géocodage magique et gratuit de la ville
+    if (userCriteria.city) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(userCriteria.city)}`);
+        const data = await res.json();
+        if (data && data.length > 0) { userCriteria.lat = parseFloat(data[0].lat); userCriteria.lon = parseFloat(data[0].lon); }
+      } catch(e) { console.error("Erreur de géocodage"); }
+    }
+
+    localStorage.setItem('st_user_criteria', JSON.stringify(userCriteria));
+    document.getElementById('wizardModal').style.display = 'none';
+    btn.innerText = "Calculer mon Match Score";
+    
+    // On rafraîchit l'affichage pour appliquer les nouveaux scores
+    if (typeof renderOffres === "function") renderOffres();
+    if (typeof renderCockpit === "function") renderCockpit();
+  }
+  // Au lieu d'écrire la note en dur, tu l'appelles dynamiquement :
+const matchData = calculateMatchScore(offer.offer);
+let badgeClass = "score-zero";
+if (matchData.score >= 75) badgeClass = "score-high";
+else if (matchData.score >= 40) badgeClass = "score-mid";
+else if (matchData.score > 0) badgeClass = "score-low";
+
+// L'injection HTML pour l'affichage :
+const scoreBadge = matchData.score !== null ? `
+  <div class="match-badge ${badgeClass}">
+    ${matchData.score}%
+    <div class="match-tooltip">${matchData.html}</div>
+  </div>` : '';
+
+  // Calcul de la distance GPS (Formule de Haversine)
+  function getDistanceKm(lat1, lon1, lat2, lon2) {
+    if(!lat1 || !lon1 || !lat2 || !lon2) return null;
+    const R = 6371; const dLat = (lat2-lat1)*Math.PI/180; const dLon = (lon2-lon1)*Math.PI/180;
+    const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function calculateMatchScore(offer) {
+    if (!userCriteria.city && userCriteria.jobs.length === 0) return { score: null, html: "Profil incomplet" };
+    
+    let score = 0; let maxScore = 0; let details = [];
+    const descLower = (offer.description || "").toLowerCase();
+    
+    // 1. DEALBREAKERS (Géographie & Langues)
+    if (userCriteria.lat && offer.lat) {
+      const dist = getDistanceKm(userCriteria.lat, userCriteria.lon, offer.lat, offer.lon);
+      if (dist > userCriteria.radius) return { score: 0, html: `<span class="dealbreaker">🛑 Hors zone (${Math.round(dist)}km)</span>` };
+      else details.push(`<span class="match-ok">✓ À ${Math.round(dist)}km (Zone OK)</span>`);
+    }
+    if (userCriteria.languages.length > 0) {
+      const langsInOffer = ["anglais", "espagnol", "allemand"].filter(l => descLower.includes(l));
+      const missing = langsInOffer.filter(l => !userCriteria.languages.includes(l));
+      if (missing.length > 0) return { score: 0, html: `<span class="dealbreaker">🛑 Langue manquante (${missing.join(',')})</span>` };
+      else if (langsInOffer.length > 0) details.push(`<span class="match-ok">✓ Langue requise parlée</span>`);
+    }
+
+    // 2. CRITÈRES PONDÉRÉS (Métier & Salaire)
+    if (userCriteria.jobs.length > 0) {
+      maxScore += 50;
+      const titleLower = (offer.titre || "").toLowerCase();
+      if (userCriteria.jobs.some(j => titleLower.includes(j) || descLower.includes(j))) { score += 50; details.push(`<span class="match-ok">✓ Mots-clés trouvés</span>`); }
+      else details.push(`<span class="match-meh">✗ Mots-clés absents</span>`);
+    }
+    if (userCriteria.minSalary && offer.salaire) {
+      maxScore += 30;
+      const salMatch = offer.salaire.match(/(\d+)/);
+      if (salMatch) {
+        const offerSal = parseInt(salMatch[1]) * (parseInt(salMatch[1]) < 1000 ? 1000 : 1);
+        if (offerSal >= userCriteria.minSalary) { score += 30; details.push(`<span class="match-ok">✓ Salaire cible OK</span>`); }
+        else { score += 15; details.push(`<span class="match-meh">~ Salaire un peu bas</span>`); }
+      }
+    }
+
+    const finalScore = maxScore === 0 ? 50 : Math.round((score / maxScore) * 100);
+    return { score: finalScore, html: details.join('') };
   }
 </script>
 </body>

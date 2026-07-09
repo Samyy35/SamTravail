@@ -41,19 +41,20 @@
     --glow:rgba(255,111,94,.20);
   }
   [data-theme="dark"]{
-    --bg:#0b0d12; --bg-2:#11141c; --surface:#171b24; --surface-2:#1f2430; --surface-3:#2a3040;
-    --border:#272d3a; --border-light:#38414f;
-    --text:#eef1f7; --text-dim:#9aa3b6; --text-mute:#626a7e;
-    --accent:#5b8def; --accent-h:#73a0f5; --accent-soft:rgba(91,141,239,.14);
-    --green:#22c55e; --green-soft:rgba(34,197,94,.14);
-    --orange:#f59e0b; --orange-soft:rgba(245,158,11,.14);
-    --red:#f0556d; --red-soft:rgba(240,85,109,.14);
-    --purple:#a87ffb; --purple-soft:rgba(168,127,251,.14);
-    --cyan:#22d3ee; --cyan-soft:rgba(34,211,238,.14);
+    /* Chantier 6 : plus de relief — fond nettement plus sombre que les cartes (avant : quasi identiques) */
+    --bg:#07080c; --bg-2:#0c0e13; --surface:#1b202b; --surface-2:#242b38; --surface-3:#2f3746;
+    --border:#2e3544; --border-light:#414a5c;
+    --text:#f1f3f9; --text-dim:#9ea8bc; --text-mute:#67708a;
+    --accent:#5b8def; --accent-h:#79a4f6; --accent-soft:rgba(91,141,239,.16);
+    --green:#22c55e; --green-soft:rgba(34,197,94,.16);
+    --orange:#f59e0b; --orange-soft:rgba(245,158,11,.16);
+    --red:#f0556d; --red-soft:rgba(240,85,109,.16);
+    --purple:#a87ffb; --purple-soft:rgba(168,127,251,.16);
+    --cyan:#22d3ee; --cyan-soft:rgba(34,211,238,.16);
     --pink:#f472b6; --gold:#fbbf24;
-    --shadow:0 4px 24px rgba(0,0,0,.30); --shadow-lg:0 24px 64px rgba(0,0,0,.55);
-    --overlay:rgba(0,0,0,.65);
-    --glow:rgba(91,141,239,.4);
+    --shadow:0 4px 20px rgba(0,0,0,.45); --shadow-lg:0 24px 60px rgba(0,0,0,.65);
+    --overlay:rgba(0,0,0,.72);
+    --glow:rgba(91,141,239,.45);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased;}
@@ -140,6 +141,19 @@
   .title-chip:hover{background:var(--accent);color:#fff;}
   @media(max-width:820px){ .bento-grid{grid-template-columns:repeat(2,1fr);} .bento-map{grid-column:span 2;} }
   @media(max-width:560px){ .bento-grid{grid-template-columns:1fr;} .bento-map{grid-column:span 1;} }
+
+  /* Mode édition Bento (chantier 3c, gridstack.js CDN chargé à la demande) : hors édition, les wrappers
+     grid-stack-item/-content s'effacent totalement du flux (display:contents) -> layout CSS Grid normal,
+     identique à avant. En édition, gridstack.js prend le relais (position absolue, drag, resize). */
+  body:not(.bento-editing) .grid-stack-item,
+  body:not(.bento-editing) .grid-stack-item-content{display:contents!important;}
+  .bento-editbar{display:flex;justify-content:flex-end;margin:-8px 0 10px;}
+  body.bento-editing .grid-stack-item-content .bento-card,
+  body.bento-editing .grid-stack-item-content.bento-card{height:100%;box-sizing:border-box;animation:bento-jiggle .26s ease-in-out infinite alternate;cursor:grab;}
+  body.bento-editing .grid-stack-item-content{overflow:auto;}
+  @keyframes bento-jiggle{from{transform:rotate(-0.6deg);}to{transform:rotate(0.6deg);}}
+  body.bento-editing .bento-card.clickable{cursor:grab;}
+  .bento-done-bar{display:flex;justify-content:center;margin:14px 0 4px;}
 
   /* TIMELINE repliable */
   .timeline-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow);}
@@ -307,6 +321,11 @@
   .crit-in{width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-family:var(--font);font-size:13px;}
   .crit-in:focus{outline:none;border-color:var(--accent);}
   .crit-hint{font-size:11px;color:var(--text-mute);margin-top:5px;}
+  /* Assistant compatibilité — puces cliquables */
+  .wiz-chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .wiz-chip{background:var(--bg-2);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:12.5px;font-family:var(--font);color:var(--text-dim);cursor:pointer;transition:.15s ease;user-select:none;}
+  .wiz-chip:hover{border-color:var(--accent);color:var(--text);}
+  .wiz-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.12);}
   /* Panneau relances */
   .relances-box{background:linear-gradient(135deg,rgba(245,158,11,.08),var(--surface));border:1px solid var(--orange);border-radius:14px;padding:16px;margin-bottom:20px;}
   .relances-head{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:12px;}
@@ -575,6 +594,9 @@
   .pc-links a.site-link{flex-direction:row;}
   .pc-section-h{font-size:12.5px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 9px;}
   .pc-notes{font-size:13px;color:var(--text-dim);line-height:1.55;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;white-space:pre-wrap;}
+  .pc-notes-input{width:100%;min-height:72px;font:inherit;font-size:13px;color:var(--text);line-height:1.55;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;resize:vertical;font-family:var(--font);}
+  .pc-notes-input:focus{border-color:var(--accent);outline:none;}
+  .pc-notes-input::placeholder{color:var(--text-mute);}
   .pc-missing{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--text-dim);line-height:1.5;background:linear-gradient(135deg,var(--accent-soft),var(--purple-soft));border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin-top:16px;}
   .pc-missing-ico{flex-shrink:0;font-size:15px;}
   .pc-complete{font-size:12px;color:var(--green);font-weight:600;text-align:center;margin-top:16px;}
@@ -668,6 +690,9 @@
   .auth-field{margin-bottom:11px;}
   .auth-error{color:var(--red);font-size:12.5px;margin:10px 0 0;line-height:1.4;}
   .auth-gate .btn-validate{margin-top:14px;}
+  .auth-links{display:flex;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:8px;}
+  .auth-link{background:none;border:none;color:var(--text-dim);font-size:12.5px;font-weight:600;cursor:pointer;padding:2px;font-family:var(--font);}
+  .auth-link:hover{color:var(--accent);}
 
   /* MODAL */
   .modal-bg{display:none;position:fixed;inset:0;background:var(--overlay);z-index:50;backdrop-filter:blur(4px);}
@@ -736,6 +761,8 @@
   .mzg-bar-actions{display:flex;gap:8px;}
   .mzg-error{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--red-soft);border:1px solid var(--red);color:var(--red);border-radius:11px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;}
   .mzg-error span{flex:1;min-width:160px;}
+  .mzg-warn{display:flex;align-items:flex-start;gap:10px;background:var(--orange-soft);border:1px solid var(--orange);color:var(--text);border-radius:11px;padding:11px 14px;font-size:12.5px;line-height:1.5;margin-bottom:16px;}
+  .mzg-warn .ic{color:var(--orange);flex-shrink:0;margin-top:1px;}
   .mzg-error .ic{width:16px;height:16px;flex-shrink:0;}
   .mzg-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
   .mzg-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px 15px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:6px;}
@@ -1238,7 +1265,8 @@
   .pc-coeur.on{background:linear-gradient(135deg,var(--gold),var(--orange));border-color:transparent;color:#fff;}
   .pc-coeur-hint{font-size:11.5px;color:var(--text-mute);font-style:italic;}
   /* ===== Accueil : bouton recherche (remplace le bandeau 3 étapes) ===== */
-  .home-cta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+  .home-cta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+  @media(max-width:980px){.home-cta{grid-template-columns:repeat(2,1fr);}}
   .home-shortcut{display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 15px;cursor:pointer;transition:.16s ease;box-shadow:var(--shadow);font-family:var(--font);color:var(--text);}
   .home-shortcut:hover{border-color:var(--border-light);transform:translateY(-2px);box-shadow:0 10px 26px rgba(12,27,42,.14);}
   .home-shortcut .hs-ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--surface-2);color:var(--text-dim);flex-shrink:0;}
@@ -1505,14 +1533,7 @@
 <div id="authGate" class="auth-gate" style="display:none;">
   <div class="auth-card">
     <div class="auth-brand"><span class="sb-logo">S</span><span>Sam'Travail</span></div>
-    <h2 class="auth-h">Connexion</h2>
-    <p class="auth-sub">Tes candidatures, marques et messages t'attendent.</p>
-    <form id="authForm" onsubmit="handleAuthSubmit(event);return false;">
-      <div class="auth-field"><input class="crit-in" id="authEmail" type="email" placeholder="Email" autocomplete="username" required /></div>
-      <div class="auth-field"><input class="crit-in" id="authPassword" type="password" placeholder="Mot de passe" autocomplete="current-password" required /></div>
-      <div class="auth-error" id="authError" style="display:none;"></div>
-      <button type="submit" class="btn btn-validate" id="authSubmitBtn">Se connecter</button>
-    </form>
+    <div id="authBody"></div>
   </div>
 </div>
 <button class="sb-expand" onclick="toggleSb()" aria-label="Afficher le menu">☰</button>
@@ -1534,7 +1555,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v99</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v101</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1551,25 +1572,30 @@
     <div class="todo-grid" id="cockpit"></div>
   </div>
 
-  <!-- DASHBOARD BENTO : Carte, Messagerie (statut binaire), Découverte, accès Entretiens/Réseau -->
-  <div class="bento-grid" id="bentoGrid">
-    <div class="bento-card bento-map">
+  <!-- Bascule mode édition Bento (chantier 3c) -->
+  <div class="bento-editbar"><button class="btn ghost sm" id="bentoEditBtn" onclick="toggleBentoEdit()"><i data-ic="sliders"></i><span>Organiser mes widgets</span></button></div>
+
+  <!-- DASHBOARD BENTO — tout en haut : Carte + Messagerie (chantier 3) -->
+  <div class="bento-grid grid-stack" id="bentoGrid">
+    <div class="grid-stack-item" gs-id="map" gs-x="0" gs-y="0" gs-w="2" gs-h="1" gs-min-w="1" gs-max-w="2" gs-min-h="1" gs-max-h="2">
+    <div class="grid-stack-item-content bento-card bento-map">
       <div class="bento-head"><span class="bento-title"><i data-ic="pin"></i> Mes candidatures</span><button class="bento-refresh" id="dashMapRefresh" onclick="refreshDashMap()" title="Actualiser la carte"><i data-ic="history"></i></button></div>
       <div id="dashMap" class="dash-map"></div>
       <div class="bento-foot"><button class="btn ghost sm" onclick="setView('carte')">Voir en grand →</button></div>
-    </div>
-    <div class="bento-card bento-mail clickable" onclick="setView('messagerie')">
+    </div></div>
+    <div class="grid-stack-item" gs-id="mail" gs-x="2" gs-y="0" gs-w="1" gs-h="1" gs-min-w="1" gs-max-w="2" gs-min-h="1" gs-max-h="2">
+    <div class="grid-stack-item-content bento-card bento-mail clickable" onclick="bentoNav('messagerie')">
       <div class="bento-head"><span class="bento-title"><i data-ic="mail"></i> Messagerie</span></div>
       <div class="mail-status" id="dashMailStatus"></div>
-    </div>
-    <div class="bento-card bento-discover">
-      <div class="bento-head"><span class="bento-title"><i data-ic="search"></i> Découverte</span></div>
-      <a class="btn ghost sm" href="https://candidat.francetravail.fr/offres/recherche" target="_blank" rel="noopener"><i data-ic="link"></i><span>France Travail →</span></a>
-      <button class="btn ghost sm" onclick="suggestJobTitles(this)"><i data-ic="sparkle"></i><span>Suggestions de métiers (IA)</span></button>
-      <div class="titles-sugg" id="titlesSugg"></div>
-    </div>
-    <div class="bento-card bento-mini clickable" onclick="setView('entretiens')"><i data-ic="mic"></i><span>Entretiens</span><span class="mini-badge" id="dashEntretiensN" style="display:none;"></span></div>
-    <div class="bento-card bento-mini clickable" onclick="setView('reseau')"><i data-ic="user"></i><span>Réseau</span></div>
+    </div></div>
+  </div>
+
+  <!-- RACCOURCIS AUJOURD'HUI : À trier · Suivi · Ajouter une offre · Chercher -->
+  <div class="home-cta">
+    <button class="home-shortcut" onclick="setView('offres')"><span class="hs-ic"><i data-ic="inbox"></i></span><span class="hs-tx"><b>À trier</b><small>Classe ta pile par intérêt</small></span></button>
+    <button class="home-shortcut" onclick="setView('pipeline')"><span class="hs-ic"><i data-ic="columns"></i></span><span class="hs-tx"><b>Suivi</b><small>Mes candidatures en cours</small></span></button>
+    <button class="home-shortcut" onclick="openAddOfferMenu()"><span class="hs-ic"><i data-ic="bookmark"></i></span><span class="hs-tx"><b>Ajouter une offre</b><small>Favori, manuel ou par lien</small></span></button>
+    <button class="home-shortcut accent" onclick="setView('veille')"><span class="hs-ic"><i data-ic="search"></i></span><span class="hs-tx"><b>Chercher sur France Travail</b><small>Trouve de nouvelles offres</small></span></button>
   </div>
 
   <!-- TIMELINE repliable -->
@@ -1581,11 +1607,19 @@
     <div class="timeline-body" id="timelineBody"></div>
   </div>
 
-  <!-- RACCOURCIS AUJOURD'HUI : trier · capturer favori · chercher -->
-  <div class="home-cta">
-    <button class="home-shortcut" onclick="setView('offres')"><span class="hs-ic"><i data-ic="inbox"></i></span><span class="hs-tx"><b>Trier mes offres</b><small>Classe ta pile par intérêt</small></span></button>
-    <button class="home-shortcut" onclick="openAddOfferMenu()"><span class="hs-ic"><i data-ic="bookmark"></i></span><span class="hs-tx"><b>Ajouter une offre</b><small>Favori, manuel ou par lien</small></span></button>
-    <button class="home-shortcut accent" onclick="setView('veille')"><span class="hs-ic"><i data-ic="search"></i></span><span class="hs-tx"><b>Chercher sur France Travail</b><small>Trouve de nouvelles offres</small></span></button>
+  <!-- DASHBOARD BENTO — tout en bas : Découverte, Entretiens, Réseau (chantier 3) -->
+  <div class="bento-grid grid-stack" id="bentoGridBottom">
+    <div class="grid-stack-item" gs-id="discover" gs-x="0" gs-y="0" gs-w="1" gs-h="1" gs-min-w="1" gs-max-w="2" gs-min-h="1" gs-max-h="2">
+    <div class="grid-stack-item-content bento-card bento-discover">
+      <div class="bento-head"><span class="bento-title"><i data-ic="search"></i> Découverte</span></div>
+      <a class="btn ghost sm" href="https://candidat.francetravail.fr/offres/recherche" target="_blank" rel="noopener"><i data-ic="link"></i><span>France Travail →</span></a>
+      <button class="btn ghost sm" onclick="suggestJobTitles(this)"><i data-ic="sparkle"></i><span>Suggestions de métiers (IA)</span></button>
+      <div class="titles-sugg" id="titlesSugg"></div>
+    </div></div>
+    <div class="grid-stack-item" gs-id="entretiens" gs-x="1" gs-y="0" gs-w="1" gs-h="1" gs-min-w="1" gs-max-w="1" gs-min-h="1" gs-max-h="1" gs-no-resize="true">
+    <div class="grid-stack-item-content bento-card bento-mini clickable" onclick="bentoNav('entretiens')"><i data-ic="mic"></i><span>Entretiens</span><span class="mini-badge" id="dashEntretiensN" style="display:none;"></span></div></div>
+    <div class="grid-stack-item" gs-id="reseau" gs-x="2" gs-y="0" gs-w="1" gs-h="1" gs-min-w="1" gs-max-w="1" gs-min-h="1" gs-max-h="1" gs-no-resize="true">
+    <div class="grid-stack-item-content bento-card bento-mini clickable" onclick="bentoNav('reseau')"><i data-ic="user"></i><span>Réseau</span></div></div>
   </div>
 
   <!-- ENCART INSTALLATION BOOKMARKLET (visible tant que pas installé) -->
@@ -1890,12 +1924,13 @@
   // ===== SCORE DE MATCH =====
   // Critères modifiables (chargés depuis Supabase, sinon ces défauts)
   let matchCriteria={
-    secteurs:{"Nautisme":3,"Aéronautique":3,"Automobile":3,"Industrie":2,"Pharma / Santé":1,"Luxe / Cosmétique":0,"Agroalimentaire":1,"Autre":2},
+    secteurs:{"Nautisme / Naval":3,"Aéronautique / Spatial":3,"Automobile / Mobilité":3,"Industrie":2,"Pharma / Santé":1,"Luxe / Cosmétique":0,"Agroalimentaire":1,"Autre":2},
     lieuxPref:["bretagne","normandie","pays de la loire","loire-atlantique","morbihan","finistère","ille-et-vilaine","manche","vendée","côtes-d'armor","belgique","suisse","44","35","56","29","22","50","85"],
     lieuxExclus:["paris","75","ile-de-france","île-de-france"],
     contratPref:"CDI",
     motsBonus:["supply chain","demand planning","approvisionnement","planification","logistique","s&op","planner"],
-    motsMalus:["alternance","stage","apprenti"]
+    motsMalus:["alternance","stage","apprenti"],
+    paysPref:[]   // pays visés (minuscules) — chantier 5, bonus uniquement (jamais de malus, le lieu n'est souvent qu'une ville sans pays)
   };
 
   function matchScore(o){
@@ -1906,6 +1941,7 @@
     const lieu=(o.lieu||"").toLowerCase();
     if(matchCriteria.lieuxPref.some(l=>lieu.includes(l))) score+=15;
     if(matchCriteria.lieuxExclus.some(l=>lieu.includes(l))) score-=20;
+    if(matchCriteria.paysPref&&matchCriteria.paysPref.length&&matchCriteria.paysPref.some(p=>lieu.includes(p))) score+=8;
     const contrat=(o.typeContrat||"").toLowerCase();
     if(matchCriteria.contratPref && contrat.includes(matchCriteria.contratPref.toLowerCase())) score+=10;
     const txt=((o.titre||"")+" "+(o.description||"")).toLowerCase();
@@ -1951,6 +1987,13 @@
     document.getElementById("modalBg").classList.add("open");
   }
   function setSecW(sec,n){ matchCriteria.secteurs[sec]=n; openCriteres(); }
+  async function persistMatchCriteria(){
+    let critErr=null;
+    if(sb){ const {error}=await sb.from("parametres").upsert({cle:"matchCriteria",valeur:matchCriteria,updated_at:new Date().toISOString()},{onConflict:"user_id,cle"}); critErr=error; }
+    closeModal(); renderVeille();
+    if(critErr) alert("Critères appliqués pour cette session, mais non sauvegardés en base :\n"+(critErr.message||critErr));
+    else flashCenter("Préférences enregistrées ✓");
+  }
   async function saveCriteres(){
     const splitC=(id)=>(document.getElementById(id).value||"").split(",").map(s=>s.trim().toLowerCase()).filter(Boolean);
     matchCriteria.lieuxPref=splitC("crit-lieux");
@@ -1958,10 +2001,46 @@
     matchCriteria.contratPref=(document.getElementById("crit-contrat").value||"").trim();
     matchCriteria.motsBonus=splitC("crit-bonus");
     matchCriteria.motsMalus=splitC("crit-malus");
-    let critErr=null;
-    if(sb){ const {error}=await sb.from("parametres").upsert({cle:"matchCriteria",valeur:matchCriteria,updated_at:new Date().toISOString()},{onConflict:"user_id,cle"}); critErr=error; }
-    closeModal(); renderVeille();
-    if(critErr) alert("Critères appliqués pour cette session, mais non sauvegardés en base :\n"+(critErr.message||critErr));
+    await persistMatchCriteria();
+  }
+
+  // ===== ASSISTANT COMPATIBILITÉ (chantier 5) — sélection visuelle par puces, complément rapide à openCriteres() =====
+  const PAYS_OPTIONS=["France","Belgique","Suisse","Luxembourg","Pays-Bas","Allemagne","Royaume-Uni","Espagne","Canada","Autre"];
+  function openCompatWizard(){
+    const secKeys=SECTORS.map(s=>s.key).concat(["Autre"]);
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`
+      <div class="modal-head"><h3>${ic("target")} Score de compatibilité</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Choisis ce qui compte pour toi — les offres qui correspondent remontent automatiquement en haut de ta pile.</p>
+      <div class="crit-block"><div class="crit-label">${ic("building")} Secteurs qui t'intéressent</div>
+        <div class="wiz-chips">${secKeys.map(k=>`<button type="button" class="wiz-chip ${(matchCriteria.secteurs[k]||0)>0?'on':''}" onclick="wizToggleSector('${esc(k)}',this)">${esc(k)}</button>`).join("")}</div>
+      </div>
+      <div class="crit-block"><div class="crit-label">${ic("pin")} Pays où tu cherches</div>
+        <div class="wiz-chips">${PAYS_OPTIONS.map(p=>`<button type="button" class="wiz-chip ${(matchCriteria.paysPref||[]).includes(p.toLowerCase())?'on':''}" onclick="wizTogglePays('${esc(p)}',this)">${esc(p)}</button>`).join("")}</div>
+        <div class="crit-hint">Aucun choix = aucune restriction de pays (juste un petit bonus quand ça correspond).</div>
+      </div>
+      <div class="crit-block"><div class="crit-label">${ic("doc")} Contrat préféré</div>
+        <div class="wiz-chips">${["CDI","CDD","Stage","Alternance","Freelance"].map(c=>`<button type="button" class="wiz-chip ${matchCriteria.contratPref===c?'on':''}" onclick="wizSetContrat('${esc(c)}',this)">${esc(c)}</button>`).join("")}</div>
+      </div>
+      <p class="modal-sub" style="margin-top:14px;">Pour affiner (lieux précis, mots-clés bonus/malus) → <a href="#" onclick="event.preventDefault();openCriteres();">réglages avancés</a>.</p>
+      <div class="modal-actions"><button class="btn btn-validate" onclick="persistMatchCriteria()">${ic("save")}<span>Enregistrer</span></button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  function wizToggleSector(k,btn){
+    const cur=matchCriteria.secteurs[k]||0;
+    matchCriteria.secteurs[k]=cur>0?0:2;
+    btn.classList.toggle("on",matchCriteria.secteurs[k]>0);
+  }
+  function wizTogglePays(p,btn){
+    const key=p.toLowerCase();
+    if(!matchCriteria.paysPref) matchCriteria.paysPref=[];
+    const i=matchCriteria.paysPref.indexOf(key);
+    if(i>=0) matchCriteria.paysPref.splice(i,1); else matchCriteria.paysPref.push(key);
+    btn.classList.toggle("on",matchCriteria.paysPref.includes(key));
+  }
+  function wizSetContrat(c,btn){
+    matchCriteria.contratPref=c;
+    btn.parentElement.querySelectorAll(".wiz-chip").forEach(b=>b.classList.toggle("on",b===btn));
   }
 
   function companyLinks(name){
@@ -2123,8 +2202,10 @@
       sel.dataset.filled="1";
     }
     if(!carteMap){
-      carteMap=L.map(box,{scrollWheelZoom:true,attributionControl:false}).setView(SAINTMALO,8);
-      L.tileLayer(tileUrl(),{maxZoom:18}).addTo(carteMap);
+      // maxBounds+noWrap+minZoom : empêche la répétition horizontale infinie du monde au dézoom,
+      // tout en gardant la possibilité de voir des offres à l'étranger (pas restreint à la France).
+      carteMap=L.map(box,{scrollWheelZoom:true,attributionControl:false,maxBounds:[[-85,-200],[85,200]],maxBoundsViscosity:0.8,minZoom:2}).setView(SAINTMALO,8);
+      L.tileLayer(tileUrl(),{maxZoom:18,noWrap:true}).addTo(carteMap);
     } else { carteMarkers.forEach(m=>{try{carteMap.removeLayer(m);}catch(e){}}); }
     carteMarkers=[];
     // regroupement (clustering) : gros point + nombre quand des offres sont proches, se divise au zoom
@@ -2166,8 +2247,8 @@
     _dashMapDone=true;
     const btn=document.getElementById("dashMapRefresh"); if(btn)btn.classList.add("spinning");
     if(!dashMap){
-      dashMap=L.map(box,{scrollWheelZoom:true,attributionControl:false}).setView(SAINTMALO,7);
-      L.tileLayer(tileUrl(),{maxZoom:18}).addTo(dashMap);
+      dashMap=L.map(box,{scrollWheelZoom:true,attributionControl:false,maxBounds:[[-85,-200],[85,200]],maxBoundsViscosity:0.8,minZoom:2}).setView(SAINTMALO,7);
+      L.tileLayer(tileUrl(),{maxZoom:18,noWrap:true}).addTo(dashMap);
     } else { dashMarkers.forEach(m=>{try{dashMap.removeLayer(m);}catch(e){}}); }
     dashMarkers=[];
     if(L.markerClusterGroup){
@@ -2231,6 +2312,95 @@
   function searchThisTitle(intitule){
     setView("veille");
     const inp=document.getElementById("q-mots"); if(inp)inp.value=intitule;
+  }
+
+  // ===== Mode édition Bento (chantier 3c) : drag+resize « façon iOS », gridstack.js chargé à la demande =====
+  // Navigation depuis un widget : no-op pendant l'édition (on manipule les cartes, on ne navigue pas par accident).
+  function bentoNav(view){ if(!document.body.classList.contains("bento-editing")) setView(view); }
+  let _gridstackPromise=null;
+  function loadGridstack(){
+    if(window.GridStack) return Promise.resolve(window.GridStack);
+    if(_gridstackPromise) return _gridstackPromise;
+    _gridstackPromise=new Promise((res,rej)=>{
+      if(!document.getElementById("gridstackCss")){
+        const l=document.createElement("link"); l.id="gridstackCss"; l.rel="stylesheet";
+        l.href="https://cdn.jsdelivr.net/npm/gridstack@10/dist/gridstack.min.css";
+        document.head.appendChild(l);
+      }
+      const s=document.createElement("script");
+      s.src="https://cdn.jsdelivr.net/npm/gridstack@10/dist/gridstack-all.js";
+      s.onload=()=>res(window.GridStack);
+      s.onerror=()=>{ _gridstackPromise=null; rej(new Error("gridstack")); };
+      document.head.appendChild(s);
+      setTimeout(()=>{ if(!window.GridStack){ _gridstackPromise=null; rej(new Error("gridstack-timeout")); } },12000);
+    });
+    return _gridstackPromise;
+  }
+  let _bentoGrids=null;
+  // 4 formats stricts (largeur×hauteur en cellules) : carré, rectangle large, rectangle haut, grand carré.
+  const BENTO_FORMATS=[{w:1,h:1},{w:2,h:1},{w:1,h:2},{w:2,h:2}];
+  function bentoSnap(w,h){
+    let best=BENTO_FORMATS[0],bd=Infinity;
+    for(const f of BENTO_FORMATS){ const d=Math.abs(f.w-w)+Math.abs(f.h-h); if(d<bd){bd=d;best=f;} }
+    return best;
+  }
+  function bentoSaveLayout(gridEl,key){
+    // NB : on lit el.gridstackNode (état interne live de la lib), PAS les attributs gs-w/gs-h — gridstack
+    // ne les réécrit pas forcément dans le DOM pour un item inchangé après le déplacement d'un voisin
+    // (bug trouvé en testant : gs-w/gs-h restaient absents sur un item non touché directement).
+    const items=[...gridEl.querySelectorAll(".grid-stack-item")].map(el=>{
+      const n=el.gridstackNode||{};
+      return {id:el.getAttribute("gs-id"),x:n.x||0,y:n.y||0,w:n.w||1,h:n.h||1};
+    });
+    try{ localStorage.setItem(key,JSON.stringify(items)); }catch(e){}
+    bentoApplyStaticLayout(gridEl.id,key);   // garde le CSS Grid "au repos" synchro, pour un retour propre hors édition
+  }
+  function bentoApplySavedLayout(gridEl,key){
+    let saved=null; try{ saved=JSON.parse(localStorage.getItem(key)||"null"); }catch(e){}
+    if(!Array.isArray(saved)) return;
+    saved.forEach(it=>{
+      const el=gridEl.querySelector('.grid-stack-item[gs-id="'+it.id+'"]'); if(!el) return;
+      el.setAttribute("gs-x",it.x); el.setAttribute("gs-y",it.y); el.setAttribute("gs-w",it.w); el.setAttribute("gs-h",it.h);
+    });
+  }
+  // Applique la disposition sauvegardée SANS gridstack (mode normal, CSS Grid pur) : ordre via `order`,
+  // taille via grid-column/row span — c'est ce qui fait que le rangement survit à la sortie du mode édition.
+  function bentoApplyStaticLayout(gridId,key){
+    const grid=document.getElementById(gridId); if(!grid) return;
+    let saved=null; try{ saved=JSON.parse(localStorage.getItem(key)||"null"); }catch(e){}
+    if(!Array.isArray(saved)||!saved.length) return;
+    saved.slice().sort((a,b)=>(a.y-b.y)||(a.x-b.x)).forEach((it,idx)=>{
+      const item=grid.querySelector('.grid-stack-item[gs-id="'+it.id+'"]'); if(!item) return;
+      const card=item.querySelector(".bento-card"); if(!card) return;
+      card.style.order=idx;
+      card.style.gridColumn="span "+Math.min(3,it.w||1);
+      card.style.gridRow="span "+(it.h||1);
+    });
+  }
+  function bentoApplyAllStaticLayouts(){ bentoApplyStaticLayout("bentoGrid","st_bento_top"); bentoApplyStaticLayout("bentoGridBottom","st_bento_bottom"); }
+  async function toggleBentoEdit(){
+    const btn=document.getElementById("bentoEditBtn");
+    const entering=!document.body.classList.contains("bento-editing");
+    if(entering){
+      // applique une éventuelle disposition déjà sauvegardée AVANT d'initialiser gridstack
+      bentoApplySavedLayout(document.getElementById("bentoGrid"),"st_bento_top");
+      bentoApplySavedLayout(document.getElementById("bentoGridBottom"),"st_bento_bottom");
+      let GS; try{ GS=await loadGridstack(); }catch(e){ flashCenter("Impossible de charger l'éditeur de widgets (connexion ?).","info"); return; }
+      document.body.classList.add("bento-editing");
+      if(btn){ btn.innerHTML='<i data-ic="check"></i><span>Terminé</span>'; hydrateIcons(btn.parentElement); }
+      const opts={column:3,cellHeight:150,float:true,margin:12,disableOneColumnMode:true,animate:false};
+      _bentoGrids=[GS.init(opts,"#bentoGrid"),GS.init(opts,"#bentoGridBottom")];
+      _bentoGrids.forEach((g,gi)=>{
+        const key=gi===0?"st_bento_top":"st_bento_bottom";
+        g.on("resizestop",(ev,el)=>{ const n=el.gridstackNode; const f=bentoSnap(n.w,n.h); g.update(el,{w:f.w,h:f.h}); bentoSaveLayout(g.el,key); });
+        g.on("dragstop",()=>{ bentoSaveLayout(g.el,key); });
+      });
+    } else {
+      if(_bentoGrids){ _bentoGrids.forEach(g=>{ try{ g.destroy(false); }catch(e){} }); _bentoGrids=null; }
+      document.body.classList.remove("bento-editing");
+      bentoApplyAllStaticLayouts();
+      if(btn){ btn.innerHTML='<i data-ic="sliders"></i><span>Organiser mes widgets</span>'; hydrateIcons(btn.parentElement); }
+    }
   }
 
   // Cache des infos entreprise déjà récupérées (évite de refaire l'appel)
@@ -2413,7 +2583,7 @@
     closeMore();
     const nav=document.getElementById("nav");
     if(nav){const y=nav.getBoundingClientRect().top+window.pageYOffset-12;window.scrollTo({top:y,behavior:"smooth"});}
-    if(v==="aujourdhui"){renderCockpit();renderRoadmap();if(typeof renderBmSetup==="function")renderBmSetup();renderDashMap();renderDashEntretiensBadge();renderDashMailWidget();if(sb)loadSyncedMail();}
+    if(v==="aujourdhui"){renderCockpit();renderRoadmap();if(typeof renderBmSetup==="function")renderBmSetup();renderDashMap();renderDashEntretiensBadge();renderDashMailWidget();if(sb)loadSyncedMail();if(typeof bentoApplyAllStaticLayouts==="function")bentoApplyAllStaticLayouts();}
     if(v==="carte"){setTimeout(renderCarteMap,100);}
     if(v==="bilan"){renderBilan();}
     if(v==="reve"){renderReveBmSetup();}
@@ -3088,9 +3258,13 @@
   // Favori "loader" : 3 lignes qui ne changent plus jamais. Toute la logique d'extraction vit dans
   // bm-offer.js (servi par CETTE appli), rechargé à chaque clic -> on l'améliore sans jamais redemander
   // à l'utilisateur de réinstaller le favori (fini le blob minifié géant collé dans le favori).
+  // NB : sur les sites à CSP stricte (script-src n'autorise pas notre domaine — vu sur certains grands
+  // groupes), l'injection du <script> loader est bloquée par le NAVIGATEUR (pas un souci de connexion).
+  // Repli : on ouvre quand même la capture, avec juste l'URL -> /api/extract (scraping CÔTÉ SERVEUR,
+  // donc jamais concerné par le CSP du site visité) prend le relais automatiquement.
   function bookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){var s=document.createElement('script');s.src='"+origin+"/bm-offer.js?v='+Date.now();s.onerror=function(){alert('Sam Travail : chargement impossible (verifie ta connexion)');};document.head.appendChild(s);})();";
+    return "javascript:(function(){var s=document.createElement('script');s.src='"+origin+"/bm-offer.js?v='+Date.now();s.onerror=function(){try{var u='"+origin+"/?addUrl='+encodeURIComponent(location.href)+'&capture=1';var w=window.open(u,'samtravail_capture','width=500,height=680,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}}catch(e){alert('Sam Travail : capture bloquee par ce site. Utilise Ajouter Offre > Ajouter par lien dans l\\'appli.');}};document.head.appendChild(s);})();";
   }
   // État d'attente affiché dans la pop-up pendant que le favori interroge l'API de l'ATS (Greenhouse/Lever/...)
   // avant de connaître le contenu final : la pop-up s'ouvre tout de suite (contrainte anti-bloqueur de pop-up),
@@ -4468,10 +4642,12 @@
       <div class="fiche-col">
         <div class="pc-section-h">${ic("doc")} Description ${o.id?`<button class="fiche-desc-edit" onclick="toggleDescEdit('${o.id}','offer',this)" title="Modifier la description">${ic("pencil")}</button>`:""}</div>
         <div id="pcDesc" class="pc-notes desc-rich oc-desc-full">${descRaw?formatDescription(descRaw):'<span class="muted">Pas de description enregistrée pour cette candidature. Ouvre l\'annonce d\'origine pour la consulter.</span>'}</div>
+        <div class="pc-section-h">${ic("pencil")} Notes</div>
+        <textarea class="pc-notes-input" placeholder="Notes rapides (ex : pendant un appel avec le recruteur)…" onblur="savePipeNotes('${p.id}',this.value)">${esc(p.notes||"")}</textarea>
       </div>
       <div class="fiche-col">
-        <div class="pc-section-h">${ic("link")} Liens utiles</div>
-        <div class="pc-links">
+        <div class="pc-section-h">${ic("link")} Liens utiles <button class="fiche-desc-edit" onclick="editPipeLink('${p.id}',this)" title="Modifier le lien de l'offre">${ic("pencil")}</button></div>
+        <div class="pc-links" id="pcLinks">
           ${p.lien_offre?`<a href="${esc(p.lien_offre)}" target="_blank" rel="noopener" title="Offre" class="full site-link">${ic("doc")} Voir l'annonce</a>`:""}
           <a href="${cl.site}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("building")}</span><span>Site</span></a>
           <a href="${cl.wiki}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("book")}</span><span>Wikipédia</span></a>
@@ -4484,7 +4660,6 @@
         <div class="modal-checklist">
           ${CHECKLIST_ITEMS.map((it,i)=>`<label class="chk-item"><input type="checkbox" id="pcchk-${i}" ${chk[it]?"checked":""} onchange="setPipeCheckItem('${p.id}','${esc(it)}',this.checked)"> ${esc(it)}</label>`).join("")}
         </div>
-        ${p.notes?`<div class="pc-section-h">${ic("pencil")} Notes</div><div class="pc-notes">${esc(p.notes)}</div>`:""}
         ${lettreFor(p.lien_offre||p.id)?`<div class="pc-section-h">${ic("sparkle")} Candidature sur mesure</div><div class="pc-notes" style="white-space:pre-wrap;">${esc(lettreFor(p.lien_offre||p.id))}</div>`:""}
       </div>
       </div>
@@ -4765,10 +4940,12 @@
     if(sb){try{await sb.from("entreprises_reve").update({note:e.note}).eq("id",id);}catch(x){}}
     renderReve();
   }
-  // bookmarklet "marque" : favori-loader, voir bookmarkletCode() ci-dessus (même principe, bm-brand.js)
+  // bookmarklet "marque" : favori-loader, voir bookmarkletCode() ci-dessus (même principe, bm-brand.js).
+  // Repli CSP identique, en dégradé : nom+site seulement (déductibles sans exécuter bm-brand.js), le
+  // reste (description/logo/secteur) se complète à la main dans la pop-up une fois ouverte.
   function brandBookmarkletCode(){
     const origin=window.location.origin;
-    return "javascript:(function(){var s=document.createElement('script');s.src='"+origin+"/bm-brand.js?v='+Date.now();s.onerror=function(){alert('Sam Travail : chargement impossible (verifie ta connexion)');};document.head.appendChild(s);})();";
+    return "javascript:(function(){var s=document.createElement('script');s.src='"+origin+"/bm-brand.js?v='+Date.now();s.onerror=function(){try{var nm=(document.title||location.hostname).split(/[|\\-\\u2013\\u2014:\\u2022\\u00b7]/)[0].trim().slice(0,60)||location.hostname;var u='"+origin+"/?addBrand='+encodeURIComponent(nm)+'&brandSite='+encodeURIComponent(location.origin)+'&capture=1';var w=window.open(u,'samtravail_capture','width=520,height=720,scrollbars=yes');if(w){w.focus();}else{window.open(u,'_blank');}}catch(e){alert('Sam Travail : capture bloquee par ce site.');}};document.head.appendChild(s);})();";
   }
   // tri de la galerie — défaut : marque la plus anciennement visitée (à revisiter en priorité)
   let reveSort="ancienne", reveQuery="";
@@ -5268,10 +5445,12 @@
       <div class="fiche-col">
         <div class="pc-section-h">${ic("doc")} Description <button class="fiche-desc-edit" onclick="toggleDescEdit('${o.id}','offer',this)" title="Modifier la description">${ic("pencil")}</button></div>
         ${(o.descriptionFmt||o.description)?`<div id="ocDesc" class="pc-notes desc-rich oc-desc-full">${formatDescription(o.descriptionFmt||o.description)}</div>`:`<div id="ocDesc" class="pc-notes"><span class="muted">Pas de description fournie. Clique le crayon pour en écrire une.</span></div>`}
+        <div class="pc-section-h">${ic("pencil")} Notes</div>
+        <textarea class="pc-notes-input" placeholder="Notes rapides (ex : pendant un appel avec le recruteur)…" onblur="saveOfferNotes('${o.id}',this.value)">${esc(o.notes||"")}</textarea>
       </div>
       <div class="fiche-col">
-        <div class="pc-section-h">${ic("link")} Liens utiles</div>
-        <div class="pc-links">
+        <div class="pc-section-h">${ic("link")} Liens utiles <button class="fiche-desc-edit" onclick="editOfferLink('${o.id}',this)" title="Modifier le lien de l'offre">${ic("pencil")}</button></div>
+        <div class="pc-links" id="ocLinks">
           <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre" class="full site-link">${ic("doc")} Voir l'annonce</a>
           <a href="${cl.site}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("building")}</span><span>Site</span></a>
           <a href="${cl.wiki}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("book")}</span><span>Wikipédia</span></a>
@@ -5351,6 +5530,49 @@
       box.querySelector("textarea").focus();
       btn.innerHTML=ic("check");
     }
+  }
+  // Notes rapides — toujours visibles/cliquables (fiche offre ET candidature), sauvegarde au blur.
+  async function saveOfferNotes(id,value){
+    const s=statusMap[id]; if(!s||!s.offer) return;
+    s.offer.notes=value;
+    if(sb){ try{ await sb.from("job_status").upsert({offer_id:id,statut:s.statut,offer_data:s.offer,updated_at:new Date().toISOString()},{onConflict:"user_id,offer_id"}); }catch(e){} }
+  }
+  async function savePipeNotes(id,value){
+    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p) return;
+    p.notes=value;
+    if(sb){ try{ await sb.from("pipeline").update({notes:value}).eq("id",id); }catch(e){} }
+    renderPipeline();
+  }
+  // Lien de l'offre éditable : bascule le bloc "Liens utiles" en champ URL, puis ré-ouvre la fiche pour
+  // refléter le nouveau lien partout (bouton "Voir l'annonce", etc.)
+  function editOfferLink(id,btn){
+    const wrap=document.getElementById("ocLinks"); if(!wrap||wrap.querySelector("input")) return;
+    const s=statusMap[id]; if(!s||!s.offer) return;
+    const input=document.createElement("input");
+    input.className="crit-in"; input.type="url"; input.placeholder="https://…"; input.value=s.offer.lien||""; input.style.marginBottom="10px";
+    input.onblur=async function(){
+      s.offer.lien=input.value.trim();
+      if(sb){ try{ await sb.from("job_status").upsert({offer_id:id,statut:s.statut,offer_data:s.offer,updated_at:new Date().toISOString()},{onConflict:"user_id,offer_id"}); }catch(e){} }
+      renderVeille();
+      openOfferCard(s.offer);
+    };
+    input.onkeydown=function(e){ if(e.key==="Enter"){e.preventDefault();input.blur();} };
+    wrap.parentElement.insertBefore(input,wrap);
+    input.focus(); input.select();
+  }
+  function editPipeLink(id,btn){
+    const wrap=document.getElementById("pcLinks"); if(!wrap||wrap.querySelector("input")) return;
+    const p=pipeline.find(x=>String(x.id)===String(id)); if(!p) return;
+    const input=document.createElement("input");
+    input.className="crit-in"; input.type="url"; input.placeholder="https://…"; input.value=p.lien_offre||""; input.style.marginBottom="10px";
+    input.onblur=async function(){
+      p.lien_offre=input.value.trim();
+      if(sb){ try{ await sb.from("pipeline").update({lien_offre:p.lien_offre}).eq("id",id); }catch(e){} }
+      openPipeCard(id);
+    };
+    input.onkeydown=function(e){ if(e.key==="Enter"){e.preventDefault();input.blur();} };
+    wrap.parentElement.insertBefore(input,wrap);
+    input.focus(); input.select();
   }
   const TRI_LABELS={super:"Coup de cœur ⭐",apostuler:"À postuler ❤️",reflexion:"Plus tard 🕐",ignore:"Passée"};
   async function markOfferFromCard(o,statut){
@@ -5941,7 +6163,7 @@
     document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   }
 
-  function refreshAll(){renderStatsBadges();renderPipeline();renderReve();renderReseau();renderEntretiens();renderVeille();renderCockpit();renderBilan();renderRoadmap();renderDashMap();renderDashEntretiensBadge();renderDashMailWidget();}
+  function refreshAll(){renderStatsBadges();renderPipeline();renderReve();renderReseau();renderEntretiens();renderVeille();renderCockpit();renderBilan();renderRoadmap();renderDashMap();renderDashEntretiensBadge();renderDashMailWidget();if(typeof bentoApplyAllStaticLayouts==="function")bentoApplyAllStaticLayouts();}
 
   // ===== INIT =====
   if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box"><b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
@@ -6150,7 +6372,8 @@
       <p class="modal-sub" style="margin-top:-4px;">Affine le score d'affinité (pondération des secteurs) et sauvegarde tes données.</p>
       <div class="prof-settings">
         <button class="btn ghost sm" id="themeToggle" onclick="toggleTheme()">${ic(theme==="dark"?"moon":"sun")}<span>Thème ${theme==="dark"?"sombre":"clair"}</span></button>
-        <button class="btn ghost sm" onclick="closeModal();openCriteres();">${ic("sliders")}<span>Critères de matching</span></button>
+        <button class="btn ghost sm" onclick="closeModal();openCompatWizard();">${ic("target")}<span>Score de compatibilité</span></button>
+        <button class="btn ghost sm" onclick="closeModal();openCriteres();">${ic("sliders")}<span>Critères avancés</span></button>
         <button class="btn ghost sm" onclick="openPromptAccroche()">${ic("sparkle")}<span>Prompt d'accroche (IA)</span></button>
         <button class="btn ghost sm" onclick="openDocsHistory()">${ic("doc")}<span>Mes documents</span></button>
         <button class="btn ghost sm" onclick="exportCSV()">${ic("download")}<span>Export CSV (sauvegarde)</span></button>
@@ -6309,11 +6532,20 @@
   // La connexion Outlook/Graph reste dispo en option « avancé » (importe vers la même table).
   let syncedMail=[], mailTableMissing=false;
   // États appli « lu / archivé » (localStorage) : persistants, sans schéma DB. Cross-appareils viendra si un jour on fait la synchro serveur.
-  let _mailRead=null,_mailArch=null,mailShowArchived=false;
-  function mailReadSet(){ if(!_mailRead){try{_mailRead=new Set(JSON.parse(localStorage.getItem("st_mail_read")||"[]"));}catch(e){_mailRead=new Set();}} return _mailRead; }
-  function mailArchSet(){ if(!_mailArch){try{_mailArch=new Set(JSON.parse(localStorage.getItem("st_mail_arch")||"[]"));}catch(e){_mailArch=new Set();}} return _mailArch; }
-  function markMailRead(id){ const s=mailReadSet(); if(!s.has(String(id))){ s.add(String(id)); try{localStorage.setItem("st_mail_read",JSON.stringify([...s]));}catch(e){} const m=syncedMail.find(x=>String(x.id)===String(id)); if(m)m._read=true; } }
-  function toggleMailArchived(id){ const s=mailArchSet(); id=String(id); if(s.has(id))s.delete(id); else s.add(id); try{localStorage.setItem("st_mail_arch",JSON.stringify([...s]));}catch(e){} const m=syncedMail.find(x=>String(x.id)===id); if(m)m._archived=s.has(id); renderMessagerie(); }
+  // Lu/archivé persistés en base (colonnes emails_sync.read/archived) au lieu du localStorage : suit
+  // l'utilisateur sur tous ses appareils, comme le reste des données depuis le Pilier 2 (user_id/RLS).
+  let mailShowArchived=false;
+  async function markMailRead(id){
+    const m=syncedMail.find(x=>String(x.id)===String(id)); if(!m||m._read) return;
+    m._read=true;
+    if(sb){ try{ await sb.from("emails_sync").update({read:true}).eq("id",id); }catch(e){} }
+  }
+  async function toggleMailArchived(id){
+    const m=syncedMail.find(x=>String(x.id)===String(id)); if(!m) return;
+    m._archived=!m._archived;
+    if(sb){ try{ await sb.from("emails_sync").update({archived:m._archived}).eq("id",id); }catch(e){} }
+    renderMessagerie();
+  }
   function toggleShowArchived(){ mailShowArchived=!mailShowArchived; renderMessagerie(); }
 
   // --- Diagnostics d'erreur -> message FR clair ---
@@ -6669,7 +6901,7 @@
   function enrichSynced(r){
     const nat=MAIL_NATURE.find(b=>b.key===r.nature)||MAIL_NATURE_OTHER;
     const match=matchMailToOffer({subject:r.subject,fromName:r.from_name,fromAddr:r.from_email,preview:r.body});
-    return Object.assign({},r,{_nature:nat,_match:match,_read:mailReadSet().has(String(r.id)),_archived:mailArchSet().has(String(r.id))});
+    return Object.assign({},r,{_nature:nat,_match:match,_read:!!r.read,_archived:!!r.archived});
   }
   // champs e-mail (Gmail/Graph) -> ligne emails_sync, en détectant un TRANSFERT (alors on extrait le vrai expéditeur du corps)
   function smartRow(o){
@@ -6777,6 +7009,9 @@
   }
   function mzgSyncSection(){
     const origin=location.origin, redirect=location.origin+location.pathname;
+    // Avertissement en tête : la boîte mail d'école/université est quasi toujours bloquée côté IT
+    // (restrictions OAuth tierces) — mieux vaut un Gmail perso, ou le collage manuel (marche partout).
+    const warn=`<div class="mzg-warn">${ic("alert")}<span><b>Adresse d'école/université ?</b> Elle bloque presque toujours ce type de connexion (restrictions IT). Utilise un <b>compte Gmail personnel</b>, ou <button class="auth-link" style="display:inline;padding:0;" onclick="closeModal();openMailPaste();">colle tes e-mails à la main</button> (marche avec n'importe quelle adresse).</span></div>`;
     // --- Gmail (recommandé) ---
     const gmail = gmailConnected
       ? `<div class="mzg-bar" style="margin:4px 0;"><div class="mzg-account">${ic("mail")} Gmail connecté</div>
@@ -6795,7 +7030,7 @@
               <li><b>Identifiants</b> → Créer → <b>ID client OAuth</b> → type <b>Application Web</b> → <b>Origines JavaScript autorisées</b> = <code>${esc(origin)}</code> → copie l'<b>ID client</b> ci-dessus.</li>
               <li>Dans Gmail, crée un libellé <b>Suivi Candidatures</b> (la recherche par défaut <code>label:suivi-candidatures</code> le vise).</li>
             </ol>
-            <p class="bm-note">${ic("alert")} Google affiche « application non vérifiée » → clique <b>Continuer</b>. Reconnexion ~tous les 7 jours (normal pour un usage perso non vérifié).</p>
+            <p class="bm-note">${ic("alert")} Google affiche « application non vérifiée » → clique <b>Continuer</b>. Tant que l'app n'est pas passée en revue par Google (statut « Testing »), seuls les comptes ajoutés comme <b>utilisateurs test</b> peuvent se connecter — donc pas encore ouvert à n'importe quel visiteur. Reconnexion ~tous les 7 jours en attendant (normal pour un usage non vérifié).</p>
           </details>`;
     // --- Outlook direct (secondaire) ---
     const outlook = outlookAccount
@@ -6809,7 +7044,7 @@
           <button class="btn sm" onclick="connectOutlook()">${ic("link")}<span>Connecter Outlook</span></button>
           <p class="mzg-steps" style="list-style:none;padding-left:0;"><a href="https://entra.microsoft.com" target="_blank" rel="noopener">entra.microsoft.com</a> → Inscriptions d'applications → Nouvelle (SPA, redirection <code>${esc(redirect)}</code>) → Mail.Read. Préfère <b>Gmail + Power Automate</b>.</p>
         </details>`;
-    return gmail+outlook;
+    return warn+gmail+outlook;
   }
   function renderMessagerie(){
     const c=document.getElementById("messagerie-content"); if(!c) return;
@@ -6856,11 +7091,17 @@
       <p class="modal-sub">Colle ceci dans Supabase → SQL Editor → Run (une seule fois). Puis désactive la RLS sur la table (comme les autres).</p>
       <pre class="mzg-sql">create table if not exists emails_sync (
   id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade default auth.uid(),
   subject text, from_name text, from_email text, from_domain text,
   received_at timestamptz, body text, nature text,
+  read boolean default false, archived boolean default false,
   created_at timestamptz default now()
 );
-alter table emails_sync disable row level security;</pre>
+alter table emails_sync add column if not exists read boolean default false;
+alter table emails_sync add column if not exists archived boolean default false;
+alter table emails_sync enable row level security;
+drop policy if exists "own rows" on emails_sync;
+create policy "own rows" on emails_sync for all using (user_id = auth.uid()) with check (user_id = auth.uid());</pre>
       <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
     document.getElementById("modalBg").classList.add("open");
   }
@@ -6901,8 +7142,60 @@ alter table emails_sync disable row level security;</pre>
   // Jeton d'accès courant (session Supabase), mis en cache pour l'attacher aux appels /api/* sans
   // ré-appeler getSession() à chaque fois. Mis à jour par onAuthStateChange (SIGNED_IN/TOKEN_REFRESHED).
   let _accessToken=null;
-  function showAuthGate(){ const g=document.getElementById("authGate"); if(g)g.style.display="flex"; }
+  let authMode="login";   // login | signup | forgot | reset
+  function showAuthGate(){ const g=document.getElementById("authGate"); if(g)g.style.display="flex"; renderAuthGate(); }
   function hideAuthGate(){ const g=document.getElementById("authGate"); if(g)g.style.display="none"; }
+  function setAuthMode(m){ authMode=m; renderAuthGate(); }
+  function renderAuthGate(){
+    const body=document.getElementById("authBody"); if(!body) return;
+    body.innerHTML = authMode==="signup" ? authSignupHTML() : authMode==="forgot" ? authForgotHTML() : authMode==="reset" ? authResetHTML() : authLoginHTML();
+    hydrateIcons(body);
+  }
+  function authLoginHTML(){
+    return `<h2 class="auth-h">Connexion</h2>
+      <p class="auth-sub">Tes candidatures, marques et messages t'attendent.</p>
+      <form onsubmit="handleAuthSubmit(event);return false;">
+        <div class="auth-field"><input class="crit-in" id="authEmail" type="email" placeholder="Email" autocomplete="username" required /></div>
+        <div class="auth-field"><input class="crit-in" id="authPassword" type="password" placeholder="Mot de passe" autocomplete="current-password" required /></div>
+        <div class="auth-error" id="authError" style="display:none;"></div>
+        <button type="submit" class="btn btn-validate" id="authSubmitBtn">Se connecter</button>
+      </form>
+      <div class="auth-links"><button type="button" class="auth-link" onclick="setAuthMode('forgot')">Mot de passe oublié ?</button><button type="button" class="auth-link" onclick="setAuthMode('signup')">Créer un compte</button></div>`;
+  }
+  function authSignupHTML(){
+    return `<h2 class="auth-h">Créer un compte</h2>
+      <p class="auth-sub">Rejoins Sam'Travail — c'est gratuit.</p>
+      <form onsubmit="handleAuthSignup(event);return false;">
+        <div class="auth-field"><input class="crit-in" id="authPrenom" type="text" placeholder="Prénom (optionnel)" autocomplete="given-name" /></div>
+        <div class="auth-field"><input class="crit-in" id="authEmail" type="email" placeholder="Email" autocomplete="username" required /></div>
+        <div class="auth-field"><input class="crit-in" id="authPassword" type="password" placeholder="Mot de passe (6 caractères min.)" autocomplete="new-password" minlength="6" required /></div>
+        <div class="auth-error" id="authError" style="display:none;"></div>
+        <button type="submit" class="btn btn-validate" id="authSubmitBtn">Créer mon compte</button>
+      </form>
+      <div class="auth-links"><button type="button" class="auth-link" onclick="setAuthMode('login')">← Retour à la connexion</button></div>`;
+  }
+  function authForgotHTML(){
+    return `<h2 class="auth-h">Mot de passe oublié</h2>
+      <p class="auth-sub">On t'envoie un lien pour en choisir un nouveau.</p>
+      <form onsubmit="handleAuthForgot(event);return false;">
+        <div class="auth-field"><input class="crit-in" id="authEmail" type="email" placeholder="Email" autocomplete="username" required /></div>
+        <div class="auth-error" id="authError" style="display:none;"></div>
+        <button type="submit" class="btn btn-validate" id="authSubmitBtn">Envoyer le lien</button>
+      </form>
+      <div class="auth-links"><button type="button" class="auth-link" onclick="setAuthMode('login')">← Retour à la connexion</button></div>`;
+  }
+  function authResetHTML(){
+    return `<h2 class="auth-h">Nouveau mot de passe</h2>
+      <p class="auth-sub">Choisis ton nouveau mot de passe.</p>
+      <form onsubmit="handleAuthReset(event);return false;">
+        <div class="auth-field"><input class="crit-in" id="authPassword" type="password" placeholder="Nouveau mot de passe (6 caractères min.)" autocomplete="new-password" minlength="6" required /></div>
+        <div class="auth-error" id="authError" style="display:none;"></div>
+        <button type="submit" class="btn btn-validate" id="authSubmitBtn">Enregistrer</button>
+      </form>`;
+  }
+  function authMsgHTML(title,msg){
+    return `<h2 class="auth-h">${esc(title)}</h2><p class="auth-sub">${msg}</p><div class="auth-links"><button type="button" class="auth-link" onclick="setAuthMode('login')">← Retour à la connexion</button></div>`;
+  }
   async function handleAuthSubmit(ev){
     if(ev&&ev.preventDefault)ev.preventDefault();
     const email=(document.getElementById("authEmail").value||"").trim();
@@ -6921,17 +7214,80 @@ alter table emails_sync disable row level security;</pre>
     hideAuthGate();
     await runApp();
   }
+  async function handleAuthSignup(ev){
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    const prenom=(document.getElementById("authPrenom").value||"").trim();
+    const email=(document.getElementById("authEmail").value||"").trim();
+    const password=document.getElementById("authPassword").value||"";
+    const btn=document.getElementById("authSubmitBtn"), errEl=document.getElementById("authError");
+    errEl.style.display="none";
+    btn.disabled=true; btn.textContent="Création…";
+    const {data,error}=await sb.auth.signUp({email,password,options:prenom?{data:{prenom}}:undefined});
+    btn.disabled=false; btn.textContent="Créer mon compte";
+    if(error){
+      errEl.textContent="Inscription impossible : "+(error.message||"erreur inconnue");
+      errEl.style.display="block";
+      return;
+    }
+    if(data.session){
+      // confirmation e-mail désactivée côté dashboard -> session immédiate
+      _accessToken=data.session.access_token;
+      if(prenom){ userName=prenom; try{localStorage.setItem("st_name",prenom);}catch(e){} }
+      hideAuthGate();
+      await runApp();
+    } else {
+      // confirmation e-mail activée -> pas de session tant que le lien n'est pas cliqué
+      document.getElementById("authBody").innerHTML=authMsgHTML("Vérifie ta boîte mail","On a envoyé un lien de confirmation à <b>"+esc(email)+"</b>. Clique dessus pour activer ton compte, puis reviens te connecter ici.");
+    }
+  }
+  async function handleAuthForgot(ev){
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    const email=(document.getElementById("authEmail").value||"").trim();
+    const btn=document.getElementById("authSubmitBtn"), errEl=document.getElementById("authError");
+    errEl.style.display="none";
+    btn.disabled=true; btn.textContent="Envoi…";
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+    btn.disabled=false; btn.textContent="Envoyer le lien";
+    if(error){
+      errEl.textContent="Envoi impossible : "+(error.message||"erreur inconnue");
+      errEl.style.display="block";
+      return;
+    }
+    document.getElementById("authBody").innerHTML=authMsgHTML("Vérifie ta boîte mail","Si un compte existe pour <b>"+esc(email)+"</b>, un lien pour choisir un nouveau mot de passe vient d'être envoyé.");
+  }
+  async function handleAuthReset(ev){
+    if(ev&&ev.preventDefault)ev.preventDefault();
+    const password=document.getElementById("authPassword").value||"";
+    const btn=document.getElementById("authSubmitBtn"), errEl=document.getElementById("authError");
+    errEl.style.display="none";
+    btn.disabled=true; btn.textContent="Enregistrement…";
+    const {error}=await sb.auth.updateUser({password});
+    btn.disabled=false; btn.textContent="Enregistrer";
+    if(error){
+      errEl.textContent="Impossible : "+(error.message||"erreur inconnue");
+      errEl.style.display="block";
+      return;
+    }
+    history.replaceState({},"",window.location.pathname);
+    flashCenter("Mot de passe mis à jour ✓");
+    hideAuthGate();
+    await runApp();
+  }
   if(sb){
     sb.auth.onAuthStateChange((event,session)=>{
       _accessToken=session?session.access_token:null;
+      if(event==="PASSWORD_RECOVERY"){ setAuthMode("reset"); showAuthGate(); return; }
       if(event==="SIGNED_OUT") showAuthGate();
     });
   }
   (async function init(){
     if(sb){
+      // lien "mot de passe oublié" cliqué -> Supabase pose un jeton de récupération dans l'URL (#...type=recovery)
+      // et établit une session TEMPORAIRE (juste pour changer le mot de passe) : on l'intercepte avant runApp().
+      if(window.location.hash.indexOf("type=recovery")>=0){ setAuthMode("reset"); showAuthGate(); return; }
       let session=null;
       try{ const r=await sb.auth.getSession(); session=r&&r.data&&r.data.session; }catch(e){}
-      if(!session){ showAuthGate(); return; }
+      if(!session){ setAuthMode("login"); showAuthGate(); return; }
       _accessToken=session.access_token;
     }
     await runApp();

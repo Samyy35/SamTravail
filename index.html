@@ -17,12 +17,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<!-- Driver.js pour la visite guidée (Pilier 1) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
-<!-- Driver.js pour la visite guidée (Pilier 1) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
-<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
 <!-- Typo : police système (SF Pro sur iOS/Mac), pas de dépendance externe -->
 <style>
   :root{
@@ -73,12 +67,9 @@
   /* HEADER */
   header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:12px;}
   .brand{display:flex;align-items:center;gap:13px;}
-  .brand-mark{width:46px;height:46px;border-radius:13px;background:var(--grad);display:grid;place-items:center;box-shadow:0 6px 20px var(--glow);}
+  .brand-mark{width:46px;height:46px;border-radius:13px;background:var(--grad);display:grid;place-items:center;box-shadow:0 6px 20px var(--glow);transition:.15s;}
+  .brand-mark:hover{transform:scale(1.06);}
   .brand-mark svg{width:30px;height:30px;}
-  .theme-toggle{width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:.15s;flex-shrink:0;display:grid;place-items:center;color:var(--text-dim);}
-  .theme-toggle:hover{border-color:var(--accent);color:var(--accent);}
-  .theme-toggle .ic{width:18px;height:18px;}
-  .theme-toggle:hover{border-color:var(--accent);transform:scale(1.05);}
   /* Bandeau orientation 3 étapes */
   /* États vides qui guident */
   .empty-cta{text-align:center;padding:48px 24px;background:var(--surface);border:1px dashed var(--border-light);border-radius:18px;}
@@ -114,7 +105,41 @@
   .cockpit{background:var(--grad);border:none;border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 10px 30px var(--glow);}
   .cockpit::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,var(--accent-soft),transparent 70%);}
   .cockpit-title{font-size:12.5px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.92);text-transform:uppercase;letter-spacing:.06em;}
+  .cockpit-title .streak{margin:0 0 0 auto;text-transform:none;letter-spacing:0;}
   .todo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;position:relative;z-index:1;}
+
+  /* DASHBOARD BENTO (widgets Carte/Messagerie/Découverte/mineurs) */
+  .bento-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+  .bento-card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+  .bento-card.clickable{cursor:pointer;transition:.15s ease;}
+  .bento-card.clickable:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--accent);}
+  .bento-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .bento-title{font-size:13.5px;font-weight:650;color:var(--text);display:flex;align-items:center;gap:7px;}
+  .bento-title .ic{width:16px;height:16px;color:var(--accent);flex-shrink:0;}
+  .bento-refresh{background:none;border:none;color:var(--text-mute);cursor:pointer;padding:5px;border-radius:8px;transition:.15s;display:flex;}
+  .bento-refresh:hover{color:var(--accent);background:var(--accent-soft);}
+  .bento-refresh .ic{width:15px;height:15px;}
+  .bento-refresh.spinning .ic{animation:spin .8s linear infinite;}
+  .bento-map{grid-column:span 2;}
+  .dash-map{height:210px;border-radius:12px;overflow:hidden;background:var(--surface-2);margin-bottom:10px;}
+  .bento-foot{text-align:right;}
+  .mail-status{display:flex;gap:10px;}
+  .mail-pill{flex:1;border-radius:12px;padding:12px 8px;text-align:center;background:var(--surface-2);}
+  .mail-pill .n{font-size:22px;font-weight:750;line-height:1;color:var(--text-mute);}
+  .mail-pill .t{font-size:11px;color:var(--text-dim);margin-top:4px;}
+  .mail-pill.action{background:var(--accent-soft);}
+  .mail-pill.action .n{color:var(--accent);}
+  .mail-empty{font-size:12.5px;color:var(--text-mute);padding:8px 0;}
+  .bento-discover .btn{width:100%;justify-content:flex-start;margin-top:8px;}
+  .bento-discover .btn:first-of-type{margin-top:0;}
+  .bento-mini{display:flex;align-items:center;gap:9px;padding:14px 16px;font-size:13px;font-weight:600;color:var(--text-dim);}
+  .bento-mini .ic{width:16px;height:16px;color:var(--accent);flex-shrink:0;}
+  .mini-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:1px 7px;}
+  .titles-sugg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .title-chip{font-size:12px;font-weight:600;background:var(--accent-soft);color:var(--accent);border:none;border-radius:999px;padding:5px 11px;cursor:pointer;transition:.15s;}
+  .title-chip:hover{background:var(--accent);color:#fff;}
+  @media(max-width:820px){ .bento-grid{grid-template-columns:repeat(2,1fr);} .bento-map{grid-column:span 2;} }
+  @media(max-width:560px){ .bento-grid{grid-template-columns:1fr;} .bento-map{grid-column:span 1;} }
 
   /* TIMELINE repliable */
   .timeline-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow);}
@@ -526,12 +551,28 @@
   .pchk-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text);cursor:pointer;}
   .pchk-item input{width:15px;height:15px;accent-color:var(--accent);}
   /* fiche riche candidature */
-  .pc-company{font-size:15px;color:var(--accent);font-weight:600;margin:-8px 0 12px;}
+  .pc-company{font-size:15px;color:var(--accent);font-weight:600;margin:-8px 0 6px;}
   .pc-badges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
   .pc-badge{font-size:12px;font-weight:600;padding:4px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);}
+  /* Fiche minimaliste (chantier 4) : ligne meta discrète au lieu des vignettes empilées */
+  .pc-meta-clean{display:flex;flex-wrap:wrap;align-items:center;gap:0;font-size:12.5px;color:var(--text-dim);margin-bottom:16px;}
+  .pc-meta-clean .dot{margin:0 7px;color:var(--text-mute);}
+  .pc-score-inline{display:inline-flex;align-items:baseline;gap:1px;font-weight:800;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 10px;margin-right:9px;}
+  .pc-score-inline small{font-size:9px;font-weight:600;opacity:.8;}
+  .pc-score-inline .ic{width:13px;height:13px;}
+  /* Champs éditables directement dans la fiche (clic -> input, blur/Entrée -> sauvegarde) */
+  .fiche-ed{cursor:text;border-radius:6px;padding:1px 4px;margin:-1px -4px;transition:background .12s;}
+  .fiche-ed:hover{background:var(--accent-soft);}
+  .fiche-ed-input{font:inherit;color:inherit;background:var(--surface);border:1px solid var(--accent);border-radius:6px;padding:1px 6px;width:auto;min-width:60px;}
+  .fiche-desc-edit{background:none;border:none;color:var(--text-mute);cursor:pointer;padding:3px;border-radius:6px;vertical-align:-3px;transition:.15s;}
+  .fiche-desc-edit:hover{color:var(--accent);background:var(--accent-soft);}
+  .fiche-desc-edit .ic{width:13px;height:13px;}
   .pc-links{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
-  .pc-links a{flex:1;min-width:70px;text-align:center;font-size:12px;font-weight:600;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:9px;padding:9px 6px;transition:.12s;}
-  .pc-links a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+  .pc-links a{flex:1;min-width:64px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;font-size:11.5px;font-weight:600;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:12px;padding:12px 6px;transition:.15s;}
+  .pc-links a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow);}
+  .pc-links a .pcl-ic{width:22px;height:22px;}
+  .pc-links a .pcl-ic .ic{width:100%;height:100%;}
+  .pc-links a.site-link{flex-direction:row;}
   .pc-section-h{font-size:12.5px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 9px;}
   .pc-notes{font-size:13px;color:var(--text-dim);line-height:1.55;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;white-space:pre-wrap;}
   .pc-missing{display:flex;align-items:flex-start;gap:9px;font-size:12.5px;color:var(--text-dim);line-height:1.5;background:linear-gradient(135deg,var(--accent-soft),var(--purple-soft));border:1px solid var(--border);border-radius:11px;padding:11px 14px;margin-top:16px;}
@@ -548,7 +589,12 @@
   }
   /* ===== SUIVI : Kanban condensé (4 colonnes) ===== */
   .kanban-board{display:flex;gap:12px;align-items:flex-start;}
-  .kb-col{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:10px;flex:var(--kw,1) 1 160px;min-width:150px;}
+  .kb-col{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:10px;flex:var(--kw,1) 1 160px;min-width:150px;position:relative;}
+  .kb-resize{position:absolute;top:0;right:-7px;width:14px;height:100%;cursor:col-resize;z-index:2;}
+  .kb-resize::after{content:"";position:absolute;top:8px;bottom:8px;left:6px;width:2px;border-radius:2px;background:transparent;transition:background .15s;}
+  .kb-resize:hover::after{background:var(--accent);}
+  body.kb-resizing{cursor:col-resize;user-select:none;}
+  body.kb-resizing .kb-resize::after{background:var(--accent);}
   .kb-head{display:flex;align-items:center;gap:8px;padding:3px 5px 11px;font-size:13px;font-weight:700;color:var(--text);}
   .kb-head .kb-dot{width:9px;height:9px;border-radius:50%;background:var(--kc,var(--text-mute));flex-shrink:0;}
   .kb-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -627,6 +673,20 @@
   .modal-bg{display:none;position:fixed;inset:0;background:var(--overlay);z-index:50;backdrop-filter:blur(4px);}
   .modal-bg.open{display:grid;place-items:center;}
   .modal{background:var(--surface);border:1px solid var(--border-light);border-radius:18px;padding:24px;width:min(560px,93vw);max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+
+  /* MENU « Ajouter Offre » (centralisé, À trier) : bookmarklet mis en avant > manuel > lien (déconseillé) */
+  .addoffer-opt{border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-top:12px;}
+  .addoffer-opt.addoffer-primary{border-color:var(--accent);background:var(--accent-soft);}
+  .addoffer-opt.addoffer-muted{border:none;background:none;padding:8px 2px 0;text-align:center;}
+  .ao-h{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .ao-t{font-size:13.5px;font-weight:650;color:var(--text);display:flex;align-items:center;gap:7px;}
+  .ao-t .ic{width:16px;height:16px;color:var(--accent);}
+  .ao-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:var(--accent);border-radius:999px;padding:2px 8px;}
+  .addoffer-opt .info-panel{margin-bottom:10px;}
+  .addoffer-opt .crit-in{margin-bottom:8px;}
+  .ao-row{display:flex;gap:8px;}
+  .ao-row .crit-in{flex:1;}
+
   /* Fiches détaillées (offre/marque) : plus larges + 2 colonnes sur desktop */
   .modal.wide{width:min(980px,95vw);}
   .fiche-2col{display:grid;grid-template-columns:1fr;gap:0 26px;}
@@ -818,7 +878,7 @@
   /* Onglet Relances + filtre « Sans réponse » */
   .seg-badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:9px;background:var(--gold);color:#3a2c00;font-size:10px;font-weight:800;margin-left:4px;vertical-align:middle;}
   .seg.active .seg-badge{background:#fff;color:var(--accent);}
-  .rl-view{max-width:820px;margin:6px auto 0;}
+  .rl-view{margin:6px 0 0;}
   .rl-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 2px 13px;}
   .rl-count{font-size:14px;font-weight:600;color:var(--text);}
   .rl-coeur{color:var(--gold);font-weight:600;font-size:12.5px;margin-left:6px;} .rl-coeur .ic{width:13px;height:13px;vertical-align:-.15em;}
@@ -949,7 +1009,6 @@
     .wrap{padding:16px 14px 80px;}
     header{align-items:flex-start;}
     .greeting{text-align:left;margin-left:0;}
-    .theme-toggle{position:absolute;top:16px;right:14px;}
     /* nav : défilement horizontal au lieu d'un pavé qui passe à la ligne */
     .nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
     .nav::-webkit-scrollbar{display:none;}
@@ -1440,186 +1499,9 @@
   #veille-grid.ultra .ocard{padding:9px 11px;}
   #veille-grid.ultra .ocard-logo{width:30px;height:30px;font-size:14px;}
   #veille-grid.ultra .ocard-title{font-size:13.5px;}
-  /* ===== PILIER 1 : STYLE VISITE GUIDÉE, MINI-NAVIGATEUR & BANNIÈRE ===== */
-  .driver-popover { background-color: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border-light) !important; border-radius: 20px !important; box-shadow: var(--shadow-lg) !important; font-family: var(--font) !important; max-width: 540px !important; padding: 24px !important; }
-  .driver-popover-title { font-family: var(--display) !important; font-size: 24px !important; font-weight: 800 !important; margin-bottom: 16px !important; color: var(--text) !important; letter-spacing: -0.02em; }
-  .driver-popover-description { font-size: 15.5px !important; color: var(--text-dim) !important; line-height: 1.65 !important; margin-bottom: 24px !important; }
-  
-  /* Harmonisation des espacements dans le texte (listes à puces) */
-  .driver-popover-description ul { margin-top: 16px !important; margin-bottom: 20px !important; padding-left: 24px !important; }
-  .driver-popover-description li { margin-bottom: 10px !important; }
-  
-  /* Agrandissement des boutons du pied de page */
-  .driver-popover-footer { margin-top: 12px !important; }
-  .driver-popover-footer button { background-color: var(--surface-2) !important; border: 1px solid var(--border) !important; color: var(--text) !important; border-radius: 10px !important; font-weight: 600 !important; font-size: 14.5px !important; padding: 10px 20px !important; transition: 0.15s; font-family: var(--font) !important; text-shadow: none !important;}
-  .driver-popover-footer button:hover { background-color: var(--surface-3) !important; }
-  .driver-popover-footer .driver-popover-next-btn { background-color: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
-  .driver-popover-footer .driver-popover-next-btn:hover { background-color: var(--accent-h) !important; }
-  .driver-popover-progress-text { color: var(--text-mute) !important; font-size: 14px !important; font-weight: 600 !important; }
-  
-  /* Bannière Créer mon compte (Mode Démo) */
-  .guest-banner { background: linear-gradient(135deg, var(--accent), var(--purple)); color: #fff; padding: 18px 26px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(255,111,94,0.25); animation: fade 0.4s ease; }
-  .guest-banner h3 { margin: 0 0 6px; font-family: var(--display); font-size: 19px; display: flex; align-items: center; gap: 10px; font-weight: 700; }
-  .guest-banner p { margin: 0; font-size: 14.5px; opacity: 0.95; line-height: 1.5; }
-  .guest-banner button { font-size: 15px !important; padding: 10px 22px !important; border-radius: 10px !important; }
-  @media(max-width: 680px) { .guest-banner { flex-direction: column; align-items: stretch; text-align: left; } }
-  
-  /* Animations des VRAIS mini-navigateurs - Échelles ajustées pour 540px */
-  .dv { border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#fff; margin-top:20px; box-shadow:0 10px 25px rgba(0,0,0,0.08); display:flex; flex-direction:column; }
-  .dv-top { background:#f3f4f6; border-bottom:1px solid #e5e7eb; display:flex; flex-direction:column; }
-  .dv-tabs { display:flex; align-items:center; padding:10px 16px 0; gap:14px; }
-  .dv-dots { display:flex; gap:8px; }
-  .dv-dots span { display:inline-block; width:12px; height:12px; border-radius:50%; }
-  .dv-dots span:nth-child(1){background:#ff5f56;} .dv-dots span:nth-child(2){background:#ffbd2e;} .dv-dots span:nth-child(3){background:#27c93f;}
-  .dv-tab { background:#fff; padding:6px 18px; border-radius:10px 10px 0 0; font-size:12.5px; color:#374151; font-weight:600; display:flex; align-items:center; gap:8px; box-shadow:0 1px 0 #fff; margin-bottom:-1px; }
-  .dv-nav { display:flex; align-items:center; padding:8px 16px; gap:16px; background:#fff; border-bottom:1px solid #e5e7eb; }
-  .dv-url { flex:1; background:#f3f4f6; border-radius:14px; height:26px; }
-  .dv-bookmarks { display:flex; align-items:center; padding:8px 16px; background:#fff; border-bottom:1px solid #e5e7eb; }
-  .dv-bm { display:inline-flex; align-items:center; font-size:11.5px; background:var(--accent-soft); color:var(--accent); padding:4px 12px; border-radius:99px; font-weight:bold; position:relative; border:1px solid var(--accent); }
-  .dv-body { padding:20px 24px; position:relative; }
-  .dv-cursor { position:absolute; left:75px; top:40px; font-size:26px; animation:dvClick 3s cubic-bezier(.2,.8,.3,1) infinite; z-index:10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-  @keyframes dvClick { 0%{transform:translate(50px, 50px); opacity:0;} 15%{transform:translate(50px, 50px); opacity:1;} 40%{transform:translate(0,0); opacity:1;} 50%{transform:scale(0.85); opacity:1;} 70%{transform:scale(1); opacity:1;} 100%{transform:translate(50px, 50px); opacity:0;} }
-/* ===== WIZARD "APPLE STYLE" V4 (Tree & Premium) ===== */
-  #wizardModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9999; align-items: center !important; justify-content: center !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: opacity 0.3s ease; }
-  
-  .wiz-box { background: rgba(255, 255, 255, 0.85); border-radius: 32px; width: 90vw; max-width: 800px; max-height: 85vh; padding: 40px; box-shadow: 0 24px 48px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.5); display: flex; flex-direction: column; overflow: hidden; }
-  
-  /* En-tête fixe */
-  .wiz-header { text-align: center; margin-bottom: 24px; flex-shrink: 0; }
-  .wiz-title { font-family: var(--display, system-ui); font-size: 32px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.03em; color: #111; }
-  .wiz-subtitle { font-size: 16px; color: #555; }
-  
-  .wiz-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; flex-shrink: 0; }
-  .wiz-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.1); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-  .wiz-dot.active { background: var(--accent, #ff5f56); width: 32px; }
-
-  /* Corps scrollable (Évite de casser l'écran) */
-  .wiz-step { display: none; flex-direction: column; flex-grow: 1; overflow: hidden; animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-  .wiz-step.active { display: flex; }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-  .wiz-content-scroll { overflow-y: auto; overflow-x: hidden; padding: 10px; margin: 0 -10px; flex-grow: 1; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.2) transparent; }
-  .wiz-content-scroll::-webkit-scrollbar { width: 6px; }
-  .wiz-content-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 10px; }
-
-  /* Input magique & Titres de l'arbre */
-  .wiz-custom-input { width: 100%; padding: 16px 24px; border-radius: 20px; border: 1.5px solid rgba(0,0,0,0.1); margin-bottom: 16px; font-family: inherit; font-size: 15px; background: rgba(255,255,255,0.5); color: #111; transition: 0.2s; outline: none; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-  .wiz-custom-input:focus { border-color: var(--accent, #ff5f56); background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-
-  .wiz-group-title { font-size: 15px; font-weight: 700; color: #333; margin: 16px 0 12px 8px; display: flex; align-items: center; gap: 8px; }
-  .wiz-group-title::before { content: "↳"; color: var(--accent, #ff5f56); font-weight: bold; font-size: 18px; }
-
-  /* Les Pilules */
-  .wiz-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-  .wiz-pill { padding: 12px 20px; border-radius: 40px; border: 1px solid rgba(0,0,0,0.08); background: #fff; color: #222; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; user-select: none; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: inline-flex; align-items: center; }
-  .wiz-pill:hover { transform: scale(1.02); border-color: rgba(0,0,0,0.2); }
-  .wiz-pill.selected { background: var(--accent, #ff5f56); color: #fff; border-color: var(--accent, #ff5f56); transform: scale(1.05); box-shadow: 0 8px 16px rgba(var(--accent-rgb, 255,95,86), 0.3); }
-
-  /* Footer fixe */
-  .wiz-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 24px; margin-top: 16px; flex-shrink: 0; }
-  .wiz-btn-back { background: transparent; border: none; color: #777; font-weight: 600; cursor: pointer; font-size: 16px; padding: 10px; transition: 0.2s; }
-  .wiz-btn-back:hover { color: #111; }
-  .wiz-btn-next { background: #111; color: #fff; border: none; border-radius: 20px; padding: 16px 36px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-  .wiz-btn-next:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.25); background: #000; }
-  /* ===== SCORE V2 TOOLTIP ===== */
-  .match-badge { position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; cursor: help; border: 1px solid transparent; }
-  .match-badge.score-high { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
-  .match-badge.score-mid { background: #fef9c3; color: #166534; border-color: #fef08a; } /* Orange/Jaune */
-  .match-badge.score-low { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
-  .match-badge.score-zero { background: #f3f4f6; color: #4b5563; border-color: #e5e7eb; }
-
-  .match-tooltip { visibility: hidden; opacity: 0; position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-lg); padding: 12px; border-radius: 8px; width: 240px; font-size: 12px; line-height: 1.5; color: var(--text); transition: 0.2s; z-index: 100; font-weight: normal; text-align: left; }
-  .match-badge:hover .match-tooltip { visibility: visible; opacity: 1; }
-  .match-tooltip span { display: block; margin-bottom: 4px; }
-  .match-tooltip span:last-child { margin-bottom: 0; }
-  .match-tooltip .dealbreaker { color: #dc2626; font-weight: 600; }
-  .match-tooltip .match-ok { color: #16a34a; }
-  .match-tooltip .match-meh { color: #6b7280; }
 </style>
 </head>
 <body>
-<div id="wizardModal">
-    <div class="wiz-box">
-      <div class="wiz-dots" id="wizDots">
-        <div class="wiz-dot active"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div><div class="wiz-dot"></div>
-      </div>
-
-      <div class="wiz-step active" id="wStep1">
-        <div class="wiz-header">
-          <div class="wiz-title">Quelles langues maîtrises-tu ?</div>
-          <div class="wiz-subtitle">L'algorithme filtrera les offres incompatibles.</div>
-        </div>
-        <div class="wiz-content-scroll">
-          <input type="text" class="wiz-custom-input" placeholder="🗣️ Une autre langue ? Tape ici et fais Entrée..." onkeypress="addCustomPill(event, 'gridLangues')">
-          <div class="wiz-grid" id="gridLangues">
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Français</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Anglais</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Espagnol</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Allemand</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="wiz-step" id="wStep2">
-        <div class="wiz-header">
-          <div class="wiz-title">Où souhaites-tu travailler ?</div>
-          <div class="wiz-subtitle">Choisis tes zones géographiques.</div>
-        </div>
-        <div class="wiz-content-scroll">
-          <div class="wiz-grid" id="gridRegions">
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Europe</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Amérique du Nord</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Asie</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Moyen-Orient</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="wiz-step" id="wStep3">
-        <div class="wiz-header">
-          <div class="wiz-title">Des pays en particulier ?</div>
-          <div class="wiz-subtitle">Affinaison selon tes régions (Optionnel).</div>
-        </div>
-        <div class="wiz-content-scroll">
-          <input type="text" class="wiz-custom-input" placeholder="🌍 Ajoute un pays manuellement et fais Entrée..." onkeypress="addCustomPill(event, 'customPaysGrid')">
-          <div class="wiz-grid" id="customPaysGrid"></div> <div id="dynamicPaysContainer"></div> </div>
-      </div>
-
-      <div class="wiz-step" id="wStep4">
-        <div class="wiz-header">
-          <div class="wiz-title">Quels secteurs t'attirent ?</div>
-          <div class="wiz-subtitle">Sélectionne tes industries de prédilection.</div>
-        </div>
-        <div class="wiz-content-scroll">
-          <div class="wiz-grid" id="gridSecteurs">
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Pharma, Santé & Sciences</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Supply Chain, Logistique & Transport</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Tech, Data & Logiciel</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Industrie, Aéronautique & Naval</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Retail, FMCG & Distribution</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Conseil, Stratégie & Audit</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Finance, Banque & Assurance</div>
-            <div class="wiz-pill" onclick="this.classList.toggle('selected')">Énergie & Environnement</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="wiz-step" id="wStep5">
-        <div class="wiz-header">
-          <div class="wiz-title">Tes intitulés de postes ?</div>
-          <div class="wiz-subtitle">Ciblés selon tes secteurs de prédilection.</div>
-        </div>
-        <div class="wiz-content-scroll">
-          <input type="text" class="wiz-custom-input" placeholder="💼 Un poste précis ? Tape ici et fais Entrée..." onkeypress="addCustomPill(event, 'customPostesGrid')">
-          <div class="wiz-grid" id="customPostesGrid"></div> <div id="dynamicPostesContainer"></div> </div>
-      </div>
-
-      <div class="wiz-footer">
-        <button class="wiz-btn-back" id="wizBtnBack" style="visibility: hidden;" onclick="changeWizStep(-1)">Retour</button>
-        <button class="wiz-btn-next" id="wizBtnNext" onclick="changeWizStep(1)">Continuer</button>
-      </div>
-    </div>
-  </div>
 <div id="authGate" class="auth-gate" style="display:none;">
   <div class="auth-card">
     <div class="auth-brand"><span class="sb-logo">S</span><span>Sam'Travail</span></div>
@@ -1630,9 +1512,6 @@
       <div class="auth-field"><input class="crit-in" id="authPassword" type="password" placeholder="Mot de passe" autocomplete="current-password" required /></div>
       <div class="auth-error" id="authError" style="display:none;"></div>
       <button type="submit" class="btn btn-validate" id="authSubmitBtn">Se connecter</button>
-      <div style="text-align: center; margin-top: 14px;">
-        <button type="button" class="btn quiet sm" onclick="startGuestMode()" style="width: 100%;">Continuer en mode invité (Démo)</button>
-      </div>
     </form>
   </div>
 </div>
@@ -1643,14 +1522,10 @@
     <button class="sb-item active" data-view="aujourdhui" onclick="setView('aujourdhui')"><i data-ic="sun"></i><span>Aujourd'hui</span></button>
     <button class="sb-item" data-view="offres" onclick="setView('offres')"><i data-ic="inbox"></i><span>À trier</span></button>
     <button class="sb-item" data-view="pipeline" onclick="setView('pipeline')"><i data-ic="columns"></i><span>Suivi</span></button>
-    <button class="sb-item" data-view="messagerie" onclick="setView('messagerie')"><i data-ic="mail"></i><span>Messagerie</span></button>
     <button class="sb-item" data-view="reve" onclick="setView('reve')"><i data-ic="bookmark"></i><span>Mes marques</span></button>
-    <button class="sb-item" data-view="carte" onclick="setView('carte')"><i data-ic="pin"></i><span>Carte</span></button>
-    <button class="sb-item" data-view="bilan" onclick="setView('bilan')"><i data-ic="chart"></i><span>Statistiques</span></button>
     <div class="sb-sep"></div>
     <button class="sb-item" data-view="veille" onclick="setView('veille')"><i data-ic="search"></i><span>Chercher</span></button>
-    <button class="sb-item" data-view="reseau" onclick="setView('reseau')"><i data-ic="user"></i><span>Réseau</span></button>
-    <button class="sb-item" data-view="entretiens" onclick="setView('entretiens')"><i data-ic="mic"></i><span>Entretiens</span></button>
+    <button class="sb-item" data-view="bilan" onclick="setView('bilan')"><i data-ic="chart"></i><span>Statistiques</span></button>
   </nav>
   <button class="sb-profile" onclick="openProfil()"><span class="sb-av">S</span><span>Mon profil</span></button>
 </aside>
@@ -1658,15 +1533,12 @@
 <div class="wrap">
   <header>
     <div class="brand">
-      <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v97</span></div></div>
+      <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v99</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
-      <div class="date" id="today"></div>
-      <div class="streak" id="streakBadge" style="display:none;"></div>
     </div>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer le thème" aria-label="Changer le thème"></button>
   </header>
 
   <div id="setupZone"></div>
@@ -1675,8 +1547,29 @@
   <div class="view active" id="view-aujourdhui">
   <!-- COCKPIT DU JOUR -->
   <div class="cockpit">
-    <div class="cockpit-title">Aujourd'hui</div>
+    <div class="cockpit-title">Aujourd'hui<div class="streak" id="streakBadge" style="display:none;"></div></div>
     <div class="todo-grid" id="cockpit"></div>
+  </div>
+
+  <!-- DASHBOARD BENTO : Carte, Messagerie (statut binaire), Découverte, accès Entretiens/Réseau -->
+  <div class="bento-grid" id="bentoGrid">
+    <div class="bento-card bento-map">
+      <div class="bento-head"><span class="bento-title"><i data-ic="pin"></i> Mes candidatures</span><button class="bento-refresh" id="dashMapRefresh" onclick="refreshDashMap()" title="Actualiser la carte"><i data-ic="history"></i></button></div>
+      <div id="dashMap" class="dash-map"></div>
+      <div class="bento-foot"><button class="btn ghost sm" onclick="setView('carte')">Voir en grand →</button></div>
+    </div>
+    <div class="bento-card bento-mail clickable" onclick="setView('messagerie')">
+      <div class="bento-head"><span class="bento-title"><i data-ic="mail"></i> Messagerie</span></div>
+      <div class="mail-status" id="dashMailStatus"></div>
+    </div>
+    <div class="bento-card bento-discover">
+      <div class="bento-head"><span class="bento-title"><i data-ic="search"></i> Découverte</span></div>
+      <a class="btn ghost sm" href="https://candidat.francetravail.fr/offres/recherche" target="_blank" rel="noopener"><i data-ic="link"></i><span>France Travail →</span></a>
+      <button class="btn ghost sm" onclick="suggestJobTitles(this)"><i data-ic="sparkle"></i><span>Suggestions de métiers (IA)</span></button>
+      <div class="titles-sugg" id="titlesSugg"></div>
+    </div>
+    <div class="bento-card bento-mini clickable" onclick="setView('entretiens')"><i data-ic="mic"></i><span>Entretiens</span><span class="mini-badge" id="dashEntretiensN" style="display:none;"></span></div>
+    <div class="bento-card bento-mini clickable" onclick="setView('reseau')"><i data-ic="user"></i><span>Réseau</span></div>
   </div>
 
   <!-- TIMELINE repliable -->
@@ -1691,7 +1584,7 @@
   <!-- RACCOURCIS AUJOURD'HUI : trier · capturer favori · chercher -->
   <div class="home-cta">
     <button class="home-shortcut" onclick="setView('offres')"><span class="hs-ic"><i data-ic="inbox"></i></span><span class="hs-tx"><b>Trier mes offres</b><small>Classe ta pile par intérêt</small></span></button>
-    <button class="home-shortcut" onclick="openAddLinks()"><span class="hs-ic"><i data-ic="bookmark"></i></span><span class="hs-tx"><b>Capturer une offre</b><small>Sur l'offre → clic favori → ici</small></span></button>
+    <button class="home-shortcut" onclick="openAddOfferMenu()"><span class="hs-ic"><i data-ic="bookmark"></i></span><span class="hs-tx"><b>Ajouter une offre</b><small>Favori, manuel ou par lien</small></span></button>
     <button class="home-shortcut accent" onclick="setView('veille')"><span class="hs-ic"><i data-ic="search"></i></span><span class="hs-tx"><b>Chercher sur France Travail</b><small>Trouve de nouvelles offres</small></span></button>
   </div>
 
@@ -1758,7 +1651,7 @@
       <div><h2>Offres à trier</h2><div class="sub" id="offres-info">Classe chaque offre par niveau d'intérêt. Une fois postulée, elle passe au Suivi.</div></div>
       <div class="head-actions">
         <button class="btn quiet sm" onclick="openCriteres()"><i data-ic="sliders"></i><span>Critères</span></button>
-        <button class="btn primary sm" onclick="openAddLinks()"><i data-ic="plus"></i><span>Ajouter par lien</span></button>
+        <button class="btn primary sm" onclick="openAddOfferMenu()"><i data-ic="plus"></i><span>Ajouter Offre</span></button>
       </div>
     </div>
     <div class="grid-toolbar" id="grid-toolbar">
@@ -1786,7 +1679,6 @@
   <div class="view" id="view-pipeline">
     <div class="add-bar">
       <div><h2 style="font-family:var(--display);font-size:21px;">Suivi de mes candidatures</h2><div class="sub">Fais évoluer chaque candidature d'un tap sur son étape.</div></div>
-      <button class="btn sm" onclick="openModal('pipeline')">+ Candidature</button>
     </div>
     <div id="relances-panel"></div>
     <div id="pipeline-content"></div>
@@ -2265,6 +2157,82 @@
     setTimeout(()=>{try{carteMap.invalidateSize();if(pts.length===1)carteMap.setView(pts[0],10);else if(pts.length>1)carteMap.fitBounds([...pts,SAINTMALO],{padding:[40,40],maxZoom:11});else carteMap.setView(SAINTMALO,8);}catch(e){}},300);
   }
 
+  // ===== WIDGET CARTE DU DASHBOARD (instance Leaflet séparée de la vue Carte complète) =====
+  // Coûteux (géocodage par ville) -> calculé UNE fois, jamais re-rendu au simple retour sur "Aujourd'hui".
+  let dashMap=null,dashMarkers=[],dashCluster=null,_dashMapDone=false;
+  async function renderDashMap(force){
+    const box=document.getElementById("dashMap"); if(!box||typeof L==="undefined") return;
+    if(_dashMapDone && !force) return;
+    _dashMapDone=true;
+    const btn=document.getElementById("dashMapRefresh"); if(btn)btn.classList.add("spinning");
+    if(!dashMap){
+      dashMap=L.map(box,{scrollWheelZoom:true,attributionControl:false}).setView(SAINTMALO,7);
+      L.tileLayer(tileUrl(),{maxZoom:18}).addTo(dashMap);
+    } else { dashMarkers.forEach(m=>{try{dashMap.removeLayer(m);}catch(e){}}); }
+    dashMarkers=[];
+    if(L.markerClusterGroup){
+      if(!dashCluster){ dashCluster=L.markerClusterGroup({showCoverageOnHover:false,spiderfyOnMaxZoom:true,maxClusterRadius:48}); dashMap.addLayer(dashCluster); }
+      else dashCluster.clearLayers();
+    }
+    setTimeout(()=>{try{dashMap.invalidateSize();}catch(e){}},200);
+    const list=pipeline.filter(p=>CARTE_STAT[p.statut]);
+    const located=await Promise.all(list.map(async p=>{
+      let la=null,lo=null;
+      if(p.ville){const g=await geocode(p.ville);if(g){la=g.lat;lo=g.lon;}}
+      return (la&&lo)?{p,la,lo}:null;
+    }));
+    const pts=[];
+    located.filter(Boolean).forEach(({p,la,lo})=>{
+      const meta=CARTE_STAT[p.statut]||{label:p.statut,color:"#9aa2b4"};
+      const m=L.marker([la,lo],{icon:pinIconC(meta.color)});
+      m.bindPopup('<b>'+esc(p.poste||"")+'</b><br>'+esc(p.entreprise||"")+'<br><span style="color:#888">'+esc(p.ville||"")+' · '+esc(meta.label)+'</span>');
+      if(dashCluster)dashCluster.addLayer(m); else{ m.addTo(dashMap); dashMarkers.push(m); }
+      pts.push([la,lo]);
+    });
+    if(btn)btn.classList.remove("spinning");
+    setTimeout(()=>{try{dashMap.invalidateSize();if(pts.length===1)dashMap.setView(pts[0],9);else if(pts.length>1)dashMap.fitBounds([...pts,SAINTMALO],{padding:[30,30],maxZoom:10});else dashMap.setView(SAINTMALO,7);}catch(e){}},300);
+  }
+  function refreshDashMap(){ renderDashMap(true); }
+
+  // ===== WIDGET MESSAGERIE DU DASHBOARD (tri binaire Bruit/Action, cf. classifyMail) =====
+  const MAIL_ACTION_KEYS=new Set(["entretien","screening","test","offre","refus"]);
+  function renderDashMailWidget(){
+    const el=document.getElementById("dashMailStatus"); if(!el) return;
+    if(!syncedMail || !syncedMail.length){ el.innerHTML='<div class="mail-empty">Aucun e-mail synchronisé pour l’instant.</div>'; return; }
+    let action=0,bruit=0;
+    syncedMail.forEach(r=>{ const k=(r._nature&&r._nature.key)||"autre"; if(MAIL_ACTION_KEYS.has(k))action++; else bruit++; });
+    el.innerHTML=
+      '<div class="mail-pill '+(action?"action":"")+'"><div class="n">'+action+'</div><div class="t">Action requise</div></div>'+
+      '<div class="mail-pill"><div class="n">'+bruit+'</div><div class="t">Info / accusés</div></div>';
+  }
+
+  // ===== WIDGET « MINEUR » ENTRETIENS (badge nb entretiens à venir) =====
+  function renderDashEntretiensBadge(){
+    const el=document.getElementById("dashEntretiensN"); if(!el) return;
+    const n=(typeof entretiens!=="undefined"?entretiens:[]).filter(e=>e.date_entretien && new Date(e.date_entretien)>=new Date(new Date().setHours(0,0,0,0))).length;
+    if(n>0){ el.textContent=n; el.style.display=""; } else el.style.display="none";
+  }
+
+  // ===== DÉCOUVERTE : suggestions IA d'intitulés de poste adjacents (à partir des candidatures envoyées) =====
+  async function suggestJobTitles(btn){
+    const titres=[...new Set(pipeline.map(p=>p.poste).filter(Boolean))].slice(0,40);
+    const box=document.getElementById("titlesSugg");
+    if(!titres.length){ if(box)box.innerHTML='<div class="mail-empty">Postule à quelques offres d’abord, pour que l’IA ait matière à travailler.</div>'; return; }
+    if(btn){ btn.disabled=true; }
+    if(box) box.innerHTML='<div class="mail-empty">Analyse en cours…</div>';
+    const secteurs=[...new Set(pipeline.map(p=>detectSector({titre:p.poste,entreprise:p.entreprise}).key).filter(k=>k!=="Autre"))].slice(0,10);
+    const res=await aiSort({mode:"titles",titres,secteurs},12000);
+    if(btn){ btn.disabled=false; }
+    if(!box) return;
+    if(!res||!res.ok||!res.titres||!res.titres.length){ box.innerHTML='<div class="mail-empty">Pas de suggestion pour l’instant (réessaie plus tard).</div>'; return; }
+    box.innerHTML=res.titres.map(t=>`<button class="title-chip" title="${esc(t.pourquoi||"")}" onclick='searchThisTitle(${esc(JSON.stringify(t.intitule))})'>${esc(t.intitule)}</button>`).join("");
+  }
+  // clic sur une suggestion -> pré-remplit la recherche France Travail interne et y bascule
+  function searchThisTitle(intitule){
+    setView("veille");
+    const inp=document.getElementById("q-mots"); if(inp)inp.value=intitule;
+  }
+
   // Cache des infos entreprise déjà récupérées (évite de refaire l'appel)
   let companyCache={};
   async function fetchCompany(name){
@@ -2445,7 +2413,7 @@
     closeMore();
     const nav=document.getElementById("nav");
     if(nav){const y=nav.getBoundingClientRect().top+window.pageYOffset-12;window.scrollTo({top:y,behavior:"smooth"});}
-    if(v==="aujourdhui"){renderCockpit();renderRoadmap();if(typeof renderBmSetup==="function")renderBmSetup();}
+    if(v==="aujourdhui"){renderCockpit();renderRoadmap();if(typeof renderBmSetup==="function")renderBmSetup();renderDashMap();renderDashEntretiensBadge();renderDashMailWidget();if(sb)loadSyncedMail();}
     if(v==="carte"){setTimeout(renderCarteMap,100);}
     if(v==="bilan"){renderBilan();}
     if(v==="reve"){renderReveBmSetup();}
@@ -3151,6 +3119,43 @@
     const box=document.getElementById("modalBox"); const el=box&&box.querySelector(".capture-loader");
     if(el) el.style.display="none";
   }
+  // ===== Point d'entrée UNIQUE « Ajouter Offre » (À trier) : favori > manuel > lien (dans cet ordre de priorité visuelle) =====
+  function openAddOfferMenu(){
+    const bookmarklet=bookmarkletCode();
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`
+      <div class="modal-head"><h3>${ic("plus")} Ajouter une offre</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="addoffer-opt addoffer-primary">
+        <div class="ao-h"><span class="ao-badge">Recommandé</span><span class="ao-t">${ic("bookmark")} Favori — 1 clic depuis n'importe quel site</span>
+          <button class="info-btn" data-info="addoffer" onclick="toggleInfo('addoffer',this)" aria-label="Comment faire" style="margin-left:auto;">${ic("info")}</button>
+        </div>
+        <div class="info-panel" id="info-addoffer">Glisse ce bouton dans ta barre de favoris (Ctrl+Maj+B). Ensuite, sur n'importe quelle offre (LinkedIn, WTTJ, Indeed…), un clic dessus l'envoie ici, prête à ajouter.</div>
+        <a class="bookmarklet-btn" href="${bookmarklet}" onclick="return false;" draggable="true">${ic("link")} Sam'Travail</a>
+      </div>
+      <div class="addoffer-opt">
+        <div class="ao-h"><span class="ao-t">${ic("pencil")} Ajout manuel</span></div>
+        <input class="crit-in" id="mo-titre" placeholder="Intitulé du poste" />
+        <div class="ao-row"><input class="crit-in" id="mo-entreprise" placeholder="Entreprise" /><input class="crit-in" id="mo-lieu" placeholder="Ville" /></div>
+        <input class="crit-in" id="mo-lien" placeholder="Lien de l'offre (optionnel)" />
+        <button class="btn sm" onclick="submitManualOffer()">${ic("check")}<span>Ajouter</span></button>
+      </div>
+      <div class="addoffer-opt addoffer-muted">
+        <button class="btn ghost sm" onclick="openAddLinks()">${ic("link")}<span>Ajouter par lien (plusieurs offres à la fois)</span></button>
+      </div>`;
+    document.getElementById("modalBg").classList.add("open");
+    hydrateIcons(box);
+  }
+  function submitManualOffer(){
+    const titre=(document.getElementById("mo-titre").value||"").trim();
+    const entreprise=(document.getElementById("mo-entreprise").value||"").trim();
+    const lieu=(document.getElementById("mo-lieu").value||"").trim();
+    const lien=(document.getElementById("mo-lien").value||"").trim();
+    if(!titre && !entreprise){ flashCenter("Renseigne au moins un titre ou une entreprise.","info"); return; }
+    const o={id:"manual_"+Date.now()+"_"+Math.random().toString(36).slice(2,7),titre:titre||"(sans titre)",entreprise,lieu,lien,source:"Ajout manuel",dateAjout:new Date().toISOString()};
+    const dup=findDuplicate(o);
+    if(dup){ openDupModal([{neo:o,existing:dup}],0,"apostuler"); return; }
+    commitOfferAdd(o).then(()=>{ closeModal(); setView("offres"); renderVeille(); renderCockpit(); renderStatsBadges(); flashCenter("Offre ajoutée ✓"); });
+  }
   function openAddLinks(prefillUrl, prefillTitle){
     const origin=window.location.origin;
     // Le bookmarklet capture l'URL ET le titre de la page (depuis TON navigateur = pas de blocage)
@@ -3304,35 +3309,21 @@
   }
   function hostOf(u){try{return new URL(u).hostname.replace(/^www\./,"");}catch(e){return "lien";}}
 
-  function normUrl(u){try{const x=new URL(u);return (x.hostname.replace(/^www\./,"")+x.pathname).toLowerCase().replace(/\/+$/,"");}catch(e){return (u||"").toString().trim().toLowerCase();}}
-  function dupKey(o){return (((o&&o.titre)||"")+"|"+((o&&o.entreprise)||"")).toLowerCase().replace(/\s+/g,"").slice(0,80);}
   // Plateformes ATS dont les URLs se ressemblent fortement / expirent (Workday & co.)
   function isAtsHost(url){ return /workday|myworkdayjobs|greenhouse|lever\.co|taleo|icims|smartrecruiters|teamtailor|brassring|successfactors|recruitee|workable|jobvite|ashbyhq|breezy/i.test(url||""); }
-  // Identifiant d'offre extrait de l'URL (query jk/jobId… ou ID dans le path : R-12345, JR12345, 1234567)
-  function offerIdOf(url){
-    if(!url) return "";
-    try{ const x=new URL(url); const q=x.searchParams;
-      for(const k of ["jobId","jobid","jk","vjk","gh_jid","currentJobId","offerId","offerid"]){ const v=q.get(k); if(v&&/[\w-]{3,}/.test(v)) return "q:"+(""+v).toLowerCase(); }
-      let m=x.pathname.match(/([A-Za-z]{1,4}[-_]?\d{4,})(?:\/|$)/) || x.pathname.match(/\/(\d{6,})(?:\/|$)/);
-      if(m) return "p:"+m[1].toLowerCase();
-    }catch(e){}
-    return "";
-  }
-  // Doublon = même ID d'offre (fort) OU même entreprise+titre (clé composite) OU même URL exacte (hors ATS)
+  // Clé de doublon STRICTE titre+entreprise+ville — plus de matching par URL/ID (Indeed & co. reformatent
+  // les liens de façon inconsistante côté IA d'extraction, ce qui créait des faux positifs/négatifs).
+  function dupKey(o){return (((o&&o.titre)||"")+"|"+((o&&o.entreprise)||"")+"|"+((o&&o.lieu)||"")).toLowerCase().replace(/\s+/g,"").slice(0,120);}
+  // Doublon = même triplet titre+entreprise+ville
   function findDuplicate(o){
-    const oid=offerIdOf(o.lien);
-    const url=o.lien?normUrl(o.lien):"";
-    const ats=isAtsHost(o.lien);
     const key=(o.titre&&o.entreprise)?dupKey(o):"";
-    let byKey=null;
+    if(!key) return null;
     for(const id in statusMap){
       if(id===o.id||id.indexOf("__note_")===0) continue;
       const e=statusMap[id]&&statusMap[id].offer; if(!e) continue;
-      if(oid && e.lien && offerIdOf(e.lien)===oid) return {id,offer:e,statut:statusMap[id].statut,on:"id"};
-      if(!ats && url && e.lien && !isAtsHost(e.lien) && normUrl(e.lien)===url) return {id,offer:e,statut:statusMap[id].statut,on:"url"};
-      if(!byKey && key && e.titre && e.entreprise && dupKey(e)===key) byKey={id,offer:e,statut:statusMap[id].statut,on:"titre"};
+      if(e.titre && e.entreprise && dupKey(e)===key) return {id,offer:e,statut:statusMap[id].statut,on:"titre"};
     }
-    return byKey;
+    return null;
   }
   async function commitOfferAdd(o){
     const statut=o._interet||"apostuler";delete o._quality;delete o._interet;if(!o.titre)o.titre="(sans titre)";
@@ -3357,7 +3348,7 @@
   function renderDupModal(){
     const box=document.getElementById("modalBox");const left=_dupQueue.filter(c=>!c.done);
     if(!left.length){finishAddLinks();return;}
-    box.innerHTML='<div class="modal-head"><h3>'+ic("alert")+' Doublon possible</h3><button class="x" onclick="closeDupModal()">\u2715</button></div><p class="modal-sub">'+left.length+' offre(s) ressemble(nt) \u00e0 une offre d\u00e9j\u00e0 pr\u00e9sente. Compare, puis choisis pour chacune.</p>'+left.map((c)=>{const gi=_dupQueue.indexOf(c);const matchTxt=c.existing.on==="url"?"m\u00eame lien":"m\u00eame titre + entreprise";return '<div class="dup-block"><div class="dup-why">'+ic("link")+' Correspondance : <b>'+matchTxt+'</b></div><div class="dup-grid">'+dupSide(c.existing.offer,"D\u00e9j\u00e0 chez toi","ex",c.existing.statut)+dupSide(c.neo,"Nouvelle","neo","")+'</div><div class="dup-actions"><button class="btn ghost" onclick="resolveDup('+gi+',\'ignore\')">'+ic("ban")+' Ignorer</button><button class="btn" onclick="resolveDup('+gi+',\'update\')">'+ic("save")+' Mettre \u00e0 jour l\'existante</button><button class="btn btn-validate2" onclick="resolveDup('+gi+',\'keep\')">'+ic("plus")+' Garder quand m\u00eame</button></div></div>';}).join("");
+    box.innerHTML='<div class="modal-head"><h3>'+ic("alert")+' Doublon possible</h3><button class="x" onclick="closeDupModal()">\u2715</button></div><p class="modal-sub">'+left.length+' offre(s) ressemble(nt) \u00e0 une offre d\u00e9j\u00e0 pr\u00e9sente. Compare, puis choisis pour chacune.</p>'+left.map((c)=>{const gi=_dupQueue.indexOf(c);return '<div class="dup-block"><div class="dup-why">'+ic("link")+' Correspondance : <b>même titre + entreprise + ville</b></div><div class="dup-grid">'+dupSide(c.existing.offer,"D\u00e9j\u00e0 chez toi","ex",c.existing.statut)+dupSide(c.neo,"Nouvelle","neo","")+'</div><div class="dup-actions"><button class="btn ghost" onclick="resolveDup('+gi+',\'ignore\')">'+ic("ban")+' Ignorer</button><button class="btn" onclick="resolveDup('+gi+',\'update\')">'+ic("save")+' Mettre \u00e0 jour l\'existante</button><button class="btn btn-validate2" onclick="resolveDup('+gi+',\'keep\')">'+ic("plus")+' Garder quand m\u00eame</button></div></div>';}).join("");
     hydrateIcons(box);
   }
   async function resolveDup(i,action){const c=_dupQueue[i];if(!c||c.done)return;if(action==="keep"){await commitOfferAdd(c.neo);_dupAdded++;}else if(action==="update"){await updateExistingOffer(c.existing.id,c.neo);}c.done=true;c.choice=action;renderDupModal();}
@@ -3562,7 +3553,8 @@
   // ===== SUIVI : liste dense filtrable (scale jusqu'à 100+ candidatures) =====
   let pipeFilter="all", pipeSort="recent";
   // bascule Tableur / Kanban : Kanban par défaut sur grand écran, Tableur sur mobile
-  let pipeView=(function(){try{const v=localStorage.getItem("st_pipeView");if(v==="kanban"||v==="tableur")return v;}catch(e){}return window.innerWidth>=760?"kanban":"tableur";})();
+  // Tableur retiré (chantier 5) : Kanban partout, y compris mobile (défilement horizontal déjà géré par le CSS).
+  let pipeView=(function(){try{const v=localStorage.getItem("st_pipeView");if(v==="kanban")return v;}catch(e){}return "kanban";})();
   function setPipeView(v){pipeView=v;try{if(v!=="relance")localStorage.setItem("st_pipeView",v);}catch(e){}renderPipeline();}
   let pipeManage=false; const pipeSelect=new Set();
   function togglePipeManage(){pipeManage=!pipeManage;if(!pipeManage)pipeSelect.clear();renderPipeline();}
@@ -3591,7 +3583,6 @@
     const dueCount=pipeline.filter(relanceDue).length;
     const toggle=`<div class="segmented pipe-viewseg">
       <button class="seg ${pipeView==="kanban"?"active":""}" onclick="setPipeView('kanban')">${ic("columns")} Kanban</button>
-      <button class="seg ${pipeView==="tableur"?"active":""}" onclick="setPipeView('tableur')">${ic("list")} Tableur</button>
       <button class="seg rel-seg ${pipeView==="relance"?"active":""}" onclick="setPipeView('relance')">${ic("bell")} Relances${dueCount?` <b class="seg-badge">${dueCount}</b>`:""}</button>
     </div>`;
 
@@ -3603,51 +3594,7 @@
     }
 
     // ===== VUE KANBAN CONDENSÉ (4 colonnes, Clos = Refusé + Pas pour moi) =====
-    if(pipeView==="kanban"){
-      c.innerHTML=`<div class="pipe-toolbar"><div>${toggle}</div></div>${renderKanban()}`;
-      renderStatsBadges();
-      return;
-    }
-
-    // ===== VUE TABLEUR (lignes denses, triables) =====
-    // compteurs cliquables = filtre (pas de bloc filtre séparé)
-    const ghostN=pipeline.filter(isGhosted).length;
-    const pills=`<span class="pipe-pill ${pipeFilter==="all"?"active":""}" onclick="setPipeFilter('all')">Toutes <b>${pipeline.length}</b></span>`+
-      KCOLS.map(col=>`<span class="pipe-pill ${pipeFilter===col.key?"active":""}" onclick="setPipeFilter('${col.key}')" style="${pipeFilter===col.key?`background:${pipeColor(col.key)};border-color:${pipeColor(col.key)};color:#fff;`:""}">${ic(KICON[col.key]||"minus")} ${esc(kLabel(col.label))} <b>${counts[col.key]}</b></span>`).join("")+
-      (ghostN?`<span class="pipe-pill ghost ${pipeFilter==="ghost"?"active":""}" onclick="setPipeFilter('ghost')" title="Envoyées sans réponse depuis plus de 21 jours">${ic("clock")} Sans réponse <b>${ghostN}</b></span>`:"");
-
-    // mini-barre proportionnelle (vue d'ensemble visuelle)
-    const segs=KCOLS.filter(col=>counts[col.key]>0).map(col=>`<div class="pipe-seg" style="flex:${counts[col.key]};background:${pipeColor(col.key)};" title="${esc(kLabel(col.label))} : ${counts[col.key]}"></div>`).join("");
-
-    // liste filtrée + triée
-    let list=pipeline.slice();
-    if(pipeFilter==="ghost")list=list.filter(isGhosted);
-    else if(pipeFilter!=="all")list=list.filter(p=>p.statut===pipeFilter);
-    list.sort((a,b)=>{
-      if(pipeSort==="envie")return (b.niveau_envie||0)-(a.niveau_envie||0);
-      if(pipeSort==="entreprise")return (a.entreprise||"").localeCompare(b.entreprise||"");
-      if(pipeSort==="statut")return KCOLS.findIndex(c=>c.key===a.statut)-KCOLS.findIndex(c=>c.key===b.statut);
-      return new Date(b.date_envoi||0)-new Date(a.date_envoi||0); // recent par défaut
-    });
-
-    const selCount=pipeSelect.size;
-    c.innerHTML=`
-      <div class="pipe-overview"><div class="pipe-bar">${segs}</div></div>
-      <div class="pipe-toolbar">
-        <div class="pipe-pills">${pills}</div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          ${toggle}
-          <select class="sel" onchange="setPipeSort(this.value)">
-            <option value="recent">Plus récentes</option>
-            <option value="envie" ${pipeSort==="envie"?"selected":""}>Niveau d'envie</option>
-            <option value="entreprise" ${pipeSort==="entreprise"?"selected":""}>Entreprise A→Z</option>
-            <option value="statut" ${pipeSort==="statut"?"selected":""}>Par statut</option>
-          </select>
-          <button class="pipe-manage ${pipeManage?"on":""}" onclick="togglePipeManage()" title="Sélectionner pour supprimer">${pipeManage?ic("check")+" Terminer":ic("ban")+" Gérer"}</button>
-        </div>
-      </div>
-      ${pipeManage&&selCount?`<div class="pipe-selbar"><span>${selCount} sélectionnée${selCount>1?"s":""}</span><button class="btn danger sm" onclick="deletePipeSelection()">Supprimer la sélection</button><button class="btn ghost sm" onclick="pipeSelect.clear();renderPipeline();">Tout désélectionner</button></div>`:""}
-      ${list.length?`<div class="pipe-list ${pipeManage?"manage":""}">${list.map(pipeRow).join("")}</div>`:'<div class="empty">Aucune candidature dans ce filtre.</div>'}`;
+    c.innerHTML=`<div class="pipe-toolbar"><div>${toggle}</div></div>${renderKanban()}`;
     renderStatsBadges();
   }
   // ===== KANBAN CONDENSÉ =====
@@ -3689,12 +3636,49 @@
       } else {
         body=items.length?items.map(kanbanCard).join(""):'<div class="kb-empty">—</div>';
       }
-      return `<div class="kb-col" style="--kw:${Math.max(1,items.length)};">
+      return `<div class="kb-col" data-col="${esc(kc.key)}" style="${kbColStyle(kc,items.length)}">
         <div class="kb-head" style="--kc:${kc.color};"><span class="kb-dot"></span><span class="kb-label">${esc(kc.label)}</span><b class="kb-count">${items.length}</b></div>
         <div class="kb-body">${body}</div>
+        <div class="kb-resize" onmousedown="kbStartResize(event,'${esc(kc.key)}')" ondblclick="kbResetWidth('${esc(kc.key)}')" title="Glisse pour redimensionner · double-clic pour réinitialiser"></div>
       </div>`;
     }).join("");
     return `<div class="kanban-board">${cols}</div>`;
+  }
+  // ===== Largeur des colonnes Kanban « au feeling » (glisser-déposer, persisté) =====
+  let kbColWidths=null;
+  try{ const _kbw=localStorage.getItem("st_kbColWidths"); if(_kbw)kbColWidths=JSON.parse(_kbw); }catch(e){}
+  function kbColStyle(kc,itemsLen){
+    if(kbColWidths && kbColWidths[kc.key]) return `flex:0 0 ${kbColWidths[kc.key]}px;`;
+    return `--kw:${Math.max(1,itemsLen)};`;
+  }
+  let _kbResize=null;
+  function kbStartResize(ev,colKey){
+    ev.preventDefault();
+    const colEl=ev.target.closest(".kb-col"); if(!colEl)return;
+    _kbResize={colKey,colEl,startX:ev.clientX,startW:colEl.getBoundingClientRect().width};
+    document.body.classList.add("kb-resizing");
+    document.addEventListener("mousemove",kbDoResize);
+    document.addEventListener("mouseup",kbEndResize);
+  }
+  function kbDoResize(ev){
+    if(!_kbResize)return;
+    const w=Math.max(150,Math.round(_kbResize.startW+(ev.clientX-_kbResize.startX)));
+    _kbResize.colEl.style.flex="0 0 "+w+"px";
+  }
+  function kbEndResize(ev){
+    if(!_kbResize)return;
+    const w=Math.max(150,Math.round(_kbResize.startW+(ev.clientX-_kbResize.startX)));
+    if(!kbColWidths)kbColWidths={};
+    kbColWidths[_kbResize.colKey]=w;
+    try{localStorage.setItem("st_kbColWidths",JSON.stringify(kbColWidths));}catch(e){}
+    document.body.classList.remove("kb-resizing");
+    document.removeEventListener("mousemove",kbDoResize);
+    document.removeEventListener("mouseup",kbEndResize);
+    _kbResize=null;
+  }
+  function kbResetWidth(colKey){
+    if(kbColWidths){ delete kbColWidths[colKey]; try{localStorage.setItem("st_kbColWidths",JSON.stringify(kbColWidths));}catch(e){} }
+    renderPipeline();
   }
   function kanbanCard(p){
     const col=pipeColor(p.statut);
@@ -4460,18 +4444,16 @@
     const box=document.getElementById("modalBox");
     box.classList.add("wide");
     box.innerHTML=`
-      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;">${(()=>{const b=followedBrand(p.entreprise);const lg=b?brandLogo(b):"";const ini=esc((p.entreprise||p.poste||"?").slice(0,1).toUpperCase());return `<span class="pc-logo">${lg?`<img src="${lg}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${ini}';">`:ini}</span>`;})()}<span>${esc(titre)}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;">${(()=>{const b=followedBrand(p.entreprise);const lg=b?brandLogo(b):"";const ini=esc((p.entreprise||p.poste||"?").slice(0,1).toUpperCase());return `<span class="pc-logo">${lg?`<img src="${lg}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${ini}';">`:ini}</span>`;})()}<span class="fiche-ed" data-field="poste" data-id="${p.id}" data-src="pipe" data-ph="Poste" onclick="editFicheField(this)">${esc(titre)}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
       <div class="fiche-top">
-        <div class="pc-company">${esc(p.entreprise||"")}${followedBrand(p.entreprise)?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${followedBrand(p.entreprise).id}")' style="cursor:pointer;">${ic("star")}</span>`:(p.entreprise?` <button class="brand-quickadd" onclick="quickAddBrandFromPipe('${p.id}',this)" title="Cette entreprise n'est pas dans Mes marques">+ marque</button>`:"")}</div>
-        <div class="pc-badges">
-          <span class="pc-badge" style="background:${col}1a;color:${col};border-color:${col}55;">${esc(statutLabel)}</span>
-          ${o.salaire?`<span class="pc-badge">${ic("chart")} ${esc(o.salaire)}</span>`:""}
-          ${o.typeContrat?`<span class="pc-badge">${ic("doc")} ${esc(o.typeContrat)}</span>`:""}
-          ${o.experience?`<span class="pc-badge">${ic("clock")} ${esc(o.experience)}</span>`:""}
-          ${p.ville?`<span class="pc-badge">${ic("pin")} ${esc(p.ville)}</span>`:""}
-          ${days!==null?`<span class="pc-badge">${ic("calendar")} envoyé il y a ${days} j</span>`:""}
-          ${p.niveau_envie?`<span class="pc-badge">${ic("star")} ${Math.min(5,p.niveau_envie)}/5</span>`:""}
-          ${p.source?`<span class="pc-badge">${esc(p.source)}</span>`:""}
+        <div class="pc-company"><span class="fiche-ed" data-field="entreprise" data-id="${p.id}" data-src="pipe" data-ph="Entreprise" onclick="editFicheField(this)">${esc(p.entreprise||"—")}</span>${followedBrand(p.entreprise)?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${followedBrand(p.entreprise).id}")' style="cursor:pointer;">${ic("star")}</span>`:(p.entreprise?` <button class="brand-quickadd" onclick="quickAddBrandFromPipe('${p.id}',this)" title="Cette entreprise n'est pas dans Mes marques">+ marque</button>`:"")}</div>
+        <div class="pc-meta-clean">
+          <span class="pc-score-inline" style="background:${col}22;color:${col};" title="Statut">${ic(KICON[p.statut]||"minus")}</span>
+          <span class="fiche-ed" data-field="ville" data-id="${p.id}" data-src="pipe" data-ph="Ville" onclick="editFicheField(this)">${esc(p.ville||"—")}</span>
+          ${o.typeContrat?`<span class="dot">·</span><span>${esc(o.typeContrat)}</span>`:""}
+          ${o.salaire?`<span class="dot">·</span><span>${esc(o.salaire)}</span>`:""}
+          ${days!==null?`<span class="dot">·</span><span>envoyé il y a ${days} j</span>`:""}
+          ${p.niveau_envie?`<span class="dot">·</span><span>${ic("star")} ${Math.min(5,p.niveau_envie)}/5</span>`:""}
         </div>
       </div>
       <div class="fiche-actbar">
@@ -4484,18 +4466,18 @@
       </div>
       <div class="fiche-2col">
       <div class="fiche-col">
-        <div class="pc-section-h">${ic("doc")} Description</div>
+        <div class="pc-section-h">${ic("doc")} Description ${o.id?`<button class="fiche-desc-edit" onclick="toggleDescEdit('${o.id}','offer',this)" title="Modifier la description">${ic("pencil")}</button>`:""}</div>
         <div id="pcDesc" class="pc-notes desc-rich oc-desc-full">${descRaw?formatDescription(descRaw):'<span class="muted">Pas de description enregistrée pour cette candidature. Ouvre l\'annonce d\'origine pour la consulter.</span>'}</div>
       </div>
       <div class="fiche-col">
         <div class="pc-section-h">${ic("link")} Liens utiles</div>
         <div class="pc-links">
           ${p.lien_offre?`<a href="${esc(p.lien_offre)}" target="_blank" rel="noopener" title="Offre" class="full site-link">${ic("doc")} Voir l'annonce</a>`:""}
-          <a href="${cl.site}" target="_blank" rel="noopener" title="Site">${ic("building")}</a>
-          <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
-          <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis Indeed">${ic("starcircle")}</a>
-          <a href="${cl.societe}" target="_blank" rel="noopener" title="Chiffre d'affaires">${ic("chart")}</a>
-          <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
+          <a href="${cl.site}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("building")}</span><span>Site</span></a>
+          <a href="${cl.wiki}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("book")}</span><span>Wikipédia</span></a>
+          <a href="${cl.avis}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("starcircle")}</span><span>Avis</span></a>
+          <a href="${cl.societe}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("chart")}</span><span>CA</span></a>
+          <a href="${gmaps}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("pin")}</span><span>Maps</span></a>
         </div>
         ${(p.ville||p.entreprise)?`<div id="pcMap" class="offer-map" style="height:220px;margin-top:6px;"><div class="mini-map-loading">Chargement de la carte…</div></div>`:""}
         <div class="pc-section-h">${ic("checklist")} Checklist</div>
@@ -5259,43 +5241,43 @@
     const box=document.getElementById("modalBox");
     box.classList.add("wide");
     box.innerHTML=`
-      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;"><span class="pc-logo">${lg?`<img src="${esc(lg)}" alt="" onerror="logoErr(this,'${esc(lgDom)}','${ini}','')">`:ini}</span><span>${esc(o.titre||"Offre")}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;"><span class="pc-logo">${lg?`<img src="${esc(lg)}" alt="" onerror="logoErr(this,'${esc(lgDom)}','${ini}','')">`:ini}</span><span class="fiche-ed" data-field="titre" data-id="${o.id}" data-src="offer" data-ph="Titre du poste" onclick="editFicheField(this)">${esc(o.titre||"Offre")}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
       <div class="fiche-top">
-        <div class="pc-company">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${b.id}")' style="cursor:pointer;">${ic("star")}</span>`:(o.entreprise?` <button class="brand-quickadd" onclick="quickAddBrandFromOffer('${o.id}',this)" title="Cette entreprise n'est pas dans Mes marques">+ marque</button>`:"")}</div>
-        <div class="pc-badges">
-          <span class="pc-badge" title="Score de match">${ic("target")} ${sc}/100</span>
-          <span class="pc-badge" style="color:${sec.c};border-color:${sec.c}55;">${esc(sec.key)}</span>
-          ${o.lieu?`<span class="pc-badge">${ic("pin")} ${esc(o.lieu)}</span>`:""}
-          ${o.typeContrat?`<span class="pc-badge">${ic("doc")} ${esc(o.typeContrat)}</span>`:""}
-          ${o.salaire?`<span class="pc-badge">${ic("chart")} ${esc(o.salaire)}</span>`:""}
-          ${o.experience?`<span class="pc-badge">${ic("clock")} ${esc(o.experience)}</span>`:""}
-          ${dateStr?`<span class="pc-badge">${ic("calendar")} ${dateStr}</span>`:""}
+        <div class="pc-company"><span class="fiche-ed" data-field="entreprise" data-id="${o.id}" data-src="offer" data-ph="Entreprise" onclick="editFicheField(this)">${esc(o.entreprise||"—")}</span>${b?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${b.id}")' style="cursor:pointer;">${ic("star")}</span>`:(o.entreprise?` <button class="brand-quickadd" onclick="quickAddBrandFromOffer('${o.id}',this)" title="Cette entreprise n'est pas dans Mes marques">+ marque</button>`:"")}</div>
+        <div class="pc-meta-clean">
+          <span class="pc-score-inline" title="Score de match">${sc}<small>/100</small></span>
+          <span class="fiche-ed" data-field="lieu" data-id="${o.id}" data-src="offer" data-ph="Ville" onclick="editFicheField(this)">${esc(o.lieu||"—")}</span>
+          <span class="dot">·</span><span class="fiche-ed" data-field="typeContrat" data-id="${o.id}" data-src="offer" data-ph="Contrat" onclick="editFicheField(this)">${esc(o.typeContrat||"—")}</span>
+          <span class="dot">·</span><span class="fiche-ed" data-field="salaire" data-id="${o.id}" data-src="offer" data-ph="Salaire" onclick="editFicheField(this)">${esc(o.salaire||"—")}</span>
+          <span class="dot">·</span><span class="fiche-ed" data-field="experience" data-id="${o.id}" data-src="offer" data-ph="Expérience" onclick="editFicheField(this)">${esc(o.experience||"—")}</span>
+          <span class="dot">·</span><span style="color:${sec.c};">${esc(sec.key)}</span>
+          ${dateStr?`<span class="dot">·</span><span>${dateStr}</span>`:""}
         </div>
       </div>
       <div class="fiche-actbar">
         <div class="fa-group">
           <button class="pdact ${st==="super"?"on":""}" onclick='offerCardCoeur(${oData})' style="${st==="super"?"background:var(--gold);border-color:var(--gold);color:#fff;":"color:var(--gold);border-color:var(--gold)55;"}" title="${st==="super"?"Coup de cœur — cliquer pour retirer":"Marquer en coup de cœur"}">${ic("star")} Coup de cœur</button>
-          <button class="pdact" onclick='openLettre(${oData})' title="Rédiger l'accroche + éditer le CV pour cette offre">${ic("sparkle")} Candidature${lettreFor(o.lien||o.id)?" ✓":""}</button>
+          <button class="pdact" onclick='openLettre(${oData})' title="Rédiger l'accroche + éditer le CV pour cette offre">${ic("sparkle")} Adapter le CV${lettreFor(o.lien||o.id)?" ✓":""}</button>
           <span class="fa-sep"></span>
           <button class="pdact" onclick='markOfferFromCard(${oData},"ignore")' title="Passer / retirer de la pile">${ic("ban")} Passer</button>
         </div>
         <span class="fa-spacer"></span>
-        <button class="btn primary sm" onclick='closeModal();markAsApplied(${oData})'>${ic("mail")} J'ai postulé</button>
+        <button class="btn primary sm" onclick='closeModal();markAsApplied(${oData})'>${ic("mail")} J'ai postulé →</button>
       </div>
       <div class="fiche-2col">
       <div class="fiche-col">
-        <div class="pc-section-h">${ic("doc")} Description</div>
-        ${(o.descriptionFmt||o.description)?`<div id="ocDesc" class="pc-notes desc-rich oc-desc-full">${formatDescription(o.descriptionFmt||o.description)}</div>`:`<div class="pc-notes"><span class="muted">Pas de description fournie. Ouvre l'annonce d'origine pour la consulter.</span></div>`}
+        <div class="pc-section-h">${ic("doc")} Description <button class="fiche-desc-edit" onclick="toggleDescEdit('${o.id}','offer',this)" title="Modifier la description">${ic("pencil")}</button></div>
+        ${(o.descriptionFmt||o.description)?`<div id="ocDesc" class="pc-notes desc-rich oc-desc-full">${formatDescription(o.descriptionFmt||o.description)}</div>`:`<div id="ocDesc" class="pc-notes"><span class="muted">Pas de description fournie. Clique le crayon pour en écrire une.</span></div>`}
       </div>
       <div class="fiche-col">
         <div class="pc-section-h">${ic("link")} Liens utiles</div>
         <div class="pc-links">
           <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre" class="full site-link">${ic("doc")} Voir l'annonce</a>
-          <a href="${cl.site}" target="_blank" rel="noopener" title="Site">${ic("building")}</a>
-          <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
-          <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
-          <a href="${cl.societe}" target="_blank" rel="noopener" title="Chiffre d'affaires">${ic("chart")}</a>
-          <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
+          <a href="${cl.site}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("building")}</span><span>Site</span></a>
+          <a href="${cl.wiki}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("book")}</span><span>Wikipédia</span></a>
+          <a href="${cl.avis}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("starcircle")}</span><span>Avis</span></a>
+          <a href="${cl.societe}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("chart")}</span><span>CA</span></a>
+          <a href="${gmaps}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("pin")}</span><span>Maps</span></a>
         </div>
         ${(o.lieu||o.lat)?`<div id="ocMap" class="offer-map" style="height:220px;margin-top:12px;"><div class="mini-map-loading">Chargement de la carte…</div></div>`:""}
         ${contacts.length?`<div class="pc-section-h">${ic("user")} Contacts chez ${esc(o.entreprise||"cette entreprise")} (${contacts.length})</div>
@@ -5320,6 +5302,56 @@
     })();
   }
   // Tri depuis la fiche : applique, ferme, confirme d'un flash
+  // ===== Édition inline des fiches (offre/candidature) : clic sur un champ -> input -> sauvegarde au blur/Entrée =====
+  function editFicheField(el){
+    if(el.querySelector("input")) return;   // déjà en cours d'édition
+    const cur=el.textContent.trim();
+    const input=document.createElement("input");
+    input.className="fiche-ed-input";
+    input.value=(cur==="—"?"":cur);
+    input.placeholder=el.dataset.ph||"";
+    input.size=Math.max(4,input.value.length||input.placeholder.length||4);
+    input.onblur=function(){ saveFicheField(el,input.value.trim()); };
+    input.onkeydown=function(e){ if(e.key==="Enter"){e.preventDefault();input.blur();} else if(e.key==="Escape"){el.textContent=cur;} };
+    el.textContent="";
+    el.appendChild(input);
+    input.focus(); input.select();
+  }
+  async function saveFicheField(el,value){
+    const field=el.dataset.field, id=el.dataset.id, src=el.dataset.src;
+    el.textContent=value||"—";
+    if(src==="pipe"){
+      const p=pipeline.find(x=>String(x.id)===String(id)); if(!p)return;
+      p[field]=value;
+      if(sb){ try{ await sb.from("pipeline").update({[field]:value}).eq("id",id); }catch(e){} }
+      renderPipeline();
+    } else {
+      const s=statusMap[id]; if(!s||!s.offer)return;
+      s.offer[field]=value;
+      if(sb){ try{ await sb.from("job_status").upsert({offer_id:id,statut:s.statut,offer_data:s.offer,updated_at:new Date().toISOString()},{onConflict:"user_id,offer_id"}); }catch(e){} }
+      renderVeille(); renderStatsBadges();
+    }
+  }
+  // Bascule la description entre lecture (formatée) et édition (textarea brut)
+  async function toggleDescEdit(id,src,btn){
+    const box=(src==="pipe"?document.getElementById("pcDesc"):document.getElementById("ocDesc")); if(!box)return;
+    const ta=box.querySelector("textarea");
+    if(ta){
+      const val=ta.value;
+      // la description vit toujours sur l'offre liée (job_status), jamais sur la ligne pipeline elle-même
+      const s=statusMap[id];
+      if(s&&s.offer){ s.offer.description=val; delete s.offer.descriptionFmt;
+        if(sb){ try{ await sb.from("job_status").upsert({offer_id:id,statut:s.statut,offer_data:s.offer,updated_at:new Date().toISOString()},{onConflict:"user_id,offer_id"}); }catch(e){} }
+      }
+      box.innerHTML=val?formatDescription(val):'<span class="muted">Pas de description.</span>';
+      btn.innerHTML=ic("pencil");
+    } else {
+      const s=statusMap[id]; const cur=(s&&s.offer&&s.offer.description)||"";
+      box.innerHTML=`<textarea class="draft-area" rows="9">${esc(cur)}</textarea>`;
+      box.querySelector("textarea").focus();
+      btn.innerHTML=ic("check");
+    }
+  }
   const TRI_LABELS={super:"Coup de cœur ⭐",apostuler:"À postuler ❤️",reflexion:"Plus tard 🕐",ignore:"Passée"};
   async function markOfferFromCard(o,statut){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
@@ -5909,7 +5941,7 @@
     document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
   }
 
-  function refreshAll(){renderStatsBadges();renderPipeline();renderReve();renderReseau();renderEntretiens();renderVeille();renderCockpit();renderBilan();renderRoadmap();}
+  function refreshAll(){renderStatsBadges();renderPipeline();renderReve();renderReseau();renderEntretiens();renderVeille();renderCockpit();renderBilan();renderRoadmap();renderDashMap();renderDashEntretiensBadge();renderDashMailWidget();}
 
   // ===== INIT =====
   if(!sbReady){document.getElementById("setupZone").innerHTML='<div class="setup-box"><b>Config Supabase manquante.</b> Remplace <code>TON_SUPABASE_URL</code> et <code>TON_SUPABASE_ANON_KEY</code> dans le code. Sans ça, rien ne se sauvegarde (mais tu peux tester la recherche).</div>';}
@@ -5921,7 +5953,9 @@
   function applyTheme(){
     if(theme==="dark") document.documentElement.setAttribute("data-theme","dark");
     else document.documentElement.removeAttribute("data-theme");
-    const btn=document.getElementById("themeToggle");if(btn)btn.innerHTML=ic(theme==="dark"?"moon":"sun");
+    // Le bouton vit désormais dans Réglages (openProfil) — le logo de l'en-tête est l'easter egg de bascule.
+    const btn=document.getElementById("themeToggle");
+    if(btn)btn.innerHTML=ic(theme==="dark"?"moon":"sun")+"<span>Thème "+(theme==="dark"?"sombre":"clair")+"</span>";
   }
   async function toggleTheme(){
     theme=theme==="dark"?"light":"dark";
@@ -5934,7 +5968,7 @@
   }
   function initDate(){
     const d=new Date();
-    document.getElementById("today").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+    const todayEl=document.getElementById("today"); if(todayEl)todayEl.textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
     const h=d.getHours();
     const nom=userName?(" "+userName):"";
     document.getElementById("greet").textContent=(h<12?"Bonjour":h<18?"Bon après-midi":"Bonsoir")+nom+" 👋";
@@ -6115,6 +6149,7 @@
       <div class="pc-section-h">${ic("gear")} Réglages</div>
       <p class="modal-sub" style="margin-top:-4px;">Affine le score d'affinité (pondération des secteurs) et sauvegarde tes données.</p>
       <div class="prof-settings">
+        <button class="btn ghost sm" id="themeToggle" onclick="toggleTheme()">${ic(theme==="dark"?"moon":"sun")}<span>Thème ${theme==="dark"?"sombre":"clair"}</span></button>
         <button class="btn ghost sm" onclick="closeModal();openCriteres();">${ic("sliders")}<span>Critères de matching</span></button>
         <button class="btn ghost sm" onclick="openPromptAccroche()">${ic("sparkle")}<span>Prompt d'accroche (IA)</span></button>
         <button class="btn ghost sm" onclick="openDocsHistory()">${ic("doc")}<span>Mes documents</span></button>
@@ -6855,19 +6890,9 @@ alter table emails_sync disable row level security;</pre>
         ${mt?`<button class="pdact" onclick='openMatchedOffer("${esc(m.id)}")'>${ic("link")} Voir l'offre liée</button>`:""}
         <button class="pdact" onclick='deleteSyncedMail("${esc(m.id)}");closeModal()'>${ic("trash")} Supprimer</button>
       </div>
-      <div class="mzg-body">
-      <div class="email-reader-wrapper" style="width: 100%; border: 1px solid var(--border); border-radius: 12px; background: #ffffff; overflow: hidden; margin-top: 16px;">
-        <iframe 
-          id="email-iframe" 
-          sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" 
-          scrolling="no" 
-          style="width: 100%; border: none; min-height: 400px; display: block;">
-        </iframe>
-    </div>
-</div>
+      <div class="mzg-body"><div class="mzg-body-text">${esc(m.body||"(corps du message indisponible)")}</div></div>
       <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
     document.getElementById("modalBg").classList.add("open");
-    renderRichEmail(m.body); 
   }
   window.addEventListener("focus",refreshMailOnFocus);
   document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible")refreshMailOnFocus(); });
@@ -7058,408 +7083,6 @@ alter table emails_sync disable row level security;</pre>
       const j = await r.json();
       return j || null;                          // renvoie la réponse (même ok:false) pour diagnostic ; null = réseau/délai
     }catch(e){ return null; }
-  }
-  // ===== PILIER 1 : SANDBOX & VISITE GUIDÉE (V8 - Prêt pour Production) =====
-  let isGuest = false;
-
-  window.exitGuestMode = function() {
-    isGuest = false;
-    // Le reload nettoie toute la mémoire : le bandeau disparaît et la vraie synchro e-mail est restaurée !
-    window.location.reload(); 
-  };
-
-  function startGuestMode() {
-    isGuest = true;
-    document.getElementById('authGate').style.display = 'none';
-    
-    // Blocage strict temporaire de la synchro automatique pour la session Démo
-    if (typeof syncEmails !== "undefined") window.syncEmails = function() { console.log("Sync bloquée (Démo)"); };
-    if (typeof initGoogleAuth !== "undefined") window.initGoogleAuth = function() { console.log("Auth bloquée (Démo)"); };
-    if (typeof handleAuthClick !== "undefined") window.handleAuthClick = function() { alert("La connexion réelle est désactivée en mode Démo."); };
-    const style = document.createElement('style');
-    style.innerHTML = `iframe[src*="google"], .g_id_signin { display: none !important; }`;
-    document.head.appendChild(style);
-
-    // Injection de la bannière
-    if (!document.getElementById('guestBanner')) {
-      const banner = document.createElement('div');
-      banner.id = 'guestBanner';
-      banner.className = 'guest-banner';
-      banner.innerHTML = `
-        <div style="flex:1;">
-          <h3>${ic("sparkle")} Mode Démo activé</h3>
-          <p>Explore l'outil ! Tes données de test sont enregistrées localement.<br>Pour connecter ta boîte mail, utiliser l'IA de CV et ne rien perdre, passe sur un compte sécurisé.</p>
-        </div>
-        <button onclick="exitGuestMode()" class="btn" style="background:#fff;color:var(--accent);font-weight:800;flex-shrink:0;">Créer mon compte</button>
-      `;
-      const wrap = document.querySelector('.wrap');
-      const header = wrap.querySelector('header');
-      if (header) header.insertAdjacentElement('afterend', banner);
-    }
-
-    const guestInit = localStorage.getItem('st_guest_init');
-    if (!guestInit) {
-      // DONNÉES ENRICHIES (Avec la vraie description complète de Thales)
-      statusMap = {
-        "demo_o1": { statut: "super", offer: { id: "demo_o1", titre: "Master Planner Supply Chain", entreprise: "Thales", lieu: "Vendôme", lat: 47.795, lon: 1.066, typeContrat: "CDI", salaire: "50k-65k", source: "LinkedIn", dateCreation: new Date().toISOString(), description: `Lieu :
-Vendôme, France
-L'entreprise :
-Thales est un leader mondial des hautes technologies spécialisé dans trois secteurs d'activité : Défense & Sécurité, Aéronautique & Spatial, et Cyber & Digital.
-Le Groupe développe des produits et solutions qui contribuent à un monde plus sûr, plus respectueux de l'environnement et plus inclusif.
-Thales investit près de 4 milliards d'euros par an en Recherche & Développement, notamment dans des domaines clés de l'innovation tels que l'IA, la cybersécurité, le quantique, les technologies du cloud et la 6G.
-Thales compte près de 81 000 collaborateurs dans 68 pays.
-Le site de Vendôme est référent pour la production avionique et est facilement accessible en TGV depuis Paris et Tours.
-Avantages :
-Une réussite portée par notre excellence technologique, votre expérience et notre ambition partagée
-Un package de rémunération attractif
-Un développement des compétences en continu : parcours de formation, académies et communautés internes
-Un environnement inclusif, bienveillant et respectant l'équilibre des collaborateurs
-Un engagement sociétal et environnemental reconnu
-Missions :
-Prendre part à la planification stratégique des activités de production :
-Établir un Plan de Production (PDP) adapté aux besoins clients, aux contraintes industrielles et financières.
-Planifier et ordonnancer les activités pour garantir un flux continu et optimisé.
-Identifier et traiter les inadéquations entre capacité et demande, tout en alertant les parties prenantes.
-Superviser et optimiser les flux internes et externes via des outils Lean et le Value Stream Mapping (VSM).
-Accompagner les équipes dans l'adoption des bonnes pratiques supply chain et gérer les projets d'amélioration continue.
-Profil recherché :
-Titulaire d'un Bac+5 en supply chain.
-Expérience significative en planification (Master Planner, Demand Planner, S&OP Manager).
-Maîtrise des outils ERP (notamment SAP) et des méthodes FCTL.
-Expertise dans l'amélioration supply chain (Lean, VSM, gestion des flux produits).
-Organisation, rigueur, aisance relationnelle et esprit d'équipe.
-Conditions :
-Thales est une entreprise Handi-Engagée et reconnait tous les talents. La diversité est notre meilleur atout.` } },
-        "demo_o2": { statut: "apostuler", offer: { id: "demo_o2", titre: "Product Owner Expérimenté", entreprise: "Doctolib", lieu: "Nantes", lat: 47.2184, lon: -1.5536, typeContrat: "CDI", source: "Welcome to the Jungle", dateCreation: new Date().toISOString(), description: "En tant que Product Owner chez Doctolib, votre mission est de simplifier le quotidien du personnel soignant.\n\nResponsabilités :\n- Définir la roadmap produit en lien avec les utilisateurs.\n- Gérer le backlog, rédiger les user stories et animer les sprints.\n- Travailler étroitement avec les développeurs et les UX designers.\n\nProfil : Au moins 3 ans d'expérience en produit logiciel. Vous êtes orienté data et avez une forte empathie pour les utilisateurs." } },
-        "demo_o3": { statut: "apostuler", offer: { id: "demo_o3", titre: "Product Builder No-Code", entreprise: "Back Market", lieu: "Bordeaux", lat: 44.8378, lon: -0.5792, typeContrat: "CDI", source: "Site Carrière", dateCreation: new Date().toISOString(), description: "Rejoignez la licorne de l'économie circulaire !\nVotre mission : développer des outils internes pour rendre nos équipes opérationnelles 10x plus rapides.\n\nMissions : Automatisation des process via Make/Zapier. Création d'interfaces sur Airtable et Retool.\nProfil : Esprit logique, capacité à résoudre des problèmes complexes, et excellente communication." } },
-        "demo_o4": { statut: "reflexion", offer: { id: "demo_o4", titre: "Head of Product", entreprise: "Qonto", lieu: "Lyon", lat: 45.764, lon: 4.8357, typeContrat: "CDI", source: "LinkedIn", dateCreation: new Date().toISOString(), description: "Rejoignez la Fintech européenne B2B de référence.\n\nEn tant que Head of Product, vous dirigerez une équipe de 10 PMs travaillant sur le \"Core Banking\".\nVous définirez les OKRs, coacherez vos équipes et vous assurerez de l'excellence de la livraison." } }
-      };
-      
-      pipeline = [
-        { id: "demo_p1", poste: "Product Builder", entreprise: "Alan", ville: "Paris", statut: "Entretien", niveau_envie: 5, date_envoi: new Date(Date.now() - 86400000 * 12).toISOString() },
-        { id: "demo_p2", poste: "Product Manager", entreprise: "Lydia", ville: "Paris", statut: "Envoyé", niveau_envie: 3, date_envoi: new Date(Date.now() - 86400000 * 15).toISOString() },
-        { id: "demo_p3", poste: "PM Payment", entreprise: "Swile", ville: "Montpellier", statut: "Screening", niveau_envie: 4, date_envoi: new Date(Date.now() - 86400000 * 3).toISOString() },
-        { id: "demo_p4", poste: "Senior PM", entreprise: "Sorare", ville: "Remote", statut: "Offre", niveau_envie: 5, date_envoi: new Date(Date.now() - 86400000 * 25).toISOString() }
-      ];
-      
-      reve = [
-        { id: "demo_reve_1", entreprise: "Doctolib", secteur: "Pharma / Santé", note: 5, derniere_visite: new Date().toISOString() },
-        { id: "demo_reve_2", entreprise: "Qonto", secteur: "Fintech", note: 4, derniere_visite: new Date(Date.now() - 86400000 * 2).toISOString() },
-        { id: "demo_reve_3", entreprise: "LVMH", secteur: "Luxe", note: 5, derniere_visite: null }
-      ];
-      
-      entretiens = [ 
-        { id: "demo_ent_1", pipeline_id: "demo_p1", date: new Date(Date.now() + 86400000 * 2).toISOString().slice(0,16), type: "Visio", notes: "Préparer des questions sur l'acquisition B2B pour le prochain tour avec le CPO." },
-        { id: "demo_ent_2", pipeline_id: "demo_p3", date: new Date(Date.now() - 86400000 * 1).toISOString().slice(0,16), type: "Téléphone", notes: "Premier échange RH très positif. Attente de la prochaine étape technique." }
-      ];
-      
-      reseau = [ 
-        { id: "demo_res_1", nom: "Claire Martin", poste: "Talent Acquisition", entreprise: "Alan", email: "claire@alan.com", statut: "Contacté", date: new Date().toISOString() } 
-      ];
-      
-      emails = [ 
-        { id: "demo_mail_1", thread_id: "t1", pipeline_id: "demo_p1", subject: "Suite à votre candidature chez Alan", snippet: "Bonjour, nous aimerions planifier un premier échange en visio...", date: new Date().toISOString(), is_from_me: false, is_read: true },
-        { id: "demo_mail_2", thread_id: "t2", pipeline_id: "demo_p4", subject: "Proposition d'embauche - Sorare", snippet: "Félicitations ! Nous avons le plaisir de vous faire une offre...", date: new Date().toISOString(), is_from_me: false, is_read: false }
-      ];
-
-      saveGuestData();
-      localStorage.setItem('st_guest_init', '1');
-    } else {
-      try {
-        statusMap = JSON.parse(localStorage.getItem('st_guest_status')) || {};
-        pipeline = JSON.parse(localStorage.getItem('st_guest_pipe')) || [];
-        reve = JSON.parse(localStorage.getItem('st_guest_reve')) || [];
-        entretiens = JSON.parse(localStorage.getItem('st_guest_entretiens')) || [];
-        reseau = JSON.parse(localStorage.getItem('st_guest_reseau')) || [];
-        emails = JSON.parse(localStorage.getItem('st_guest_emails')) || [];
-      } catch(e) {}
-    }
-    
-    if (typeof renderCockpit === "function") renderCockpit();
-    if (typeof renderVeille === "function") renderVeille();
-    if (typeof renderPipeline === "function") renderPipeline();
-    if (typeof renderReve === "function") renderReve();
-    if (typeof renderMessagerie === "function") renderMessagerie();
-    
-    setTimeout(startTour, 600);
-  }
-
-  function saveGuestData() {
-    if (!isGuest) return;
-    localStorage.setItem('st_guest_status', JSON.stringify(statusMap));
-    localStorage.setItem('st_guest_pipe', JSON.stringify(pipeline));
-    localStorage.setItem('st_guest_reve', JSON.stringify(reve));
-    localStorage.setItem('st_guest_entretiens', JSON.stringify(entretiens));
-    localStorage.setItem('st_guest_reseau', JSON.stringify(reseau));
-    localStorage.setItem('st_guest_emails', JSON.stringify(emails));
-  }
-
-  window.addEventListener('beforeunload', saveGuestData);
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') saveGuestData();
-  });
-
-function startTour() {
-    if(!window.driver || !window.driver.js) return;
-    const driver = window.driver.js.driver;
-    
-    const d = driver({
-      showProgress: true, allowClose: true, nextBtnText: 'Suivant', prevBtnText: 'Précédent', doneBtnText: 'C\'est compris !',
-      onDestroyStarted: () => {
-        // La magie opère ici : une fois la visite finie, on ouvre le profil !
-        if (isGuest) setTimeout(openWizard, 400);
-        d.destroy();
-      },
-      steps: [
-        { 
-          popover: { 
-            title: 'Bienvenue sur Sam\'Travail 🚀', 
-            description: 'Ta recherche d\'emploi sur pilote automatique.<br><br><ul style="margin-left: 20px; margin-bottom: 10px;"><li><b>Récupère</b> toutes les infos de tes annonces favorites (quel que soit le site)</li><li><b>Génère ton CV et tes accroches</b> sur-mesure grâce à l\'IA</li><li><b>Centralise</b> tes candidatures et gère ton réseau de marques</li><li><b>Suis</b> tes e-mails de recruteurs dans un espace dédié</li></ul>Lançons la démo !' 
-          },
-          onHighlightStarted: () => { if(typeof setView === "function") setView('aujourdhui'); }
-        },
-        { 
-          popover: { 
-            title: '1. Capturer depuis n\'importe où', 
-            description: 'Tu cherches tes annonces normalement (Indeed, LinkedIn...). Quand l\'une d\'elles te plaît, tu cliques sur <b>Sam\'Travail</b> dans tes favoris.<br><div class="dv"><div class="dv-top"><div class="dv-tabs"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-tab">💼 Offre d\'emploi</div></div><div class="dv-nav"><div class="dv-url"></div></div><div class="dv-bookmarks"><span class="dv-bm">🔗 Sam\'Travail <span class="dv-cursor">👆</span></span></div></div><div class="dv-body"><strong style="font-size:16px;color:#111;">Master Planner Supply Chain</strong><br><span style="font-size:12px;color:var(--accent);">Thales · Vendôme</span></div></div>' 
-          } 
-        },
-        { 
-          element: '#view-offres', 
-          popover: { title: '2. Centraliser et Trier', description: 'Toutes tes offres (dont l\'offre Thales) arrivent ici. L\'outil calcule un <b>score de match</b> basé sur les descriptions. Compare et décide : Coup de cœur, À postuler, ou Ignorer.', align: 'center' },
-          onHighlightStarted: () => { if(typeof setView === "function") setView('offres'); }
-        },
-        { 
-          popover: { 
-            title: '3. Le Super-Pouvoir : L\'IA', 
-            description: 'Ouvre ton offre Thales : une zone magique apparaît. <b>Dépose ton CV de base</b> : l\'IA analyse la longue description du poste et réécrit instantanément tes expériences !<br><div class="dv" style="margin-top:16px; padding:12px; display:flex; flex-direction:column; gap:10px;"><div style="border: 2px dashed var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 16px; text-align: center;"><div style="font-size:24px; margin-bottom:8px;">📄</div><strong style="color:var(--accent);">Glisse ton CV PDF ici</strong></div><div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 13.5px;"><span style="color:var(--gold);">✨ Accroche sur-mesure générée :</span><br><i style="color:#475569;">"Fort de mon expertise sur l\'outil ERP SAP, je suis prêt à optimiser le Plan de Production de Vendôme et à déployer la méthode Value Stream Mapping (VSM)..."</i></div></div>',
-          },
-          onHighlightStarted: () => { if(typeof setView === "function") setView('offres'); }
-        },
-        { 
-          element: '#view-pipeline', 
-          popover: { title: '4. Le Suivi Intelligent', description: 'Une fois postulées, tes offres passent dans ce Kanban. L\'outil t\'indique les <b>relances à faire en rouge</b> (comme ici pour Lydia) pour ne rater aucune opportunité.', align: 'center' },
-          onHighlightStarted: () => { if(typeof setView === "function") setView('pipeline'); }
-        },
-        { 
-          popover: { 
-            title: '5. Cibler des Entreprises', 
-            description: '<b>💡 Astuce :</b> Rends-toi sur la page <i>"Carrières / Jobs"</i> du site institutionnel d\'une boîte qui te fait rêver, et clique sur notre second favori pour l\'ajouter à ton radar avec son logo !<br><div class="dv"><div class="dv-top"><div class="dv-tabs"><div class="dv-dots"><span></span><span></span><span></span></div><div class="dv-tab">🏢 LVMH - Talents</div></div><div class="dv-nav"><div class="dv-url"></div></div><div class="dv-bookmarks"><span class="dv-bm" style="color:var(--gold);border-color:var(--gold);background:#fef3c7;">🔖 Sam\'Marque <span class="dv-cursor">👆</span></span></div></div><div class="dv-body"><strong style="font-size:16px;color:#111;">Groupe LVMH</strong><br><span style="font-size:12px;color:#6b7280;">Espace Candidats</span></div></div>' 
-          } 
-        },
-        { 
-          element: '#view-reve', 
-          popover: { title: '6. Ton Réseau de Marques', description: 'Garde un œil sur tes marques cibles. L\'IA peut même t\'en <b>découvrir de nouvelles</b> basées sur ton profil !', align: 'center' },
-          onHighlightStarted: () => { if(typeof setView === "function") setView('reve'); }
-        },
-        { 
-          element: '#view-messagerie', 
-          popover: { title: '7. Suivi des E-mails', description: 'Cet espace dédié centralise tes conversations avec les recruteurs (ex: Alan, Sorare) et les <b>relie directement à la bonne offre</b> du Kanban.', align: 'center' },
-          onHighlightStarted: () => { if(typeof setView === "function") setView('messagerie'); }
-        },
-        { 
-          element: '#sidebar', 
-          popover: { title: '8. La Boîte à Outils', description: 'Explore le menu de gauche : tes notes d\'<b>Entretiens</b>, ton <b>Réseau</b>, une <b>Carte</b> de tes opportunités, et même un moteur de recherche connecté à <b>France Travail</b> !' },
-          onHighlightStarted: () => { if(typeof setView === "function") setView('carte'); }
-        },
-        { 
-          popover: { 
-            title: 'À toi de jouer !', 
-            description: 'Explore l\'application librement avec ces données fictives. <br><br>Quand tu es prêt, <b>utilise la bannière en haut de l\'écran pour créer ton compte gratuit</b>, connecter ta propre clé IA et synchroniser ta boîte mail !' 
-          },
-          onHighlightStarted: () => { if(typeof setView === "function") setView('aujourdhui'); }
-        }
-      ]
-    });
-    d.drive();
-  }
-  // ===== GESTION AFFICHAGE E-MAILS HTML (IFRAME) =====
-  function renderRichEmail(htmlContent) {
-    const iframe = document.getElementById('email-iframe');
-    if (!iframe) return;
-
-    // Fallback propre si le contenu est vide
-    const contentToRender = htmlContent || "<p style='font-family: sans-serif; color: #666; padding: 20px;'>Contenu indisponible ou au format texte brut uniquement.</p>";
-
-    iframe.srcdoc = contentToRender;
-
-    iframe.onload = () => {
-      try {
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        
-        // Nettoyage de base pour forcer un affichage propre
-        iframeDoc.body.style.margin = "0";
-        iframeDoc.body.style.fontFamily = "system-ui, -apple-system, sans-serif";
-        iframeDoc.body.style.overflowY = "hidden"; // Empêche le double scroll interne
-        
-        // Ajustement automatique de la hauteur
-        const newHeight = iframeDoc.documentElement.scrollHeight;
-        iframe.style.height = newHeight + 'px';
-      } catch (e) {
-        console.warn("Sécurité : Impossible de redimensionner l'Iframe automatiquement.", e);
-        iframe.style.height = "600px"; 
-        iframe.style.overflowY = "auto";
-      }
-    };
-  }
- // ===== PILIER 2 : WIZARD V4 (ARBRE DE DÉCISION & KNOWLEDGE GRAPH) =====
-  let wizCurrentStep = 1;
-  const wizTotalSteps = 5;
-  let userProfile = { languages: [], regions: [], countries: [], sectors: [], jobs: [], keywords: [] };
-  
-  const taxonomy = {
-    regions: {
-      "Europe": ["France", "Belgique", "Suisse", "Royaume-Uni", "Allemagne", "Espagne", "Italie", "Pays-Bas", "Suède", "Luxembourg"],
-      "Amérique du Nord": ["États-Unis", "Canada", "Mexique"],
-      "Asie": ["Singapour", "Japon", "Chine", "Corée du Sud", "Hong Kong"],
-      "Moyen-Orient": ["Émirats Arabes Unis", "Qatar", "Arabie Saoudite"]
-    },
-    secteurs: {
-      "Pharma, Santé & Sciences": ["Pharmacien", "Chef de Produit Santé", "Biologiste", "Data Manager Clinique", "Ingénieur Qualité Santé", "Supply Planner Pharma"],
-      "Supply Chain, Logistique & Transport": ["Global Supply Planner", "Demand Planner", "Master Planner", "Ordonnanceur SAP", "Supply Chain Manager", "S&OP Manager", "Acheteur", "Pilote de Flux"],
-      "Tech, Data & Logiciel": ["Product Manager", "Product Owner", "Data Analyst", "Data Scientist", "Développeur Fullstack", "UX/UI Designer", "Scrum Master", "CTO"],
-      "Industrie, Aéronautique & Naval": ["Chef de Projet Planning", "Ingénieur Méthodes", "Responsable Production", "Ingénieur Qualité", "Lean Manager", "Chef de Projet Industriel"],
-      "Retail, FMCG & Distribution": ["Category Manager", "Retail Manager", "Directeur de Magasin", "Acheteur Retail", "Chef de Secteur"],
-      "Conseil, Stratégie & Audit": ["Consultant Stratégie", "Consultant Supply Chain", "Manager de Transition", "PMO", "Change Manager", "Auditeur Interne"],
-      "Finance, Banque & Assurance": ["Contrôleur de Gestion", "Analyste Financier", "M&A Analyst", "Directeur Financier (CFO)"],
-      "Énergie & Environnement": ["Chef de Projet EnR", "Ingénieur Transition", "Consultant RSE"]
-    }
-  };
-
-  try { const saved = localStorage.getItem('st_user_profile'); if (saved) userProfile = JSON.parse(saved); } catch(e) {}
-
-  function openWizard() {
-    wizCurrentStep = 1;
-    updateWizUI();
-    document.getElementById('wizardModal').style.display = 'flex'; // Force le flex pour le centrage absolu
-  }
-
-  function extractWizData(stepId) {
-    return Array.from(document.getElementById(stepId).querySelectorAll('.wiz-pill.selected')).map(el => el.innerText);
-  }
-
-  function addCustomPill(event, gridId) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const val = event.target.value.trim();
-      if (val) {
-        const grid = document.getElementById(gridId);
-        const div = document.createElement('div');
-        div.className = 'wiz-pill selected'; 
-        div.innerText = val;
-        div.onclick = function() { this.classList.toggle('selected'); };
-        grid.insertBefore(div, grid.firstChild); 
-        event.target.value = ''; 
-      }
-    }
-  }
-
-  // Fonction génératrice de l'Arbre (Tree View)
-  function buildTree(containerId, sourceObj, parentSelections) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-    
-    if (parentSelections.length === 0) {
-      container.innerHTML = '<div style="color:#777; font-size:14px; font-style:italic; text-align:center; padding: 20px;">Aucune catégorie sélectionnée précédemment.</div>';
-      return;
-    }
-
-    parentSelections.forEach(parent => {
-      if(sourceObj[parent]) {
-        // 1. Le Titre du groupe ("↳ En Europe")
-        const title = document.createElement('div');
-        title.className = 'wiz-group-title';
-        title.innerText = parent;
-        container.appendChild(title);
-        
-        // 2. La grille de mots associés
-        const grid = document.createElement('div');
-        grid.className = 'wiz-grid';
-        sourceObj[parent].forEach(child => {
-          const pill = document.createElement('div');
-          pill.className = 'wiz-pill';
-          pill.innerText = child;
-          pill.onclick = function() { this.classList.toggle('selected'); };
-          grid.appendChild(pill);
-        });
-        container.appendChild(grid);
-      }
-    });
-  }
-
-  function changeWizStep(dir) {
-    // Si on avance vers l'étape 3 (Génération de l'arbre des Pays)
-    if (wizCurrentStep === 2 && dir === 1) {
-      buildTree('dynamicPaysContainer', taxonomy.regions, extractWizData('wStep2'));
-    }
-    
-    // Si on avance vers l'étape 5 (Génération de l'arbre des Postes)
-    if (wizCurrentStep === 4 && dir === 1) {
-      buildTree('dynamicPostesContainer', taxonomy.secteurs, extractWizData('wStep4'));
-    }
-
-    if (dir === 1 && wizCurrentStep === wizTotalSteps) {
-      finishWizard();
-      return;
-    }
-    wizCurrentStep += dir;
-    updateWizUI();
-  }
-
-  function updateWizUI() {
-    for(let i=1; i<=wizTotalSteps; i++) {
-      document.getElementById('wStep'+i).classList.remove('active');
-      document.getElementById('wizDots').children[i-1].className = i === wizCurrentStep ? 'wiz-dot active' : 'wiz-dot';
-    }
-    document.getElementById('wStep'+wizCurrentStep).classList.add('active');
-    document.getElementById('wizBtnBack').style.visibility = wizCurrentStep > 1 ? 'visible' : 'hidden';
-    document.getElementById('wizBtnNext').innerText = wizCurrentStep === wizTotalSteps ? 'Générer mon profil 🚀' : 'Continuer';
-  }
-
-  function finishWizard() {
-    const btn = document.getElementById('wizBtnNext');
-    btn.innerText = "Analyse algorithmique...";
-    btn.style.background = "var(--accent)";
-    
-    // On extrait absolument toutes les pilules sélectionnées (Générées + Ajouts manuels)
-    const allSelected = Array.from(document.getElementById('wizardModal').querySelectorAll('.wiz-pill.selected'))
-                             .map(el => el.innerText.toLowerCase());
-                             
-    userProfile.languages = Array.from(document.getElementById('wStep1').querySelectorAll('.wiz-pill.selected')).map(el => el.innerText.toLowerCase());
-    userProfile.keywords = allSelected;
-
-    setTimeout(() => {
-      localStorage.setItem('st_user_profile', JSON.stringify(userProfile));
-      document.getElementById('wizardModal').style.display = 'none';
-      btn.style.background = "#111"; // Reset
-      if (typeof renderOffres === "function") renderOffres();
-    }, 1200);
-  }
-
-  function calculateMatchScore(offer) {
-    if (userProfile.keywords.length === 0 && userProfile.languages.length === 0) return { score: null, html: "Profil non configuré" };
-    
-    let score = 0; let details = [];
-    const textTarget = `${offer.titre || ""} ${offer.description || ""} ${offer.lieu || ""}`.toLowerCase();
-    
-    if (userProfile.languages.length > 0) {
-      const foundLangs = userProfile.languages.filter(lang => textTarget.includes(lang));
-      if (foundLangs.length > 0) details.push(`<span class="match-ok">✓ Langue cible détectée</span>`);
-    }
-
-    let hits = 0;
-    userProfile.keywords.forEach(kw => {
-      if (textTarget.includes(kw) || textTarget.includes(kw.split(' ')[0])) { hits++; score += 20; }
-    });
-
-    if (hits > 2) details.push(`<span class="match-ok">✓ Parfaite adéquation métier/lieu</span>`);
-    else if (hits > 0) details.push(`<span class="match-ok">✓ Quelques critères respectés</span>`);
-    else details.push(`<span class="match-meh">✗ Profil très éloigné</span>`);
-
-    let finalScore = Math.min(Math.round((score / (userProfile.keywords.length * 15)) * 100) + 40, 99);
-    if (hits === 0) finalScore = Math.floor(Math.random() * 20) + 10;
-    
-    return { score: finalScore, html: details.join('') };
   }
 </script>
 </body>

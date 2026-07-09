@@ -115,6 +115,27 @@ function parseCompanies(content) {
   return out;
 }
 
+// Meme robustesse que parseCompanies, pour la liste {titres:[{intitule,pourquoi}]} du mode "titles".
+function parseTitles(content) {
+  let s = ("" + (content || "")).replace(/```json|```/gi, "").trim();
+  const i = s.indexOf("{"); if (i > 0) s = s.slice(i);
+  const safe = (x) => { try { return JSON.parse(x); } catch (e) { return null; } };
+  let d = safe(s);
+  if (d && Array.isArray(d.titres)) return d.titres;
+  const a = s.indexOf("[");
+  if (a >= 0) {
+    const frag = s.slice(a);
+    const last = frag.lastIndexOf("}");
+    if (last > 0) {
+      d = safe('{"titres":' + frag.slice(0, last + 1) + "]}");
+      if (d && Array.isArray(d.titres)) return d.titres;
+    }
+  }
+  const out = []; const re = /\{[^{}]*?"intitule"\s*:\s*"[^"]+"[^{}]*?\}/g; let m;
+  while ((m = re.exec(s))) { const o = safe(m[0]); if (o && o.intitule) out.push(o); }
+  return out;
+}
+
 // Verification d'identite SANS aucune dependance npm (pas de package.json dans ce repo) : un simple
 // fetch vers l'endpoint Auth de Supabase. SUPABASE_URL/ANON_KEY sont les memes valeurs PUBLIQUES que
 // celles deja visibles dans index.html (l'anon key est concue pour etre publique) — rien de secret ici.
@@ -184,8 +205,9 @@ module.exports = async function handler(req, res) {
   const text = ("" + (body.text || "")).slice(0, 6000);
   const url = "" + (body.url || "");
   const mode = "" + (body.mode || "offer");
-  // le mode "draft" travaille à partir de "context", "format" de "description", "sourcing" de secteur/ville/poste (pas de "text")
-  if (mode !== "draft" && mode !== "format" && mode !== "sourcing" && !text.trim()) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
+  // le mode "draft" travaille à partir de "context", "format" de "description", "sourcing" de secteur/ville/poste,
+  // "titles" de "titres" (pas de "text" pour aucun de ces 4 modes)
+  if (mode !== "draft" && mode !== "format" && mode !== "sourcing" && mode !== "titles" && !text.trim()) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
 
   const clean = (v) => ("" + (v == null ? "" : v)).replace(/\s+/g, " ").trim().slice(0, 200);
 
@@ -286,6 +308,34 @@ module.exports = async function handler(req, res) {
       })).filter(x => x.nom).slice(0, 20);
       if (!list.length) { res.status(200).json({ ok: false, reason: "empty", got: ("" + content).slice(0, 140) }); return; }
       res.status(200).json({ ok: true, companies: list });
+    } catch (e) { res.status(200).json({ ok: false, reason: "ai_error", detail: ("" + (e && e.message || e)).slice(0, 140) }); }
+    return;
+  }
+
+  // ----- MODE TITLES : suggere des intitules de poste adjacents a partir des candidatures deja envoyees -----
+  if (mode === "titles") {
+    const titres = Array.isArray(body.titres) ? body.titres.slice(0, 40).map(x => clean(x)).filter(Boolean) : [];
+    if (!titres.length) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
+    const secteurs = Array.isArray(body.secteurs) ? body.secteurs.slice(0, 10).map(x => clean(x)).filter(Boolean) : [];
+    const sysT =
+      "Tu es un expert du marche de l'emploi francais. A partir d'intitules de postes deja postules par un " +
+      "candidat, tu suggeres des intitules ADJACENTS a chercher en plus (memes competences transferables, " +
+      "secteurs proches), sans denaturer son projet professionnel. " +
+      'Reponds UNIQUEMENT par un objet JSON valide et COMPACT : {"titres":[{"intitule":"","pourquoi":""}]}. ' +
+      "Propose EXACTEMENT 6 suggestions, jamais un intitule deja fourni. 'pourquoi' = une phrase courte (10 mots max). N'invente aucun fait.";
+    const usrT = "Intitules deja postules: " + titres.join(", ") +
+      (secteurs.length ? ("\nSecteurs concernes: " + secteurs.join(", ")) : "");
+    try {
+      const out = await callAI(base, key, model,
+        [{ role: "system", content: sysT }, { role: "user", content: usrT }], 900);
+      if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
+      const content = (out.parsed && out.parsed.choices && out.parsed.choices[0] && out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
+      const list = parseTitles(content).map(x => ({
+        intitule: clean(x && x.intitule),
+        pourquoi: ("" + ((x && x.pourquoi) || "")).replace(/\s+/g, " ").trim().slice(0, 120),
+      })).filter(x => x.intitule).slice(0, 8);
+      if (!list.length) { res.status(200).json({ ok: false, reason: "empty", got: ("" + content).slice(0, 140) }); return; }
+      res.status(200).json({ ok: true, titres: list });
     } catch (e) { res.status(200).json({ ok: false, reason: "ai_error", detail: ("" + (e && e.message || e)).slice(0, 140) }); }
     return;
   }

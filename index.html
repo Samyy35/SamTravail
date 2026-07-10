@@ -329,8 +329,28 @@
   /* Assistant compatibilité — puces cliquables */
   .wiz-chips{display:flex;flex-wrap:wrap;gap:7px;}
   .wiz-chip{background:var(--bg-2);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:12.5px;font-family:var(--font);color:var(--text-dim);cursor:pointer;transition:.15s ease;user-select:none;}
-  .wiz-chip:hover{border-color:var(--accent);color:var(--text);}
-  .wiz-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .wiz-chip:hover{border-color:var(--accent);color:var(--text);transform:translateY(-1px);}
+  .wiz-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;box-shadow:0 6px 16px var(--accent-soft);transform:translateY(-1px);}
+  /* Quiz compatibilité en étapes (façon Netflix, polish "Apple" — glass, motion, ombres teintées) */
+  .wiz-dots{justify-content:center;margin:2px 0 20px;gap:6px;}
+  .wiz-dots span{width:7px;height:7px;transition:all .3s cubic-bezier(.4,0,.2,1);}
+  .wiz-dots span.on{width:22px;border-radius:4px;}
+  #wizStepBody{min-height:180px;}
+  #wizStepBody.wiz-anim{animation:wizStepIn .38s cubic-bezier(.2,.8,.2,1);}
+  @keyframes wizStepIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .wiz-step-h{font-family:var(--display);font-size:19px;font-weight:800;letter-spacing:-.01em;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .wiz-step-h .ic{width:18px;height:18px;color:var(--accent);}
+  .wiz-step-h2{margin-top:22px;}
+  .wiz-step-hint{font-size:11.5px;font-weight:500;color:var(--text-mute);background:var(--surface-2);border-radius:999px;padding:2px 9px;}
+  .wiz-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;}
+  .wiz-advanced-link{font-size:12px;color:var(--text-mute);text-decoration:underline;}
+  .wiz-advanced-link:hover{color:var(--accent);}
+  .wiz-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px;min-height:0;}
+  .wiz-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:5px 8px 5px 12px;font-size:12px;font-weight:600;}
+  .wiz-tag button{background:none;border:none;color:inherit;opacity:.65;cursor:pointer;font-size:11px;padding:0 2px;line-height:1;}
+  .wiz-tag button:hover{opacity:1;}
+  .wiz-tag-add{display:flex;gap:8px;}
+  .wiz-tag-add .crit-in{flex:1;margin-bottom:0;}
   /* Panneau relances */
   .relances-box{background:linear-gradient(135deg,rgba(245,158,11,.08),var(--surface));border:1px solid var(--orange);border-radius:14px;padding:16px;margin-bottom:20px;}
   .relances-head{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:12px;}
@@ -698,6 +718,38 @@
   .auth-links{display:flex;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:8px;}
   .auth-link{background:none;border:none;color:var(--text-dim);font-size:12.5px;font-weight:600;cursor:pointer;padding:2px;font-family:var(--font);}
   .auth-link:hover{color:var(--accent);}
+  /* Mode démo (chantier réparation Opus) */
+  .auth-demo-sep{display:flex;align-items:center;gap:10px;margin:20px 0 14px;color:var(--text-mute);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;}
+  .auth-demo-sep::before,.auth-demo-sep::after{content:"";flex:1;height:1px;background:var(--border);}
+  .auth-demo-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:11px;font-family:var(--font);font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer;transition:.15s;}
+  .auth-demo-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+  .auth-demo-btn .ic{width:16px;height:16px;}
+  .auth-demo-hint{text-align:center;font-size:11px;color:var(--text-mute);margin:8px 0 0;}
+
+  /* Bannière mode invité : persistante, en tête, au-dessus de tout le reste */
+  .guest-banner{position:fixed;top:0;left:0;right:0;z-index:190;background:linear-gradient(90deg,var(--accent),var(--purple,#8b5cf6));color:#fff;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:9px 16px;font-size:12.5px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+  .guest-banner .gb-lbl{display:flex;align-items:center;gap:7px;}
+  .guest-banner .gb-lbl .ic{width:15px;height:15px;}
+  .guest-banner .gb-btn{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:5px 13px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
+  .guest-banner .gb-btn:hover{background:rgba(255,255,255,.32);}
+  .guest-banner .gb-btn.primary{background:#fff;color:var(--accent);}
+  body.guest-mode{padding-top:38px;}
+  body.guest-mode .guest-banner{display:flex;}
+  @media(min-width:701px){ body.guest-mode .sidebar{top:38px;} }
+
+  /* Visite guidée : overlay + spotlight + carte, vanilla (pas de dépendance CDN) */
+  .tour-layer{position:fixed;inset:0;z-index:300;pointer-events:none;}
+  .tour-spot{position:fixed;border-radius:12px;box-shadow:0 0 0 4000px rgba(10,12,20,.62),0 0 0 3px var(--accent);transition:all .35s cubic-bezier(.25,.1,.25,1);pointer-events:none;}
+  .tour-card{position:fixed;max-width:300px;background:var(--surface);border:1px solid var(--border-light);border-radius:14px;box-shadow:var(--shadow-lg);padding:16px 18px;pointer-events:auto;transition:all .35s cubic-bezier(.25,.1,.25,1);}
+  .tour-card h4{margin:0 0 6px;font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);}
+  .tour-card p{margin:0 0 14px;font-size:12.5px;line-height:1.5;color:var(--text-dim);}
+  .tour-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .tour-dots{display:flex;gap:5px;}
+  .tour-dots span{width:6px;height:6px;border-radius:50%;background:var(--border);}
+  .tour-dots span.on{background:var(--accent);}
+  .tour-actions{display:flex;gap:8px;}
+  .tour-skip{background:none;border:none;color:var(--text-mute);font-size:12px;font-family:var(--font);cursor:pointer;}
+  .tour-next{background:var(--accent);border:none;color:#fff;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;font-family:var(--font);cursor:pointer;}
 
   /* MODAL */
   .modal-bg{display:none;position:fixed;inset:0;background:var(--overlay);z-index:50;backdrop-filter:blur(4px);}
@@ -1557,6 +1609,11 @@
     <div id="authBody"></div>
   </div>
 </div>
+<div id="guestBanner" class="guest-banner" style="display:none;"></div>
+<div id="tourLayer" class="tour-layer" style="display:none;">
+  <div class="tour-spot" id="tourSpot"></div>
+  <div class="tour-card" id="tourCard"></div>
+</div>
 <button class="sb-expand" onclick="toggleSb()" aria-label="Afficher le menu">☰</button>
 <aside class="sidebar" id="sidebar">
   <div class="sb-brand"><span class="sb-logo">S</span><span class="sb-name">Sam'Travail</span><button class="sb-collapse" onclick="toggleSb()" aria-label="Réduire le menu">‹</button></div>
@@ -1576,7 +1633,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v103</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v105</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1947,6 +2004,7 @@
   }
 
   // ===== SCORE DE MATCH =====
+  let _matchCriteriaLoadedFromDb=false;   // vrai si un enregistrement existait déjà en base (utilisateur déjà configuré ailleurs)
   // Critères modifiables (chargés depuis Supabase, sinon ces défauts)
   let matchCriteria={
     secteurs:{"Nautisme / Naval":3,"Aéronautique / Spatial":3,"Automobile / Mobilité":3,"Industrie":2,"Pharma / Santé":1,"Luxe / Cosmétique":0,"Agroalimentaire":1,"Autre":2},
@@ -1955,7 +2013,8 @@
     contratPref:"CDI",
     motsBonus:["supply chain","demand planning","approvisionnement","planification","logistique","s&op","planner"],
     motsMalus:["alternance","stage","apprenti"],
-    paysPref:[]   // pays visés (minuscules) — chantier 5, bonus uniquement (jamais de malus, le lieu n'est souvent qu'une ville sans pays)
+    paysPref:[],   // pays visés (minuscules) — bonus uniquement (jamais de malus, le lieu n'est souvent qu'une ville sans pays)
+    languesPref:[]  // langues maîtrisées hors français (minuscules) — bonus uniquement, même logique que paysPref
   };
 
   function matchScore(o){
@@ -1972,6 +2031,7 @@
     const txt=((o.titre||"")+" "+(o.description||"")).toLowerCase();
     matchCriteria.motsBonus.forEach(m=>{ if(m&&txt.includes(m.toLowerCase())) score+=4; });
     matchCriteria.motsMalus.forEach(m=>{ if(m&&txt.includes(m.toLowerCase())) score-=12; });
+    if(matchCriteria.languesPref&&matchCriteria.languesPref.length&&matchCriteria.languesPref.some(l=>txt.includes(l))) score+=5;
     return Math.max(0,Math.min(100,Math.round(score)));
   }
   function matchBadge(o){
@@ -2029,32 +2089,149 @@
     await persistMatchCriteria();
   }
 
-  // ===== ASSISTANT COMPATIBILITÉ (chantier 5) — sélection visuelle par puces, complément rapide à openCriteres() =====
-  const PAYS_OPTIONS=["France","Belgique","Suisse","Luxembourg","Pays-Bas","Allemagne","Royaume-Uni","Espagne","Canada","Autre"];
+  // ===== ASSISTANT COMPATIBILITÉ — quiz façon Netflix, en étapes (refonte réparation Opus) =====
+  // Repère texte : ce bloc va jusqu'à "FIN ASSISTANT COMPATIBILITÉ" plus bas.
+  const PAYS_OPTIONS=["France","Belgique","Suisse","Luxembourg","Pays-Bas","Allemagne","Royaume-Uni","Espagne","Italie","Canada","Autre"];
+  const WIZ_REGIONS=[
+    {label:"Bretagne",tokens:["bretagne","ille-et-vilaine","morbihan","finistère","côtes-d'armor","35","56","29","22"]},
+    {label:"Normandie",tokens:["normandie","manche","50"]},
+    {label:"Pays de la Loire",tokens:["pays de la loire","loire-atlantique","vendée","44","85"]},
+    {label:"Nouvelle-Aquitaine",tokens:["nouvelle-aquitaine","gironde","33"]},
+    {label:"Île-de-France",tokens:["ile-de-france","île-de-france","paris","75"]},
+    {label:"Auvergne-Rhône-Alpes",tokens:["auvergne-rhône-alpes","rhône","69"]},
+    {label:"Hauts-de-France",tokens:["hauts-de-france","nord","59"]},
+    {label:"Grand Est",tokens:["grand est","bas-rhin","67"]},
+    {label:"Occitanie",tokens:["occitanie","haute-garonne","31"]},
+    {label:"PACA",tokens:["provence-alpes-côte d'azur","paca","bouches-du-rhône","13"]},
+    {label:"Belgique",tokens:["belgique"]},
+    {label:"Suisse",tokens:["suisse"]},
+  ];
+  const CONTRAT_OPTIONS=["CDI","CDD","Stage","Alternance","Freelance","Intérim"];
+  const LANGUES_OPTIONS=["Anglais","Espagnol","Allemand","Italien","Néerlandais","Portugais","Mandarin"];
+  const WIZ_STEPS=["secteurs","langues","lieux","pays","contrat","mots"];
+  let _wizStep=0;
+  function wizStepLabel(i){ return ["Secteurs","Langues","Lieux","Pays","Contrat","Mots-clés"][i]||""; }
   function openCompatWizard(){
-    const secKeys=SECTORS.map(s=>s.key).concat(["Autre"]);
-    const box=document.getElementById("modalBox");
+    _wizStep=0;
+    const box=document.getElementById("modalBox"); box.classList.add("wide");
     box.innerHTML=`
       <div class="modal-head"><h3>${ic("target")} Score de compatibilité</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">Choisis ce qui compte pour toi — les offres qui correspondent remontent automatiquement en haut de ta pile.</p>
-      <div class="crit-block"><div class="crit-label">${ic("building")} Secteurs qui t'intéressent</div>
-        <div class="wiz-chips">${secKeys.map(k=>`<button type="button" class="wiz-chip ${(matchCriteria.secteurs[k]||0)>0?'on':''}" onclick="wizToggleSector('${esc(k)}',this)">${esc(k)}</button>`).join("")}</div>
-      </div>
-      <div class="crit-block"><div class="crit-label">${ic("pin")} Pays où tu cherches</div>
-        <div class="wiz-chips">${PAYS_OPTIONS.map(p=>`<button type="button" class="wiz-chip ${(matchCriteria.paysPref||[]).includes(p.toLowerCase())?'on':''}" onclick="wizTogglePays('${esc(p)}',this)">${esc(p)}</button>`).join("")}</div>
-        <div class="crit-hint">Aucun choix = aucune restriction de pays (juste un petit bonus quand ça correspond).</div>
-      </div>
-      <div class="crit-block"><div class="crit-label">${ic("doc")} Contrat préféré</div>
-        <div class="wiz-chips">${["CDI","CDD","Stage","Alternance","Freelance"].map(c=>`<button type="button" class="wiz-chip ${matchCriteria.contratPref===c?'on':''}" onclick="wizSetContrat('${esc(c)}',this)">${esc(c)}</button>`).join("")}</div>
-      </div>
-      <p class="modal-sub" style="margin-top:14px;">Pour affiner (lieux précis, mots-clés bonus/malus) → <a href="#" onclick="event.preventDefault();openCriteres();">réglages avancés</a>.</p>
-      <div class="modal-actions"><button class="btn btn-validate" onclick="persistMatchCriteria()">${ic("save")}<span>Enregistrer</span></button></div>`;
+      <p class="modal-sub">Réponds en quelques clics — les offres qui te correspondent remontent automatiquement en haut de ta pile.</p>
+      <div id="wizDots" class="tour-dots wiz-dots"></div>
+      <div id="wizStepBody"></div>
+      <div class="modal-actions wiz-foot">
+        <button class="btn ghost sm" id="wizPrevBtn" onclick="wizGo(_wizStep-1)">← Précédent</button>
+        <a href="#" class="wiz-advanced-link" onclick="event.preventDefault();closeModal();openCriteres();">Réglages avancés</a>
+        <button class="btn btn-validate" id="wizNextBtn" onclick="wizNextOrSave()">Suivant →</button>
+      </div>`;
     document.getElementById("modalBg").classList.add("open");
+    wizGo(0);
   }
+  // Capture les champs texte libres du step affiché AVANT de le remplacer (ils ne vivent que dans le DOM
+  // pendant que leur step est visible — contrairement aux puces qui mutent matchCriteria au clic).
+  function wizCaptureCurrentStep(){
+    const custom=document.getElementById("wiz-lieux-custom");
+    if(custom){
+      const parisTokens=["paris","75","ile-de-france","île-de-france"];
+      const kept=(matchCriteria.lieuxExclus||[]).filter(t=>parisTokens.includes(t));
+      const added=(custom.value||"").split(",").map(s=>s.trim().toLowerCase()).filter(Boolean);
+      matchCriteria.lieuxExclus=[...new Set([...kept,...added])];
+    }
+    const langCustom=document.getElementById("wiz-langue-custom");
+    if(langCustom){
+      const v=(langCustom.value||"").trim().toLowerCase();
+      if(v){ if(!matchCriteria.languesPref)matchCriteria.languesPref=[]; if(!matchCriteria.languesPref.includes(v))matchCriteria.languesPref.push(v); }
+    }
+    // texte tapé mais pas encore validé par Entrée/Ajouter -> on le récupère quand même au moment de quitter le step
+    ["Bonus","Malus"].forEach(kind=>{
+      const inp=document.getElementById(kind==="Bonus"?"wiz-mot-bonus":"wiz-mot-malus");
+      const v=inp&&(inp.value||"").trim().toLowerCase();
+      if(v){ const key=kind==="Bonus"?"motsBonus":"motsMalus"; if(!matchCriteria[key])matchCriteria[key]=[]; if(!matchCriteria[key].includes(v))matchCriteria[key].push(v); }
+    });
+  }
+  function wizGo(i){
+    if(i<0||i>=WIZ_STEPS.length) return;
+    wizCaptureCurrentStep();
+    _wizStep=i;
+    document.getElementById("wizDots").innerHTML=WIZ_STEPS.map((_,k)=>`<span class="${k===i?"on":""}"></span>`).join("");
+    const stepBody=document.getElementById("wizStepBody");
+    stepBody.classList.remove("wiz-anim"); void stepBody.offsetWidth; // relance l'animation à chaque étape (retrait+reflow+réajout)
+    stepBody.innerHTML=wizStepHTML(WIZ_STEPS[i]);
+    stepBody.classList.add("wiz-anim");
+    const prevBtn=document.getElementById("wizPrevBtn"); if(prevBtn)prevBtn.style.visibility=i===0?"hidden":"visible";
+    const nextBtn=document.getElementById("wizNextBtn"); if(nextBtn){ nextBtn.innerHTML=i===WIZ_STEPS.length-1?(ic("save")+"<span>Enregistrer</span>"):"Suivant →"; }
+  }
+  function wizNextOrSave(){
+    if(_wizStep>=WIZ_STEPS.length-1){ wizCaptureCurrentStep(); persistMatchCriteria(); }
+    else wizGo(_wizStep+1);
+  }
+  function wizStepHTML(step){
+    if(step==="secteurs"){
+      const secKeys=SECTORS.map(s=>s.key).concat(["Autre"]);
+      return `<div class="wiz-step-h">${ic("building")} Quels secteurs t'intéressent ?</div>
+        <div class="wiz-chips">${secKeys.map(k=>`<button type="button" class="wiz-chip ${(matchCriteria.secteurs[k]||0)>0?'on':''}" onclick="wizToggleSector('${esc(k)}',this)">${esc(k)}</button>`).join("")}</div>`;
+    }
+    if(step==="langues"){
+      const on=l=>(matchCriteria.languesPref||[]).includes(l.toLowerCase());
+      return `<div class="wiz-step-h">${ic("check")} Quelles langues maîtrises-tu ? <span class="wiz-step-hint">en plus du français</span></div>
+        <div class="wiz-chips">${LANGUES_OPTIONS.map(l=>`<button type="button" class="wiz-chip ${on(l)?'on':''}" onclick="wizToggleLangue('${esc(l)}',this)">${esc(l)}</button>`).join("")}</div>
+        <input class="crit-in" id="wiz-langue-custom" placeholder="Une autre langue ? Tape-la ici…" style="margin-top:9px;" />`;
+    }
+    if(step==="lieux"){
+      const on=t=>(matchCriteria.lieuxPref||[]).includes(t);
+      const exclParis=(matchCriteria.lieuxExclus||[]).some(t=>t.includes("paris")||t.includes("ile-de-france")||t.includes("île-de-france"));
+      const customExcl=(matchCriteria.lieuxExclus||[]).filter(t=>!/paris|ile-de-france|île-de-france|^75$/.test(t)).join(", ");
+      return `<div class="wiz-step-h">${ic("pin")} Où cherches-tu ? <span class="wiz-step-hint">régions préférées (bonus)</span></div>
+        <div class="wiz-chips">${WIZ_REGIONS.map(r=>`<button type="button" class="wiz-chip ${on(r.tokens[0])?'on':''}" onclick="wizToggleRegion('${esc(r.label)}',this)">${esc(r.label)}</button>`).join("")}</div>
+        <div class="wiz-step-h wiz-step-h2">${ic("ban")} Des lieux à éviter ? <span class="wiz-step-hint">malus</span></div>
+        <div class="wiz-chips"><button type="button" class="wiz-chip ${exclParis?'on':''}" onclick="wizToggleExclParis(this)">Paris / Île-de-France</button></div>
+        <input class="crit-in" id="wiz-lieux-custom" placeholder="Autres lieux à éviter, séparés par une virgule" value="${esc(customExcl)}" style="margin-top:9px;" />`;
+    }
+    if(step==="pays"){
+      return `<div class="wiz-step-h">${ic("pin")} Ouvert à l'international ? <span class="wiz-step-hint">optionnel</span></div>
+        <div class="wiz-chips">${PAYS_OPTIONS.map(p=>`<button type="button" class="wiz-chip ${(matchCriteria.paysPref||[]).includes(p.toLowerCase())?'on':''}" onclick="wizTogglePays('${esc(p)}',this)">${esc(p)}</button>`).join("")}</div>
+        <div class="crit-hint">Aucun choix = aucune restriction de pays (juste un petit bonus quand ça correspond).</div>`;
+    }
+    if(step==="contrat"){
+      return `<div class="wiz-step-h">${ic("doc")} Quel type de contrat ?</div>
+        <div class="wiz-chips">${CONTRAT_OPTIONS.map(c=>`<button type="button" class="wiz-chip ${matchCriteria.contratPref===c?'on':''}" onclick="wizSetContrat('${esc(c)}',this)">${esc(c)}</button>`).join("")}</div>`;
+    }
+    // mots
+    return `<div class="wiz-step-h">${ic("check")} Des mots-clés qui comptent pour toi ? <span class="wiz-step-hint">bonus</span></div>
+      <div class="wiz-tags" id="wizTagsBonus">${(matchCriteria.motsBonus||[]).map((m,i)=>wizTagHTML(m,i,"Bonus")).join("")}</div>
+      <div class="wiz-tag-add"><input class="crit-in" id="wiz-mot-bonus" placeholder="Ex : supply chain, planification…" onkeydown="if(event.key==='Enter'){event.preventDefault();wizAddTag('Bonus');}" /><button type="button" class="btn ghost sm" onclick="wizAddTag('Bonus')">Ajouter</button></div>
+      <div class="wiz-step-h wiz-step-h2">${ic("minus")} Et des mots à éviter ? <span class="wiz-step-hint">malus</span></div>
+      <div class="wiz-tags" id="wizTagsMalus">${(matchCriteria.motsMalus||[]).map((m,i)=>wizTagHTML(m,i,"Malus")).join("")}</div>
+      <div class="wiz-tag-add"><input class="crit-in" id="wiz-mot-malus" placeholder="Ex : alternance, stage…" onkeydown="if(event.key==='Enter'){event.preventDefault();wizAddTag('Malus');}" /><button type="button" class="btn ghost sm" onclick="wizAddTag('Malus')">Ajouter</button></div>`;
+  }
+  function wizTagHTML(m,i,kind){ return `<span class="wiz-tag">${esc(m)}<button type="button" onclick="wizRemoveTag(${i},'${kind}')" aria-label="Retirer">✕</button></span>`; }
   function wizToggleSector(k,btn){
     const cur=matchCriteria.secteurs[k]||0;
     matchCriteria.secteurs[k]=cur>0?0:2;
     btn.classList.toggle("on",matchCriteria.secteurs[k]>0);
+  }
+  function wizToggleLangue(l,btn){
+    const key=l.toLowerCase();
+    if(!matchCriteria.languesPref) matchCriteria.languesPref=[];
+    const i=matchCriteria.languesPref.indexOf(key);
+    if(i>=0) matchCriteria.languesPref.splice(i,1); else matchCriteria.languesPref.push(key);
+    btn.classList.toggle("on",matchCriteria.languesPref.includes(key));
+  }
+  function wizToggleRegion(label,btn){
+    const region=WIZ_REGIONS.find(r=>r.label===label); if(!region) return;
+    if(!matchCriteria.lieuxPref) matchCriteria.lieuxPref=[];
+    const has=matchCriteria.lieuxPref.includes(region.tokens[0]);
+    if(has) matchCriteria.lieuxPref=matchCriteria.lieuxPref.filter(t=>!region.tokens.includes(t));
+    else matchCriteria.lieuxPref=[...new Set([...matchCriteria.lieuxPref,...region.tokens])];
+    btn.classList.toggle("on",!has);
+  }
+  function wizToggleExclParis(btn){
+    const parisTokens=["paris","75","ile-de-france","île-de-france"];
+    if(!matchCriteria.lieuxExclus) matchCriteria.lieuxExclus=[];
+    const has=matchCriteria.lieuxExclus.some(t=>parisTokens.includes(t));
+    if(has) matchCriteria.lieuxExclus=matchCriteria.lieuxExclus.filter(t=>!parisTokens.includes(t));
+    else matchCriteria.lieuxExclus=[...new Set([...matchCriteria.lieuxExclus,...parisTokens])];
+    btn.classList.toggle("on",!has);
   }
   function wizTogglePays(p,btn){
     const key=p.toLowerCase();
@@ -2067,6 +2244,31 @@
     matchCriteria.contratPref=c;
     btn.parentElement.querySelectorAll(".wiz-chip").forEach(b=>b.classList.toggle("on",b===btn));
   }
+  function wizAddTag(kind){
+    const inp=document.getElementById(kind==="Bonus"?"wiz-mot-bonus":"wiz-mot-malus");
+    const v=(inp.value||"").trim().toLowerCase(); if(!v) return;
+    const key=kind==="Bonus"?"motsBonus":"motsMalus";
+    if(!matchCriteria[key]) matchCriteria[key]=[];
+    if(!matchCriteria[key].includes(v)) matchCriteria[key].push(v);
+    inp.value="";
+    document.getElementById("wizTags"+kind).innerHTML=matchCriteria[key].map((m,i)=>wizTagHTML(m,i,kind)).join("");
+  }
+  function wizRemoveTag(i,kind){
+    const key=kind==="Bonus"?"motsBonus":"motsMalus";
+    matchCriteria[key].splice(i,1);
+    document.getElementById("wizTags"+kind).innerHTML=matchCriteria[key].map((m,j)=>wizTagHTML(m,j,kind)).join("");
+  }
+  // Ouvre le quiz automatiquement à la toute première connexion (une fois par navigateur, jamais en mode démo/
+  // capture, et jamais si l'utilisateur a déjà des critères enregistrés en base — nouveau device, pas nouveau user).
+  function maybeShowCompatWizardOnboarding(){
+    if(isGuest) return;
+    let seen=false; try{ seen=localStorage.getItem("st_compat_wizard_seen")==="1"; }catch(e){}
+    if(seen) return;
+    try{ localStorage.setItem("st_compat_wizard_seen","1"); }catch(e){}
+    if(_matchCriteriaLoadedFromDb) return;
+    setTimeout(()=>{ try{ openCompatWizard(); }catch(e){} },500);
+  }
+  // ===== FIN ASSISTANT COMPATIBILITÉ =====
 
   function companyLinks(name){
     const n=encodeURIComponent(name||"");
@@ -2644,7 +2846,7 @@
       pipeline=pl.data||[]; reve=rv.data||[]; reseau=rs.data||[]; entretiens=et.data||[]; evenements=ev.data||[];
       seenOffers={}; (so&&so.data||[]).forEach(r=>seenOffers[r.offer_id]=true);
       activityLog=(al&&al.data)||[];
-      if(pc&&pc.data&&pc.data.valeur){ try{ matchCriteria={...matchCriteria,...pc.data.valeur}; }catch(e){} }
+      if(pc&&pc.data&&pc.data.valeur){ try{ matchCriteria={...matchCriteria,...pc.data.valeur}; _matchCriteriaLoadedFromDb=true; }catch(e){} }
       if(sb){try{ if(_reveSortForce){ sb.from("parametres").upsert({cle:"reveSort",valeur:{s:"ancienne"},updated_at:new Date().toISOString()},{onConflict:"user_id,cle"}); } else { const {data:rsd}=await sb.from("parametres").select("valeur").eq("cle","reveSort").maybeSingle(); if(rsd&&rsd.valeur&&rsd.valeur.s)reveSort=rsd.valeur.s; } }catch(e){}}
     }catch(e){console.warn(e);}
     // notes (localStorage-free : stockées dans Supabase via table simple ? -> on garde en mémoire + localStorage interdit en artifact, donc on persiste via job_status spécial)
@@ -7272,7 +7474,10 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
         <div class="auth-error" id="authError" style="display:none;"></div>
         <button type="submit" class="btn btn-validate" id="authSubmitBtn">Se connecter</button>
       </form>
-      <div class="auth-links"><button type="button" class="auth-link" onclick="setAuthMode('forgot')">Mot de passe oublié ?</button><button type="button" class="auth-link" onclick="setAuthMode('signup')">Créer un compte</button></div>`;
+      <div class="auth-links"><button type="button" class="auth-link" onclick="setAuthMode('forgot')">Mot de passe oublié ?</button><button type="button" class="auth-link" onclick="setAuthMode('signup')">Créer un compte</button></div>
+      <div class="auth-demo-sep"><span>ou</span></div>
+      <button type="button" class="auth-demo-btn" onclick="startGuestMode()">${ic("eye")}<span>Découvrir en mode démo</span></button>
+      <p class="auth-demo-hint">Sans inscription — données fictives, rien n'est sauvegardé.</p>`;
   }
   function authSignupHTML(){
     return `<h2 class="auth-h">Créer un compte</h2>
@@ -7392,6 +7597,94 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
       if(event==="SIGNED_OUT") showAuthGate();
     });
   }
+
+  // ===== MODE DÉMO / INVITÉ (sandbox + visite guidée) — reconstruit de zéro. =====
+  // Repère texte : ce bloc va de cette ligne jusqu'à "FIN MODE DÉMO" ci-dessous.
+  // Principe : quasi CHAQUE écriture Supabase du fichier est déjà protégée par `if(sb){...}` (vérifié :
+  // 90+ sites), et loadAll() retourne immédiatement si `!sb`. Donc mettre `sb=null` pendant le mode invité
+  // suffit à rendre TOUTES les écritures no-op, sans toucher un seul site d'appel existant. On pré-remplit
+  // juste les variables d'état en mémoire avec des données fictives, puis on relance le pipeline de rendu
+  // normal (runApp) qui, lui, ne fait plus aucun appel réseau tant que sb est null.
+  let isGuest=false, _guestRealSb=null;
+  function guestSeed(){
+    const day=86400000, now=Date.now();
+    statusMap={
+      demo_o1:{statut:"super",offer:{id:"demo_o1",titre:"Ingénieur Supply Chain",entreprise:"Chantiers Bénéteau",lieu:"Saint-Malo",typeContrat:"CDI",salaire:"38-42k€",description:"Piloter la planification de production et les approvisionnements pour la gamme voile. Coordination fournisseurs, optimisation des stocks, amélioration continue S&OP.",lien:"https://exemple.fr/offre/beneteau-supply",source:"France Travail",dateAjout:new Date(now-2*day).toISOString()}},
+      demo_o2:{statut:"super",offer:{id:"demo_o2",titre:"Demand Planner",entreprise:"Airbus",lieu:"Nantes",typeContrat:"CDI",salaire:"40-45k€",description:"Prévision de la demande et animation du cycle S&OP pour la division aérostructures. Analyse des écarts, reporting, collaboration avec la production.",lien:"https://exemple.fr/offre/airbus-planner",source:"LinkedIn",dateAjout:new Date(now-1*day).toISOString()}},
+      demo_o3:{statut:"apostuler",offer:{id:"demo_o3",titre:"Approvisionneur Senior",entreprise:"Michelin",lieu:"Clermont-Ferrand",typeContrat:"CDI",salaire:"36-40k€",description:"Gestion du portefeuille fournisseurs matières premières, négociation des délais, suivi des indicateurs de performance achats.",lien:"https://exemple.fr/offre/michelin-appro",source:"Indeed",dateAjout:new Date(now-5*day).toISOString()}},
+      demo_o4:{statut:"apostuler",offer:{id:"demo_o4",titre:"Chargé de planification industrielle",entreprise:"Naval Group",lieu:"Lorient",typeContrat:"CDI",salaire:"37-41k€",description:"Ordonnancement des lignes de production, ajustement des plannings selon les aléas, reporting hebdomadaire.",lien:"https://exemple.fr/offre/naval-group",source:"Welcome to the Jungle",dateAjout:new Date(now-3*day).toISOString()}}
+    };
+    seenOffers={demo_o1:true,demo_o2:true,demo_o3:true,demo_o4:true};
+    pipeline=[
+      {id:"demo_p1",entreprise:"Thales",poste:"Ingénieur Méthodes",ville:"Rennes",source:"LinkedIn",lien_offre:"https://exemple.fr/offre/thales-methodes",statut:"Entretien",niveau_envie:5,date_envoi:new Date(now-9*day).toISOString().slice(0,10),date_reponse:new Date(now-3*day).toISOString().slice(0,10),notes:"2ᵉ entretien prévu — bien préparer le cas technique S&OP.",checklist:{cv:true,lettre:true,relance:false}},
+      {id:"demo_p2",entreprise:"Stellantis",poste:"Analyste Logistique",ville:"Rennes",source:"Indeed",lien_offre:"https://exemple.fr/offre/stellantis-logistique",statut:"Envoyé",niveau_envie:4,date_envoi:new Date(now-4*day).toISOString().slice(0,10),notes:"",checklist:{cv:true,lettre:true,relance:false}},
+      {id:"demo_p3",entreprise:"Schneider Electric",poste:"Chef de projet Supply Chain",ville:"Nantes",source:"France Travail",lien_offre:"https://exemple.fr/offre/schneider-cp",statut:"Screening",niveau_envie:4,date_envoi:new Date(now-7*day).toISOString().slice(0,10),date_reponse:new Date(now-2*day).toISOString().slice(0,10),notes:"Échange RH prévu vendredi.",checklist:{cv:true,lettre:false,relance:false}},
+    ];
+    reve=[
+      {id:"demo_r1",entreprise:"Safran",site:"https://www.safran-group.com",ville:"Rennes",secteur:"Aéronautique / Spatial",note:3,description:"Groupe aéronautique et défense français, présent sur les moteurs et équipements.",logo:"",derniere_visite:new Date(now-6*day).toISOString(),nb_visites:2},
+      {id:"demo_r2",entreprise:"Décathlon",site:"https://www.decathlon.fr",ville:"Lille",secteur:"Industrie",note:2,description:"Distributeur et fabricant d'articles de sport, forte culture supply chain.",logo:"",derniere_visite:new Date(now-14*day).toISOString(),nb_visites:1},
+    ];
+    entretiens=[{id:"demo_e1",poste:"Ingénieur Méthodes",entreprise:"Thales",date_entretien:new Date(now+4*day).toISOString().slice(0,10),type_entretien:"Visio — technique",personnes:"Responsable méthodes + RH",questions:"Cas pratique S&OP, questions sur un projet d'amélioration continue.",points_forts:"Expérience alternance planification, appétence outils Excel/Power BI."}];
+    reseau=[{id:"demo_rs1",prenom:"Claire",nom:"Morin",entreprise:"Thales",poste:"Talent Acquisition",statut:"Contact LinkedIn",dernier_contact:new Date(now-5*day).toISOString(),notes:"A confirmé la réception de candidature, très réactive.",lien_linkedin:"https://www.linkedin.com/"}];
+    evenements=[{id:"demo_ev1",titre:"Entretien Thales",date_event:new Date(now+4*day).toISOString().slice(0,10),type:"Entretien"}];
+    activityLog=[];
+  }
+  function renderGuestBanner(){
+    const b=document.getElementById("guestBanner"); if(!b) return;
+    b.innerHTML=`<span class="gb-lbl">${ic("eye")} Mode démo — données fictives, rien n'est sauvegardé</span>
+      <button class="gb-btn" onclick="startTour()">${ic("compass")||""}Visite guidée</button>
+      <button class="gb-btn primary" onclick="exitGuestMode()">Créer mon compte</button>`;
+    hydrateIcons(b);
+  }
+  async function startGuestMode(){
+    isGuest=true; _guestRealSb=sb; sb=null;
+    guestSeed();
+    document.body.classList.add("guest-mode");
+    hideAuthGate();
+    document.getElementById("guestBanner").style.display="flex";
+    renderGuestBanner();
+    await runApp();
+    try{ if(!localStorage.getItem("st_tour_seen")) setTimeout(startTour,600); }catch(e){ setTimeout(startTour,600); }
+  }
+  function exitGuestMode(){
+    try{ localStorage.setItem("st_tour_seen","1"); }catch(e){}
+    window.location.href=window.location.origin+window.location.pathname;
+  }
+
+  // ---- Visite guidée : coachmarks vanilla (0 dépendance) ----
+  const TOUR_STEPS=[
+    {sel:'[data-view="aujourdhui"]',title:"Ton tableau de bord",text:"Aujourd'hui rassemble ta carte, ta messagerie, tes raccourcis et ta timeline en un coup d'œil."},
+    {sel:'[data-view="offres"]',title:"À trier",text:"Les offres captées (favori, ajout manuel ou lien) atterrissent ici — tu les classes par intérêt."},
+    {sel:'[data-view="pipeline"]',title:"Suivi",text:"Ton pipeline de candidatures en Kanban : Envoyé → Screening → Entretien → Offre reçue."},
+    {sel:'[data-view="reve"]',title:"Mes marques",text:"Les entreprises qui t'intéressent, avec un score d'affinité et un rappel de dernière visite."},
+    {sel:'.home-cta',title:"Ajouter une offre",text:"Favori, ajout manuel ou lien — tout part d'ici, centralisé."},
+  ];
+  let _tourI=0;
+  function tourRectFor(sel){ const el=document.querySelector(sel); return el?el.getBoundingClientRect():null; }
+  function tourShow(i){
+    const steps=TOUR_STEPS.filter(s=>tourRectFor(s.sel));
+    if(!steps.length){ tourEnd(); return; }
+    if(i>=steps.length){ tourEnd(); return; }
+    _tourI=i;
+    const step=steps[i], r=tourRectFor(step.sel);
+    const layer=document.getElementById("tourLayer"); layer.style.display="block";
+    const spot=document.getElementById("tourSpot");
+    spot.style.left=(r.left-6)+"px"; spot.style.top=(r.top-6)+"px"; spot.style.width=(r.width+12)+"px"; spot.style.height=(r.height+12)+"px";
+    const card=document.getElementById("tourCard");
+    let top=r.bottom+14, left=Math.min(Math.max(r.left,12),window.innerWidth-312);
+    if(top>window.innerHeight-180) top=Math.max(12,r.top-190);
+    card.style.top=top+"px"; card.style.left=left+"px";
+    card.innerHTML=`<h4>${esc(step.title)}</h4><p>${esc(step.text)}</p>
+      <div class="tour-foot">
+        <div class="tour-dots">${steps.map((_,k)=>`<span class="${k===i?"on":""}"></span>`).join("")}</div>
+        <div class="tour-actions"><button class="tour-skip" onclick="tourEnd()">Passer</button><button class="tour-next" onclick="tourNext()">${i===steps.length-1?"Terminer":"Suivant"}</button></div>
+      </div>`;
+  }
+  function startTour(){ setView("aujourdhui"); setTimeout(()=>tourShow(0),200); }
+  function tourNext(){ tourShow(_tourI+1); }
+  function tourEnd(){ document.getElementById("tourLayer").style.display="none"; try{ localStorage.setItem("st_tour_seen","1"); }catch(e){} }
+  // ===== FIN MODE DÉMO =====
+
   (async function init(){
     if(sb){
       // lien "mot de passe oublié" cliqué -> Supabase pose un jeton de récupération dans l'URL (#...type=recovery)
@@ -7427,6 +7720,7 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
     await loadProfil(!!addUrl);  // si on arrive via bookmarklet, on ne demande pas le nom maintenant
     refreshAll();renderBmSetup();applyDensity();
     if(!window._captureMode) prefetchDescFmt();   // pré-formate les descriptions au démarrage (hors pop-up de capture)
+    if(!addUrl && !window._captureMode) maybeShowCompatWizardOnboarding();
     // Bookmarklet : si ?addUrl=... -> ouvre directement l'ajout par lien
     if(addUrl){
       var _ttl=params.get("addTitle")||""; if(badTitle(_ttl))_ttl=""; else _ttl=tidyTitle(_ttl, params.get("addEnt")||"");

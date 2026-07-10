@@ -349,6 +349,25 @@
   .wiz-tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:5px 8px 5px 12px;font-size:12px;font-weight:600;}
   .wiz-tag button{background:none;border:none;color:inherit;opacity:.65;cursor:pointer;font-size:11px;padding:0 2px;line-height:1;}
   .wiz-tag button:hover{opacity:1;}
+  /* IA & consommation (BYOK + jauge tokens) */
+  .api-block{margin-bottom:20px;}
+  .tok-gauge{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 15px;}
+  .tok-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:5px;}
+  .tok-lbl{color:var(--text-dim);font-weight:600;}
+  .tok-val{color:var(--text);font-variant-numeric:tabular-nums;font-size:12px;}
+  .tok-bar{height:8px;border-radius:999px;background:var(--surface-3);overflow:hidden;margin-bottom:14px;}
+  .tok-bar:last-of-type{margin-bottom:0;}
+  .tok-fill{height:100%;border-radius:999px;transition:width .4s cubic-bezier(.25,.1,.25,1);}
+  .tok-fill.g-green{background:var(--green);}
+  .tok-fill.g-orange{background:var(--orange);}
+  .tok-fill.g-red{background:var(--red);}
+  .tok-note{font-size:11.5px;color:var(--text-mute);margin-top:12px;line-height:1.45;}
+  .tok-note .ic{width:13px;height:13px;vertical-align:-.12em;color:var(--green);}
+  .api-key-set{font-size:13px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .api-key-set .ic{width:15px;height:15px;}
+  .onb-steps{margin:4px 0 8px;padding-left:20px;font-size:13px;color:var(--text-dim);line-height:1.6;}
+  .onb-steps li{margin-bottom:8px;}
+  .onb-steps code{background:var(--surface-3);border-radius:5px;padding:1px 5px;font-size:12px;}
   .wiz-tag-add{display:flex;gap:8px;}
   .wiz-tag-add .crit-in{flex:1;margin-bottom:0;}
   /* Panneau relances */
@@ -824,6 +843,11 @@
   .mzg-error{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--red-soft);border:1px solid var(--red);color:var(--red);border-radius:11px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;}
   .mzg-error span{flex:1;min-width:160px;}
   .mzg-warn{display:flex;align-items:flex-start;gap:10px;background:var(--orange-soft);border:1px solid var(--orange);color:var(--text);border-radius:11px;padding:11px 14px;font-size:12.5px;line-height:1.5;margin-bottom:16px;}
+  .mail-onb{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:16px;}
+  .mail-onb-p{margin:0 0 8px;font-size:12.5px;line-height:1.55;color:var(--text-dim);}
+  .mail-onb-p:last-child{margin-bottom:0;}
+  .mail-onb-warn{color:var(--orange);font-weight:600;white-space:nowrap;}
+  .mail-onb-warn .ic{width:13px;height:13px;vertical-align:-.12em;margin-right:2px;}
   .mzg-warn .ic{color:var(--orange);flex-shrink:0;margin-top:1px;}
   .mzg-error .ic{width:16px;height:16px;flex-shrink:0;}
   .mzg-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
@@ -842,6 +866,9 @@
   .mzg-pill.none{color:var(--text-mute);}
   .mzg-body{margin-top:6px;}
   .mzg-iframe{width:100%;height:56vh;border:1px solid var(--border);border-radius:10px;background:#fff;}
+  .mzg-text-toggle{margin-top:8px;background:none;border:none;color:var(--text-mute);font-size:12px;font-family:var(--font);cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+  .mzg-text-toggle:hover{color:var(--accent);}
+  .mzg-text-toggle .ic{width:13px;height:13px;}
   .mzg-body-text{white-space:pre-wrap;font-size:13px;color:var(--text-dim);line-height:1.6;padding:12px;background:var(--surface-2);border-radius:10px;max-height:56vh;overflow:auto;}
   .mzg-compose{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:16px;transition:.15s;}
   .mzg-compose.drag{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
@@ -1633,7 +1660,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v105</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v107</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -6688,6 +6715,8 @@
         <button class="btn ghost sm" id="themeToggle" onclick="toggleTheme()">${ic(theme==="dark"?"moon":"sun")}<span>Thème ${theme==="dark"?"sombre":"clair"}</span></button>
         <button class="btn ghost sm" onclick="closeModal();openCompatWizard();">${ic("target")}<span>Score de compatibilité</span></button>
         <button class="btn ghost sm" onclick="closeModal();openCriteres();">${ic("sliders")}<span>Critères avancés</span></button>
+        <button class="btn ghost sm" onclick="openApiSettings()">${ic("sparkle")}<span>IA & consommation</span></button>
+        <button class="btn ghost sm" onclick="closeModal();setView('messagerie');openMailSync();">${ic("mail")}<span>Connexion boîte mail</span></button>
         <button class="btn ghost sm" onclick="openPromptAccroche()">${ic("sparkle")}<span>Prompt d'accroche (IA)</span></button>
         <button class="btn ghost sm" onclick="openDocsHistory()">${ic("doc")}<span>Mes documents</span></button>
         <button class="btn ghost sm" onclick="exportCSV()">${ic("download")}<span>Export CSV (sauvegarde)</span></button>
@@ -6911,7 +6940,7 @@
       await loadMsal();
       const app=getMsalApp(); if(!app) throw new Error("MSAL indisponible");
       const res=await app.loginPopup({scopes:OUTLOOK_SCOPES, prompt:"select_account"});
-      outlookAccount=res.account; app.setActiveAccount(res.account);
+      outlookAccount=res.account; app.setActiveAccount(res.account); saveMailConfig();
       mailLoading=false; await importGraphToSync();
     }catch(e){ mailLoading=false; const msg=authErrorMsg(e); if(msg)mailError=msg; renderMessagerie(); }
   }
@@ -7230,6 +7259,27 @@
   let GMAIL_CLIENT_ID=""; try{ GMAIL_CLIENT_ID=localStorage.getItem("st_gmail_client_id")||""; }catch(e){}
   let GMAIL_QUERY="label:suivi-candidatures"; try{ const q=localStorage.getItem("st_gmail_query"); if(q)GMAIL_QUERY=q; }catch(e){}
   let _gmailToken=null, _gmailTokenClient=null, gmailConnected=false;
+  // ===== Config mail LIÉE À LA SESSION (cross-device) : source de vérité = Supabase (parametres cle="mailConfig",
+  // isolée par RLS). localStorage sert de cache local. À la connexion sur n'importe quel appareil, on ré-hydrate
+  // la config puis on tente une reconnexion Gmail SILENCIEUSE — l'utilisateur retrouve sa boîte sans re-saisir l'ID.
+  function saveMailConfig(){
+    if(!sb) return;
+    let gmailOn=false; try{ gmailOn=localStorage.getItem("st_gmail_on")==="1"; }catch(e){}
+    const cfg={ gmailClientId:GMAIL_CLIENT_ID||"", gmailQuery:GMAIL_QUERY||"", gmailOn:gmailOn, outlookClientId:OUTLOOK_CLIENT_ID||"" };
+    try{ sb.from("parametres").upsert({cle:"mailConfig",valeur:cfg,updated_at:new Date().toISOString()},{onConflict:"user_id,cle"}); }catch(e){}
+  }
+  async function loadMailConfig(){
+    if(!sb) return;
+    let cfg=null;
+    try{ const {data}=await sb.from("parametres").select("valeur").eq("cle","mailConfig").maybeSingle(); if(data&&data.valeur)cfg=data.valeur; }catch(e){}
+    if(!cfg) return;
+    if(cfg.gmailClientId){ GMAIL_CLIENT_ID=cfg.gmailClientId; try{localStorage.setItem("st_gmail_client_id",GMAIL_CLIENT_ID);}catch(e){} }
+    if(cfg.gmailQuery){ GMAIL_QUERY=cfg.gmailQuery; try{localStorage.setItem("st_gmail_query",GMAIL_QUERY);}catch(e){} }
+    if(cfg.outlookClientId){ OUTLOOK_CLIENT_ID=cfg.outlookClientId; try{localStorage.setItem("st_outlook_client_id",OUTLOOK_CLIENT_ID);}catch(e){} }
+    if(cfg.gmailOn){ try{localStorage.setItem("st_gmail_on","1");}catch(e){}
+      try{ tryGmailSilent(false); }catch(e){}   // reconnexion silencieuse (pas de pop-up si le consentement Google est encore valide)
+    }
+  }
   function loadGis(){ if(window.google&&google.accounts&&google.accounts.oauth2) return Promise.resolve();
     return new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="https://accounts.google.com/gsi/client"; s.async=true; s.onload=()=>res(); s.onerror=()=>rej(new Error("Chargement de Google impossible (réseau).")); document.head.appendChild(s); }); }
   function getGmailTokenClient(){
@@ -7248,7 +7298,7 @@
       await loadGis();
       const tc=getGmailTokenClient(); if(!tc) throw new Error("Google indisponible");
       _gmailToken=await new Promise((resolve,reject)=>{ tc.callback=function(resp){ if(resp&&resp.access_token)resolve(resp.access_token); else reject(new Error((resp&&resp.error)||"accès refusé")); }; try{ tc.requestAccessToken({prompt:gmailConnected?"":"consent"}); }catch(e){ reject(e); } });
-      gmailConnected=true; try{localStorage.setItem("st_gmail_on","1");}catch(e){} mailLoading=false; await importGmailToSync();
+      gmailConnected=true; try{localStorage.setItem("st_gmail_on","1");}catch(e){} saveMailConfig(); mailLoading=false; await importGmailToSync();
     }catch(e){ mailLoading=false; mailError="Connexion Gmail échouée : "+((e&&e.message)||e); renderMessagerie(); }
   }
   // reconnexion SILENCIEUSE (sans pop-up si la session Google est encore valide) -> sync auto à l'arrivée
@@ -7262,7 +7312,7 @@
     }catch(e){}
     return false;
   }
-  function disconnectGmail(){ _gmailToken=null; gmailConnected=false; try{localStorage.removeItem("st_gmail_on");}catch(e){} flashCenter("Gmail déconnecté","info"); renderMessagerie(); }
+  function disconnectGmail(){ _gmailToken=null; gmailConnected=false; try{localStorage.removeItem("st_gmail_on");}catch(e){} saveMailConfig(); flashCenter("Gmail déconnecté","info"); renderMessagerie(); }
   async function gmailGet(url){ const r=await fetch(url,{headers:{Authorization:"Bearer "+_gmailToken}}); if(!r.ok){ let t=""; try{t=await r.text();}catch(_){} const err=new Error("gmail"); err.status=r.status; err.detail=t; throw err; } return r.json(); }
   function gmailDecode(b64){ if(!b64) return ""; try{ return decodeURIComponent(escape(atob(b64.replace(/-/g,"+").replace(/_/g,"/")))); }catch(e){ try{ return atob(b64.replace(/-/g,"+").replace(/_/g,"/")); }catch(_){ return ""; } } }
   function gmailBodyText(payload){
@@ -7271,6 +7321,34 @@
     if(payload.parts){ for(const p of payload.parts){ if(p.mimeType==="text/plain"){ const b=gmailBodyText(p); if(b)return b; } } for(const p of payload.parts){ const b=gmailBodyText(p); if(b)return b; } }
     if(payload.mimeType==="text/html" && payload.body&&payload.body.data){ const div=document.createElement("div"); div.innerHTML=gmailDecode(payload.body.data); return (div.textContent||div.innerText||"").replace(/\n{3,}/g,"\n\n").trim(); }
     return "";
+  }
+  // Récupère la partie text/html BRUTE d'un mail Gmail (pour un rendu fidèle : mise en page + images),
+  // en complément du texte simple. Rendu ensuite dans une iframe sandbox (aucun script exécuté).
+  function gmailBodyHtml(payload){
+    if(!payload) return "";
+    if(payload.mimeType==="text/html" && payload.body&&payload.body.data) return gmailDecode(payload.body.data);
+    if(payload.parts){
+      for(const p of payload.parts){ if(p.mimeType==="text/html"){ const h=gmailBodyHtml(p); if(h)return h; } }
+      for(const p of payload.parts){ const h=gmailBodyHtml(p); if(h)return h; }
+    }
+    return "";
+  }
+  // Nettoie le corps TEXTE d'un mail pour un affichage lisible (retire caractères invisibles + blancs superflus).
+  function cleanMailText(raw){
+    return (""+(raw||"")).replace(/\r\n/g,"\n").replace(/[​‌‍﻿]/g,"")
+      .replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+  }
+  // Enveloppe un corps HTML de mail dans un mini-document autonome (images bornées, liens en nouvel onglet).
+  function mailHtmlDoc(html){
+    return "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><base target='_blank'>"+
+      "<style>html,body{margin:0;padding:12px;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;color:#1a1a1a;background:#fff;word-wrap:break-word;overflow-wrap:break-word;}"+
+      "img{max-width:100%!important;height:auto!important;}table{max-width:100%!important;}a{color:#0071e3;}*{max-width:100%;}</style></head><body>"+
+      (""+(html||""))+"</body></html>";
+  }
+  function mailShowText(btn){
+    const b=btn.closest(".mzg-body"); if(!b)return;
+    const id=b.getAttribute("data-mid"); const m=syncedMail.find(x=>String(x.id)===String(id));
+    b.innerHTML=`<div class="mzg-body-text">${esc(cleanMailText((m&&m.body)||"")||"(corps du message indisponible)")}</div>`;
   }
   function gmailHeader(headers,name){ const h=(headers||[]).find(x=>(x.name||"").toLowerCase()===name); return h?h.value:""; }
   async function importGmailToSync(){
@@ -7289,9 +7367,17 @@
         const nm=fromRaw.replace(/<[^>]*>/,"").replace(/["']/g,"").trim();
         const d=dateH?new Date(dateH):null;
         const row=smartRow({fromName:nm,fromEmail:em,subject:subject,date:(d&&!isNaN(d.getTime()))?d.toISOString():null,body:gmailBodyText(full.payload)||full.snippet||""});
+        const html=gmailBodyHtml(full.payload); if(html) row.body_html=(""+html).slice(0,100000);   // rendu fidèle (images/mise en page)
         const k=syncKey(row.from_email,row.subject,row.received_at); if(have.has(k))continue; have.add(k); rows.push(row);
       }
-      if(rows.length&&sb){ const res=await sb.from("emails_sync").insert(rows); if(res.error)throw res.error; }
+      if(rows.length&&sb){
+        let res=await sb.from("emails_sync").insert(rows);
+        // colonne body_html pas encore créée en base ? on la retire et on réessaie (l'import marche quand même, sans le rendu HTML)
+        if(res.error && /body_html|column|schema|does not exist/i.test((res.error.message||"")+(res.error.details||""))){
+          rows.forEach(r=>{ delete r.body_html; }); res=await sb.from("emails_sync").insert(rows);
+        }
+        if(res.error)throw res.error;
+      }
       flashCenter(rows.length?(rows.length+" e-mail(s) importé(s) de Gmail"):"Gmail déjà à jour","info");
       await loadSyncedMail();
     }catch(e){ mailError=(e&&e.status===401)?"Session Gmail expirée — reclique « Connecter Gmail » (Google réinitialise ~tous les 7 jours).":("Lecture Gmail impossible : "+((e&&e.detail)||(e&&e.message)||e)); mailLoading=false; renderMessagerie(); }
@@ -7325,7 +7411,10 @@
     const origin=location.origin, redirect=location.origin+location.pathname;
     // Avertissement en tête : la boîte mail d'école/université est quasi toujours bloquée côté IT
     // (restrictions OAuth tierces) — mieux vaut un Gmail perso, ou le collage manuel (marche partout).
-    const warn=`<div class="mzg-warn">${ic("alert")}<span><b>Adresse d'école/université ?</b> Elle bloque presque toujours ce type de connexion (restrictions IT). Utilise un <b>compte Gmail personnel</b>, ou <button class="auth-link" style="display:inline;padding:0;" onclick="closeModal();openMailPaste();">colle tes e-mails à la main</button> (marche avec n'importe quelle adresse).</span></div>`;
+    const warn=`<div class="mail-onb">
+        <p class="mail-onb-p">Connecte ta boîte pour que tes réponses (entretiens, refus, offres reçues) se classent toutes seules et se relient à tes candidatures. <b>Lecture seule</b> — l'app ne peut rien envoyer ni supprimer.</p>
+        <p class="mail-onb-p"><span class="mail-onb-warn">${ic("alert")} Adresse d'école/université ?</span> Elle est presque toujours bloquée (restrictions IT). Le plus fluide : un <b>Gmail personnel</b>, ou <button class="auth-link" style="display:inline;padding:0;" onclick="closeModal();openMailPaste();">colle tes e-mails à la main</button> (marche partout, zéro config).</p>
+      </div>`;
     // --- Gmail (recommandé) ---
     const gmail = gmailConnected
       ? `<div class="mzg-bar" style="margin:4px 0;"><div class="mzg-account">${ic("mail")} Gmail connecté</div>
@@ -7407,12 +7496,13 @@
   id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade default auth.uid(),
   subject text, from_name text, from_email text, from_domain text,
-  received_at timestamptz, body text, nature text,
+  received_at timestamptz, body text, body_html text, nature text,
   read boolean default false, archived boolean default false,
   created_at timestamptz default now()
 );
 alter table emails_sync add column if not exists read boolean default false;
 alter table emails_sync add column if not exists archived boolean default false;
+alter table emails_sync add column if not exists body_html text;
 alter table emails_sync enable row level security;
 drop policy if exists "own rows" on emails_sync;
 create policy "own rows" on emails_sync for all using (user_id = auth.uid()) with check (user_id = auth.uid());</pre>
@@ -7445,7 +7535,12 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
         ${mt?`<button class="pdact" onclick='openMatchedOffer("${esc(m.id)}")'>${ic("link")} Voir l'offre liée</button>`:""}
         <button class="pdact" onclick='deleteSyncedMail("${esc(m.id)}");closeModal()'>${ic("trash")} Supprimer</button>
       </div>
-      <div class="mzg-body"><div class="mzg-body-text">${esc(m.body||"(corps du message indisponible)")}</div></div>
+      <div class="mzg-body" data-mid="${esc(m.id)}">${
+        m.body_html
+          ? `<iframe class="mzg-iframe" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" srcdoc="${esc(mailHtmlDoc(m.body_html))}"></iframe>
+             <button class="mzg-text-toggle" onclick="mailShowText(this)">${ic("doc")} Afficher en texte simple</button>`
+          : `<div class="mzg-body-text">${esc(cleanMailText(m.body)||"(corps du message indisponible)")}</div>`
+      }</div>
       <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>`;
     document.getElementById("modalBg").classList.add("open");
   }
@@ -7716,7 +7811,7 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
         if(sTitle) params.set("addTitle",sTitle);
       }
     }
-    await loadAll();await reconcileActivity(true);loadNotes();loadStreak();loadTheme();
+    await loadAll();await reconcileActivity(true);loadNotes();loadStreak();loadTheme();loadGroqState();loadMailConfig();
     await loadProfil(!!addUrl);  // si on arrive via bookmarklet, on ne demande pas le nom maintenant
     refreshAll();renderBmSetup();applyDensity();
     if(!window._captureMode) prefetchDescFmt();   // pré-formate les descriptions au démarrage (hors pop-up de capture)
@@ -7833,6 +7928,87 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
   }
   // ===== Assistant IA — modulaire & repli transparent =====
   // Mets AI_ASSIST=false pour désactiver complètement l'IA (l'app retombe en 100% déterministe, sans rien casser).
+  // ===== IA (Groq) : BYOK + jauge de consommation =====
+  const GROQ_TPD=100000, GROQ_RPD=1000;   // offre gratuite Groq (llama-3.3-70b) : tokens/jour, requêtes/jour (par organisation)
+  let _groqUsage={date:"",tokens:0,requests:0}, _groqRl=null, _hasGroqKey=false, _groqUsageTimer=null;
+  function _todayStr(){ return new Date().toISOString().slice(0,10); }
+  // Comptage incrémental : la clé serveur renvoie l'usage réel (tokens) de chaque appel ; on cumule sur la journée.
+  function trackAiUsage(usage, rl){
+    const today=_todayStr();
+    if(_groqUsage.date!==today) _groqUsage={date:today,tokens:0,requests:0};
+    if(usage&&usage.total) _groqUsage.tokens+=usage.total;
+    _groqUsage.requests+=1;
+    if(rl&&(rl.remTokens!=null||rl.remRequests!=null)) _groqRl=rl;
+    clearTimeout(_groqUsageTimer);
+    _groqUsageTimer=setTimeout(()=>{ if(sb){try{ sb.from("parametres").upsert({cle:"groqUsage",valeur:_groqUsage,updated_at:new Date().toISOString()},{onConflict:"user_id,cle"}); }catch(e){} } },1500);
+    const el=document.getElementById("tokGaugeMount"); if(el) el.innerHTML=renderTokenGauge();
+  }
+  async function loadGroqState(){
+    if(!sb) return;
+    try{ const {data}=await sb.from("parametres").select("valeur").eq("cle","groqUsage").maybeSingle();
+      if(data&&data.valeur){ _groqUsage=data.valeur; if(_groqUsage.date!==_todayStr()) _groqUsage={date:_todayStr(),tokens:0,requests:0}; } }catch(e){}
+    try{ const {data}=await sb.from("parametres").select("valeur").eq("cle","groqKey").maybeSingle();
+      _hasGroqKey=!!(data&&data.valeur&&(typeof data.valeur==="string"?data.valeur:data.valeur.key)); }catch(e){}
+  }
+  function _gaugePct(used,limit){ return Math.max(0,Math.min(100,Math.round(100*used/limit))); }
+  function renderTokenGauge(){
+    const u=(_groqUsage&&_groqUsage.date===_todayStr())?_groqUsage:{tokens:0,requests:0};
+    const tp=_gaugePct(u.tokens,GROQ_TPD), rp=_gaugePct(u.requests,GROQ_RPD);
+    const cls=p=>p>=90?"g-red":p>=70?"g-orange":"g-green";
+    const fmt=n=>(n||0).toLocaleString("fr-FR");
+    return `<div class="tok-gauge">
+      <div class="tok-row"><span class="tok-lbl">Tokens aujourd'hui</span><span class="tok-val">${fmt(u.tokens)} / ${fmt(GROQ_TPD)}</span></div>
+      <div class="tok-bar"><div class="tok-fill ${cls(tp)}" style="width:${tp}%"></div></div>
+      <div class="tok-row"><span class="tok-lbl">Requêtes IA aujourd'hui</span><span class="tok-val">${u.requests} / ${GROQ_RPD}</span></div>
+      <div class="tok-bar"><div class="tok-fill ${cls(rp)}" style="width:${rp}%"></div></div>
+      <div class="tok-note">${_hasGroqKey?(ic("check")+" Sur <b>ta</b> clé Groq — ce quota est à toi seul."):"Clé de base partagée. <a href=\"#\" onclick=\"event.preventDefault();openGroqHelp();\">Ajoute ta clé gratuite</a> pour ton propre quota."}</div>
+    </div>`;
+  }
+  function openApiSettings(editing){
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3>${ic("sparkle")} IA & consommation</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">L'app utilise l'IA (Groq) pour adapter tes accroches, nettoyer les descriptions et suggérer des entreprises.</p>
+      <div class="api-block"><div class="crit-label">${ic("target")} Consommation du jour</div>
+        <div id="tokGaugeMount">${renderTokenGauge()}</div></div>
+      <div class="api-block"><div class="crit-label">${ic("gear")} Ta clé Groq (optionnelle mais recommandée)</div>
+        ${(_hasGroqKey&&!editing)
+          ? `<div class="api-key-set"><span class="pcv-ok">${ic("check")} Clé enregistrée</span> <span class="prof-hint">— c'est la tienne qui est utilisée pour chaque appel IA.</span></div>
+             <div class="modal-actions" style="justify-content:flex-start;margin-top:8px;"><button class="btn ghost sm" onclick="openApiSettings(true)">${ic("pencil")}<span>Remplacer</span></button><button class="btn danger sm" onclick="removeGroqKey()">${ic("ban")}<span>Retirer</span></button></div>`
+          : `<p class="prof-hint" style="margin:0 0 9px;">Gratuite, ~2 min à créer, et ça te donne ton propre quota. <a href="#" onclick="event.preventDefault();openGroqHelp();">Comment l'obtenir ?</a></p>
+             <input class="crit-in" id="groqKeyInput" type="password" placeholder="gsk_..." autocomplete="off" spellcheck="false" />
+             <div class="crit-hint">Ta clé est stockée de façon privée (isolée par utilisateur) et utilisée uniquement côté serveur — jamais partagée.</div>
+             <div class="modal-actions" style="justify-content:flex-start;margin-top:10px;">${(_hasGroqKey?`<button class="btn ghost sm" onclick="openApiSettings()">Annuler</button>`:"")}<button class="btn btn-validate sm" onclick="saveGroqKey()">${ic("save")}<span>Enregistrer</span></button></div>`}
+      </div>`;
+    document.getElementById("modalBg").classList.add("open");
+    hydrateIcons(box);
+  }
+  async function saveGroqKey(){
+    const inp=document.getElementById("groqKeyInput"); const v=((inp&&inp.value)||"").trim();
+    if(!v){ flashCenter("Colle ta clé Groq d'abord.","info"); return; }
+    if(!/^gsk_/i.test(v) && !confirm("Cette clé ne ressemble pas à une clé Groq (elle devrait commencer par « gsk_ »). L'enregistrer quand même ?")) return;
+    if(sb){ try{ await sb.from("parametres").upsert({cle:"groqKey",valeur:{key:v},updated_at:new Date().toISOString()},{onConflict:"user_id,cle"}); }catch(e){ alert("Échec de l'enregistrement : "+((e&&e.message)||e)); return; } }
+    _hasGroqKey=true; flashCenter("Clé Groq enregistrée ✓"); openApiSettings();
+  }
+  async function removeGroqKey(){
+    if(!confirm("Retirer ta clé Groq ? L'app repassera sur la clé de base partagée.")) return;
+    if(sb){ try{ await sb.from("parametres").delete().eq("cle","groqKey"); }catch(e){} }
+    _hasGroqKey=false; flashCenter("Clé retirée.","info"); openApiSettings();
+  }
+  function openGroqHelp(){
+    const box=document.getElementById("modalBox");
+    box.innerHTML=`<div class="modal-head"><h3>${ic("sparkle")} Obtenir ta clé Groq (gratuit, ~2 min)</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Groq offre une IA rapide et gratuite. Ta propre clé te donne ton quota quotidien, rien qu'à toi.</p>
+      <ol class="onb-steps">
+        <li>Ouvre <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> et connecte-toi (Google ou GitHub, sans carte bancaire).</li>
+        <li>Clique <b>Create API Key</b>, donne-lui un nom (ex : « SamTravail »).</li>
+        <li>Copie la clé affichée (elle commence par <code>gsk_</code>) — ⚠ elle ne s'affiche qu'<b>une seule fois</b>.</li>
+        <li>Reviens ici et colle-la dans le champ « Ta clé Groq », puis Enregistre.</li>
+      </ol>
+      <div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button><button class="btn btn-validate" onclick="openApiSettings(true)">${ic("check")}<span>J'ai ma clé, la coller →</span></button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+    hydrateIcons(box);
+  }
+
   const AI_ASSIST = true;
   async function aiSort(payload, timeoutMs){
     if(!AI_ASSIST) return null;                 // interrupteur
@@ -7843,6 +8019,7 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
       const r = await fetch("/api/ai-sort",{method:"POST",headers:{"Content-Type":"application/json",...authH},body:JSON.stringify(payload),signal:ctrl?ctrl.signal:undefined});
       if(to) clearTimeout(to);
       const j = await r.json();
+      if(j && (j.usage || j.rl)) trackAiUsage(j.usage, j.rl);   // jauge de consommation Groq
       return j || null;                          // renvoie la réponse (même ok:false) pour diagnostic ; null = réseau/délai
     }catch(e){ return null; }
   }

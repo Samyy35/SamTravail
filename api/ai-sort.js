@@ -35,16 +35,12 @@
 //  (Vercel ne les prend pas en compte tant que tu n'as pas redeploye).
 // =============================================================
 
-// Regles de style communes a toutes les redactions IA (relance, accroche, etc.)
+// Regles de style communes a toutes les redactions IA (relance, accroche, etc.) — version compacte (moins de tokens en entree).
 const STYLE_RULES =
-  "STYLE OBLIGATOIRE — le texte doit sembler ecrit par le candidat lui-meme, pas par une IA :\n" +
-  "- Phrases simples et directes, ton sobre et professionnel.\n" +
-  "- INTERDIT : 'dynamique', 'passionne par', 'relever des defis', 'fort de', 'doté de', " +
-  "'mettre a profit', 'pleinement', 'au sein de votre structure', 'n'hesitez pas', " +
-  "superlatifs, enumerations de qualites, formules creuses de motivation generique.\n" +
-  "- Pas de tirets longs, pas de listes a puces, pas d'emphase, pas d'emojis.\n" +
-  "- Une legere imperfection (phrase courte, formulation simple) vaut mieux qu'un texte trop lisse.\n" +
-  "- N'invente AUCUN fait : utilise uniquement les informations fournies.\n";
+  "STYLE (doit sembler ecrit par le candidat, pas par une IA) : phrases simples et directes, ton sobre. " +
+  "INTERDIT : 'dynamique', 'passionne par', 'relever des defis', 'fort de', 'dote de', 'mettre a profit', " +
+  "'au sein de votre structure', 'n'hesitez pas', superlatifs, listes de qualites, formules de motivation generiques, " +
+  "tirets longs, puces, emojis. N'invente AUCUN fait : utilise uniquement les infos fournies.\n";
 
 function diagnose(status, errMsg) {
   const m = ("" + (errMsg || "")).toLowerCase();
@@ -87,7 +83,25 @@ async function callAI(base, key, model, messages, maxTokens, opts) {
   const raw = await r.text();
   let parsed = null;
   try { parsed = JSON.parse(raw); } catch (e) {}
-  return { status: r.status, ok: r.ok, raw: raw, parsed: parsed };
+  // Consommation de tokens (jauge) : l'objet usage renvoye par l'API + les en-tetes de quota restant de Groq
+  // (x-ratelimit-remaining-* = valeur AUTORITATIVE, pas une estimation).
+  const u = parsed && parsed.usage;
+  const usage = u ? {
+    prompt: u.prompt_tokens || 0,
+    completion: u.completion_tokens || 0,
+    total: u.total_tokens || ((u.prompt_tokens || 0) + (u.completion_tokens || 0)),
+  } : null;
+  const num = (h) => { const v = r.headers.get(h); const n = v == null ? NaN : parseFloat(v); return isNaN(n) ? null : n; };
+  const rl = {
+    remTokens: num("x-ratelimit-remaining-tokens"), remRequests: num("x-ratelimit-remaining-requests"),
+    limTokens: num("x-ratelimit-limit-tokens"), limRequests: num("x-ratelimit-limit-requests"),
+  };
+  return { status: r.status, ok: r.ok, raw: raw, parsed: parsed, usage: usage, rl: rl };
+}
+// Fusionne les infos de consommation dans la reponse JSON (jauge cote client), sans casser la forme existante.
+function withUsage(obj, out) {
+  if (out) { if (out.usage) obj.usage = out.usage; if (out.rl) obj.rl = out.rl; }
+  return obj;
 }
 
 // Extraction ROBUSTE d'une liste d'entreprises depuis la reponse IA
@@ -141,9 +155,12 @@ function parseTitles(content) {
 // celles deja visibles dans index.html (l'anon key est concue pour etre publique) — rien de secret ici.
 const SUPABASE_URL = "https://vjvidltlrqxssigxboqy.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_yMT8GmHQ_ooUC1wxHtv-dQ_TMjEz3JL";
-async function verifyUser(req) {
+function bearerToken(req) {
   const auth = req.headers.authorization || "";
-  const token = auth.indexOf("Bearer ") === 0 ? auth.slice(7) : "";
+  return auth.indexOf("Bearer ") === 0 ? auth.slice(7) : "";
+}
+async function verifyUser(req) {
+  const token = bearerToken(req);
   if (!token) return null;
   try {
     const r = await fetch(SUPABASE_URL + "/auth/v1/user", {
@@ -155,8 +172,25 @@ async function verifyUser(req) {
   } catch (e) { return null; }
 }
 
+// BYOK : lit la cle Groq PERSONNELLE de l'utilisateur dans sa ligne parametres (cle="groqKey"), via SON JWT.
+// La RLS (Pilier 2) garantit qu'un utilisateur ne peut lire QUE sa propre cle — jamais celle d'un autre.
+// La cle n'est jamais renvoyee au client : le serveur la lit ici et l'utilise directement pour appeler Groq.
+async function getUserAiKey(token) {
+  if (!token) return "";
+  try {
+    const r = await fetch(SUPABASE_URL + "/rest/v1/parametres?cle=eq.groqKey&select=valeur", {
+      headers: { Authorization: "Bearer " + token, apikey: SUPABASE_ANON_KEY },
+    });
+    if (!r.ok) return "";
+    const rows = await r.json();
+    const v = rows && rows[0] && rows[0].valeur;
+    const k = v && (typeof v === "string" ? v : v.key);
+    return k ? ("" + k).trim() : "";
+  } catch (e) { return ""; }
+}
+
 module.exports = async function handler(req, res) {
-  const key = process.env.AI_KEY;
+  let key = process.env.AI_KEY;   // cle de BASE (fallback) ; ecrasee par la cle perso de l'utilisateur si presente (POST)
   const base = (process.env.AI_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/$/, "");
   const model = process.env.AI_MODEL || "llama-3.3-70b-versatile";
 
@@ -195,8 +229,12 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") { res.status(405).json({ ok: false, reason: "method" }); return; }
   // Empeche un curl/script direct (hors navigateur, donc CORS n'aide pas) de consommer le quota IA :
   // le mode GET selftest ci-dessus reste ouvert (diagnostic manuel via l'URL dans un navigateur).
+  const token = bearerToken(req);
   const user = await verifyUser(req);
   if (!user) { res.status(401).json({ ok: false, reason: "unauthorized" }); return; }
+  // BYOK : si l'utilisateur a renseigne SA cle Groq, on l'utilise IMPERATIVEMENT ; sinon la cle de base.
+  const userKey = await getUserAiKey(token);
+  if (userKey) key = userKey;
   if (!key) { res.status(200).json({ ok: false, reason: "no_key" }); return; }
 
   let body = req.body;
@@ -216,17 +254,10 @@ module.exports = async function handler(req, res) {
     const desc = ("" + (body.description || text || "")).slice(0, 6000);
     if (!desc.trim()) { res.status(200).json({ ok: false, reason: "no_text" }); return; }
     const sysF =
-      "Tu reformates la DESCRIPTION d'une offre d'emploi (texte brut, souvent un seul bloc mal structure) " +
-      "en un texte clair et bien organise, en francais.\n" +
-      "REGLES :\n" +
-      "1. Regroupe le contenu en sections logiques quand c'est pertinent (ex: \"L'entreprise\", \"Missions\", " +
-      "\"Profil recherche\", \"Competences\", \"Avantages\", \"Conditions\", \"Process de recrutement\"). " +
-      "Mets chaque titre de section seul sur sa ligne, suivi de deux points (ex: \"Missions :\").\n" +
-      "2. Utilise des puces commencant par \"- \" pour les listes (missions, competences, avantages).\n" +
-      "3. N'INVENTE AUCUNE information et n'en supprime aucune : tu REORGANISES et aeres uniquement le texte " +
-      "fourni. Garde toutes les informations factuelles (chiffres, lieux, technologies, contrat, salaire).\n" +
-      "4. Pas de markdown (pas de #, pas de **, pas de gras). Aucun commentaire de ta part, aucune phrase " +
-      "d'introduction (ne commence pas par \"Voici...\"). Reponds UNIQUEMENT par le texte reformate.";
+      "Reformate la DESCRIPTION d'une offre d'emploi (texte brut mal structure) en texte clair et aere, en francais. " +
+      "Regroupe en sections pertinentes (titre seul sur sa ligne suivi de ':', ex: 'Missions :', 'Profil recherche :', 'Avantages :'). " +
+      "Puces en '- ' pour les listes. N'INVENTE ni ne SUPPRIME aucune info (garde chiffres, lieux, technos, contrat, salaire) : tu REORGANISES seulement. " +
+      "Pas de markdown ni de gras, aucune phrase d'intro (ne commence pas par 'Voici'). Reponds UNIQUEMENT par le texte reformate.";
     try {
       const out = await callAI(base, key, model,
         [{ role: "system", content: sysF },
@@ -236,7 +267,7 @@ module.exports = async function handler(req, res) {
       let txt = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
         out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
       txt = ("" + txt).replace(/```/g, "").trim();
-      res.status(200).json({ ok: !!txt, text: txt.slice(0, 4000) });
+      res.status(200).json(withUsage({ ok: !!txt, text: txt.slice(0, 4000) }, out));
     } catch (e) {
       res.status(200).json({ ok: false, reason: "ai_error" });
     }
@@ -266,7 +297,7 @@ module.exports = async function handler(req, res) {
       c = ("" + c).replace(/```json|```/g, "").trim();
       let d = {};
       try { d = JSON.parse(c); } catch (e) {}
-      res.status(200).json({
+      res.status(200).json(withUsage({
         ok: true,
         brand: {
           entreprise: clean(d.entreprise),
@@ -274,7 +305,7 @@ module.exports = async function handler(req, res) {
           ville: clean(d.ville),
           description: clean(d.description),
         },
-      });
+      }, out));
     } catch (e) {
       res.status(200).json({ ok: false, reason: "ai_error" });
     }
@@ -307,7 +338,7 @@ module.exports = async function handler(req, res) {
         contexte: ("" + ((x && x.contexte) || "")).replace(/\s+/g, " ").trim().slice(0, 180),
       })).filter(x => x.nom).slice(0, 20);
       if (!list.length) { res.status(200).json({ ok: false, reason: "empty", got: ("" + content).slice(0, 140) }); return; }
-      res.status(200).json({ ok: true, companies: list });
+      res.status(200).json(withUsage({ ok: true, companies: list }, out));
     } catch (e) { res.status(200).json({ ok: false, reason: "ai_error", detail: ("" + (e && e.message || e)).slice(0, 140) }); }
     return;
   }
@@ -335,7 +366,7 @@ module.exports = async function handler(req, res) {
         pourquoi: ("" + ((x && x.pourquoi) || "")).replace(/\s+/g, " ").trim().slice(0, 120),
       })).filter(x => x.intitule).slice(0, 8);
       if (!list.length) { res.status(200).json({ ok: false, reason: "empty", got: ("" + content).slice(0, 140) }); return; }
-      res.status(200).json({ ok: true, titres: list });
+      res.status(200).json(withUsage({ ok: true, titres: list }, out));
     } catch (e) { res.status(200).json({ ok: false, reason: "ai_error", detail: ("" + (e && e.message || e)).slice(0, 140) }); }
     return;
   }
@@ -381,25 +412,14 @@ module.exports = async function handler(req, res) {
         (ctx.intro ? ("\n\nPROFIL du candidat:\n" + ("" + ctx.intro).slice(0, 700)) : "") +
         (ctx.cv ? ("\n\nCV (extrait): " + ("" + ctx.cv).slice(0, 1800)) : "");
     } else if (kind === "accroche") {
-      sysD = "Tu adaptes l'ACCROCHE ORIGINALE du candidat pour la cibler sur une offre d'emploi. " +
-        "OBJECTIF : que le resultat semble ecrit par le candidat lui-meme, pas par une IA.\n" +
-        "REGLES STRICTES :\n" +
-        "1. Garde la longueur de l'original (a une phrase pres), sa structure, son rythme et son vocabulaire. " +
-        "Reprends ses tournures telles quelles quand elles restent pertinentes.\n" +
-        "2. ADAPTE REELLEMENT le contenu a l'annonce : cite le NOM DE L'ENTREPRISE, l'INTITULE DU POSTE, " +
-        "et evoque le secteur/l'industrie quand c'est pertinent. Ajuste les competences et qualites mises " +
-        "en avant pour qu'elles repondent a ce que demande l'offre (en t'appuyant uniquement sur le parcours " +
-        "reel du candidat). L'accroche doit donner l'impression d'avoir ete ecrite POUR cette annonce, " +
-        "pas juste retouchee d'un mot ou deux.\n" +
-        "3. " + STYLE_RULES +
-        "4. Pas de 'Madame, Monsieur', pas de signature, pas de commentaire.\n" +
-        "FORMAT DE SORTIE OBLIGATOIRE : DEUX versions de l'accroche, separees par une ligne contenant " +
-        "uniquement trois tirets (---).\n" +
-        "Version 1 (avant le ---) : TRES PROCHE de l'original — changements minimaux, juste le poste/l'entreprise integres.\n" +
-        "Version 2 (apres le ---) : PLUS ADAPTEE a l'annonce — competences et qualites ajustees a l'offre, " +
-        "secteur evoque, mais toujours le meme style et la meme longueur.\n" +
-        "Aucun titre, aucune etiquette, aucun commentaire : juste version 1, la ligne ---, version 2.\n" +
-        "Si aucune accroche originale n'est fournie, redige 4 a 6 phrases sobres a partir du CV, memes regles, meme format a deux versions.";
+      sysD = "Tu adaptes l'ACCROCHE ORIGINALE du candidat pour cibler une offre. Objectif : on doit croire que c'est LUI qui l'a ecrite.\n" +
+        "Regles : garde la longueur (a une phrase pres), la structure, le rythme et le vocabulaire de l'original ; reprends ses tournures. " +
+        "Adapte VRAIMENT au contenu de l'annonce : cite le NOM de l'entreprise et l'INTITULE du poste, evoque le secteur, ajuste les competences mises en avant a ce que demande l'offre (uniquement a partir de son parcours reel). " +
+        "Pas de 'Madame, Monsieur', pas de signature, pas de commentaire.\n" + STYLE_RULES +
+        "SORTIE : exactement DEUX versions separees par une ligne ne contenant QUE ---. " +
+        "V1 (avant ---) : tres proche de l'original, juste poste/entreprise integres. " +
+        "V2 (apres ---) : plus adaptee a l'offre (competences ajustees, secteur evoque), meme style et meme longueur. " +
+        "Aucun titre ni etiquette. Si aucune accroche fournie : redige 4-6 phrases sobres depuis le CV, meme format 2 versions.";
       usr = "Poste: " + (ctx.poste || "") + "\nEntreprise: " + (ctx.entreprise || "") +
         "\nLieu: " + (ctx.lieu || "") +
         (ctx.offre ? ("\n\nDetails de l'offre: " + ("" + ctx.offre).slice(0, 1500)) : "") +
@@ -423,7 +443,7 @@ module.exports = async function handler(req, res) {
       let txt = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
         out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
       txt = ("" + txt).trim();
-      res.status(200).json({ ok: !!txt, text: txt.slice(0, 1800) });
+      res.status(200).json(withUsage({ ok: !!txt, text: txt.slice(0, 1800) }, out));
     } catch (e) {
       res.status(200).json({ ok: false, reason: "ai_error" });
     }
@@ -448,10 +468,10 @@ module.exports = async function handler(req, res) {
         out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
       c = ("" + c).replace(/```json|```/g, "").trim();
       let d = {}; try { d = JSON.parse(c); } catch (e) {}
-      res.status(200).json({ ok: true, profil: {
+      res.status(200).json(withUsage({ ok: true, profil: {
         prenom: clean(d.prenom).slice(0, 40),
         intro: ("" + (d.intro || "")).replace(/\s+/g, " ").trim().slice(0, 900),
-      }});
+      }}, out));
     } catch (e) { res.status(200).json({ ok: false, reason: "ai_error" }); }
     return;
   }
@@ -481,7 +501,7 @@ module.exports = async function handler(req, res) {
     content = ("" + content).replace(/```json|```/g, "").trim();
     let data = {};
     try { data = JSON.parse(content); } catch (e) {}
-    res.status(200).json({
+    res.status(200).json(withUsage({
       ok: true,
       offer: {
         titre: clean(data.titre),
@@ -491,7 +511,7 @@ module.exports = async function handler(req, res) {
         salaire: clean(data.salaire),
         experience: clean(data.experience),
       },
-    });
+    }, out));
   } catch (e) {
     res.status(200).json({ ok: false, reason: "ai_error" });
   }

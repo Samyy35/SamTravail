@@ -124,13 +124,24 @@
   .bento-map{grid-column:span 2;}
   .dash-map{height:210px;border-radius:12px;overflow:hidden;background:var(--surface-2);margin-bottom:10px;}
   .bento-foot{text-align:right;}
-  .mail-status{display:flex;gap:10px;}
-  .mail-pill{flex:1;border-radius:12px;padding:12px 8px;text-align:center;background:var(--surface-2);}
-  .mail-pill .n{font-size:22px;font-weight:750;line-height:1;color:var(--text-mute);}
-  .mail-pill .t{font-size:11px;color:var(--text-dim);margin-top:4px;}
-  .mail-pill.action{background:var(--accent-soft);}
-  .mail-pill.action .n{color:var(--accent);}
+  .mail-status{display:flex;flex-direction:column;gap:8px;}
   .mail-empty{font-size:12.5px;color:var(--text-mute);padding:8px 0;}
+  /* Widget Messagerie : aperçu des derniers mails, défilement discret, actions rapides au survol */
+  .mail-mini-badge{align-self:flex-start;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;border-radius:999px;padding:3px 10px;}
+  .mail-mini-list{display:flex;flex-direction:column;gap:2px;max-height:172px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;}
+  .mail-mini-list::-webkit-scrollbar{display:none;}
+  .mail-mini-row{display:flex;align-items:center;gap:9px;padding:7px 6px;border-radius:9px;cursor:pointer;transition:background .15s;position:relative;}
+  .mail-mini-row:hover{background:var(--surface-2);}
+  .mail-mini-row .mmr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .mail-mini-row.unread .mmr-from{font-weight:700;color:var(--text);}
+  .mail-mini-row .mmr-txt{flex:1;min-width:0;}
+  .mail-mini-row .mmr-from{font-size:12px;font-weight:600;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mail-mini-row .mmr-subj{font-size:11.5px;color:var(--text-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mail-mini-row .mmr-actions{display:flex;gap:3px;flex-shrink:0;opacity:0;transform:translateX(4px);transition:.15s;}
+  .mail-mini-row:hover .mmr-actions{opacity:1;transform:translateX(0);}
+  .mail-mini-row .mmr-actions button{background:var(--surface-3);border:none;border-radius:7px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);transition:.15s;}
+  .mail-mini-row .mmr-actions button:hover{background:var(--accent);color:#fff;}
+  .mail-mini-row .mmr-actions .ic{width:13px;height:13px;}
   .bento-discover .btn{width:100%;justify-content:flex-start;margin-top:8px;}
   .bento-discover .btn:first-of-type{margin-top:0;}
   .bento-mini{display:flex;align-items:center;gap:9px;padding:14px 16px;font-size:13px;font-weight:600;color:var(--text-dim);}
@@ -572,6 +583,16 @@
   .pipe-pill{font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:.15s;white-space:nowrap;}
   .pipe-pill:hover{border-color:var(--accent);color:var(--text);}
   .pipe-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  /* Recherche Kanban : input discret avec icône loupe intégrée, style Apple */
+  .kb-search{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:7px 12px;min-width:220px;flex:0 1 280px;transition:border-color .15s;}
+  .kb-search:focus-within{border-color:var(--accent);}
+  .kb-search .ic{width:15px;height:15px;color:var(--text-mute);flex-shrink:0;}
+  .kb-search input{flex:1;min-width:0;background:none;border:none;outline:none;font-family:var(--font);font-size:13px;color:var(--text);}
+  .kb-search input::placeholder{color:var(--text-mute);}
+  .kb-search-clear{background:none;border:none;color:var(--text-mute);cursor:pointer;display:flex;padding:2px;flex-shrink:0;}
+  .kb-search-clear .ic{width:12px;height:12px;}
+  .kb-search-clear:hover{color:var(--text);}
+  @media(max-width:660px){.kb-search{flex:1 1 100%;min-width:0;}}
   .pipe-pill b{font-weight:700;margin-left:3px;}
   .pipe-list{display:flex;flex-direction:column;gap:8px;}
   .pipe-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:11px;padding:11px 14px;transition:.12s;}
@@ -594,10 +615,12 @@
   .pstep .ic{width:17px;height:17px;}
   .pstep:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
   .pstep.on{color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.18);}
-  .pstep.pop{animation:pstepPop .4s cubic-bezier(.2,.9,.3,1.4);}
+  .pstep.pop,.kstep.pop,.pdact.pop{animation:pstepPop .4s cubic-bezier(.2,.9,.3,1.4);}
   @keyframes pstepPop{0%{transform:scale(1);}40%{transform:scale(1.45);}100%{transform:scale(1);}}
-  .pipe-row.flash{animation:rowFlash .5s ease;}
-  @keyframes rowFlash{0%{background:var(--surface);}30%{background:color-mix(in srgb,var(--flash) 22%,var(--surface));border-left-width:7px;}100%{background:var(--surface);}}
+  /* Entrée animée d'une carte qui vient de changer de colonne (cf. changePipeStatut) — remplace l'ancien
+     "flash" mort qui ciblait .pipe-row (classe Tableur disparue depuis la refonte Kanban). */
+  .kb-card-enter{animation:kbCardEnter .4s cubic-bezier(.2,.8,.3,1);}
+  @keyframes kbCardEnter{0%{opacity:0;transform:translateY(-8px) scale(.94);}60%{opacity:1;}100%{opacity:1;transform:none;}}
   /* bouton checklist + panneau inline */
   .pipe-row-wrap{display:flex;flex-direction:column;}
   .pipe-check{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px;width:46px;padding:5px 4px;border-radius:9px;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;transition:.12s;font-family:var(--font);}
@@ -769,6 +792,29 @@
   .tour-actions{display:flex;gap:8px;}
   .tour-skip{background:none;border:none;color:var(--text-mute);font-size:12px;font-family:var(--font);cursor:pointer;}
   .tour-next{background:var(--accent);border:none;color:#fff;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;font-family:var(--font);cursor:pointer;}
+  /* Étapes "présentation" (pas d'élément réel à cibler) : carte centrée, pas de spotlight troué */
+  .tour-spot.tour-spot-off{box-shadow:0 0 0 4000px rgba(10,12,20,.62);opacity:1;width:0!important;height:0!important;}
+  .tour-card.tour-card-center{max-width:420px;padding:22px 26px;}
+  .tour-card.tour-card-center h4{font-size:19px;}
+  .tour-card.tour-card-center p{font-size:13px;}
+  .tour-card ul{margin:0 0 14px;padding-left:19px;}
+  .tour-card ul li{font-size:12.5px;color:var(--text-dim);line-height:1.6;margin-bottom:5px;}
+  .tour-card ul li b{color:var(--text);}
+  /* Mini-navigateur illustratif (visite guidée : "comment utiliser le favori") — pure CSS, 0 image */
+  .dv{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;margin-top:14px;box-shadow:0 8px 20px rgba(0,0,0,.1);}
+  .dv-top{background:#f3f4f6;border-bottom:1px solid #e5e7eb;}
+  .dv-tabs{display:flex;align-items:center;padding:8px 12px 0;gap:10px;}
+  .dv-dots{display:flex;gap:6px;}
+  .dv-dots span{display:inline-block;width:9px;height:9px;border-radius:50%;}
+  .dv-dots span:nth-child(1){background:#ff5f56;} .dv-dots span:nth-child(2){background:#ffbd2e;} .dv-dots span:nth-child(3){background:#27c93f;}
+  .dv-tab{background:#fff;padding:5px 14px;border-radius:8px 8px 0 0;font-size:11px;color:#374151;font-weight:600;margin-bottom:-1px;}
+  .dv-nav{padding:6px 12px;background:#fff;border-bottom:1px solid #e5e7eb;}
+  .dv-url{background:#f3f4f6;border-radius:12px;height:20px;}
+  .dv-bookmarks{display:flex;align-items:center;padding:6px 12px;background:#fff;border-bottom:1px solid #e5e7eb;}
+  .dv-bm{display:inline-flex;align-items:center;font-size:10.5px;background:var(--accent-soft);color:var(--accent);padding:3px 10px;border-radius:99px;font-weight:700;position:relative;border:1px solid var(--accent);}
+  .dv-body{padding:14px 16px;position:relative;color:#111;}
+  .dv-cursor{position:absolute;left:60px;top:32px;font-size:22px;animation:dvClick 3s cubic-bezier(.2,.8,.3,1) infinite;z-index:10;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));}
+  @keyframes dvClick{0%{transform:translate(40px,40px);opacity:0;}15%{transform:translate(40px,40px);opacity:1;}40%{transform:translate(0,0);opacity:1;}50%{transform:scale(.85);opacity:1;}70%{transform:scale(1);opacity:1;}100%{transform:translate(40px,40px);opacity:0;}}
 
   /* MODAL */
   .modal-bg{display:none;position:fixed;inset:0;background:var(--overlay);z-index:50;backdrop-filter:blur(4px);}
@@ -1102,6 +1148,60 @@
   .prof-toggle{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--text);cursor:pointer;margin:6px 0 2px;line-height:1.4;}
   .prof-toggle input{width:16px;height:16px;margin-top:2px;accent-color:var(--accent);flex-shrink:0;}
   .prof-toggle small{display:block;color:var(--text-mute);font-size:11.5px;}
+
+  /* ===== RÉGLAGES refonte (sous-nav latérale + composants variés, style Apple) ===== */
+  .set-wrap{display:flex;gap:20px;align-items:flex-start;margin-top:4px;}
+  .set-nav{display:flex;flex-direction:column;gap:3px;flex:0 0 178px;position:sticky;top:0;}
+  .set-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:11px;font-size:13.5px;font-weight:600;color:var(--text-dim);background:none;border:none;cursor:pointer;font-family:var(--font);text-align:left;transition:.15s ease;width:100%;}
+  .set-nav-item .ic{width:16px;height:16px;flex-shrink:0;color:var(--text-mute);transition:.15s;}
+  .set-nav-item:hover{background:var(--surface-2);color:var(--text);}
+  .set-nav-item.on{background:var(--accent-soft);color:var(--accent);}
+  .set-nav-item.on .ic{color:var(--accent);}
+  .set-body{flex:1;min-width:0;}
+  .set-section-title{font-family:var(--display);font-size:18px;font-weight:800;letter-spacing:-.01em;color:var(--text);margin:0 0 4px;}
+  .set-section-sub{font-size:12.5px;color:var(--text-dim);margin:0 0 18px;line-height:1.5;}
+  /* Carte cliquable (navigation vers un sous-écran / éditeur) */
+  .set-card{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;font-family:var(--font);transition:.16s cubic-bezier(.25,.1,.25,1);margin-bottom:10px;}
+  .set-card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:var(--shadow);}
+  .set-card-ic{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .set-card-ic .ic{width:18px;height:18px;color:var(--accent);}
+  .set-card-tx{flex:1;min-width:0;}
+  .set-card-tx b{display:block;font-size:13.5px;font-weight:650;color:var(--text);}
+  .set-card-tx span{display:block;font-size:12px;color:var(--text-mute);margin-top:2px;line-height:1.4;}
+  .set-card-chev{color:var(--text-mute);font-size:17px;flex-shrink:0;}
+  /* Rangée avec interrupteur iOS */
+  .set-row{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;}
+  .set-row-tx{flex:1;min-width:0;}
+  .set-row-tx b{display:block;font-size:13.5px;font-weight:650;color:var(--text);}
+  .set-row-tx span{display:block;font-size:12px;color:var(--text-mute);margin-top:2px;line-height:1.4;}
+  .toggle-switch{position:relative;flex-shrink:0;width:46px;height:27px;display:inline-block;}
+  .toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
+  .toggle-track{position:absolute;inset:0;background:var(--surface-3);border-radius:999px;transition:.22s cubic-bezier(.25,.1,.25,1);cursor:pointer;}
+  .toggle-track::before{content:"";position:absolute;left:3px;top:3px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.25);transition:.22s cubic-bezier(.25,.1,.25,1);}
+  .toggle-switch input:checked + .toggle-track{background:var(--accent);}
+  .toggle-switch input:checked + .toggle-track::before{transform:translateX(19px);}
+  /* Info compte (lecture seule) */
+  .set-info-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;font-size:13px;}
+  .set-info-row .ic{width:16px;height:16px;color:var(--text-mute);flex-shrink:0;}
+  .set-info-row .val{font-weight:600;color:var(--text);word-break:break-all;}
+  .set-info-row .lbl{color:var(--text-mute);}
+  /* Zone de danger */
+  .set-danger{margin-top:22px;border:1px solid var(--red);border-radius:14px;background:color-mix(in srgb,var(--red) 7%,transparent);padding:15px 16px;}
+  .set-danger-h{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:4px;}
+  .set-danger-p{font-size:12px;color:var(--text-dim);margin:0 0 12px;line-height:1.5;}
+  .set-danger-btns{display:flex;gap:9px;flex-wrap:wrap;}
+  .set-danger-btn{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:600;font-family:var(--font);cursor:pointer;transition:.15s;}
+  .set-danger-btn .ic{width:14px;height:14px;}
+  .set-danger-btn:hover{border-color:var(--text-dim);}
+  .set-danger-btn.destructive{color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,transparent);}
+  .set-danger-btn.destructive:hover{background:var(--red);border-color:var(--red);color:#fff;}
+  @media(max-width:720px){
+    .set-wrap{flex-direction:column;}
+    .set-nav{flex-direction:row;flex:0 0 auto;width:100%;overflow-x:auto;position:static;padding-bottom:4px;scrollbar-width:none;}
+    .set-nav::-webkit-scrollbar{display:none;}
+    .set-nav-item{white-space:nowrap;}
+    .set-nav-item span{display:inline;}
+  }
   /* Écran de confirmation dans la pop-up de capture (bookmarklet) */
   .capture-done{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:var(--bg);padding:20px;}
   .capture-done .cd-card{background:var(--surface);border:1px solid var(--border-light);border-radius:18px;box-shadow:var(--shadow-lg);padding:28px 26px;text-align:center;max-width:340px;width:100%;}
@@ -1660,7 +1760,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v107</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v110</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -2335,9 +2435,14 @@
       }
     }catch(e){/* silencieux : la carte favicon reste affichée */}
   }
-  // ===== MINI-MAP INTERACTIVE (Leaflet + tuiles Geoapify dark-matter) =====
+  // ===== MINI-MAP INTERACTIVE (Leaflet + tuiles Geoapify) =====
   const GEOAPIFY_KEY="5fda6ac6574e46e583b4955b0f578860";
-  const MAP_STYLE="osm-bright-smooth";
+  // Styles "positron"/"dark-matter" = fond épuré, fort contraste, peu de labels (équivalent CartoDB
+  // Positron/Dark Matter, hébergés par Geoapify — même clé, aucune nouvelle dépendance). Sensible au thème.
+  function mapStyle(){ return theme==="dark"?"dark-matter":"positron"; }
+  // Cadre France métropolitaine (utilisé pour un centrage par défaut fiable quelle que soit la taille du widget,
+  // via fitBounds — contrairement à un setView+zoom fixe qui rendait le cadrage "hasardeux selon la taille d'écran").
+  const FRANCE_BOUNDS=[[41.2,-5.3],[51.3,9.8]];
   let geoCache={};
   let mapInstances={}; // pour nettoyer les cartes Leaflet entre les slides
   // Géocodage ville -> {lat,lon} (réutilisable, avec cache)
@@ -2386,7 +2491,7 @@
     box.innerHTML="";
     try{
       const map=L.map(box,{scrollWheelZoom:true,attributionControl:false}).setView([la,lo],6);
-      L.tileLayer("https://maps.geoapify.com/v1/tile/"+MAP_STYLE+"/{z}/{x}/{y}.png?apiKey="+GEOAPIFY_KEY,{maxZoom:18}).addTo(map);
+      L.tileLayer(tileUrl(),{maxZoom:18}).addTo(map);
       // marqueur custom
       const icon=L.divIcon({className:"job-pin",html:'<div class="job-pin-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]});
       L.marker([la,lo],{icon}).addTo(map);
@@ -2396,7 +2501,7 @@
     }catch(e){ box.innerHTML='<div class="mini-map-loading">'+esc(lieu||"")+'</div>'; }
   }
 
-  function tileUrl(){return "https://maps.geoapify.com/v1/tile/"+MAP_STYLE+"/{z}/{x}/{y}.png?apiKey="+GEOAPIFY_KEY;}
+  function tileUrl(){return "https://maps.geoapify.com/v1/tile/"+mapStyle()+"/{z}/{x}/{y}.png?apiKey="+GEOAPIFY_KEY;}
   function pinIcon(){return L.divIcon({className:"job-pin",html:'<div class="job-pin-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]});}
   function pinIconC(c){return L.divIcon({className:"job-pin",html:'<div class="job-pin-dot" style="background:'+c+';box-shadow:0 0 0 2px '+c+',0 2px 6px rgba(0,0,0,.4);"></div>',iconSize:[18,18],iconAnchor:[9,9]});}
 
@@ -2425,7 +2530,7 @@
   }
 
   // ===== CARTE DES CANDIDATURES (postulé / entretien / refusé) =====
-  let carteMap=null,carteMarkers=[],carteCluster=null,carteFilter="all",carteSector="all";
+  let carteMap=null,carteMarkers=[],carteCluster=null,carteFilter="all",carteSector="all",carteTileLayer=null,_carteMapResizeObs=null;
   const SAINTMALO=[48.649,-2.026]; // base / repère
   const CARTE_STAT={
     "Envoyé":{label:"Postulé",color:"#0071e3"},
@@ -2459,8 +2564,13 @@
       // Empêche la répétition horizontale infinie du monde au dézoom : maxBounds EXACTEMENT au monde
       // (±180° de longitude, pas ±200 qui laissait voir une 2ᵉ copie), viscosité 1 (mur dur), noWrap sur
       // la tuile + bounds → aucune copie de tuile rendue au-delà d'un monde. minZoom 3 garde du contexte.
-      carteMap=L.map(box,{scrollWheelZoom:true,attributionControl:false,worldCopyJump:false,maxBounds:[[-85,-180],[85,180]],maxBoundsViscosity:1,minZoom:3}).setView(SAINTMALO,8);
-      L.tileLayer(tileUrl(),{maxZoom:18,minZoom:3,noWrap:true,bounds:[[-90,-180],[90,180]]}).addTo(carteMap);
+      carteMap=L.map(box,{scrollWheelZoom:true,attributionControl:false,worldCopyJump:false,maxBounds:[[-85,-180],[85,180]],maxBoundsViscosity:1,minZoom:3});
+      carteMap.fitBounds(FRANCE_BOUNDS,{padding:[20,20]});
+      carteTileLayer=L.tileLayer(tileUrl(),{maxZoom:18,minZoom:3,noWrap:true,bounds:[[-90,-180],[90,180]]}).addTo(carteMap);
+      if(typeof ResizeObserver!=="undefined"){
+        _carteMapResizeObs=new ResizeObserver(()=>{ try{ carteMap.invalidateSize(); }catch(e){} });
+        _carteMapResizeObs.observe(box);
+      }
     } else { carteMarkers.forEach(m=>{try{carteMap.removeLayer(m);}catch(e){}}); }
     carteMarkers=[];
     // regroupement (clustering) : gros point + nombre quand des offres sont proches, se divise au zoom
@@ -2490,20 +2600,27 @@
       pts.push([la,lo]);
     });
     if(cnt)cnt.textContent=pts.length+" candidature(s) sur la carte"+(list.length>pts.length?" ("+(list.length-pts.length)+" sans lieu)":"");
-    setTimeout(()=>{try{carteMap.invalidateSize();if(pts.length===1)carteMap.setView(pts[0],10);else if(pts.length>1)carteMap.fitBounds([...pts,SAINTMALO],{padding:[40,40],maxZoom:11});else carteMap.setView(SAINTMALO,8);}catch(e){}},300);
+    setTimeout(()=>{try{carteMap.invalidateSize();if(pts.length===1)carteMap.setView(pts[0],10);else if(pts.length>1)carteMap.fitBounds([...pts,SAINTMALO],{padding:[40,40],maxZoom:11});else carteMap.fitBounds(FRANCE_BOUNDS,{padding:[20,20]});}catch(e){}},300);
   }
 
   // ===== WIDGET CARTE DU DASHBOARD (instance Leaflet séparée de la vue Carte complète) =====
   // Coûteux (géocodage par ville) -> calculé UNE fois, jamais re-rendu au simple retour sur "Aujourd'hui".
-  let dashMap=null,dashMarkers=[],dashCluster=null,_dashMapDone=false;
+  let dashMap=null,dashMarkers=[],dashCluster=null,_dashMapDone=false,dashTileLayer=null,_dashMapResizeObs=null;
   async function renderDashMap(force){
     const box=document.getElementById("dashMap"); if(!box||typeof L==="undefined") return;
     if(_dashMapDone && !force) return;
     _dashMapDone=true;
     const btn=document.getElementById("dashMapRefresh"); if(btn)btn.classList.add("spinning");
     if(!dashMap){
-      dashMap=L.map(box,{scrollWheelZoom:true,attributionControl:false,worldCopyJump:false,maxBounds:[[-85,-180],[85,180]],maxBoundsViscosity:1,minZoom:3}).setView(SAINTMALO,7);
-      L.tileLayer(tileUrl(),{maxZoom:18,minZoom:3,noWrap:true,bounds:[[-90,-180],[90,180]]}).addTo(dashMap);
+      dashMap=L.map(box,{scrollWheelZoom:true,attributionControl:false,worldCopyJump:false,maxBounds:[[-85,-180],[85,180]],maxBoundsViscosity:1,minZoom:3});
+      dashMap.fitBounds(FRANCE_BOUNDS,{padding:[10,10]});   // cadrage France par défaut, fiable quelle que soit la taille du widget
+      dashTileLayer=L.tileLayer(tileUrl(),{maxZoom:18,minZoom:3,noWrap:true,bounds:[[-90,-180],[90,180]]}).addTo(dashMap);
+      // Le widget peut changer de taille (redimensionnement fenêtre, drag en mode édition Bento) : sans ça,
+      // Leaflet garde ses anciennes dimensions internes -> cadrage qui part de travers ("hasardeux").
+      if(typeof ResizeObserver!=="undefined"){
+        _dashMapResizeObs=new ResizeObserver(()=>{ try{ dashMap.invalidateSize(); }catch(e){} });
+        _dashMapResizeObs.observe(box);
+      }
     } else { dashMarkers.forEach(m=>{try{dashMap.removeLayer(m);}catch(e){}}); }
     dashMarkers=[];
     if(L.markerClusterGroup){
@@ -2526,20 +2643,44 @@
       pts.push([la,lo]);
     });
     if(btn)btn.classList.remove("spinning");
-    setTimeout(()=>{try{dashMap.invalidateSize();if(pts.length===1)dashMap.setView(pts[0],9);else if(pts.length>1)dashMap.fitBounds([...pts,SAINTMALO],{padding:[30,30],maxZoom:10});else dashMap.setView(SAINTMALO,7);}catch(e){}},300);
+    setTimeout(()=>{try{dashMap.invalidateSize();if(pts.length===1)dashMap.setView(pts[0],9);else if(pts.length>1)dashMap.fitBounds([...pts,SAINTMALO],{padding:[30,30],maxZoom:10});else dashMap.fitBounds(FRANCE_BOUNDS,{padding:[10,10]});}catch(e){}},300);
   }
   function refreshDashMap(){ renderDashMap(true); }
 
-  // ===== WIDGET MESSAGERIE DU DASHBOARD (tri binaire Bruit/Action, cf. classifyMail) =====
+  // ===== WIDGET MESSAGERIE DU DASHBOARD : aperçu interactif des derniers mails =====
   const MAIL_ACTION_KEYS=new Set(["entretien","screening","test","offre","refus"]);
   function renderDashMailWidget(){
     const el=document.getElementById("dashMailStatus"); if(!el) return;
     if(!syncedMail || !syncedMail.length){ el.innerHTML='<div class="mail-empty">Aucun e-mail synchronisé pour l’instant.</div>'; return; }
-    let action=0,bruit=0;
-    syncedMail.forEach(r=>{ const k=(r._nature&&r._nature.key)||"autre"; if(MAIL_ACTION_KEYS.has(k))action++; else bruit++; });
+    let action=0;
+    syncedMail.forEach(r=>{ const k=(r._nature&&r._nature.key)||"autre"; if(MAIL_ACTION_KEYS.has(k))action++; });
+    const recent=[...syncedMail].filter(m=>!m._archived).sort((a,b)=>new Date(b.received_at||0)-new Date(a.received_at||0)).slice(0,4);
     el.innerHTML=
-      '<div class="mail-pill '+(action?"action":"")+'"><div class="n">'+action+'</div><div class="t">Action requise</div></div>'+
-      '<div class="mail-pill"><div class="n">'+bruit+'</div><div class="t">Info / accusés</div></div>';
+      (action?`<div class="mail-mini-badge">${action} action${action>1?"s":""} requise${action>1?"s":""}</div>`:"")+
+      `<div class="mail-mini-list">${recent.map(mailMiniRow).join("")||'<div class="mail-empty">Boîte vide pour l’instant.</div>'}</div>`;
+  }
+  function mailMiniRow(m){
+    const nat=m._nature||MAIL_NATURE_OTHER;
+    return `<div class="mail-mini-row ${m._read?"":"unread"}" onclick="event.stopPropagation();bentoNav('messagerie');openMail('${esc(m.id)}');">
+      <span class="mmr-dot" style="background:${nat.color};" title="${esc(nat.label)}"></span>
+      <div class="mmr-txt">
+        <div class="mmr-from">${esc(m.from_name||m.from_email||"Expéditeur")}</div>
+        <div class="mmr-subj">${esc((m.subject||"(sans objet)").slice(0,60))}</div>
+      </div>
+      <div class="mmr-actions">
+        <button type="button" title="Archiver" onclick="event.stopPropagation();quickArchiveMail('${esc(m.id)}')">${ic("inbox")}</button>
+        <button type="button" title="Supprimer" onclick="event.stopPropagation();quickDeleteMail('${esc(m.id)}')">${ic("trash")}</button>
+      </div>
+    </div>`;
+  }
+  async function quickArchiveMail(id){
+    await toggleMailArchived(id);
+    renderDashMailWidget();
+  }
+  async function quickDeleteMail(id){
+    if(!confirm("Supprimer définitivement cet e-mail ?")) return;
+    await deleteSyncedMail(id);
+    renderDashMailWidget();
   }
 
   // ===== WIDGET « MINEUR » ENTRETIENS (badge nb entretiens à venir) =====
@@ -2811,18 +2952,17 @@
   // ===== COCKPIT DU JOUR =====
   function renderCockpit(){
     const now=new Date();now.setHours(0,0,0,0);
-    // À trier : toutes les offres gardées et pas encore postulées (la pile)
+    // À trier : toutes les offres gardées et pas encore postulées (la pile) — inclut déjà "apostuler"
+    // (TRIAGE_STATUTS), donc PAS de tuile "à postuler" séparée : c'était un doublon (sous-ensemble strict
+    // de "à trier", même action de clic) qui prêtait à confusion. Retiré (chantier nettoyage dashboard).
     const aTrier=Object.values(statusMap).filter(isToTriage).length;
-    // À postuler : celles explicitement marquées « à postuler » (❤), prêtes à envoyer
-    const aPostuler=Object.values(statusMap).filter(s=>s.statut==="apostuler").length;
     const envoyees=pipeline.filter(p=>p.statut==="Envoyé").length;
     const relances=pipeline.filter(relanceDue).length;
     const entretiens_=pipeline.filter(p=>p.statut==="Entretien").length;
     const propositions=pipeline.filter(p=>p.statut==="Offre reçue").length;
-    // 6 tuiles : l'entonnoir (à trier → à postuler → offres envoyées → relances → entretiens → offre reçue)
+    // 5 tuiles : l'entonnoir (à trier → offres envoyées → relances → entretiens → offre reçue)
     const items=[
       {n:aTrier,t:"à trier",ic:"inbox",act:()=>{setView('offres');setVeilleFilter('all');}},
-      {n:aPostuler,t:"à postuler",ic:"heart",act:()=>{setView('offres');setVeilleFilter('all');}},
       {n:envoyees,t:"offres envoyées",ic:"send",act:()=>{setView('pipeline');setPipeFilter&&setPipeFilter('Envoyé');}},
       {n:relances,t:"relances",ic:"bell",act:()=>setView('pipeline')},
       {n:entretiens_,t:"entretiens",ic:"mic",act:()=>setView('pipeline')},
@@ -4043,6 +4183,17 @@
   // Tableur retiré (chantier 5) : Kanban partout, y compris mobile (défilement horizontal déjà géré par le CSS).
   let pipeView=(function(){try{const v=localStorage.getItem("st_pipeView");if(v==="kanban")return v;}catch(e){}return "kanban";})();
   function setPipeView(v){pipeView=v;try{if(v!=="relance")localStorage.setItem("st_pipeView",v);}catch(e){}renderPipeline();}
+  // Recherche Kanban : filtre live par entreprise/poste (session uniquement, pas persistée).
+  let pipeSearch="";
+  // id de la candidature qui vient de changer de statut : anime son entrée dans la nouvelle colonne
+  // au prochain rendu (cf. changePipeStatut / kanbanCard / renderKanban).
+  let _pipeJustMoved=null;
+  function setPipeSearch(v){ pipeSearch=v; renderPipeline(); }
+  function pipeMatchesSearch(p){
+    if(!pipeSearch.trim()) return true;
+    const q=pipeSearch.trim().toLowerCase();
+    return ((p.entreprise||"")+" "+(p.poste||"")).toLowerCase().includes(q);
+  }
   let pipeManage=false; const pipeSelect=new Set();
   function togglePipeManage(){pipeManage=!pipeManage;if(!pipeManage)pipeSelect.clear();renderPipeline();}
   function togglePipeSelect(id){id=String(id);if(pipeSelect.has(id))pipeSelect.delete(id);else pipeSelect.add(id);renderPipeline();}
@@ -4081,7 +4232,14 @@
     }
 
     // ===== VUE KANBAN CONDENSÉ (4 colonnes, Clos = Refusé + Pas pour moi) =====
-    c.innerHTML=`<div class="pipe-toolbar"><div>${toggle}</div></div>${renderKanban()}`;
+    // La recherche reconstruit tout le HTML à chaque frappe (comme le reste de l'app) : on doit donc
+    // explicitement rendre le focus + la position du curseur au champ après coup, sinon il se referme
+    // le clavier / perd le focus à chaque caractère tapé.
+    const searchHadFocus=document.activeElement&&document.activeElement.id==="kbSearchInput";
+    const caret=searchHadFocus?document.activeElement.selectionStart:null;
+    const search=`<div class="kb-search">${ic("search")}<input id="kbSearchInput" placeholder="Rechercher une entreprise, un poste…" value="${esc(pipeSearch)}" oninput="setPipeSearch(this.value)" autocomplete="off" spellcheck="false">${pipeSearch?`<button class="kb-search-clear" onmousedown="event.preventDefault()" onclick="setPipeSearch('')" title="Effacer">${ic("ban")}</button>`:""}</div>`;
+    c.innerHTML=`<div class="pipe-toolbar"><div>${toggle}</div>${search}</div>${renderKanban()}`;
+    if(searchHadFocus){ const si=document.getElementById("kbSearchInput"); if(si){ si.focus(); try{si.setSelectionRange(caret,caret);}catch(e){} } }
     renderStatsBadges();
   }
   // ===== KANBAN CONDENSÉ =====
@@ -4112,7 +4270,7 @@
   }
   function renderKanban(){
     const cols=KANBAN_COLS.map(kc=>{
-      const items=pipeline.filter(p=>kc.statuts.includes(p.statut))
+      const items=pipeline.filter(p=>kc.statuts.includes(p.statut)&&pipeMatchesSearch(p))
         .sort((a,b)=>new Date(b.date_envoi||0)-new Date(a.date_envoi||0));
       const clusters=kc.key==="Envoyé"?clusterByDate(items):null;
       let body;
@@ -4129,6 +4287,7 @@
         <div class="kb-resize" onmousedown="kbStartResize(event,'${esc(kc.key)}')" ondblclick="kbResetWidth('${esc(kc.key)}')" title="Glisse pour redimensionner · double-clic pour réinitialiser"></div>
       </div>`;
     }).join("");
+    _pipeJustMoved=null;   // consommé : n'anime qu'une seule fois, pas à chaque futur rendu (recherche, etc.)
     return `<div class="kanban-board">${cols}</div>`;
   }
   // ===== Largeur des colonnes Kanban « au feeling » (glisser-déposer, persisté) =====
@@ -4179,7 +4338,10 @@
     const chk=p.checklist||{}; const done=Object.keys(chk).filter(k=>chk[k]).length;
     const STEPS=["Envoyé","Screening","Entretien","Offre reçue","Refusé"]; // « Pas pour moi » retiré, remplacé par le rollback
     const sug=mailSuggestFor(p.id);
-    return `<div class="kb-card" style="border-left-color:${col};">
+    // Anime d'une entrée douce la carte qui vient de changer de colonne (cf. changePipeStatut) — consommé
+    // une seule fois (l'attribut disparaît au prochain rendu, la classe ne se réapplique pas à chaque frappe de recherche).
+    const justMoved=_pipeJustMoved&&String(_pipeJustMoved)===String(p.id);
+    return `<div class="kb-card ${justMoved?"kb-card-enter":""}" style="border-left-color:${col};">
       ${sug?`<div class="kb-suggest" onclick="event.stopPropagation();openMailSuggest('${p.id}')" title="Suggestion d'après un e-mail — clique pour valider">${ic("bell")} Suggestion : ${esc(kLabel((KCOLS.find(c=>c.key===sug.status)||{label:sug.status}).label))}</div>`:""}
       <div class="kb-card-head" onclick="openPipeCard('${p.id}')" title="Voir la fiche">
         <div class="kb-logo ${logo?'':'mono'}" style="${logo?'':`background:${sec.c}1f;color:${sec.c};`}">${logoInner}</div>
@@ -5007,19 +5169,18 @@
       try{const map=L.map(mb,{scrollWheelZoom:true,attributionControl:false}).setView([la,lo],11);L.tileLayer(tileUrl(),{maxZoom:18}).addTo(map);L.marker([la,lo],{icon:pinIconC(col.startsWith("var")?"#0071e3":col)}).addTo(map);setTimeout(()=>{try{map.invalidateSize();}catch(e){}},250);}catch(e){}
     })();
   }
-  // Faire évoluer une ligne via le dropdown (remplace le drag-and-drop)
+  // Faire évoluer une ligne via les boutons d'étape (remplace le drag-and-drop).
+  // ⚠ bug trouvé en investiguant un signalement de "duplication visuelle" : l'ancienne animation de
+  // confirmation ("flash") ciblait `.closest(".pipe-row")`, une classe du Tableur — supprimé depuis la
+  // refonte Kanban (v99). Ni les boutons du Kanban (.kb-card) ni ceux de la fiche (.pdact) ne sont jamais
+  // dans un .pipe-row : `row` valait donc TOUJOURS null, l'animation ne s'est JAMAIS jouée. Le changement
+  // de colonne était un remplacement de DOM instantané et silencieux (aucune donnée dupliquée — vérifié en
+  // direct : jamais plus d'une carte par offre — mais un "saut" sans transition qui donne l'illusion d'un
+  // glitch). Remplacé par une vraie animation d'entrée sur la carte qui vient de changer de colonne.
   async function changePipeStatut(id,col,btn){
     const p=pipeline.find(x=>String(x.id)===String(id));if(!p||p.statut===col)return;
-    // mini-animation de confirmation sur la ligne (flash) avant re-render
-    if(btn){
-      const row=btn.closest(".pipe-row");
-      btn.classList.add("pop");
-      if(row){
-        const cc=pipeColor(col);
-        row.style.setProperty("--flash",cc);
-        row.classList.add("flash");
-      }
-    }
+    if(btn) btn.classList.add("pop");
+    _pipeJustMoved=id;
     p.statut=col;
     const patch={statut:col};
     if(col!=="Envoyé"&&!p.date_reponse){patch.date_reponse=new Date().toISOString().slice(0,10);p.date_reponse=patch.date_reponse;}
@@ -6504,6 +6665,9 @@
     // Le bouton vit désormais dans Réglages (openProfil) — le logo de l'en-tête est l'easter egg de bascule.
     const btn=document.getElementById("themeToggle");
     if(btn)btn.innerHTML=ic(theme==="dark"?"moon":"sun")+"<span>Thème "+(theme==="dark"?"sombre":"clair")+"</span>";
+    // Bascule live des tuiles de carte (positron <-> dark-matter) sans recréer les cartes déjà montées.
+    try{ if(dashTileLayer) dashTileLayer.setUrl(tileUrl()); }catch(e){}
+    try{ if(carteTileLayer) carteTileLayer.setUrl(tileUrl()); }catch(e){}
   }
   async function toggleTheme(){
     theme=theme==="dark"?"light":"dark";
@@ -6540,7 +6704,7 @@
         }
       }catch(e){}
     }
-    if(!userName && !skipAsk){ askName(); }
+    if(!userName && !skipAsk && !isGuest){ askName(); }   // en mode démo : pas de demande de prénom (chevauchait la visite guidée)
     else initDate();
   }
   function askName(){
@@ -6695,38 +6859,88 @@
       <div class="modal-actions flow-foot" style="justify-content:flex-end;"><button class="btn ghost" onclick="openProfil()">← Retour</button></div>`;
     document.getElementById("modalBg").classList.add("open");
   }
+  // ===== RÉGLAGES : coquille à sous-navigation latérale + sections catégorisées (refonte Design Apple) =====
+  const PROF_SECTIONS=[
+    {key:"profil",icon:"user",label:"Profil"},
+    {key:"recherche",icon:"target",label:"Recherche"},
+    {key:"integrations",icon:"sparkle",label:"Intégrations"},
+    {key:"affichage",icon:"sun",label:"Affichage"},
+    {key:"compte",icon:"gear",label:"Compte"},
+  ];
+  let _profSection="profil", _profAccountEmail=null;
   function openProfil(){
     closeMore&&closeMore();
     try{ if(window.tinymce&&tinymce.remove)tinymce.remove(); }catch(e){}
-    const box=document.getElementById("modalBox");
-    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("user")} Mon profil</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">Ces infos servent à personnaliser les messages générés par l'IA (relances, et bientôt accroches de candidature). Rien n'est obligatoire.</p>
-      <label class="prof-lab">Prénom</label>
-      <input class="crit-in" id="profPrenom" value="${esc(userName)}" placeholder="Ton prénom" />
-      <div class="prof-langsel">Langue du CV & de l'accroche :
-        <button class="vers-btn ${profLang==="fr"?"on":""}" id="profLang-fr" onclick="setProfLang('fr')">Français</button>
-        <button class="vers-btn ${profLang==="en"?"on":""}" id="profLang-en" onclick="setProfLang('en')">English</button>
-        <span class="prof-hint" style="margin-left:auto;">Importe ton CV <b>.docx</b> → il garde sa mise en page.</span>
-      </div>
-      <div id="profLangBlock"></div>
-      <div class="pc-section-h">${ic("gear")} Réglages</div>
-      <p class="modal-sub" style="margin-top:-4px;">Affine le score d'affinité (pondération des secteurs) et sauvegarde tes données.</p>
-      <div class="prof-settings">
-        <button class="btn ghost sm" id="themeToggle" onclick="toggleTheme()">${ic(theme==="dark"?"moon":"sun")}<span>Thème ${theme==="dark"?"sombre":"clair"}</span></button>
-        <button class="btn ghost sm" onclick="closeModal();openCompatWizard();">${ic("target")}<span>Score de compatibilité</span></button>
-        <button class="btn ghost sm" onclick="closeModal();openCriteres();">${ic("sliders")}<span>Critères avancés</span></button>
-        <button class="btn ghost sm" onclick="openApiSettings()">${ic("sparkle")}<span>IA & consommation</span></button>
-        <button class="btn ghost sm" onclick="closeModal();setView('messagerie');openMailSync();">${ic("mail")}<span>Connexion boîte mail</span></button>
-        <button class="btn ghost sm" onclick="openPromptAccroche()">${ic("sparkle")}<span>Prompt d'accroche (IA)</span></button>
-        <button class="btn ghost sm" onclick="openDocsHistory()">${ic("doc")}<span>Mes documents</span></button>
-        <button class="btn ghost sm" onclick="exportCSV()">${ic("download")}<span>Export CSV (sauvegarde)</span></button>
-        <button class="btn ghost sm" onclick="claimLegacyData()">${ic("check")}<span>Réclamer mes données</span></button>
-        <button class="btn ghost sm" onclick="logout()">${ic("exit")}<span>Se déconnecter</span></button>
-      </div>
-      <label class="prof-toggle"><input type="checkbox" id="capCloseToggle" ${getCaptureAutoClose()?"checked":""} onchange="setCaptureAutoClose(this.checked)"><span>Fermer automatiquement la fenêtre du favori après l'ajout d'une offre <small>(évite d'accumuler les onglets)</small></span></label>
-      <div class="modal-actions"><button class="btn danger" onclick="closeModal()">Annuler</button><button class="btn btn-validate" onclick="saveProfil()">${ic("check")}<span>Enregistrer</span></button></div>`;
+    _profSection="profil";
+    const box=document.getElementById("modalBox"); box.classList.add("wide");
+    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;">${ic("gear")} Réglages</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <div class="set-wrap">
+        <nav class="set-nav" id="setNav">${PROF_SECTIONS.map(s=>`<button class="set-nav-item ${s.key===_profSection?"on":""}" data-sec="${s.key}" onclick="profGo('${s.key}')">${ic(s.icon)}<span>${s.label}</span></button>`).join("")}</nav>
+        <div class="set-body" id="setBody"></div>
+      </div>`;
     document.getElementById("modalBg").classList.add("open");
-    renderProfLangBlock();
+    profGo("profil");
+    // email du compte chargé en arrière-plan (affiché dans la section Compte)
+    if(sb && _profAccountEmail===null){ sb.auth.getUser().then(r=>{ _profAccountEmail=(r&&r.data&&r.data.user&&r.data.user.email)||""; if(_profSection==="compte")profGo("compte"); }).catch(()=>{ _profAccountEmail=""; }); }
+  }
+  function profGo(sec){
+    // capture les champs texte du profil AVANT de quitter la section (sinon les saisies non enregistrées seraient perdues)
+    if(_profSection==="profil"){ const pn=document.getElementById("profPrenom"); if(pn)userName=(pn.value||"").trim(); captureProfLang(); }
+    _profSection=sec;
+    document.querySelectorAll("#setNav .set-nav-item").forEach(b=>b.classList.toggle("on",b.getAttribute("data-sec")===sec));
+    const body=document.getElementById("setBody"); if(!body) return;
+    body.innerHTML=profSectionHTML(sec);
+    if(sec==="profil") renderProfLangBlock();
+  }
+  function profSectionHTML(sec){
+    if(sec==="profil"){
+      return `<div class="set-section-title">Profil</div>
+        <p class="set-section-sub">Ces infos personnalisent les messages générés par l'IA (accroches, relances). Rien n'est obligatoire.</p>
+        <label class="prof-lab">Prénom</label>
+        <input class="crit-in" id="profPrenom" value="${esc(userName)}" placeholder="Ton prénom" />
+        <div class="prof-langsel" style="margin-top:14px;">Langue du CV & de l'accroche :
+          <button class="vers-btn ${profLang==="fr"?"on":""}" id="profLang-fr" onclick="setProfLang('fr')">Français</button>
+          <button class="vers-btn ${profLang==="en"?"on":""}" id="profLang-en" onclick="setProfLang('en')">English</button>
+        </div>
+        <div id="profLangBlock"></div>
+        <div style="height:10px;"></div>
+        <button class="set-card" onclick="openPromptAccroche()"><span class="set-card-ic">${ic("sparkle")}</span><span class="set-card-tx"><b>Prompt d'accroche (IA)</b><span>Personnalise le rôle système de l'IA qui rédige tes accroches</span></span><span class="set-card-chev">›</span></button>
+        <button class="set-card" onclick="openDocsHistory()"><span class="set-card-ic">${ic("doc")}</span><span class="set-card-tx"><b>Mes documents</b><span>CV et accroches enregistrés, reliés à tes offres</span></span><span class="set-card-chev">›</span></button>
+        <div class="modal-actions" style="margin-top:16px;justify-content:flex-end;"><button class="btn btn-validate" onclick="saveProfil()">${ic("check")}<span>Enregistrer le profil</span></button></div>`;
+    }
+    if(sec==="recherche"){
+      return `<div class="set-section-title">Préférences de recherche</div>
+        <p class="set-section-sub">Dis à l'app ce qui compte pour toi : les offres qui correspondent remontent automatiquement en haut de ta pile.</p>
+        <button class="set-card" onclick="closeModal();openCompatWizard();"><span class="set-card-ic">${ic("target")}</span><span class="set-card-tx"><b>Score de compatibilité</b><span>Quiz rapide : secteurs, langues, lieux, contrat…</span></span><span class="set-card-chev">›</span></button>
+        <button class="set-card" onclick="closeModal();openCriteres();"><span class="set-card-ic">${ic("sliders")}</span><span class="set-card-tx"><b>Critères avancés</b><span>Réglage fin de la pondération de chaque critère</span></span><span class="set-card-chev">›</span></button>`;
+    }
+    if(sec==="integrations"){
+      return `<div class="set-section-title">Intégrations & API</div>
+        <p class="set-section-sub">Connecte l'IA et ta boîte mail pour automatiser ta recherche.</p>
+        <button class="set-card" onclick="openApiSettings()"><span class="set-card-ic">${ic("sparkle")}</span><span class="set-card-tx"><b>IA & consommation</b><span>Ta clé Groq personnelle + jauge de tokens du jour</span></span><span class="set-card-chev">›</span></button>
+        <button class="set-card" onclick="closeModal();setView('messagerie');openMailSync();"><span class="set-card-ic">${ic("mail")}</span><span class="set-card-tx"><b>Connexion boîte mail</b><span>Gmail / Outlook — classe tes réponses automatiquement</span></span><span class="set-card-chev">›</span></button>`;
+    }
+    if(sec==="affichage"){
+      return `<div class="set-section-title">Affichage</div>
+        <p class="set-section-sub">L'apparence et le comportement de l'application.</p>
+        <div class="set-row"><div class="set-row-tx"><b>Thème sombre</b><span>Bascule entre l'apparence claire et sombre</span></div><label class="toggle-switch"><input type="checkbox" ${theme==="dark"?"checked":""} onchange="toggleTheme()"><span class="toggle-track"></span></label></div>
+        <div class="set-row"><div class="set-row-tx"><b>Fermeture auto du favori</b><span>Ferme la fenêtre du bookmarklet après l'ajout d'une offre (évite d'accumuler les onglets)</span></div><label class="toggle-switch"><input type="checkbox" ${getCaptureAutoClose()?"checked":""} onchange="setCaptureAutoClose(this.checked)"><span class="toggle-track"></span></label></div>`;
+    }
+    // compte
+    const emailRow = _profAccountEmail ? `<div class="set-info-row">${ic("mail")}<span class="lbl">Connecté·e en tant que</span> <span class="val">${esc(_profAccountEmail)}</span></div>` : "";
+    return `<div class="set-section-title">Compte & sécurité</div>
+      <p class="set-section-sub">Ton compte et tes données.</p>
+      ${emailRow}
+      <button class="set-card" onclick="claimLegacyData()"><span class="set-card-ic">${ic("check")}</span><span class="set-card-tx"><b>Réclamer mes données</b><span>Rattache à ton compte les données créées avant la connexion</span></span><span class="set-card-chev">›</span></button>
+      <button class="set-card" onclick="exportCSV()"><span class="set-card-ic">${ic("download")}</span><span class="set-card-tx"><b>Export CSV (sauvegarde)</b><span>Télécharge une copie de tes candidatures</span></span><span class="set-card-chev">›</span></button>
+      <div class="set-danger">
+        <div class="set-danger-h">Zone de danger</div>
+        <p class="set-danger-p">La déconnexion est sans risque. L'effacement supprime <b>définitivement</b> toutes tes données.</p>
+        <div class="set-danger-btns">
+          <button class="set-danger-btn" onclick="logout()">${ic("exit")}<span>Se déconnecter</span></button>
+          <button class="set-danger-btn destructive" onclick="confirmWipeData()">${ic("trash")}<span>Effacer toutes mes données</span></button>
+        </div>
+      </div>`;
   }
   async function saveProfil(){
     const pn=document.getElementById("profPrenom"); userName=pn?(pn.value||"").trim():userName;
@@ -6734,8 +6948,30 @@
     userCV=htmlToText(userCvHtml||userCvHtmlEn).slice(0,8000);     // texte du CV pour nourrir l'IA (dérivé du modèle HTML)
     try{localStorage.setItem("st_name",userName);}catch(e){}
     await saveProfilData();
-    closeModal(); initDate();
-    flashCenter("Profil enregistré ✓");
+    initDate();
+    flashCenter("Profil enregistré ✓");   // reste dans les Réglages (les autres sections s'appliquent instantanément)
+  }
+  // Effacement complet des données (zone de danger) : confirmation stricte par saisie de "EFFACER".
+  function confirmWipeData(){
+    const box=document.getElementById("modalBox"); box.classList.remove("wide");
+    box.innerHTML=`<div class="modal-head"><h3 style="display:flex;align-items:center;gap:9px;color:var(--red);">${ic("alert")} Effacer toutes mes données</h3><button class="x" onclick="openProfil()">✕</button></div>
+      <p class="modal-sub">Ceci supprime <b>définitivement</b> toutes tes candidatures, offres, marques, contacts, entretiens, e-mails synchronisés et réglages. <b>Action irréversible.</b> Ton identifiant de connexion reste actif, mais le compte repartira totalement vide.</p>
+      <p class="modal-sub">Astuce : fais d'abord un <b>Export CSV</b> si tu veux garder une trace.</p>
+      <label class="prof-lab">Pour confirmer, écris <b>EFFACER</b> :</label>
+      <input class="crit-in" id="wipeConfirm" placeholder="EFFACER" autocomplete="off" spellcheck="false" oninput="var b=document.getElementById('wipeBtn');if(b)b.disabled=(this.value.trim().toUpperCase()!=='EFFACER');" />
+      <div class="modal-actions"><button class="btn ghost" onclick="openProfil()">Annuler</button><button class="btn danger" id="wipeBtn" disabled onclick="wipeAllData()">${ic("trash")}<span>Tout effacer définitivement</span></button></div>`;
+    document.getElementById("modalBg").classList.add("open");
+  }
+  async function wipeAllData(){
+    const btn=document.getElementById("wipeBtn"); if(btn){ btn.disabled=true; btn.innerHTML="Suppression…"; }
+    if(sb){
+      let session=null; try{ const r=await sb.auth.getSession(); session=r&&r.data&&r.data.session; }catch(e){}
+      const uid=session&&session.user&&session.user.id;
+      if(uid){ for(const t of CLAIMABLE_TABLES){ try{ await sb.from(t).delete().eq("user_id",uid); }catch(e){} } }   // RLS : ne touche QUE tes propres lignes
+    }
+    try{ ["st_name","st_guest_init","st_compat_wizard_seen","st_gmail_on","st_gmail_client_id","st_gmail_query","st_outlook_client_id"].forEach(k=>localStorage.removeItem(k)); }catch(e){}
+    flashCenter("Toutes tes données ont été effacées.");
+    setTimeout(()=>{ location.href=location.origin+location.pathname; },900);
   }
   // Toutes les tables passées au multi-tenant (colonne user_id ajoutée en SQL, nullable tant que la
   // migration n'est pas terminée). Réclame les lignes créées avant la connexion (user_id encore NULL).
@@ -7335,8 +7571,12 @@
   }
   // Nettoie le corps TEXTE d'un mail pour un affichage lisible (retire caractères invisibles + blancs superflus).
   function cleanMailText(raw){
-    return (""+(raw||"")).replace(/\r\n/g,"\n").replace(/[​‌‍﻿]/g,"")
-      .replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+    let t=(""+(raw||"")).replace(/\r\n/g,"\n").replace(/[​‌‍﻿]/g,"");
+    t=t.replace(/<https?:\/\/[^>]{25,}>/g,"");                         // URLs de tracking entre chevrons <https://…très long…>
+    t=t.replace(/\[[^\]\n]{1,40}\]/g,"");                              // étiquettes de navigation [LinkedIn], [Messaging icon]…
+    t=t.replace(/https?:\/\/([^\s/]+)\/\S{25,}/g,"https://$1/…");      // URLs nues interminables -> juste le domaine
+    t=t.split("\n").map(l=>/^[<>\s|·•\-–—]*$/.test(l.trim())?"":l).join("\n");  // lignes ne contenant plus que des résidus
+    return t.replace(/[ \t]{2,}/g," ").replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
   }
   // Enveloppe un corps HTML de mail dans un mini-document autonome (images bornées, liens en nouvel onglet).
   function mailHtmlDoc(html){
@@ -7723,7 +7963,41 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
     reseau=[{id:"demo_rs1",prenom:"Claire",nom:"Morin",entreprise:"Thales",poste:"Talent Acquisition",statut:"Contact LinkedIn",dernier_contact:new Date(now-5*day).toISOString(),notes:"A confirmé la réception de candidature, très réactive.",lien_linkedin:"https://www.linkedin.com/"}];
     evenements=[{id:"demo_ev1",titre:"Entretien Thales",date_event:new Date(now+4*day).toISOString().slice(0,10),type:"Entretien"}];
     activityLog=[];
+    // Messagerie : quelques mails fictifs pour que l'espace Messagerie ne soit pas vide en démo
+    syncedMail=[
+      {id:"demo_m1",subject:"Confirmation d'entretien — Thales",from_name:"Claire Morin",from_email:"claire.morin@thales.com",from_domain:"thales.com",received_at:new Date(now-3*day).toISOString(),body:"Bonjour,\n\nSuite à notre échange, nous vous confirmons un entretien technique en visio la semaine prochaine.\n\nCordialement,\nClaire",nature:"entretien",read:true,archived:false},
+      {id:"demo_m2",subject:"Votre candidature chez Schneider Electric",from_name:"Recrutement Schneider",from_email:"recrutement@se.com",from_domain:"se.com",received_at:new Date(now-1*day).toISOString(),body:"Bonjour,\n\nNous avons bien reçu votre candidature pour le poste de Chef de projet Supply Chain. Notre équipe RH reviendra vers vous prochainement.\n\nCordialement",nature:"autre",read:false,archived:false},
+    ];
+    syncedMail=syncedMail.map(enrichSynced);   // ajoute _nature/_match/_read/_archived — sinon le widget mail ne peut pas les distinguer
   }
+  // Persistance légère des actions du visiteur PENDANT la session démo (survit à un reload accidentel,
+  // jamais envoyé à Supabase puisque sb=null). Effacée à la sortie du mode démo.
+  function saveGuestData(){
+    if(!isGuest) return;
+    try{
+      localStorage.setItem("st_guest_status",JSON.stringify(statusMap));
+      localStorage.setItem("st_guest_pipe",JSON.stringify(pipeline));
+      localStorage.setItem("st_guest_reve",JSON.stringify(reve));
+      localStorage.setItem("st_guest_entretiens",JSON.stringify(entretiens));
+      localStorage.setItem("st_guest_reseau",JSON.stringify(reseau));
+      localStorage.setItem("st_guest_evenements",JSON.stringify(evenements));
+      localStorage.setItem("st_guest_mail",JSON.stringify(syncedMail));
+    }catch(e){}
+  }
+  function restoreGuestData(){
+    try{
+      statusMap=JSON.parse(localStorage.getItem("st_guest_status"))||{};
+      pipeline=JSON.parse(localStorage.getItem("st_guest_pipe"))||[];
+      reve=JSON.parse(localStorage.getItem("st_guest_reve"))||[];
+      entretiens=JSON.parse(localStorage.getItem("st_guest_entretiens"))||[];
+      reseau=JSON.parse(localStorage.getItem("st_guest_reseau"))||[];
+      evenements=JSON.parse(localStorage.getItem("st_guest_evenements"))||[];
+      syncedMail=(JSON.parse(localStorage.getItem("st_guest_mail"))||[]).map(enrichSynced);
+      seenOffers={}; Object.keys(statusMap).forEach(id=>seenOffers[id]=true);
+    }catch(e){ guestSeed(); }
+  }
+  window.addEventListener("beforeunload",saveGuestData);
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") saveGuestData(); });
   function renderGuestBanner(){
     const b=document.getElementById("guestBanner"); if(!b) return;
     b.innerHTML=`<span class="gb-lbl">${ic("eye")} Mode démo — données fictives, rien n'est sauvegardé</span>
@@ -7733,7 +8007,7 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
   }
   async function startGuestMode(){
     isGuest=true; _guestRealSb=sb; sb=null;
-    guestSeed();
+    if(localStorage.getItem("st_guest_init")) restoreGuestData(); else { guestSeed(); try{localStorage.setItem("st_guest_init","1");}catch(e){} }
     document.body.classList.add("guest-mode");
     hideAuthGate();
     document.getElementById("guestBanner").style.display="flex";
@@ -7742,42 +8016,71 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
     try{ if(!localStorage.getItem("st_tour_seen")) setTimeout(startTour,600); }catch(e){ setTimeout(startTour,600); }
   }
   function exitGuestMode(){
-    try{ localStorage.setItem("st_tour_seen","1"); }catch(e){}
+    try{
+      localStorage.setItem("st_tour_seen","1");
+      ["st_guest_init","st_guest_status","st_guest_pipe","st_guest_reve","st_guest_entretiens","st_guest_reseau","st_guest_evenements","st_guest_mail"].forEach(k=>localStorage.removeItem(k));
+    }catch(e){}
     window.location.href=window.location.origin+window.location.pathname;
   }
 
   // ---- Visite guidée : coachmarks vanilla (0 dépendance) ----
+  // Chaque step peut avoir : view (bascule setView avant de pointer), sel (élément réel à cibler) —
+  // absent = étape "présentation" centrée sans découpe —, title, et soit text (échappé) soit html (brut,
+  // pour les illustrations comme le mini-navigateur .dv). onEnter(optionnel) pour une action custom.
   const TOUR_STEPS=[
-    {sel:'[data-view="aujourdhui"]',title:"Ton tableau de bord",text:"Aujourd'hui rassemble ta carte, ta messagerie, tes raccourcis et ta timeline en un coup d'œil."},
-    {sel:'[data-view="offres"]',title:"À trier",text:"Les offres captées (favori, ajout manuel ou lien) atterrissent ici — tu les classes par intérêt."},
-    {sel:'[data-view="pipeline"]',title:"Suivi",text:"Ton pipeline de candidatures en Kanban : Envoyé → Screening → Entretien → Offre reçue."},
-    {sel:'[data-view="reve"]',title:"Mes marques",text:"Les entreprises qui t'intéressent, avec un score d'affinité et un rappel de dernière visite."},
-    {sel:'.home-cta',title:"Ajouter une offre",text:"Favori, ajout manuel ou lien — tout part d'ici, centralisé."},
+    {title:"Bienvenue sur Sam'Travail 👋",html:"<ul><li><b>Capture</b> les offres depuis n'importe quel site en 1 clic</li><li><b>Adapte ton CV</b> et ton accroche sur mesure avec l'IA</li><li><b>Centralise</b> tes candidatures et tes marques cibles</li><li><b>Suis</b> les réponses des recruteurs dans une messagerie dédiée</li></ul>Lançons la visite !",view:"aujourdhui"},
+    {view:"offres",title:"1. Capturer depuis n'importe où",html:"Sur une offre qui te plaît (LinkedIn, Indeed, site carrière…), un clic sur ton favori <b>Sam'Travail</b> l'envoie ici — prête à trier.<div class=\"dv\"><div class=\"dv-top\"><div class=\"dv-tabs\"><div class=\"dv-dots\"><span></span><span></span><span></span></div><div class=\"dv-tab\">💼 Offre d'emploi</div></div><div class=\"dv-nav\"><div class=\"dv-url\"></div></div><div class=\"dv-bookmarks\"><span class=\"dv-bm\">🔗 Sam'Travail <span class=\"dv-cursor\">👆</span></span></div></div><div class=\"dv-body\"><strong style=\"font-size:14px;\">Demand Planner</strong><br><span style=\"font-size:11.5px;color:var(--accent);\">Airbus · Nantes</span></div></div>"},
+    {view:"offres",sel:'[data-view="offres"]',title:"À trier",text:"Toutes les offres captées atterrissent ici. L'app calcule un score de compatibilité — tu classes en coup de cœur, à garder, ou tu ignores."},
+    {view:"offres",sel:'.home-cta',title:"Ajouter une offre",text:"Favori (recommandé), ajout manuel, ou par lien — tout part d'ici, centralisé."},
+    {view:"pipeline",sel:'[data-view="pipeline"]',title:"Suivi",text:"Ton pipeline de candidatures en Kanban : Envoyé → Screening → Entretien → Offre reçue. Glisse les cartes pour faire avancer le statut."},
+    {view:"reve",sel:'[data-view="reve"]',title:"Mes marques",text:"Les entreprises qui te font rêver, avec un score d'affinité et un rappel de dernière visite. Capture-les depuis leur page carrières avec le second favori."},
+    {view:"aujourdhui",sel:'.bento-mail',title:"Messagerie",text:"Connecte ta boîte (Gmail recommandé) : les réponses des recruteurs se classent toutes seules et se relient à la bonne candidature — même sur un autre appareil."},
+    {title:"L'accroche qui s'adapte toute seule",html:"Dans ta fiche CV, colle ton accroche d'origine. Pour chaque offre, l'IA l'adapte au poste et à l'entreprise — tu gardes ton style, elle fait le travail répétitif.<div class=\"dv\" style=\"margin-top:14px;padding:12px;display:flex;flex-direction:column;gap:8px;\"><div style=\"background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--text-dim);\">Diplômé d'un master supply chain, je cherche un poste en planification…</div><div style=\"background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--text);\">✨ <b>Version pour Airbus</b> — …je souhaite mettre mon appétence pour le S&amp;OP au service de la division aérostructures…</div></div>"},
+    {title:"Ta clé IA, ton quota",html:"L'app utilise Groq (IA gratuite et rapide). Ajoute ta propre clé dans Réglages → <b>IA & consommation</b> : tu as ton quota à toi, avec une jauge pour le suivre au jour le jour."},
+    {title:"À toi de jouer !",html:"Explore librement avec ces données fictives.<br><br>Quand tu es prêt·e, clique <b>« Créer mon compte »</b> dans la bannière en haut : tu connectes ta boîte mail, ta clé IA, et rien de ce que tu as fait ici n'est perdu."},
   ];
   let _tourI=0;
   function tourRectFor(sel){ const el=document.querySelector(sel); return el?el.getBoundingClientRect():null; }
   function tourShow(i){
-    const steps=TOUR_STEPS.filter(s=>tourRectFor(s.sel));
-    if(!steps.length){ tourEnd(); return; }
-    if(i>=steps.length){ tourEnd(); return; }
+    if(i<0||i>=TOUR_STEPS.length){ tourEnd(); return; }
     _tourI=i;
-    const step=steps[i], r=tourRectFor(step.sel);
+    const step=TOUR_STEPS[i];
+    if(step.view) setView(step.view);
+    setTimeout(()=>tourPosition(i),step.view?120:0);
+  }
+  function tourPosition(i){
+    const step=TOUR_STEPS[i]; if(i!==_tourI) return;   // annulé par un tourNext entre-temps
     const layer=document.getElementById("tourLayer"); layer.style.display="block";
     const spot=document.getElementById("tourSpot");
-    spot.style.left=(r.left-6)+"px"; spot.style.top=(r.top-6)+"px"; spot.style.width=(r.width+12)+"px"; spot.style.height=(r.height+12)+"px";
     const card=document.getElementById("tourCard");
-    let top=r.bottom+14, left=Math.min(Math.max(r.left,12),window.innerWidth-312);
-    if(top>window.innerHeight-180) top=Math.max(12,r.top-190);
-    card.style.top=top+"px"; card.style.left=left+"px";
-    card.innerHTML=`<h4>${esc(step.title)}</h4><p>${esc(step.text)}</p>
+    const r=step.sel?tourRectFor(step.sel):null;
+    if(r){
+      spot.className="tour-spot";
+      spot.style.left=(r.left-6)+"px"; spot.style.top=(r.top-6)+"px"; spot.style.width=(r.width+12)+"px"; spot.style.height=(r.height+12)+"px";
+      card.className="tour-card";
+      let top=r.bottom+14, left=Math.min(Math.max(r.left,12),window.innerWidth-312);
+      if(top>window.innerHeight-180) top=Math.max(12,r.top-190);
+      card.style.top=top+"px"; card.style.left=left+"px";
+    } else {
+      spot.className="tour-spot tour-spot-off";
+      card.className="tour-card tour-card-center";
+      card.style.top="50%"; card.style.left="50%"; card.style.transform="translate(-50%,-50%)";
+    }
+    const body=step.html!=null?step.html:esc(step.text||"");
+    card.innerHTML=`<h4>${esc(step.title)}</h4><p>${body}</p>
       <div class="tour-foot">
-        <div class="tour-dots">${steps.map((_,k)=>`<span class="${k===i?"on":""}"></span>`).join("")}</div>
-        <div class="tour-actions"><button class="tour-skip" onclick="tourEnd()">Passer</button><button class="tour-next" onclick="tourNext()">${i===steps.length-1?"Terminer":"Suivant"}</button></div>
+        <div class="tour-dots">${TOUR_STEPS.map((_,k)=>`<span class="${k===i?"on":""}"></span>`).join("")}</div>
+        <div class="tour-actions"><button class="tour-skip" onclick="tourEnd()">Passer</button><button class="tour-next" onclick="tourNext()">${i===TOUR_STEPS.length-1?"C'est compris !":"Suivant"}</button></div>
       </div>`;
   }
   function startTour(){ setView("aujourdhui"); setTimeout(()=>tourShow(0),200); }
   function tourNext(){ tourShow(_tourI+1); }
-  function tourEnd(){ document.getElementById("tourLayer").style.display="none"; try{ localStorage.setItem("st_tour_seen","1"); }catch(e){} }
+  function tourEnd(){
+    document.getElementById("tourLayer").style.display="none";
+    const card=document.getElementById("tourCard"); if(card) card.style.transform="";
+    try{ localStorage.setItem("st_tour_seen","1"); }catch(e){}
+    if(isGuest) setTimeout(()=>{ try{ openCompatWizard(); }catch(e){} },400);   // enchaîne sur le quiz de préférences, comme à la 1ʳᵉ connexion réelle
+  }
   // ===== FIN MODE DÉMO =====
 
   (async function init(){

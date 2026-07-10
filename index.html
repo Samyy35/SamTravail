@@ -130,6 +130,19 @@
   .mail-mini-badge{align-self:flex-start;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;border-radius:999px;padding:3px 10px;}
   .mail-mini-list{display:flex;flex-direction:column;gap:2px;max-height:172px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;}
   .mail-mini-list::-webkit-scrollbar{display:none;}
+  .mail-mini-foot{text-align:right;}
+  .mail-mini-foot .btn{width:100%;justify-content:center;}
+  /* Aperçu inline d'un mail depuis le widget (sans quitter le tableau de bord) */
+  .mail-mini-preview{display:flex;flex-direction:column;gap:8px;}
+  .mmp-back{align-self:flex-start;background:none;border:none;color:var(--accent);font-size:12.5px;font-weight:700;font-family:var(--font);cursor:pointer;padding:2px 0;}
+  .mmp-back:hover{text-decoration:underline;}
+  .mmp-head{display:flex;flex-direction:column;gap:2px;}
+  .mmp-subj{font-size:13px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+  .mmp-from{font-size:11.5px;color:var(--text-mute);}
+  .mmp-frame{width:100%;height:190px;border:1px solid var(--border);border-radius:10px;background:#fff;}
+  .mmp-text{white-space:pre-wrap;font-size:12px;color:var(--text-dim);line-height:1.5;padding:10px;background:var(--surface-2);border-radius:10px;max-height:190px;overflow:auto;}
+  .mmp-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .mmp-actions .btn{flex:1;justify-content:center;white-space:nowrap;}
   .mail-mini-row{display:flex;align-items:center;gap:9px;padding:7px 6px;border-radius:9px;cursor:pointer;transition:background .15s;position:relative;}
   .mail-mini-row:hover{background:var(--surface-2);}
   .mail-mini-row .mmr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
@@ -381,6 +394,47 @@
   .onb-steps code{background:var(--surface-3);border-radius:5px;padding:1px 5px;font-size:12px;}
   .wiz-tag-add{display:flex;gap:8px;}
   .wiz-tag-add .crit-in{flex:1;margin-bottom:0;}
+  /* Quiz de compatibilité (arbre Industrie -> Type -> Fiche) */
+  .quiz-step-ic{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;flex-shrink:0;vertical-align:-8px;margin-right:2px;}
+  .quiz-step-ic .ic{width:14px;height:14px;}
+  .quiz-bread{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:4px 11px;margin-bottom:11px;}
+  .quiz-bread .ic{width:13px;height:13px;color:var(--accent);}
+  .quiz-src{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-mute);margin-bottom:9px;}
+  .quiz-src .ic{width:12px;height:12px;color:var(--accent);}
+  .quiz-more-row{margin-top:12px;}
+  .quiz-more .ic{width:13px;height:13px;}
+  .quiz-intro{text-align:center;padding:6px 4px 2px;}
+  .quiz-intro-ic{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px;}
+  .quiz-intro-ic .ic{width:28px;height:28px;}
+  .quiz-intro-p{font-size:13.5px;line-height:1.6;color:var(--text-dim);max-width:440px;margin:0 auto 14px;}
+  .quiz-intro-note{font-size:12px;color:var(--text-mute);background:var(--surface-2);border-radius:10px;padding:9px 13px;display:inline-flex;align-items:center;gap:7px;max-width:440px;}
+  .quiz-intro-note .ic{width:14px;height:14px;color:var(--accent);flex-shrink:0;}
+  .quiz-recap{display:flex;flex-direction:column;gap:8px;margin:14px 0 4px;}
+  .quiz-recap-row{display:flex;gap:12px;align-items:baseline;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:10px 13px;}
+  .quiz-recap-k{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-dim);min-width:132px;}
+  .quiz-recap-k .ic{width:14px;height:14px;color:var(--accent);}
+  .quiz-recap-v{font-size:12.5px;color:var(--text);}
+  .quiz-recap-v i{color:var(--text-mute);}
+  .quiz-explain{font-size:12.5px;line-height:1.6;color:var(--text-dim);background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:12px 15px;margin:16px 0 0;}
+  .quiz-explain .ic{width:14px;height:14px;color:var(--accent);vertical-align:-2px;}
+  .quiz-preview{margin-top:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:13px 15px;}
+  .quiz-preview-empty{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-dim);}
+  .quiz-preview-empty .ic{width:15px;height:15px;color:var(--accent);flex-shrink:0;}
+  .quiz-preview-h{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:10px;}
+  .quiz-preview-h .ic{width:15px;height:15px;color:var(--accent);}
+  .quiz-preview-stats{display:flex;gap:8px;margin-bottom:11px;}
+  .qp-stat{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 11px;}
+  .qp-stat.qp-high{background:rgba(34,197,94,.16);color:#16a34a;}
+  .qp-stat.qp-mid{background:rgba(245,158,11,.16);color:#b07d00;}
+  .quiz-preview-list{display:flex;flex-direction:column;gap:6px;}
+  .qp-row{display:flex;align-items:center;gap:9px;}
+  .qp-badge{flex-shrink:0;width:34px;text-align:center;font-size:12px;font-weight:800;border-radius:7px;padding:3px 0;}
+  .qp-badge.m-high{background:rgba(34,197,94,.16);color:#16a34a;}
+  .qp-badge.m-mid{background:rgba(245,158,11,.16);color:#b07d00;}
+  .qp-badge.m-low{background:var(--surface-3);color:var(--text-mute);}
+  .qp-title{font-size:12.5px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .qp-ent{font-size:11.5px;color:var(--text-mute);white-space:nowrap;flex-shrink:0;}
+  .crit-arbre{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px;}
   /* Panneau relances */
   .relances-box{background:linear-gradient(135deg,rgba(245,158,11,.08),var(--surface));border:1px solid var(--orange);border-radius:14px;padding:16px;margin-bottom:20px;}
   .relances-head{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:12px;}
@@ -782,7 +836,7 @@
   /* Visite guidée : overlay + spotlight + carte, vanilla (pas de dépendance CDN) */
   .tour-layer{position:fixed;inset:0;z-index:300;pointer-events:none;}
   .tour-spot{position:fixed;border-radius:12px;box-shadow:0 0 0 4000px rgba(10,12,20,.62),0 0 0 3px var(--accent);transition:all .35s cubic-bezier(.25,.1,.25,1);pointer-events:none;}
-  .tour-card{position:fixed;max-width:300px;background:var(--surface);border:1px solid var(--border-light);border-radius:14px;box-shadow:var(--shadow-lg);padding:16px 18px;pointer-events:auto;transition:all .35s cubic-bezier(.25,.1,.25,1);}
+  .tour-card{position:fixed;max-width:300px;max-height:calc(100vh - 24px);overflow-y:auto;background:var(--surface);border:1px solid var(--border-light);border-radius:14px;box-shadow:var(--shadow-lg);padding:16px 18px;pointer-events:auto;transition:all .35s cubic-bezier(.25,.1,.25,1);}
   .tour-card h4{margin:0 0 6px;font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);}
   .tour-card p{margin:0 0 14px;font-size:12.5px;line-height:1.5;color:var(--text-dim);}
   .tour-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -1760,7 +1814,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v110</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v115</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -1889,7 +1943,7 @@
     <div class="sec-head">
       <div><h2>Offres à trier</h2><div class="sub" id="offres-info">Classe chaque offre par niveau d'intérêt. Une fois postulée, elle passe au Suivi.</div></div>
       <div class="head-actions">
-        <button class="btn quiet sm" onclick="openCriteres()"><i data-ic="sliders"></i><span>Critères</span></button>
+        <button class="btn quiet sm" onclick="openCompatQuiz()"><i data-ic="target"></i><span>Compatibilité</span></button>
         <button class="btn primary sm" onclick="openAddOfferMenu()"><i data-ic="plus"></i><span>Ajouter Offre</span></button>
       </div>
     </div>
@@ -2141,8 +2195,18 @@
     motsBonus:["supply chain","demand planning","approvisionnement","planification","logistique","s&op","planner"],
     motsMalus:["alternance","stage","apprenti"],
     paysPref:[],   // pays visés (minuscules) — bonus uniquement (jamais de malus, le lieu n'est souvent qu'une ville sans pays)
-    languesPref:[]  // langues maîtrisées hors français (minuscules) — bonus uniquement, même logique que paysPref
+    languesPref:[],  // langues maîtrisées hors français (minuscules) — bonus uniquement, même logique que paysPref
+    // Arbre de décision du quiz de compatibilité (industrie -> type de poste -> fiche de poste). Chaque nœud =
+    // {label, kw:[...]}. Vide par défaut (aucune pré-sélection) ; rempli quand l'utilisateur passe le quiz.
+    arbre:{industries:[],types:[],fiches:[]}
   };
+  // Un nœud d'arbre "touche" une offre si son label (assez long) ou l'un de ses mots-clés apparaît dans le texte.
+  function arbreNodeHit(node,hay){
+    if(!node) return false;
+    const lab=(node.label||"").toLowerCase();
+    if(lab.length>=4 && hay.includes(lab)) return true;
+    return (node.kw||[]).some(k=>k && k.length>=2 && hay.includes(k.toLowerCase()));
+  }
 
   function matchScore(o){
     let score=50; // base
@@ -2159,6 +2223,14 @@
     matchCriteria.motsBonus.forEach(m=>{ if(m&&txt.includes(m.toLowerCase())) score+=4; });
     matchCriteria.motsMalus.forEach(m=>{ if(m&&txt.includes(m.toLowerCase())) score-=12; });
     if(matchCriteria.languesPref&&matchCriteria.languesPref.length&&matchCriteria.languesPref.some(l=>txt.includes(l))) score+=5;
+    // Arbre de compatibilité : industrie (large) < type de poste < fiche de poste (le plus précis pèse le plus).
+    const arbre=matchCriteria.arbre;
+    if(arbre){
+      const hayFull=(sec+" "+txt).toLowerCase();
+      if((arbre.industries||[]).some(n=>arbreNodeHit(n,hayFull))) score+=8;
+      if((arbre.types||[]).some(n=>arbreNodeHit(n,txt))) score+=13;
+      if((arbre.fiches||[]).some(n=>arbreNodeHit(n,txt))) score+=17;
+    }
     return Math.max(0,Math.min(100,Math.round(score)));
   }
   function matchBadge(o){
@@ -2172,8 +2244,9 @@
     const secKeys=SECTORS.map(s=>s.key).concat(["Autre"]);
     const box=document.getElementById("modalBox");
     box.innerHTML=`
-      <div class="modal-head"><h3>${ic("gear")} Mes critères de match</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">Règle l'importance de chaque critère. Le score de match de chaque offre se recalcule automatiquement et les meilleures remontent.</p>
+      <div class="modal-head"><h3>${ic("gear")} Critères avancés</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <p class="modal-sub">Réglage fin de la pondération. Le plus simple reste le <a href="#" class="wiz-advanced-link" onclick="event.preventDefault();openCompatQuiz();">quiz de compatibilité</a> ; ici tu ajustes chaque critère à la main.</p>
+      ${(matchCriteria.arbre&&(matchCriteria.arbre.industries.length||matchCriteria.arbre.types.length||matchCriteria.arbre.fiches.length))?`<div class="crit-block"><div class="crit-label">${ic("target")} Ton profil (défini au quiz)</div><div class="crit-arbre">${["industries","types","fiches"].map(k=>(matchCriteria.arbre[k]||[]).map(n=>`<span class="wiz-tag" style="cursor:default;">${esc(n.label)}</span>`).join("")).join("")}</div><div class="crit-hint">Repasse le <a href="#" class="wiz-advanced-link" onclick="event.preventDefault();openCompatQuiz();">quiz</a> pour le modifier.</div></div>`:""}
       <div class="crit-block"><div class="crit-label">${ic("building")} Secteurs (priorité 0 à 3)</div>
         ${secKeys.map(k=>`<div class="crit-row"><span>${esc(k)}</span><div class="crit-stars" data-sec="${esc(k)}">
           ${[0,1,2,3].map(n=>`<span class="star ${(matchCriteria.secteurs[k]||0)>=n&&n>0?'on':''} ${n===0?'zero':''}" onclick="setSecW('${esc(k)}',${n})">${n===0?'∅':'★'}</span>`).join("")}
@@ -2195,7 +2268,7 @@
       <div class="crit-block"><div class="crit-label">${ic("minus")} Mots malus (−12 chacun)</div>
         <input class="crit-in" id="crit-malus" value="${esc(matchCriteria.motsMalus.join(", "))}" />
       </div>
-      <div class="modal-actions"><button class="btn btn-validate" onclick="saveCriteres()">${ic("save")}<span>Enregistrer mes critères</span></button></div>`;
+      <div class="modal-actions"><button class="btn ghost" onclick="openCompatQuiz()">${ic("target")}<span>← Revenir au quiz</span></button><button class="btn btn-validate" onclick="saveCriteres()">${ic("save")}<span>Enregistrer mes critères</span></button></div>`;
     document.getElementById("modalBg").classList.add("open");
   }
   function setSecW(sec,n){ matchCriteria.secteurs[sec]=n; openCriteres(); }
@@ -2235,156 +2308,464 @@
   ];
   const CONTRAT_OPTIONS=["CDI","CDD","Stage","Alternance","Freelance","Intérim"];
   const LANGUES_OPTIONS=["Anglais","Espagnol","Allemand","Italien","Néerlandais","Portugais","Mandarin"];
-  const WIZ_STEPS=["secteurs","langues","lieux","pays","contrat","mots"];
-  let _wizStep=0;
-  function wizStepLabel(i){ return ["Secteurs","Langues","Lieux","Pays","Contrat","Mots-clés"][i]||""; }
-  function openCompatWizard(){
-    _wizStep=0;
+
+  // ===== QUIZ DE COMPATIBILITÉ — arbre de décision Industrie → Type de poste → Fiche de poste =====
+  // Repère texte : ce bloc va jusqu'à "FIN QUIZ COMPATIBILITÉ" plus bas.
+  // Les options de chaque niveau sont générées par l'IA à partir du choix précédent (mode:"tree"), avec un
+  // repli statique complet (TREE_FALLBACK) pour finir le quiz même sans IA / sans tokens. Le résultat alimente
+  // matchCriteria.arbre + secteurs/lieux/contrat/langues, donc le score de match existant (matchScore).
+  const QLEVEL_ARR={industrie:"industries",type:"types",fiche:"fiches"};
+  // Repli statique : industries (niveau 1) -> types de poste (niveau 2). Les fiches (niveau 3) sont dérivées par séniorité.
+  const TREE_FALLBACK=[
+    {label:"Finance / Banque",kw:["finance","banque","bancaire","financial"],types:[
+      {label:"Fusions-acquisitions (M&A)",kw:["m&a","fusions","acquisitions","corporate finance","deal"]},
+      {label:"Private Equity",kw:["private equity","lbo","capital investissement","fonds"]},
+      {label:"Contrôle de gestion",kw:["contrôle de gestion","controlling","fp&a","reporting"]},
+      {label:"Audit financier",kw:["audit","commissaire aux comptes","transaction services"]},
+      {label:"Trésorerie / Financement",kw:["trésorerie","cash management","financement","dette"]},
+      {label:"Analyse crédit / Risque",kw:["analyse crédit","risque","credit","scoring"]}]},
+    {label:"Conseil / Stratégie",kw:["conseil","consulting","stratégie","cabinet"],types:[
+      {label:"Conseil en stratégie",kw:["stratégie","strategy","corporate strategy"]},
+      {label:"Conseil en management",kw:["management","organisation","transformation"]},
+      {label:"Conseil en transformation",kw:["transformation","change","pmo"]},
+      {label:"Data / Business Intelligence",kw:["data","business intelligence","analytics","bi"]},
+      {label:"Conseil IT / SI",kw:["conseil it","systèmes d'information","erp"]}]},
+    {label:"Tech / Informatique",kw:["informatique","software","développement","tech","it"],types:[
+      {label:"Développement logiciel",kw:["développeur","developer","software engineer","fullstack","backend","frontend"]},
+      {label:"Data / IA",kw:["data scientist","data engineer","machine learning","ia","intelligence artificielle"]},
+      {label:"DevOps / Infrastructure",kw:["devops","infrastructure","cloud","sre","kubernetes"]},
+      {label:"Cybersécurité",kw:["cybersécurité","sécurité","security","soc","pentest"]},
+      {label:"Product / UX",kw:["product manager","product owner","ux","ui","design"]}]},
+    {label:"Industrie / Production",kw:["industrie","production","usine","manufactur","fabrication"],types:[
+      {label:"Méthodes / Industrialisation",kw:["méthodes","industrialisation","process","gamme"]},
+      {label:"Production / Fabrication",kw:["production","fabrication","atelier","ligne"]},
+      {label:"Maintenance",kw:["maintenance","fiabilité","gmao"]},
+      {label:"Qualité",kw:["qualité","quality","iso","contrôle qualité"]},
+      {label:"Amélioration continue / Lean",kw:["lean","amélioration continue","kaizen","six sigma"]}]},
+    {label:"Supply chain / Logistique",kw:["supply chain","logistique","approvisionnement","transport"],types:[
+      {label:"Planification / Demand planning",kw:["planification","demand planning","planner","prévisions"]},
+      {label:"Approvisionnement / Achats",kw:["approvisionnement","achats","procurement","buyer"]},
+      {label:"Transport / Distribution",kw:["transport","distribution","fret","expédition"]},
+      {label:"Gestion de stock / Entrepôt",kw:["stock","entrepôt","warehouse","wms"]},
+      {label:"S&OP",kw:["s&op","sales and operations","pdp"]}]},
+    {label:"Ingénierie / R&D",kw:["ingénierie","r&d","conception","bureau d'études"],types:[
+      {label:"Bureau d'études / Conception",kw:["bureau d'études","conception","cao","catia","solidworks"]},
+      {label:"R&D / Innovation",kw:["r&d","recherche","innovation","développement produit"]},
+      {label:"Essais / Tests",kw:["essais","tests","validation","banc d'essai"]},
+      {label:"Chef de projet technique",kw:["chef de projet","project manager","projet technique"]},
+      {label:"Calcul / Simulation",kw:["calcul","simulation","éléments finis","cfd"]}]},
+    {label:"Marketing / Communication",kw:["marketing","communication","digital","brand"],types:[
+      {label:"Marketing digital",kw:["marketing digital","seo","sea","acquisition"]},
+      {label:"Chef de produit",kw:["chef de produit","product marketing","product manager"]},
+      {label:"Communication",kw:["communication","relations presse","événementiel"]},
+      {label:"Content / Social media",kw:["content","social media","community","éditorial"]},
+      {label:"CRM / Growth",kw:["crm","growth","fidélisation","marketing automation"]}]},
+    {label:"Commercial / Vente",kw:["commercial","vente","sales","business development"],types:[
+      {label:"Business development",kw:["business development","développement commercial","bizdev"]},
+      {label:"Commercial terrain",kw:["commercial terrain","itinérant","secteur"]},
+      {label:"Grands comptes / Key account",kw:["grands comptes","key account","kam"]},
+      {label:"Inside sales / Sédentaire",kw:["inside sales","sédentaire","télévente"]},
+      {label:"Manager des ventes",kw:["manager des ventes","directeur commercial","responsable des ventes"]}]},
+    {label:"Ressources humaines",kw:["ressources humaines","rh","recrutement","talent"],types:[
+      {label:"Recrutement",kw:["recrutement","recruteur","talent acquisition","sourcing"]},
+      {label:"Gestion RH / Paie",kw:["gestion rh","paie","administration du personnel","adp"]},
+      {label:"Développement RH / Formation",kw:["formation","développement rh","gpec","learning"]},
+      {label:"HRBP",kw:["hrbp","business partner","rrh"]},
+      {label:"SIRH",kw:["sirh","système d'information rh"]}]},
+    {label:"Juridique",kw:["juridique","droit","legal","juriste"],types:[
+      {label:"Droit des affaires",kw:["droit des affaires","corporate","sociétés"]},
+      {label:"Droit social",kw:["droit social","droit du travail"]},
+      {label:"Droit des contrats",kw:["contrats","contract","commercial"]},
+      {label:"Compliance / Conformité",kw:["compliance","conformité","rgpd","éthique"]},
+      {label:"Propriété intellectuelle",kw:["propriété intellectuelle","brevets","marques"]}]},
+    {label:"Santé / Pharma",kw:["santé","pharma","médical","biotech"],types:[
+      {label:"Affaires réglementaires",kw:["affaires réglementaires","regulatory","amm"]},
+      {label:"Recherche clinique",kw:["recherche clinique","essais cliniques","cra"]},
+      {label:"Production pharmaceutique",kw:["production pharmaceutique","bpf","gmp"]},
+      {label:"Qualité / Validation",kw:["qualité","validation","assurance qualité"]},
+      {label:"Accès au marché",kw:["accès au marché","market access","remboursement"]}]},
+    {label:"Énergie / Environnement",kw:["énergie","environnement","rse","renouvelable"],types:[
+      {label:"Énergies renouvelables",kw:["renouvelable","solaire","éolien","photovoltaïque"]},
+      {label:"Efficacité énergétique",kw:["efficacité énergétique","performance énergétique"]},
+      {label:"RSE / Développement durable",kw:["rse","développement durable","esg","carbone"]},
+      {label:"HSE",kw:["hse","sécurité","environnement","qhse"]},
+      {label:"Ingénierie environnement",kw:["ingénierie environnement","eau","déchets","dépollution"]}]},
+    {label:"Grande distribution / Retail",kw:["distribution","retail","magasin","commerce"],types:[
+      {label:"Category management",kw:["category management","catman","assortiment"]},
+      {label:"Chef de rayon / Magasin",kw:["chef de rayon","responsable magasin","store manager"]},
+      {label:"Achats / Sourcing",kw:["achats","sourcing","buyer"]},
+      {label:"Merchandising",kw:["merchandising","implantation","visuel"]},
+      {label:"E-commerce",kw:["e-commerce","marketplace","drive"]}]},
+  ];
+  const TREE_GENERIC_TYPES=[
+    {label:"Poste opérationnel",kw:["opérationnel","terrain"]},
+    {label:"Gestion de projet",kw:["chef de projet","project manager","projet"]},
+    {label:"Encadrement / Management",kw:["manager","responsable","directeur","chef"]},
+    {label:"Support / Fonctions transverses",kw:["support","administratif","assistant"]},
+    {label:"Expertise / Spécialiste",kw:["expert","spécialiste","référent"]},
+  ];
+  function quizDeriveKw(label){
+    const l=(""+(label||"")).toLowerCase().replace(/\s*[—–-]\s*/g," ").replace(/[()]/g," ").trim();
+    const words=l.split(/[\s/,]+/).filter(w=>w.length>=4);
+    return [...new Set([l, ...words])].filter(Boolean).slice(0,6);
+  }
+  function normNode(o){ return { label:(""+((o&&o.label)||"")).trim(), kw:((o&&o.kw)||[]).map(k=>(""+k).toLowerCase().trim()).filter(Boolean).slice(0,6) }; }
+  // Options de repli statique pour un niveau donné (aucune IA nécessaire).
+  function treeFallbackOptions(level,parents,excludeLower){
+    excludeLower=excludeLower||[];
+    const out=[]; const seen=new Set(excludeLower);
+    const push=n=>{ const nn=normNode(n); if(nn.label&&!seen.has(nn.label.toLowerCase())){ seen.add(nn.label.toLowerCase()); out.push(nn); } };
+    if(level==="industrie"){ TREE_FALLBACK.forEach(ind=>push({label:ind.label,kw:ind.kw})); }
+    else if(level==="type"){
+      const pl=(parents||[]).map(p=>p.toLowerCase());
+      let matched=false;
+      TREE_FALLBACK.forEach(ind=>{ if(pl.some(p=>p===ind.label.toLowerCase())){ matched=true; ind.types.forEach(push); } });
+      if(!matched) TREE_GENERIC_TYPES.forEach(push);   // industrie personnalisée/IA absente du repli -> types génériques
+    } else {
+      // fiches : dérivées par séniorité à partir du/des TYPE(s) de poste parent(s). On écarte les labels qui sont
+      // en fait des industries (niveau 1) quand un type plus précis existe, pour ne pas générer de fiches trop larges.
+      let types=(parents||[]).filter(p=>!TREE_FALLBACK.some(ind=>ind.label.toLowerCase()===(""+p).toLowerCase()));
+      if(!types.length) types=(parents||[]).length?parents:["ce poste"];
+      types.slice(0,3).forEach(t=>{
+        const base=quizDeriveKw(t);
+        push({label:"Stage / Alternance — "+t,kw:["stage","alternance","alternant","stagiaire",...base]});
+        push({label:"Junior / Débutant — "+t,kw:["junior","débutant","assistant","chargé",...base]});
+        push({label:"Confirmé — "+t,kw:["confirmé","senior","expérimenté",...base]});
+        push({label:"Manager / Responsable — "+t,kw:["manager","responsable","lead","chef","directeur",...base]});
+      });
+    }
+    return out.slice(0,10);
+  }
+  // Cache localStorage des options IA par niveau+parents (clé = quizCurrentKey) : évite un aller-retour IA à
+  // chaque ouverture du quiz pour les mêmes choix (le niveau "industrie" en particulier est quasi toujours le
+  // même en premier écran) -> ces options s'affichent instantanément au lieu d'attendre l'IA. TTL 14 jours.
+  const QUIZ_CACHE_KEY="st_quiz_tree_cache", QUIZ_CACHE_TTL=14*24*3600*1000, QUIZ_CACHE_MAX=60;
+  function quizCacheGet(key){
+    try{
+      const all=JSON.parse(localStorage.getItem(QUIZ_CACHE_KEY)||"{}");
+      const e=all[key];
+      if(e && e.options && e.options.length && (Date.now()-(e.at||0))<QUIZ_CACHE_TTL) return e.options;
+    }catch(e){}
+    return null;
+  }
+  function quizCacheSet(key,options){
+    try{
+      const all=JSON.parse(localStorage.getItem(QUIZ_CACHE_KEY)||"{}");
+      all[key]={options:options,at:Date.now()};
+      const keys=Object.keys(all);
+      if(keys.length>QUIZ_CACHE_MAX) keys.sort((a,b)=>(all[a].at||0)-(all[b].at||0)).slice(0,keys.length-QUIZ_CACHE_MAX).forEach(k=>delete all[k]);
+      localStorage.setItem(QUIZ_CACHE_KEY,JSON.stringify(all));
+    }catch(e){}
+  }
+  // Récupère les options d'un niveau : cache local d'abord (instantané), puis IA, puis repli statique. Renvoie {source,options}.
+  async function quizFetchOptions(level,parents,exclude){
+    if(!(exclude&&exclude.length)){   // le cache ne couvre que le 1er lot (pas les demandes "plus d'idées", volontairement variées)
+      const key=level+"|"+(parents||[]).join(",").toLowerCase();
+      const cached=quizCacheGet(key);
+      if(cached) return {source:"cache",options:cached};
+    }
+    if(AI_ASSIST){
+      try{
+        const r=await aiSort({mode:"tree",level:level,parents:parents||[],exclude:exclude||[]},8000);
+        if(r&&r.ok&&Array.isArray(r.options)&&r.options.length){
+          const options=r.options.map(normNode).filter(n=>n.label);
+          if(!(exclude&&exclude.length)){ const key=level+"|"+(parents||[]).join(",").toLowerCase(); quizCacheSet(key,options); }
+          return {source:"ia",options:options};
+        }
+      }catch(e){}
+    }
+    return {source:"local",options:treeFallbackOptions(level,parents,(exclude||[]).map(x=>(""+x).toLowerCase()))};
+  }
+  // Mappe une industrie choisie vers un SECTOR connu (pour piloter la pondération secteur du score existant).
+  function mapIndustrieToSector(node){
+    const hay=((node.label||"")+" "+((node.kw||[]).join(" "))).toLowerCase();
+    for(const s of SECTORS){
+      if(s.kw.some(k=>hay.includes(k))) return s.key;
+      if(s.key.toLowerCase().split(/[\s/]+/).some(w=>w.length>=4&&hay.includes(w))) return s.key;
+    }
+    return null;
+  }
+
+  let _quiz=null;
+  const QUIZ_STEPS=["intro","industrie","type","fiche","lieux","contrat","langues","resume"];
+  function quizParents(level){
+    if(level==="type") return _quiz.industries.map(n=>n.label);
+    if(level==="fiche") return [..._quiz.industries.map(n=>n.label), ..._quiz.types.map(n=>n.label)];
+    return [];
+  }
+  function quizCurrentKey(level){ return level+"|"+quizParents(level).join(",").toLowerCase(); }
+  function openCompatQuiz(){
+    _quiz={ i:0, industries:[], types:[], fiches:[], regionLabels:[], exclParis:false, exclCustom:"",
+            contrat:"", langues:[], opts:{}, optsSource:{}, enriched:{}, loadingKey:null };
     const box=document.getElementById("modalBox"); box.classList.add("wide");
     box.innerHTML=`
       <div class="modal-head"><h3>${ic("target")} Score de compatibilité</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">Réponds en quelques clics — les offres qui te correspondent remontent automatiquement en haut de ta pile.</p>
-      <div id="wizDots" class="tour-dots wiz-dots"></div>
-      <div id="wizStepBody"></div>
+      <p class="modal-sub">Un petit arbre de préférences pour cerner ce que tu cherches vraiment. Clique ce qui te parle — <b>rien n'est coché d'avance</b>.</p>
+      <div id="quizDots" class="tour-dots wiz-dots"></div>
+      <div id="quizBody"></div>
       <div class="modal-actions wiz-foot">
-        <button class="btn ghost sm" id="wizPrevBtn" onclick="wizGo(_wizStep-1)">← Précédent</button>
+        <button class="btn ghost sm" id="quizPrevBtn" onclick="quizGo(_quiz.i-1)">← Précédent</button>
         <a href="#" class="wiz-advanced-link" onclick="event.preventDefault();closeModal();openCriteres();">Réglages avancés</a>
-        <button class="btn btn-validate" id="wizNextBtn" onclick="wizNextOrSave()">Suivant →</button>
+        <button class="btn btn-validate" id="quizNextBtn" onclick="quizNext()">Suivant →</button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
-    wizGo(0);
+    quizRenderStep();
+    // Préchauffe le niveau "industrie" en tâche de fond pendant que l'utilisateur lit l'intro : le temps qu'il
+    // clique "Commencer", le cache/IA a déjà répondu -> 0 latence perçue sur la toute première étape du quiz.
+    quizMaybeEnrich("industrie", quizCurrentKey("industrie"));
   }
-  // Capture les champs texte libres du step affiché AVANT de le remplacer (ils ne vivent que dans le DOM
-  // pendant que leur step est visible — contrairement aux puces qui mutent matchCriteria au clic).
-  function wizCaptureCurrentStep(){
-    const custom=document.getElementById("wiz-lieux-custom");
-    if(custom){
-      const parisTokens=["paris","75","ile-de-france","île-de-france"];
-      const kept=(matchCriteria.lieuxExclus||[]).filter(t=>parisTokens.includes(t));
-      const added=(custom.value||"").split(",").map(s=>s.trim().toLowerCase()).filter(Boolean);
-      matchCriteria.lieuxExclus=[...new Set([...kept,...added])];
+  function quizCaptureStep(){
+    if(!_quiz) return;
+    const step=QUIZ_STEPS[_quiz.i];
+    if(step==="lieux"){ const c=document.getElementById("quizExclCustom"); if(c) _quiz.exclCustom=c.value||""; }
+    if(step==="industrie"||step==="type"||step==="fiche"){
+      const inp=document.getElementById("quizManual");
+      const v=inp&&(inp.value||"").trim();
+      if(v){ const arr=_quiz[QLEVEL_ARR[step]]; if(!arr.some(n=>n.label.toLowerCase()===v.toLowerCase())) arr.push({label:v,kw:quizDeriveKw(v),source:"manuel"}); }
     }
-    const langCustom=document.getElementById("wiz-langue-custom");
-    if(langCustom){
-      const v=(langCustom.value||"").trim().toLowerCase();
-      if(v){ if(!matchCriteria.languesPref)matchCriteria.languesPref=[]; if(!matchCriteria.languesPref.includes(v))matchCriteria.languesPref.push(v); }
+  }
+  function quizGo(i){ if(!_quiz||i<0||i>=QUIZ_STEPS.length) return; quizCaptureStep(); _quiz.i=i; quizRenderStep(); }
+  function quizNext(){
+    if(!_quiz) return;
+    if(QUIZ_STEPS[_quiz.i]==="resume"){ quizCommit(); return; }
+    quizGo(_quiz.i+1);
+  }
+  function quizRenderStep(){
+    if(!_quiz) return;
+    const step=QUIZ_STEPS[_quiz.i];
+    const dots=document.getElementById("quizDots"); if(dots) dots.innerHTML=QUIZ_STEPS.map((_,k)=>`<span class="${k===_quiz.i?"on":""}"></span>`).join("");
+    const body=document.getElementById("quizBody");
+    if(step==="industrie"||step==="type"||step==="fiche"){
+      const key=quizCurrentKey(step);
+      quizEnsureFallback(step,key);          // synchrone -> jamais d'attente, des options s'affichent toujours immédiatement
+      quizMaybeEnrich(step,key);             // cache/IA en tâche de fond, remplace silencieusement si mieux et toujours sur cette étape
+      body.innerHTML=quizTreeStepHTML(step, _quiz.opts[key]);
+    } else {
+      body.innerHTML=quizOtherStepHTML(step);
     }
-    // texte tapé mais pas encore validé par Entrée/Ajouter -> on le récupère quand même au moment de quitter le step
-    ["Bonus","Malus"].forEach(kind=>{
-      const inp=document.getElementById(kind==="Bonus"?"wiz-mot-bonus":"wiz-mot-malus");
-      const v=inp&&(inp.value||"").trim().toLowerCase();
-      if(v){ const key=kind==="Bonus"?"motsBonus":"motsMalus"; if(!matchCriteria[key])matchCriteria[key]=[]; if(!matchCriteria[key].includes(v))matchCriteria[key].push(v); }
-    });
-  }
-  function wizGo(i){
-    if(i<0||i>=WIZ_STEPS.length) return;
-    wizCaptureCurrentStep();
-    _wizStep=i;
-    document.getElementById("wizDots").innerHTML=WIZ_STEPS.map((_,k)=>`<span class="${k===i?"on":""}"></span>`).join("");
-    const stepBody=document.getElementById("wizStepBody");
-    stepBody.classList.remove("wiz-anim"); void stepBody.offsetWidth; // relance l'animation à chaque étape (retrait+reflow+réajout)
-    stepBody.innerHTML=wizStepHTML(WIZ_STEPS[i]);
-    stepBody.classList.add("wiz-anim");
-    const prevBtn=document.getElementById("wizPrevBtn"); if(prevBtn)prevBtn.style.visibility=i===0?"hidden":"visible";
-    const nextBtn=document.getElementById("wizNextBtn"); if(nextBtn){ nextBtn.innerHTML=i===WIZ_STEPS.length-1?(ic("save")+"<span>Enregistrer</span>"):"Suivant →"; }
-  }
-  function wizNextOrSave(){
-    if(_wizStep>=WIZ_STEPS.length-1){ wizCaptureCurrentStep(); persistMatchCriteria(); }
-    else wizGo(_wizStep+1);
-  }
-  function wizStepHTML(step){
-    if(step==="secteurs"){
-      const secKeys=SECTORS.map(s=>s.key).concat(["Autre"]);
-      return `<div class="wiz-step-h">${ic("building")} Quels secteurs t'intéressent ?</div>
-        <div class="wiz-chips">${secKeys.map(k=>`<button type="button" class="wiz-chip ${(matchCriteria.secteurs[k]||0)>0?'on':''}" onclick="wizToggleSector('${esc(k)}',this)">${esc(k)}</button>`).join("")}</div>`;
+    hydrateIcons(body);
+    const prev=document.getElementById("quizPrevBtn"); if(prev) prev.style.visibility=(_quiz.i===0)?"hidden":"visible";
+    const next=document.getElementById("quizNextBtn");
+    if(next){
+      if(step==="intro") next.innerHTML="Commencer →";
+      else if(step==="resume") next.innerHTML=ic("save")+"<span>Enregistrer mes préférences</span>";
+      else next.innerHTML="Suivant →";
     }
-    if(step==="langues"){
-      const on=l=>(matchCriteria.languesPref||[]).includes(l.toLowerCase());
-      return `<div class="wiz-step-h">${ic("check")} Quelles langues maîtrises-tu ? <span class="wiz-step-hint">en plus du français</span></div>
-        <div class="wiz-chips">${LANGUES_OPTIONS.map(l=>`<button type="button" class="wiz-chip ${on(l)?'on':''}" onclick="wizToggleLangue('${esc(l)}',this)">${esc(l)}</button>`).join("")}</div>
-        <input class="crit-in" id="wiz-langue-custom" placeholder="Une autre langue ? Tape-la ici…" style="margin-top:9px;" />`;
+  }
+  // Remplit toujours _quiz.opts[key] de façon SYNCHRONE avec le repli statique (jamais vide, jamais d'attente) —
+  // l'IA/le cache viennent ensuite en tâche de fond enrichir/remplacer via quizMaybeEnrich, sans jamais bloquer l'affichage.
+  function quizEnsureFallback(level,key){
+    if(!_quiz.opts[key]){ _quiz.opts[key]=treeFallbackOptions(level,quizParents(level),[]); _quiz.optsSource[key]="local"; }
+  }
+  // Lance UNE fois par clé une résolution cache puis IA en arrière-plan ; ne re-rend que si l'étape affichée
+  // est toujours la même (l'utilisateur n'a pas déjà avancé/reculé) et préserve le focus du champ manuel.
+  function quizMaybeEnrich(level,key){
+    if(_quiz.enriched[key]) return;
+    _quiz.enriched[key]=true;
+    quizEnrichNow(level,key);
+  }
+  async function quizEnrichNow(level,key){
+    const cached=quizCacheGet(key);
+    if(cached){ _quiz.opts[key]=cached; _quiz.optsSource[key]="cache"; quizMaybeRerender(level,key); return; }
+    if(!AI_ASSIST) return;
+    try{
+      const r=await aiSort({mode:"tree",level:level,parents:quizParents(level),exclude:[]},8000);
+      if(!_quiz) return;
+      if(r&&r.ok&&Array.isArray(r.options)&&r.options.length){
+        const options=r.options.map(normNode).filter(n=>n.label);
+        if(options.length){ _quiz.opts[key]=options; _quiz.optsSource[key]="ia"; quizCacheSet(key,options); quizMaybeRerender(level,key); }
+      }
+    }catch(e){}
+  }
+  function quizMaybeRerender(level,key){
+    if(!_quiz||QUIZ_STEPS[_quiz.i]!==level||quizCurrentKey(level)!==key) return;
+    const inp=document.getElementById("quizManual");
+    const hadFocus=inp&&document.activeElement===inp, val=inp?inp.value:"", caret=inp?inp.selectionStart:0;
+    quizRenderStep();
+    const inp2=document.getElementById("quizManual");
+    if(inp2&&val){ inp2.value=val; if(hadFocus){ inp2.focus(); try{ inp2.setSelectionRange(caret,caret); }catch(e){} } }
+  }
+  async function quizMore(level){
+    const key=quizCurrentKey(level);
+    const cur=(_quiz.opts[key]||[]).map(n=>n.label);
+    _quiz.loadingKey=key+"|more"; quizRenderStep();
+    const res=await quizFetchOptions(level,quizParents(level),cur);
+    if(!_quiz) return;
+    const existing=_quiz.opts[key]||[];
+    (res.options||[]).forEach(n=>{ if(!existing.some(m=>m.label.toLowerCase()===n.label.toLowerCase())) existing.push(n); });
+    _quiz.opts[key]=existing; _quiz.optsSource[key]=res.source; _quiz.loadingKey=null;
+    quizRenderStep();
+  }
+  const QLEVEL_LABEL={industrie:"industrie",type:"type de poste",fiche:"fiche de poste"};
+  // Un badge icône coloré distinct par étape (ludique, 0 asset externe) — même traitement visuel que l'écran d'intro.
+  const QUIZ_STEP_META={
+    industrie:{icon:"building",color:"#5b8def"}, type:{icon:"layers",color:"#a87ffb"}, fiche:{icon:"target",color:"#ff7a45"},
+    lieux:{icon:"pin",color:"#16a34a"}, contrat:{icon:"doc",color:"#f59e0b"}, langues:{icon:"check",color:"#ec4899"},
+  };
+  function quizStepIc(level){ const m=QUIZ_STEP_META[level]||{icon:"target",color:"var(--accent)"}; return `<span class="quiz-step-ic" style="background:${m.color}22;color:${m.color};">${ic(m.icon)}</span>`; }
+  function quizTreeStepHTML(level,options){
+    const arr=_quiz[QLEVEL_ARR[level]];
+    const selected=arr.slice();
+    // chips = options récupérées + choix déjà faits qui ne figurent pas dans les options
+    const chips=options.slice();
+    selected.forEach(s=>{ if(!chips.some(o=>o.label.toLowerCase()===s.label.toLowerCase())) chips.push(s); });
+    const isOn=lab=>arr.some(n=>n.label.toLowerCase()===lab.toLowerCase());
+    const src=_quiz.optsSource[quizCurrentKey(level)];
+    const parents=quizParents(level);
+    const bread=(level!=="industrie"&&parents.length)?`<div class="quiz-bread">${ic("layers")} ${esc(parents.join(" › "))}</div>`:"";
+    const q= level==="industrie"?"Quelles industries / secteurs t'attirent ?"
+           : level==="type"?"Quels types de poste vises-tu ?"
+           : "Quelles fiches de poste précises te correspondent ?";
+    const hint= level==="industrie"?"choisis-en autant que tu veux"
+           : level==="type"?"adaptés à ton industrie"
+           : "l'intitulé concret des annonces";
+    const chipsBlock=chips.length?`<div class="wiz-chips">${chips.map(o=>`<button type="button" class="wiz-chip ${isOn(o.label)?'on':''}" data-level="${esc(level)}" data-label="${esc(o.label)}" onclick="quizChipClick(this)">${esc(o.label)}</button>`).join("")}</div>`:"";
+    const moreLoading=_quiz.loadingKey===(quizCurrentKey(level)+"|more");
+    const moreBtn=`<button type="button" class="btn ghost sm quiz-more" onclick="quizMore('${esc(level)}')" ${moreLoading?"disabled":""}>${ic("sparkle")}<span>${moreLoading?"Recherche…":"Plus d'idées"}</span></button>`;
+    return `<div class="wiz-step-h">${quizStepIc(level)} ${q} <span class="wiz-step-hint">${hint}</span></div>
+      ${bread}
+      ${src?`<div class="quiz-src">${src==="ia"?(ic("sparkle")+" Options proposées par l'IA"):src==="cache"?(ic("check")+" Retrouvées depuis ta dernière visite"):(ic("list")+" Suggestions")}</div>`:""}
+      ${chipsBlock}
+      <div class="wiz-tag-add" style="margin-top:11px;"><input class="crit-in" id="quizManual" placeholder="Pas dans la liste ? Ajoute ton ${esc(QLEVEL_LABEL[level])}…" onkeydown="if(event.key==='Enter'){event.preventDefault();quizAddManual('${esc(level)}');}" /><button type="button" class="btn ghost sm" onclick="quizAddManual('${esc(level)}')">Ajouter</button></div>
+      <div class="quiz-more-row">${moreBtn}</div>`;
+  }
+  function quizChipClick(btn){
+    const level=btn.dataset.level, label=btn.dataset.label;
+    const arr=_quiz[QLEVEL_ARR[level]];
+    const idx=arr.findIndex(n=>n.label.toLowerCase()===label.toLowerCase());
+    if(idx>=0) arr.splice(idx,1);
+    else{
+      const opts=_quiz.opts[quizCurrentKey(level)]||[];
+      const found=opts.find(n=>n.label.toLowerCase()===label.toLowerCase());
+      arr.push({label:label, kw:found?found.kw:quizDeriveKw(label), source:found?(_quiz.optsSource[quizCurrentKey(level)]||"ia"):"manuel"});
+    }
+    quizRenderStep();
+  }
+  function quizAddManual(level){
+    const inp=document.getElementById("quizManual"); const v=inp&&(inp.value||"").trim(); if(!v) return;
+    const arr=_quiz[QLEVEL_ARR[level]];
+    if(!arr.some(n=>n.label.toLowerCase()===v.toLowerCase())) arr.push({label:v,kw:quizDeriveKw(v),source:"manuel"});
+    inp.value=""; quizRenderStep();
+  }
+  function quizOtherStepHTML(step){
+    if(step==="intro"){
+      return `<div class="quiz-intro">
+        <div class="quiz-intro-ic">${ic("target")}</div>
+        <div class="wiz-step-h" style="justify-content:center;">Révèle ton profil idéal en 6 étapes</div>
+        <p class="quiz-intro-p">On part de ton <b>industrie</b>, on descend vers ton <b>type de poste</b>, puis la <b>fiche de poste</b> précise — chaque réponse affine la suivante. Ensuite lieu, contrat, langues.<br>À la fin, chaque offre de ta pile reçoit un <b>score de compatibilité</b> et les meilleures remontent en haut.</p>
+        <p class="quiz-intro-note">${ic("info")} Aucune réponse n'est cochée d'avance, et tu peux toujours <b>ajouter la tienne</b> si elle n'est pas proposée.</p>
+      </div>`;
     }
     if(step==="lieux"){
-      const on=t=>(matchCriteria.lieuxPref||[]).includes(t);
-      const exclParis=(matchCriteria.lieuxExclus||[]).some(t=>t.includes("paris")||t.includes("ile-de-france")||t.includes("île-de-france"));
-      const customExcl=(matchCriteria.lieuxExclus||[]).filter(t=>!/paris|ile-de-france|île-de-france|^75$/.test(t)).join(", ");
-      return `<div class="wiz-step-h">${ic("pin")} Où cherches-tu ? <span class="wiz-step-hint">régions préférées (bonus)</span></div>
-        <div class="wiz-chips">${WIZ_REGIONS.map(r=>`<button type="button" class="wiz-chip ${on(r.tokens[0])?'on':''}" onclick="wizToggleRegion('${esc(r.label)}',this)">${esc(r.label)}</button>`).join("")}</div>
+      const on=lab=>_quiz.regionLabels.includes(lab);
+      return `<div class="wiz-step-h">${quizStepIc("lieux")} Où cherches-tu ? <span class="wiz-step-hint">régions préférées (bonus)</span></div>
+        <div class="wiz-chips">${WIZ_REGIONS.map(r=>`<button type="button" class="wiz-chip ${on(r.label)?'on':''}" data-region="${esc(r.label)}" onclick="quizToggleRegion(this)">${esc(r.label)}</button>`).join("")}</div>
         <div class="wiz-step-h wiz-step-h2">${ic("ban")} Des lieux à éviter ? <span class="wiz-step-hint">malus</span></div>
-        <div class="wiz-chips"><button type="button" class="wiz-chip ${exclParis?'on':''}" onclick="wizToggleExclParis(this)">Paris / Île-de-France</button></div>
-        <input class="crit-in" id="wiz-lieux-custom" placeholder="Autres lieux à éviter, séparés par une virgule" value="${esc(customExcl)}" style="margin-top:9px;" />`;
-    }
-    if(step==="pays"){
-      return `<div class="wiz-step-h">${ic("pin")} Ouvert à l'international ? <span class="wiz-step-hint">optionnel</span></div>
-        <div class="wiz-chips">${PAYS_OPTIONS.map(p=>`<button type="button" class="wiz-chip ${(matchCriteria.paysPref||[]).includes(p.toLowerCase())?'on':''}" onclick="wizTogglePays('${esc(p)}',this)">${esc(p)}</button>`).join("")}</div>
-        <div class="crit-hint">Aucun choix = aucune restriction de pays (juste un petit bonus quand ça correspond).</div>`;
+        <div class="wiz-chips"><button type="button" class="wiz-chip ${_quiz.exclParis?'on':''}" onclick="quizToggleExclParis(this)">Paris / Île-de-France</button></div>
+        <input class="crit-in" id="quizExclCustom" placeholder="Autres lieux à éviter, séparés par une virgule" value="${esc(_quiz.exclCustom||"")}" style="margin-top:9px;" />`;
     }
     if(step==="contrat"){
-      return `<div class="wiz-step-h">${ic("doc")} Quel type de contrat ?</div>
-        <div class="wiz-chips">${CONTRAT_OPTIONS.map(c=>`<button type="button" class="wiz-chip ${matchCriteria.contratPref===c?'on':''}" onclick="wizSetContrat('${esc(c)}',this)">${esc(c)}</button>`).join("")}</div>`;
+      return `<div class="wiz-step-h">${quizStepIc("contrat")} Quel type de contrat ? <span class="wiz-step-hint">optionnel</span></div>
+        <div class="wiz-chips">${CONTRAT_OPTIONS.map(c=>`<button type="button" class="wiz-chip ${_quiz.contrat===c?'on':''}" data-contrat="${esc(c)}" onclick="quizSetContrat(this)">${esc(c)}</button>`).join("")}</div>`;
     }
-    // mots
-    return `<div class="wiz-step-h">${ic("check")} Des mots-clés qui comptent pour toi ? <span class="wiz-step-hint">bonus</span></div>
-      <div class="wiz-tags" id="wizTagsBonus">${(matchCriteria.motsBonus||[]).map((m,i)=>wizTagHTML(m,i,"Bonus")).join("")}</div>
-      <div class="wiz-tag-add"><input class="crit-in" id="wiz-mot-bonus" placeholder="Ex : supply chain, planification…" onkeydown="if(event.key==='Enter'){event.preventDefault();wizAddTag('Bonus');}" /><button type="button" class="btn ghost sm" onclick="wizAddTag('Bonus')">Ajouter</button></div>
-      <div class="wiz-step-h wiz-step-h2">${ic("minus")} Et des mots à éviter ? <span class="wiz-step-hint">malus</span></div>
-      <div class="wiz-tags" id="wizTagsMalus">${(matchCriteria.motsMalus||[]).map((m,i)=>wizTagHTML(m,i,"Malus")).join("")}</div>
-      <div class="wiz-tag-add"><input class="crit-in" id="wiz-mot-malus" placeholder="Ex : alternance, stage…" onkeydown="if(event.key==='Enter'){event.preventDefault();wizAddTag('Malus');}" /><button type="button" class="btn ghost sm" onclick="wizAddTag('Malus')">Ajouter</button></div>`;
+    if(step==="langues"){
+      const on=l=>_quiz.langues.includes(l.toLowerCase());
+      return `<div class="wiz-step-h">${quizStepIc("langues")} Quelles langues maîtrises-tu ? <span class="wiz-step-hint">en plus du français</span></div>
+        <div class="wiz-chips">${LANGUES_OPTIONS.map(l=>`<button type="button" class="wiz-chip ${on(l)?'on':''}" data-langue="${esc(l)}" onclick="quizToggleLangue(this)">${esc(l)}</button>`).join("")}</div>`;
+    }
+    // resume
+    return quizResumeHTML();
   }
-  function wizTagHTML(m,i,kind){ return `<span class="wiz-tag">${esc(m)}<button type="button" onclick="wizRemoveTag(${i},'${kind}')" aria-label="Retirer">✕</button></span>`; }
-  function wizToggleSector(k,btn){
-    const cur=matchCriteria.secteurs[k]||0;
-    matchCriteria.secteurs[k]=cur>0?0:2;
-    btn.classList.toggle("on",matchCriteria.secteurs[k]>0);
+  function quizToggleRegion(btn){
+    const lab=btn.dataset.region; const i=_quiz.regionLabels.indexOf(lab);
+    if(i>=0) _quiz.regionLabels.splice(i,1); else _quiz.regionLabels.push(lab);
+    btn.classList.toggle("on",_quiz.regionLabels.includes(lab));
   }
-  function wizToggleLangue(l,btn){
-    const key=l.toLowerCase();
-    if(!matchCriteria.languesPref) matchCriteria.languesPref=[];
-    const i=matchCriteria.languesPref.indexOf(key);
-    if(i>=0) matchCriteria.languesPref.splice(i,1); else matchCriteria.languesPref.push(key);
-    btn.classList.toggle("on",matchCriteria.languesPref.includes(key));
+  function quizToggleExclParis(btn){ _quiz.exclParis=!_quiz.exclParis; btn.classList.toggle("on",_quiz.exclParis); }
+  function quizSetContrat(btn){
+    const c=btn.dataset.contrat; _quiz.contrat=(_quiz.contrat===c)?"":c;
+    btn.parentElement.querySelectorAll(".wiz-chip").forEach(b=>b.classList.toggle("on",b.dataset.contrat===_quiz.contrat));
   }
-  function wizToggleRegion(label,btn){
-    const region=WIZ_REGIONS.find(r=>r.label===label); if(!region) return;
-    if(!matchCriteria.lieuxPref) matchCriteria.lieuxPref=[];
-    const has=matchCriteria.lieuxPref.includes(region.tokens[0]);
-    if(has) matchCriteria.lieuxPref=matchCriteria.lieuxPref.filter(t=>!region.tokens.includes(t));
-    else matchCriteria.lieuxPref=[...new Set([...matchCriteria.lieuxPref,...region.tokens])];
-    btn.classList.toggle("on",!has);
+  function quizToggleLangue(btn){
+    const key=btn.dataset.langue.toLowerCase(); const i=_quiz.langues.indexOf(key);
+    if(i>=0) _quiz.langues.splice(i,1); else _quiz.langues.push(key);
+    btn.classList.toggle("on",_quiz.langues.includes(key));
   }
-  function wizToggleExclParis(btn){
+  // Construit l'objet matchCriteria à partir des réponses du quiz (repart de zéro : aucune pré-sélection).
+  function quizBuildCriteria(){
+    const secteurs={};
+    _quiz.industries.forEach(n=>{ const key=mapIndustrieToSector(n); if(key) secteurs[key]=3; });
+    const lieuxPref=[]; _quiz.regionLabels.forEach(lab=>{ const r=WIZ_REGIONS.find(x=>x.label===lab); if(r) lieuxPref.push(...r.tokens); });
     const parisTokens=["paris","75","ile-de-france","île-de-france"];
-    if(!matchCriteria.lieuxExclus) matchCriteria.lieuxExclus=[];
-    const has=matchCriteria.lieuxExclus.some(t=>parisTokens.includes(t));
-    if(has) matchCriteria.lieuxExclus=matchCriteria.lieuxExclus.filter(t=>!parisTokens.includes(t));
-    else matchCriteria.lieuxExclus=[...new Set([...matchCriteria.lieuxExclus,...parisTokens])];
-    btn.classList.toggle("on",!has);
+    const lieuxExclus=[]; if(_quiz.exclParis) lieuxExclus.push(...parisTokens);
+    (_quiz.exclCustom||"").split(",").map(s=>s.trim().toLowerCase()).filter(Boolean).forEach(t=>lieuxExclus.push(t));
+    return Object.assign({}, matchCriteria, {
+      secteurs:secteurs,
+      lieuxPref:[...new Set(lieuxPref)],
+      lieuxExclus:[...new Set(lieuxExclus)],
+      contratPref:_quiz.contrat||"",
+      languesPref:[...new Set(_quiz.langues)],
+      arbre:{
+        industries:_quiz.industries.map(n=>({label:n.label,kw:n.kw})),
+        types:_quiz.types.map(n=>({label:n.label,kw:n.kw})),
+        fiches:_quiz.fiches.map(n=>({label:n.label,kw:n.kw})),
+      }
+    });
   }
-  function wizTogglePays(p,btn){
-    const key=p.toLowerCase();
-    if(!matchCriteria.paysPref) matchCriteria.paysPref=[];
-    const i=matchCriteria.paysPref.indexOf(key);
-    if(i>=0) matchCriteria.paysPref.splice(i,1); else matchCriteria.paysPref.push(key);
-    btn.classList.toggle("on",matchCriteria.paysPref.includes(key));
+  // Pool d'offres pour l'aperçu du score (offres à trier + candidatures + suivi).
+  function quizOffersPool(){
+    const pool=[];
+    (typeof allOffers!=="undefined"?allOffers:[]).forEach(o=>{ if(o) pool.push(o); });
+    Object.values(statusMap||{}).forEach(s=>{ if(s&&s.offer) pool.push(s.offer); });
+    (typeof pipeline!=="undefined"?pipeline:[]).forEach(p=>pool.push({titre:p.poste,entreprise:p.entreprise,lieu:p.lieu,description:p.description||"",typeContrat:p.contrat,secteur:p.secteur}));
+    // dédoublonne grossièrement par titre+entreprise
+    const seen=new Set(); return pool.filter(o=>{ const k=((o.titre||"")+"|"+(o.entreprise||"")).toLowerCase(); if(seen.has(k))return false; seen.add(k); return true; });
   }
-  function wizSetContrat(c,btn){
-    matchCriteria.contratPref=c;
-    btn.parentElement.querySelectorAll(".wiz-chip").forEach(b=>b.classList.toggle("on",b===btn));
+  function quizResumeHTML(){
+    const nInd=_quiz.industries.length, nTyp=_quiz.types.length, nFic=_quiz.fiches.length;
+    // aperçu : score les offres avec les critères en cours de construction (sans encore les enregistrer)
+    const draft=quizBuildCriteria(); const saved=matchCriteria; matchCriteria=draft;
+    let previewBlock="";
+    try{
+      const pool=quizOffersPool();
+      if(pool.length){
+        const scored=pool.map(o=>({o,s:matchScore(o)})).sort((a,b)=>b.s-a.s);
+        const strong=scored.filter(x=>x.s>=75).length, mid=scored.filter(x=>x.s>=55&&x.s<75).length;
+        const top=scored.slice(0,3);
+        previewBlock=`<div class="quiz-preview">
+          <div class="quiz-preview-h">${ic("trend")} Sur tes ${pool.length} offre(s) actuelles</div>
+          <div class="quiz-preview-stats"><span class="qp-stat qp-high">${strong} forte(s)</span><span class="qp-stat qp-mid">${mid} moyenne(s)</span></div>
+          ${top.length?`<div class="quiz-preview-list">${top.map(x=>`<div class="qp-row"><span class="qp-badge ${x.s>=75?'m-high':x.s>=55?'m-mid':'m-low'}">${x.s}</span><span class="qp-title">${esc((x.o.titre||"—").slice(0,52))}</span><span class="qp-ent">${esc(x.o.entreprise||"")}</span></div>`).join("")}</div>`:""}
+        </div>`;
+      } else {
+        previewBlock=`<div class="quiz-preview quiz-preview-empty">${ic("info")} Tu n'as pas encore d'offres — dès que tu en captures, elles seront notées automatiquement avec ces préférences.</div>`;
+      }
+    } finally { matchCriteria=saved; }
+    return `<div class="wiz-step-h" style="justify-content:center;">${ic("check")} Ton profil de compatibilité est prêt</div>
+      <div class="quiz-recap">
+        <div class="quiz-recap-row"><span class="quiz-recap-k">${ic("building")} Industries</span><span class="quiz-recap-v">${nInd?esc(_quiz.industries.map(n=>n.label).join(", ")):"<i>aucune</i>"}</span></div>
+        <div class="quiz-recap-row"><span class="quiz-recap-k">${ic("layers")} Types de poste</span><span class="quiz-recap-v">${nTyp?esc(_quiz.types.map(n=>n.label).join(", ")):"<i>aucun</i>"}</span></div>
+        <div class="quiz-recap-row"><span class="quiz-recap-k">${ic("target")} Fiches de poste</span><span class="quiz-recap-v">${nFic?esc(_quiz.fiches.map(n=>n.label).join(", ")):"<i>aucune</i>"}</span></div>
+      </div>
+      <p class="quiz-explain">${ic("info")} <b>Ce que fait ton score de compatibilité :</b> chaque offre reçoit une note sur 100. Ta <b>fiche de poste</b> pèse le plus, puis ton <b>type de poste</b> et ton <b>industrie</b> ; ton lieu, ton contrat et tes langues ajustent la note. Les offres les plus proches remontent en haut de ta pile « À trier », avec leur score affiché sur chaque carte. Tu peux tout affiner ensuite dans <b>Réglages avancés</b>.</p>
+      ${previewBlock}
+      ${nInd?`<button type="button" class="btn ghost sm" style="margin-top:12px;" onclick="quizDiscoverCompanies()">${ic("search")}<span>Découvrir des entreprises dans ce secteur</span></button>`:""}`;
   }
-  function wizAddTag(kind){
-    const inp=document.getElementById(kind==="Bonus"?"wiz-mot-bonus":"wiz-mot-malus");
-    const v=(inp.value||"").trim().toLowerCase(); if(!v) return;
-    const key=kind==="Bonus"?"motsBonus":"motsMalus";
-    if(!matchCriteria[key]) matchCriteria[key]=[];
-    if(!matchCriteria[key].includes(v)) matchCriteria[key].push(v);
-    inp.value="";
-    document.getElementById("wizTags"+kind).innerHTML=matchCriteria[key].map((m,i)=>wizTagHTML(m,i,kind)).join("");
+  // Enchaîne le quiz sur la découverte d'entreprises (mode:"sourcing" existant), pré-rempli avec l'industrie/fiche
+  // choisie — sans enregistrer d'abord (les réponses du quiz restent dans _quiz, quizCommit reste explicite).
+  function quizDiscoverCompanies(){
+    if(!_quiz) return;
+    const secteur=(_quiz.industries[0]||{}).label||"";
+    const poste=((_quiz.fiches[0]||_quiz.types[0])||{}).label||"";
+    closeModal();
+    openSourcing({secteur:secteur,poste:poste});
   }
-  function wizRemoveTag(i,kind){
-    const key=kind==="Bonus"?"motsBonus":"motsMalus";
-    matchCriteria[key].splice(i,1);
-    document.getElementById("wizTags"+kind).innerHTML=matchCriteria[key].map((m,j)=>wizTagHTML(m,j,kind)).join("");
+  async function quizCommit(){
+    matchCriteria=quizBuildCriteria();
+    await persistMatchCriteria();   // upsert + closeModal + renderVeille + flash
   }
+  // Alias de compatibilité : les anciens points d'appel (onboarding 1ère connexion, fin de visite guidée) continuent de marcher.
+  function openCompatWizard(){ openCompatQuiz(); }
   // Ouvre le quiz automatiquement à la toute première connexion (une fois par navigateur, jamais en mode démo/
   // capture, et jamais si l'utilisateur a déjà des critères enregistrés en base — nouveau device, pas nouveau user).
   function maybeShowCompatWizardOnboarding(){
@@ -2393,9 +2774,9 @@
     if(seen) return;
     try{ localStorage.setItem("st_compat_wizard_seen","1"); }catch(e){}
     if(_matchCriteriaLoadedFromDb) return;
-    setTimeout(()=>{ try{ openCompatWizard(); }catch(e){} },500);
+    setTimeout(()=>{ try{ openCompatQuiz(); }catch(e){} },500);
   }
-  // ===== FIN ASSISTANT COMPATIBILITÉ =====
+  // ===== FIN QUIZ COMPATIBILITÉ =====
 
   function companyLinks(name){
     const n=encodeURIComponent(name||"");
@@ -2454,7 +2835,14 @@
       const q=lieu.replace(/[()]/g," ").trim();
       const r=await fetch("https://api.geoapify.com/v1/geocode/search?text="+encodeURIComponent(q)+"&type=city&bias=countrycode:fr,nl,be,lu,ch,de&format=json&limit=1&apiKey="+GEOAPIFY_KEY);
       const d=await r.json();
-      if(d.results&&d.results[0]){geoCache[key]={lat:d.results[0].lat,lon:d.results[0].lon};return geoCache[key];}
+      if(d.results&&d.results[0]){
+        const la=d.results[0].lat, lo=d.results[0].lon;
+        // Rejette les correspondances hors d'une zone Europe de l'Ouest élargie (marge autour de FR+voisins biaisés) :
+        // sans ce garde-fou, une ville mal orthographiée/ambiguë peut résoudre à un point hors zone (ex. Afrique du
+        // Nord) et faire dériver tout le fitBounds de la carte loin de la France ("carte centrée sur le Sahara").
+        if(la<40||la>56||lo<-6||lo>16)return null;
+        geoCache[key]={lat:la,lon:lo};return geoCache[key];
+      }
     }catch(e){}
     return null;
   }
@@ -2649,19 +3037,27 @@
 
   // ===== WIDGET MESSAGERIE DU DASHBOARD : aperçu interactif des derniers mails =====
   const MAIL_ACTION_KEYS=new Set(["entretien","screening","test","offre","refus"]);
+  let _dashMailPreviewId=null;   // id du mail actuellement prévisualisé inline dans le widget (null = vue liste)
   function renderDashMailWidget(){
     const el=document.getElementById("dashMailStatus"); if(!el) return;
-    if(!syncedMail || !syncedMail.length){ el.innerHTML='<div class="mail-empty">Aucun e-mail synchronisé pour l’instant.</div>'; return; }
+    if(!syncedMail || !syncedMail.length){ el.innerHTML='<div class="mail-empty">Aucun e-mail synchronisé pour l’instant.</div>'; _dashMailPreviewId=null; return; }
+    if(_dashMailPreviewId){
+      const m=syncedMail.find(x=>String(x.id)===String(_dashMailPreviewId));
+      if(m){ el.innerHTML=dashMailPreviewHtml(m); return; }
+      _dashMailPreviewId=null;   // le mail prévisualisé a été supprimé entre-temps -> retombe sur la liste
+    }
     let action=0;
     syncedMail.forEach(r=>{ const k=(r._nature&&r._nature.key)||"autre"; if(MAIL_ACTION_KEYS.has(k))action++; });
-    const recent=[...syncedMail].filter(m=>!m._archived).sort((a,b)=>new Date(b.received_at||0)-new Date(a.received_at||0)).slice(0,4);
+    // Plus de plafond à 4 : la liste défile (voir .mail-mini-list, hauteur fixe + scroll interne).
+    const recent=[...syncedMail].filter(m=>!m._archived).sort((a,b)=>new Date(b.received_at||0)-new Date(a.received_at||0));
     el.innerHTML=
       (action?`<div class="mail-mini-badge">${action} action${action>1?"s":""} requise${action>1?"s":""}</div>`:"")+
-      `<div class="mail-mini-list">${recent.map(mailMiniRow).join("")||'<div class="mail-empty">Boîte vide pour l’instant.</div>'}</div>`;
+      `<div class="mail-mini-list">${recent.map(mailMiniRow).join("")||'<div class="mail-empty">Boîte vide pour l’instant.</div>'}</div>`+
+      `<div class="mail-mini-foot"><button type="button" class="btn ghost sm" onclick="event.stopPropagation();bentoNav('messagerie')">${ic("mail")}<span>Voir toute la messagerie →</span></button></div>`;
   }
   function mailMiniRow(m){
     const nat=m._nature||MAIL_NATURE_OTHER;
-    return `<div class="mail-mini-row ${m._read?"":"unread"}" onclick="event.stopPropagation();bentoNav('messagerie');openMail('${esc(m.id)}');">
+    return `<div class="mail-mini-row ${m._read?"":"unread"}" onclick="event.stopPropagation();dashMailPreview('${esc(m.id)}');">
       <span class="mmr-dot" style="background:${nat.color};" title="${esc(nat.label)}"></span>
       <div class="mmr-txt">
         <div class="mmr-from">${esc(m.from_name||m.from_email||"Expéditeur")}</div>
@@ -2673,12 +3069,41 @@
       </div>
     </div>`;
   }
+  // Aperçu inline d'un mail directement dans le widget (pas de navigation vers la Messagerie complète) :
+  // le widget devient trop petit pour tout montrer, mais on garde toujours "Ouvrir en grand" pour la vue riche.
+  function dashMailPreview(id){
+    const m=syncedMail.find(x=>String(x.id)===String(id)); if(!m) return;
+    _dashMailPreviewId=id;
+    if(!m._read){ markMailRead(id); }
+    renderDashMailWidget();
+  }
+  function dashMailPreviewBack(){ _dashMailPreviewId=null; renderDashMailWidget(); }
+  function dashMailPreviewHtml(m){
+    const nat=m._nature||MAIL_NATURE_OTHER;
+    const recv=m.received_at?new Date(m.received_at).toLocaleDateString("fr-FR",{day:"2-digit",month:"short"}):"";
+    return `<div class="mail-mini-preview">
+      <button type="button" class="mmp-back" onclick="event.stopPropagation();dashMailPreviewBack();">← Retour</button>
+      <div class="mmp-head">
+        <div class="mmp-subj">${esc(m.subject||"(sans objet)")}</div>
+        <div class="mmp-from">${esc(m.from_name||m.from_email||"Expéditeur")}${recv?" · "+recv:""} · <span style="color:${nat.color};">${esc(nat.label)}</span></div>
+      </div>
+      ${m.body_html
+        ? `<iframe class="mmp-frame" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" srcdoc="${esc(mailHtmlDoc(m.body_html))}"></iframe>`
+        : `<div class="mmp-text">${esc(cleanMailText(m.body)||"(corps du message indisponible)")}</div>`}
+      <div class="mmp-actions">
+        <button type="button" class="btn ghost sm" onclick="event.stopPropagation();bentoNav('messagerie');openMail('${esc(m.id)}');">${ic("link")}<span>Ouvrir en grand</span></button>
+        <button type="button" class="btn ghost sm" onclick="event.stopPropagation();quickArchiveMail('${esc(m.id)}')">${ic("inbox")}<span>Archiver</span></button>
+        <button type="button" class="btn ghost sm" onclick="event.stopPropagation();quickDeleteMail('${esc(m.id)}')">${ic("trash")}<span>Supprimer</span></button>
+      </div>
+    </div>`;
+  }
   async function quickArchiveMail(id){
     await toggleMailArchived(id);
     renderDashMailWidget();
   }
   async function quickDeleteMail(id){
     if(!confirm("Supprimer définitivement cet e-mail ?")) return;
+    if(String(_dashMailPreviewId)===String(id)) _dashMailPreviewId=null;
     await deleteSyncedMail(id);
     renderDashMailWidget();
   }
@@ -4468,13 +4893,7 @@
     document.body.appendChild(a); a.click();
     setTimeout(()=>{ try{URL.revokeObjectURL(url);}catch(e){} a.remove(); },600);
   }
-  let _lettreCtx=null, _lettreVers=null;
-  function pickVers(i){
-    if(!_lettreVers||!_lettreVers[i])return;
-    lettreSetVal(_lettreVers[i]);
-    const b0=document.getElementById("versB0"), b1=document.getElementById("versB1");
-    if(b0)b0.classList.toggle("on",i===0); if(b1)b1.classList.toggle("on",i===1);
-  }
+  let _lettreCtx=null;
   // Prompt prêt à copier pour une IA externe (ChatGPT, app Gemini...) si l'IA intégrée est KO
   function buildLettrePrompt(){
     const c=_lettreCtx||{};
@@ -4603,10 +5022,12 @@
     try{ localStorage.setItem("st_sourcing_seen",JSON.stringify(arr)); }catch(e){}
     if(sb){ try{ sb.from("parametres").upsert({cle:"sourcingSeen",valeur:{names:arr},updated_at:new Date().toISOString()},{onConflict:"user_id,cle"}); }catch(e){} }
   }
+  // Le lien de site que l'IA propose est une DEVINETTE (jamais vérifiée) — on ne l'affiche/n'enregistre jamais
+  // tel quel (risque de mauvais lien "carrières"). On propose systématiquement une recherche Google fiable à la
+  // place, comme partout ailleurs dans l'app pour une marque sans site confirmé (cf. brandStableSite).
   function srcCard(c,i){
-    const site=c.site?(String(c.site).startsWith("http")?c.site:"https://"+c.site):"";
-    const dom=site?esc(site.replace(/^https?:\/\//,"").split("/")[0]):"";
-    return `<div class="src-card"><div class="src-cmain"><div class="src-cname">${esc(c.nom||"")}${c.ville?` <span class="src-city">· ${esc(c.ville)}</span>`:""}</div>${c.contexte?`<div class="src-cctx">${esc(c.contexte)}</div>`:""}${site?`<a href="${esc(site)}" target="_blank" rel="noopener" class="src-clink">${ic("link")} ${dom}</a>`:""}</div><button class="btn sm" onclick="addSourcedBrand(${i})">${ic("plus")} Ajouter</button></div>`;
+    const search=companyLinks(c.nom||"").site;
+    return `<div class="src-card"><div class="src-cmain"><div class="src-cname">${esc(c.nom||"")}${c.ville?` <span class="src-city">· ${esc(c.ville)}</span>`:""}</div>${c.contexte?`<div class="src-cctx">${esc(c.contexte)}</div>`:""}<a href="${esc(search)}" target="_blank" rel="noopener" class="src-clink">${ic("search")} Rechercher le site officiel</a></div><button class="btn sm" onclick="addSourcedBrand(${i})">${ic("plus")} Ajouter</button></div>`;
   }
   async function aiDiscoverCompanies(){
     const g=id=>((document.getElementById(id)||{}).value||"").trim();
@@ -4638,22 +5059,23 @@
   }
   async function addSourcedBrand(i){
     const c=(_srcLast||[])[i]; if(!c)return;
-    let site=c.site?(String(c.site).startsWith("http")?c.site:"https://"+c.site):"";
-    if(typeof isAtsHost==="function" && isAtsHost(site)) site="";
+    // Volontairement PAS de "site" ici (voir srcCard) : sans site confirmé, la fiche marque retombe automatiquement
+    // sur une recherche Google fiable (brandStableSite) plutôt que d'afficher un lien "carrières" potentiellement faux.
     if(!sb){ flashCenter("Pas de connexion base.","info"); return; }
-    try{ await sb.from("entreprises_reve").insert({entreprise:c.nom||"", site:site, ville:c.ville||"", secteur:((document.getElementById("srcSecteur")||{}).value||"")}); }catch(e){ flashCenter("Échec : "+((e&&e.message)||e),"info"); return; }
+    try{ await sb.from("entreprises_reve").insert({entreprise:c.nom||"", ville:c.ville||"", secteur:((document.getElementById("srcSecteur")||{}).value||"")}); }catch(e){ flashCenter("Échec : "+((e&&e.message)||e),"info"); return; }
     const cards=document.querySelectorAll("#srcResults .src-card"); if(cards[i]){ const b=cards[i].querySelector("button"); if(b){ b.disabled=true; b.innerHTML=ic("check")+" Ajoutée"; } cards[i].classList.add("added"); }
     flashCenter("« "+(c.nom||"")+" » ajoutée aux Marques ✓");
     try{ await loadAll(); refreshAll(); }catch(e){}
   }
-  function openSourcing(){
+  function openSourcing(prefill){
+    prefill=prefill||{};
     const box=document.getElementById("modalBox"); box.classList.remove("wide");
     const secs=(typeof SECTORS!=="undefined"?SECTORS:[]).map(s=>s.key||s).filter(Boolean);
     box.innerHTML=`<div class="modal-head"><h3>${ic("search")} Découvrir des entreprises</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <p class="modal-sub">Trouve des entreprises où postuler au-delà des grands groupes. L'IA du site évite de te reproposer les mêmes. <span id="srcSeenLbl" style="color:var(--text-mute);"></span></p>
-      <div class="field"><label>Secteur</label><input class="crit-in" id="srcSecteur" list="__srcSec" oninput="refreshSourcingPrompt()" placeholder="Ex : Pharma / Santé"><datalist id="__srcSec">${secs.map(s=>`<option value="${esc(s)}"></option>`).join("")}</datalist></div>
-      <div class="field"><label>Ville / région (optionnel)</label><input class="crit-in" id="srcVille" oninput="refreshSourcingPrompt()" placeholder="Ex : Nantes, Bretagne, Pays-Bas…"></div>
-      <div class="field"><label>Type de poste (optionnel)</label><input class="crit-in" id="srcPoste" oninput="refreshSourcingPrompt()" placeholder="Ex : Supply chain, planification"></div>
+      <p class="modal-sub">Des idées d'entreprises où postuler au-delà des grands groupes — une <b>source d'inspiration</b> à vérifier toi-même, pas une liste garantie. <span id="srcSeenLbl" style="color:var(--text-mute);"></span></p>
+      <div class="field"><label>Secteur</label><input class="crit-in" id="srcSecteur" list="__srcSec" value="${esc(prefill.secteur||"")}" oninput="refreshSourcingPrompt()" placeholder="Ex : Pharma / Santé"><datalist id="__srcSec">${secs.map(s=>`<option value="${esc(s)}"></option>`).join("")}</datalist></div>
+      <div class="field"><label>Ville / région (optionnel)</label><input class="crit-in" id="srcVille" value="${esc(prefill.ville||"")}" oninput="refreshSourcingPrompt()" placeholder="Ex : Nantes, Bretagne, Pays-Bas…"></div>
+      <div class="field"><label>Type de poste (optionnel)</label><input class="crit-in" id="srcPoste" value="${esc(prefill.poste||"")}" oninput="refreshSourcingPrompt()" placeholder="Ex : Supply chain, planification"></div>
       <div class="modal-actions" style="margin:8px 0 2px;"><button class="btn primary" id="srcAiBtn" onclick="aiDiscoverCompanies()">${ic("sparkle")}<span>Découvrir avec l'IA du site</span></button></div>
       <div id="srcResults"></div>
       <details class="bookmarklet-help" style="margin-top:12px;"><summary>${ic("link")} Ou copier un prompt pour ton IA externe (ChatGPT / Gemini, illimité)</summary>
@@ -4698,7 +5120,6 @@
   function openLettre(o){
     if(typeof o==="string"){try{o=JSON.parse(o);}catch(e){return;}}
     if(!o)return;
-    _lettreVers=null;
     _lettreCtx={key:lettreKey(o), poste:(o.poste||o.titre||""), entreprise:(o.entreprise||""), lieu:(o.lieu||o.ville||""), desc:(o.description||"")};
     const c=_lettreCtx, existing=lettreFor(c.key);
     c.lang=detectLang(c.desc,c.lieu);   // pré-sélection intelligente FR/EN
@@ -4733,6 +5154,14 @@
     document.getElementById("modalBg").classList.add("open");
     updateAccrocheCount();
   }
+  // Indice de profil cible (issu du quiz de compatibilité) : le + précis d'abord (fiche > type > industrie).
+  // Sert UNIQUEMENT d'appoint pour les annonces trop courtes pour que l'IA devine seule le secteur/la culture —
+  // jamais envoyé si l'annonce est déjà détaillée (évite un contexte inutile = tokens gaspillés pour rien).
+  function accrocheProfilHint(){
+    const a=matchCriteria&&matchCriteria.arbre; if(!a) return "";
+    const pick=arr=>(arr||[]).map(n=>n&&n.label).filter(Boolean).slice(0,2).join(", ");
+    return pick(a.fiches)||pick(a.types)||pick(a.industries)||"";
+  }
   async function genLettre(){
     const c=_lettreCtx; if(!c)return;
     const st=document.getElementById("lettreStatus"), ta=document.getElementById("lettreText");
@@ -4740,17 +5169,12 @@
     if(!AI_ASSIST){ if(st)st.textContent="IA désactivée."; return; }
     if(st)st.textContent="Rédaction par l'IA…";
     const baseIntro=((document.getElementById("lettreOrig")||{}).value||"").trim() || baseAccroche(c.lang);   // accroche d'origine ÉDITABLE affichée à l'écran (sinon base CV/profil)
-    const aj=await aiSort({mode:"draft",kind:"accroche",lang:(c.lang||"fr"),systemPrompt:(promptAccroche||"").slice(0,4000),context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offre.slice(0,1500),intro:(baseIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500)}}, 20000);
+    const offreTxt=offre.slice(0,1500);
+    const profilCible=offreTxt.trim().length<300 ? accrocheProfilHint() : "";   // annonce peu détaillée seulement
+    const aj=await aiSort({mode:"draft",kind:"accroche",lang:(c.lang||"fr"),systemPrompt:(promptAccroche||"").slice(0,4000),context:{poste:c.poste,entreprise:c.entreprise,lieu:c.lieu,offre:offreTxt,intro:(baseIntro||"").slice(0,800),cv:(userCV||"").slice(0,2500),profilCible:profilCible}}, 20000);
     if(aj && aj.text){
-      const parts=aj.text.split(/\n\s*-{3,}\s*\n/).map(x=>x.trim()).filter(Boolean);
-      if(parts.length>=2){
-        _lettreVers=[parts[0],parts[1]];
-        lettreSetVal(parts[0]);
-        if(st)st.innerHTML=ic("check")+' Deux propositions : <button class="vers-btn on" id="versB0" onclick="pickVers(0)">Proche de l\u2019originale</button> <button class="vers-btn" id="versB1" onclick="pickVers(1)">Plus adaptée</button>';
-      } else {
-        lettreSetVal(aj.text);
-        if(st)st.innerHTML=ic("check")+" Proposé par IA — édite librement.";
-      }
+      lettreSetVal(aj.text.trim());
+      if(st)st.innerHTML=ic("check")+" Proposé par IA — édite librement.";
     }
     else if(st){
       let r="";
@@ -5347,6 +5771,13 @@
     if(!persist) _toastTimer=setTimeout(hideToast,7000);
   }
   function hideToast(){const t=document.getElementById("toast");if(t)t.classList.remove("show");}
+  // Confirmation de synchro mail : la grande pop-up centrée (flashCenter) n'apparaît qu'une fois par session
+  // (1er chargement/1ère sync) ; les rechargements suivants n'ont droit qu'à un petit toast discret en bas d'écran.
+  function mailSyncNotify(msg){
+    let first=false;
+    try{ first=!sessionStorage.getItem("st_mail_sync_seen"); if(first) sessionStorage.setItem("st_mail_sync_seen","1"); }catch(e){ first=true; }
+    if(first) flashCenter(msg,"info"); else showToast(esc(msg));
+  }
   // Confirmation animée au centre de l'écran (1,2 s) — remplace les alert()
   function flashCenter(msg,kind){
     const old=document.getElementById("flashCenter"); if(old)old.remove();
@@ -6911,7 +7342,7 @@
     if(sec==="recherche"){
       return `<div class="set-section-title">Préférences de recherche</div>
         <p class="set-section-sub">Dis à l'app ce qui compte pour toi : les offres qui correspondent remontent automatiquement en haut de ta pile.</p>
-        <button class="set-card" onclick="closeModal();openCompatWizard();"><span class="set-card-ic">${ic("target")}</span><span class="set-card-tx"><b>Score de compatibilité</b><span>Quiz rapide : secteurs, langues, lieux, contrat…</span></span><span class="set-card-chev">›</span></button>
+        <button class="set-card" onclick="closeModal();openCompatQuiz();"><span class="set-card-ic">${ic("target")}</span><span class="set-card-tx"><b>Score de compatibilité</b><span>Le quiz : industrie › type › fiche de poste, puis lieu &amp; contrat</span></span><span class="set-card-chev">›</span></button>
         <button class="set-card" onclick="closeModal();openCriteres();"><span class="set-card-ic">${ic("sliders")}</span><span class="set-card-tx"><b>Critères avancés</b><span>Réglage fin de la pondération de chaque critère</span></span><span class="set-card-chev">›</span></button>`;
     }
     if(sec==="integrations"){
@@ -6934,7 +7365,7 @@
       <button class="set-card" onclick="claimLegacyData()"><span class="set-card-ic">${ic("check")}</span><span class="set-card-tx"><b>Réclamer mes données</b><span>Rattache à ton compte les données créées avant la connexion</span></span><span class="set-card-chev">›</span></button>
       <button class="set-card" onclick="exportCSV()"><span class="set-card-ic">${ic("download")}</span><span class="set-card-tx"><b>Export CSV (sauvegarde)</b><span>Télécharge une copie de tes candidatures</span></span><span class="set-card-chev">›</span></button>
       <div class="set-danger">
-        <div class="set-danger-h">Zone de danger</div>
+        <div class="set-danger-h">Gestion du compte</div>
         <p class="set-danger-p">La déconnexion est sans risque. L'effacement supprime <b>définitivement</b> toutes tes données.</p>
         <div class="set-danger-btns">
           <button class="set-danger-btn" onclick="logout()">${ic("exit")}<span>Se déconnecter</span></button>
@@ -7264,7 +7695,10 @@
       if(done.has(m.id)) continue;
       done.add(m.id); touched=true;
       const mt=m._match;
-      if(!mt || mt.confidence!=="haute") continue;                       // sécurité : match fiable (domaine = entreprise) uniquement
+      // Suggestion (validée par l'utilisateur) : confiance haute (domaine) OU bonne (entreprise citée en toutes lettres) —
+      // élargir ici est sans risque puisque rien ne s'applique sans validation humaine, hors le cas "Envoyé" plus bas
+      // qui reste volontairement restreint à la confiance haute (seule action appliquée sans confirmation).
+      if(!mt || (mt.confidence!=="haute" && mt.confidence!=="bonne")) continue;
       const emailSnap={ subject:m.subject||"", from_name:m.from_name||"", from_email:m.from_email||"", received_at:m.received_at||"", body:(""+(m.body||"")).slice(0,4000) };
       if(mt.kind==="offer"){                                             // OFFRE encore « À trier » qui reçoit une réponse -> suggérer de la monter en Suivi
         const o=mt.ref; if(!o) continue;
@@ -7280,8 +7714,10 @@
       if(p.statut==="Refusé"||p.statut==="Non intéressé") continue;       // dossier clos : on ne réanime pas
       const forward = target==="Refusé" ? true : (STATUS_RANK[target]||0)>(STATUS_RANK[p.statut]||0);  // jamais de régression
       if(!forward) continue;
-      if(target==="Envoyé"){                                             // simple accusé de réception = faible enjeu -> auto conservé (souvent no-op)
-        if(await _autoSetPipeStatus(p,target)) nBlind++;
+      if(target==="Envoyé"){
+        // Seule action appliquée SANS validation humaine (faible enjeu) -> reste restreinte à la confiance haute
+        // (domaine expéditeur = entreprise), même si le seuil de suggestion ci-dessus a été élargi à "bonne".
+        if(mt.confidence==="haute" && await _autoSetPipeStatus(p,target)) nBlind++;
         continue;
       }
       // statuts à ENJEU (Screening / Entretien / Offre reçue / Refusé) -> SUGGESTION, pas d'application aveugle
@@ -7378,7 +7814,7 @@
         const row=smartRow({fromName:ea.name||"",fromEmail:ea.address||"",subject:m.subject||"",date:m.receivedDateTime||null,body:m.bodyPreview||""});
         const k=syncKey(row.from_email,row.subject,row.received_at); if(have.has(k))return; have.add(k); rows.push(row); });
       if(rows.length && sb){ const res=await sb.from("emails_sync").insert(rows); if(res.error) throw res.error; }
-      flashCenter(rows.length?(rows.length+" e-mail(s) importé(s)"):"Déjà à jour","info");
+      mailSyncNotify(rows.length?(rows.length+" e-mail(s) importé(s)"):"Déjà à jour");
       await loadSyncedMail();
     }catch(e){ mailError=graphErrorMsg(e&&e.status, e&&(e.detail||e.message)); mailLoading=false; renderMessagerie(); }
   }
@@ -7443,8 +7879,11 @@
     if(best.key==="entretien"){
       const full=" "+subj+"  "+bod+" ";
       const sched=/(disponibilit|creneau|calendly|planifier|rencontrer|schedule an|schedule a call|book a |phone screen|screening call|proposer un)/.test(full);
+      // Une convocation automatique donne souvent directement une date/heure fixe plutôt que de "proposer un créneau"
+      // (ex: "entretien le 15 mars a 14h") -> sans ce signal, ces vraies invitations étaient reclassées à tort en "reçue".
+      const dated=/(\d{1,2}\s?[h:]\s?\d{0,2}\b)|(\d{1,2}\/\d{1,2}(\/\d{2,4})?)|\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b|\b(janvier|fevrier|mars|avril|juin|juillet|aout|septembre|octobre|novembre|decembre|january|february|march|april|june|july|august|september|october|november|december)\b/.test(full);
       const auto=/(no.?reply|noreply|ne.?pas.?repondre|do.?not.?reply|mailer-daemon|postmaster|notification|automat)/.test(normTxt(fromEmail||""));
-      if(auto && !sched){ const r=MAIL_NATURE.find(b=>b.key==="recu"); if(r) best=r; }
+      if(auto && !sched && !dated){ const r=MAIL_NATURE.find(b=>b.key==="recu"); if(r) best=r; }
     }
     // TODO: IA Fallback — si bestScore est faible/0 ou ambigu, appeler /api/ai-sort (mode "mail")
     // pour résumer le mail en un statut fiable ("Entretien proposé","Refus","Demande d'infos") quand l'algo strict ne tranche pas.
@@ -7569,6 +8008,37 @@
     }
     return "";
   }
+  // Indexe toutes les parties MIME portant un Content-ID (images "inline" jointes au mail), par cid sans < >.
+  function gmailCidParts(payload,out){
+    out=out||{};
+    if(!payload) return out;
+    const h=(payload.headers||[]).find(x=>(x.name||"").toLowerCase()==="content-id");
+    if(h&&h.value) out[h.value.replace(/[<>]/g,"")]=payload;
+    if(payload.parts) payload.parts.forEach(p=>gmailCidParts(p,out));
+    return out;
+  }
+  // Remplace les <img src="cid:..."> (images intégrées en pièce jointe inline — très courant dans les mails
+  // LinkedIn/ATS pour les logos/icônes) par des data: URI. Sans ça, le HTML pointe vers une référence interne
+  // au message que le navigateur ne peut jamais résoudre -> icône d'image cassée à l'affichage.
+  async function resolveCidImages(html,payload,msgId){
+    if(!html||!/cid:/i.test(html)) return html;
+    const parts=gmailCidParts(payload);
+    const cids=[...new Set([...html.matchAll(/src=["']cid:([^"']+)["']/gi)].map(m=>m[1]))];
+    for(const cid of cids){
+      const part=parts[cid]; if(!part) continue;
+      let b64=part.body&&part.body.data;
+      if(!b64 && part.body&&part.body.attachmentId){
+        try{
+          const att=await gmailGet("https://gmail.googleapis.com/gmail/v1/users/me/messages/"+msgId+"/attachments/"+part.body.attachmentId);
+          b64=att.data;
+        }catch(e){ continue; }
+      }
+      if(!b64) continue;
+      const uri="data:"+(part.mimeType||"image/png")+";base64,"+b64.replace(/-/g,"+").replace(/_/g,"/");
+      html=html.split('src="cid:'+cid+'"').join('src="'+uri+'"').split("src='cid:"+cid+"'").join("src='"+uri+"'");
+    }
+    return html;
+  }
   // Nettoie le corps TEXTE d'un mail pour un affichage lisible (retire caractères invisibles + blancs superflus).
   function cleanMailText(raw){
     let t=(""+(raw||"")).replace(/\r\n/g,"\n").replace(/[​‌‍﻿]/g,"");
@@ -7607,7 +8077,9 @@
         const nm=fromRaw.replace(/<[^>]*>/,"").replace(/["']/g,"").trim();
         const d=dateH?new Date(dateH):null;
         const row=smartRow({fromName:nm,fromEmail:em,subject:subject,date:(d&&!isNaN(d.getTime()))?d.toISOString():null,body:gmailBodyText(full.payload)||full.snippet||""});
-        const html=gmailBodyHtml(full.payload); if(html) row.body_html=(""+html).slice(0,100000);   // rendu fidèle (images/mise en page)
+        let html=gmailBodyHtml(full.payload);
+        if(html) html=await resolveCidImages(html,full.payload,id);   // images intégrées (logos LinkedIn/ATS) -> data: URI
+        if(html) row.body_html=(""+html).slice(0,500000);   // rendu fidèle (images/mise en page)
         const k=syncKey(row.from_email,row.subject,row.received_at); if(have.has(k))continue; have.add(k); rows.push(row);
       }
       if(rows.length&&sb){
@@ -7618,7 +8090,7 @@
         }
         if(res.error)throw res.error;
       }
-      flashCenter(rows.length?(rows.length+" e-mail(s) importé(s) de Gmail"):"Gmail déjà à jour","info");
+      mailSyncNotify(rows.length?(rows.length+" e-mail(s) importé(s) de Gmail"):"Gmail déjà à jour");
       await loadSyncedMail();
     }catch(e){ mailError=(e&&e.status===401)?"Session Gmail expirée — reclique « Connecter Gmail » (Google réinitialise ~tous les 7 jours).":("Lecture Gmail impossible : "+((e&&e.detail)||(e&&e.message)||e)); mailLoading=false; renderMessagerie(); }
   }
@@ -8030,12 +8502,13 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
   const TOUR_STEPS=[
     {title:"Bienvenue sur Sam'Travail 👋",html:"<ul><li><b>Capture</b> les offres depuis n'importe quel site en 1 clic</li><li><b>Adapte ton CV</b> et ton accroche sur mesure avec l'IA</li><li><b>Centralise</b> tes candidatures et tes marques cibles</li><li><b>Suis</b> les réponses des recruteurs dans une messagerie dédiée</li></ul>Lançons la visite !",view:"aujourdhui"},
     {view:"offres",title:"1. Capturer depuis n'importe où",html:"Sur une offre qui te plaît (LinkedIn, Indeed, site carrière…), un clic sur ton favori <b>Sam'Travail</b> l'envoie ici — prête à trier.<div class=\"dv\"><div class=\"dv-top\"><div class=\"dv-tabs\"><div class=\"dv-dots\"><span></span><span></span><span></span></div><div class=\"dv-tab\">💼 Offre d'emploi</div></div><div class=\"dv-nav\"><div class=\"dv-url\"></div></div><div class=\"dv-bookmarks\"><span class=\"dv-bm\">🔗 Sam'Travail <span class=\"dv-cursor\">👆</span></span></div></div><div class=\"dv-body\"><strong style=\"font-size:14px;\">Demand Planner</strong><br><span style=\"font-size:11.5px;color:var(--accent);\">Airbus · Nantes</span></div></div>"},
-    {view:"offres",sel:'[data-view="offres"]',title:"À trier",text:"Toutes les offres captées atterrissent ici. L'app calcule un score de compatibilité — tu classes en coup de cœur, à garder, ou tu ignores."},
+    {view:"offres",sel:'#veille-grid',title:"À trier",text:"Toutes les offres captées atterrissent ici. L'app calcule un score de compatibilité — tu classes en coup de cœur, à garder, ou tu ignores."},
     {view:"offres",sel:'.home-cta',title:"Ajouter une offre",text:"Favori (recommandé), ajout manuel, ou par lien — tout part d'ici, centralisé."},
-    {view:"pipeline",sel:'[data-view="pipeline"]',title:"Suivi",text:"Ton pipeline de candidatures en Kanban : Envoyé → Screening → Entretien → Offre reçue. Glisse les cartes pour faire avancer le statut."},
-    {view:"reve",sel:'[data-view="reve"]',title:"Mes marques",text:"Les entreprises qui te font rêver, avec un score d'affinité et un rappel de dernière visite. Capture-les depuis leur page carrières avec le second favori."},
+    {view:"pipeline",sel:'#pipeline-content',title:"Suivi",text:"Ton pipeline de candidatures en Kanban : Envoyé → Screening → Entretien → Offre reçue. Glisse les cartes pour faire avancer le statut."},
+    {view:"reve",sel:'#reve-content',title:"Mes marques",text:"Les entreprises qui te font rêver, avec un score d'affinité et un rappel de dernière visite. Capture-les depuis leur page carrières avec le second favori."},
     {view:"aujourdhui",sel:'.bento-mail',title:"Messagerie",text:"Connecte ta boîte (Gmail recommandé) : les réponses des recruteurs se classent toutes seules et se relient à la bonne candidature — même sur un autre appareil."},
-    {title:"L'accroche qui s'adapte toute seule",html:"Dans ta fiche CV, colle ton accroche d'origine. Pour chaque offre, l'IA l'adapte au poste et à l'entreprise — tu gardes ton style, elle fait le travail répétitif.<div class=\"dv\" style=\"margin-top:14px;padding:12px;display:flex;flex-direction:column;gap:8px;\"><div style=\"background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--text-dim);\">Diplômé d'un master supply chain, je cherche un poste en planification…</div><div style=\"background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--text);\">✨ <b>Version pour Airbus</b> — …je souhaite mettre mon appétence pour le S&amp;OP au service de la division aérostructures…</div></div>"},
+    {title:"Prépare ton accroche modulable",html:"Dans <b>ton profil</b>, colle ton CV entier depuis Word (Ctrl+A / Ctrl+C → Ctrl+V, la mise en page est conservée). Puis <b>surligne ton paragraphe d'accroche</b> et clique « C'est mon accroche » : cette zone sera automatiquement remplacée à chaque candidature.<div class=\"dv\"><div class=\"dv-top\"><div class=\"dv-tabs\"><div class=\"dv-dots\"><span></span><span></span><span></span></div><div class=\"dv-tab\">📄 Mon CV modèle</div></div></div><div class=\"dv-body\" style=\"display:flex;flex-direction:column;gap:7px;\"><div style=\"font-size:11.5px;font-weight:700;\">Jean Dupont — Master Finance</div><div style=\"background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:7px 9px;font-size:11.5px;color:#111;\">Diplômé d'un master finance, je recherche un poste d'analyste où mettre à profit ma rigueur et mon appétence pour les marchés…</div><div style=\"font-size:10.5px;color:#6b7280;\">↑ paragraphe surligné = <b>ta zone accroche</b><br>Expériences · Formation · Compétences…</div></div></div>"},
+    {title:"L'accroche qui s'adapte toute seule",html:"Pour chaque offre, l'IA reprend cette accroche et l'adapte au poste et à l'entreprise — tu gardes ton style, elle fait le travail répétitif.<div class=\"dv\" style=\"margin-top:14px;padding:12px;display:flex;flex-direction:column;gap:8px;\"><div style=\"background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--text-dim);\">Diplômé d'un master supply chain, je cherche un poste en planification…</div><div style=\"background:var(--accent-soft);border:1px solid var(--accent);border-radius:8px;padding:9px 11px;font-size:12px;color:var(--text);\">✨ <b>Version pour Airbus</b> — …je souhaite mettre mon appétence pour le S&amp;OP au service de la division aérostructures…</div></div>"},
     {title:"Ta clé IA, ton quota",html:"L'app utilise Groq (IA gratuite et rapide). Ajoute ta propre clé dans Réglages → <b>IA & consommation</b> : tu as ton quota à toi, avec une jauge pour le suivre au jour le jour."},
     {title:"À toi de jouer !",html:"Explore librement avec ces données fictives.<br><br>Quand tu es prêt·e, clique <b>« Créer mon compte »</b> dans la bannière en haut : tu connectes ta boîte mail, ta clé IA, et rien de ce que tu as fait ici n'est perdu."},
   ];
@@ -8054,24 +8527,29 @@ create policy "own rows" on emails_sync for all using (user_id = auth.uid()) wit
     const spot=document.getElementById("tourSpot");
     const card=document.getElementById("tourCard");
     const r=step.sel?tourRectFor(step.sel):null;
-    if(r){
-      spot.className="tour-spot";
-      spot.style.left=(r.left-6)+"px"; spot.style.top=(r.top-6)+"px"; spot.style.width=(r.width+12)+"px"; spot.style.height=(r.height+12)+"px";
-      card.className="tour-card";
-      let top=r.bottom+14, left=Math.min(Math.max(r.left,12),window.innerWidth-312);
-      if(top>window.innerHeight-180) top=Math.max(12,r.top-190);
-      card.style.top=top+"px"; card.style.left=left+"px";
-    } else {
-      spot.className="tour-spot tour-spot-off";
-      card.className="tour-card tour-card-center";
-      card.style.top="50%"; card.style.left="50%"; card.style.transform="translate(-50%,-50%)";
-    }
+    // Le contenu (donc la taille réelle) est posé AVANT le calcul de position : sinon top/left étaient calculés
+    // sur la taille de la carte de l'étape PRÉCÉDENTE, ce qui pouvait envoyer la carte hors écran.
+    card.className=r?"tour-card":"tour-card tour-card-center";
     const body=step.html!=null?step.html:esc(step.text||"");
     card.innerHTML=`<h4>${esc(step.title)}</h4><p>${body}</p>
       <div class="tour-foot">
         <div class="tour-dots">${TOUR_STEPS.map((_,k)=>`<span class="${k===i?"on":""}"></span>`).join("")}</div>
         <div class="tour-actions"><button class="tour-skip" onclick="tourEnd()">Passer</button><button class="tour-next" onclick="tourNext()">${i===TOUR_STEPS.length-1?"C'est compris !":"Suivant"}</button></div>
       </div>`;
+    if(r){
+      spot.className="tour-spot";
+      spot.style.left=(r.left-6)+"px"; spot.style.top=(r.top-6)+"px"; spot.style.width=(r.width+12)+"px"; spot.style.height=(r.height+12)+"px";
+      card.style.transform="";
+      const cw=card.offsetWidth||300, ch=card.offsetHeight||140;
+      const left=Math.min(Math.max(r.left,12), Math.max(12,window.innerWidth-cw-12));
+      let top=r.bottom+14;
+      if(top+ch>window.innerHeight-12) top=r.top-ch-14;          // pas de place en dessous -> tente au-dessus
+      top=Math.max(12,Math.min(top,window.innerHeight-ch-12));   // clampé dans tous les cas : jamais hors écran
+      card.style.top=top+"px"; card.style.left=left+"px";
+    } else {
+      spot.className="tour-spot tour-spot-off";
+      card.style.top="50%"; card.style.left="50%"; card.style.transform="translate(-50%,-50%)";
+    }
   }
   function startTour(){ setView("aujourdhui"); setTimeout(()=>tourShow(0),200); }
   function tourNext(){ tourShow(_tourI+1); }

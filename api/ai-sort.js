@@ -371,6 +371,55 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  // ----- MODE ARBRE : génère les options du quiz de compatibilité (industrie -> type de poste -> fiche de poste) -----
+  // Chaque niveau est généré à partir du choix du niveau précédent, pour un arbre de décision personnalisé.
+  if (mode === "tree") {
+    const level = "" + (body.level || "industrie");           // industrie | type | fiche
+    const parents = Array.isArray(body.parents) ? body.parents.slice(0, 8).map(x => clean(x)).filter(Boolean) : [];
+    const exclude = Array.isArray(body.exclude) ? body.exclude.slice(0, 40).map(x => clean(x)).filter(Boolean) : [];
+    // Prompt volontairement court (moins de tokens en entree = latence de prefill plus faible) + max_tokens serre
+    // (6 options compactes tiennent largement sous 380 tokens en sortie) : la vitesse perçue du quiz depend
+    // directement de ces deux leviers, le frontend affichant deja un repli instantane pendant l'appel.
+    let sysT, usrT;
+    const common =
+      'JSON UNIQUEMENT, compact, sans texte autour : {"options":[{"label":"","kw":["",""]}]}. ' +
+      "6 options courtes, concretes, distinctes. label = 2 a 5 mots. kw = 3 a 5 mots-cles FR minuscules " +
+      "(termes d'annonce d'emploi). Aucun label deja dans 'exclure'.";
+    if (level === "industrie") {
+      sysT = "Liste d'INDUSTRIES/SECTEURS d'activite pour une recherche d'emploi (France/Europe), du plus courant au plus specialise. " + common;
+      usrT = "Niveau: industries." + (exclude.length ? ("\nExclure: " + exclude.join(", ")) : "");
+    } else if (level === "type") {
+      sysT = "Pour la/les INDUSTRIE(S) donnee(s), des TYPES DE POSTE (familles de metiers) reellement specifiques a ce secteur " +
+        "(ex: Finance -> M&A, Private Equity, Controle de gestion ; Industrie -> Supply chain, Methodes, Qualite). " + common;
+      usrT = "Industrie(s): " + (parents.join(", ") || "(non precise)") +
+        (exclude.length ? ("\nExclure: " + exclude.join(", ")) : "");
+    } else {
+      sysT = "Pour le TYPE DE POSTE donne, des FICHES DE POSTE precises (intitules concrets d'annonces), avec des niveaux " +
+        "de seniorite pertinents (stage/alternance, junior, confirme, manager). " + common;
+      usrT = "Industrie/type: " + (parents.join(" > ") || "(non precise)") +
+        (exclude.length ? ("\nExclure: " + exclude.join(", ")) : "");
+    }
+    try {
+      const out = await callAI(base, key, model,
+        [{ role: "system", content: sysT }, { role: "user", content: usrT }], 380);
+      if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
+      const content = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
+        out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";
+      let parsed = {};
+      try { parsed = JSON.parse(("" + content).replace(/```json|```/g, "").trim()); } catch (e) {
+        const m = ("" + content).match(/\{[\s\S]*\}/); if (m) { try { parsed = JSON.parse(m[0]); } catch (e2) {} }
+      }
+      const seen = new Set(exclude.map(x => x.toLowerCase()));
+      const list = (Array.isArray(parsed.options) ? parsed.options : []).map(o => ({
+        label: clean(o && o.label),
+        kw: (Array.isArray(o && o.kw) ? o.kw : []).map(k => ("" + k).toLowerCase().replace(/\s+/g, " ").trim().slice(0, 40)).filter(Boolean).slice(0, 6),
+      })).filter(o => o.label && !seen.has(o.label.toLowerCase()) && (seen.add(o.label.toLowerCase()) || true)).slice(0, 8);
+      if (!list.length) { res.status(200).json({ ok: false, reason: "empty", got: ("" + content).slice(0, 140) }); return; }
+      res.status(200).json(withUsage({ ok: true, options: list }, out));
+    } catch (e) { res.status(200).json({ ok: false, reason: "ai_error", detail: ("" + (e && e.message || e)).slice(0, 140) }); }
+    return;
+  }
+
   // ----- MODE BROUILLON : rédige un court message (relance, etc.) -----
   if (mode === "draft") {
     const kind = "" + (body.kind || "relance");
@@ -412,17 +461,17 @@ module.exports = async function handler(req, res) {
         (ctx.intro ? ("\n\nPROFIL du candidat:\n" + ("" + ctx.intro).slice(0, 700)) : "") +
         (ctx.cv ? ("\n\nCV (extrait): " + ("" + ctx.cv).slice(0, 1800)) : "");
     } else if (kind === "accroche") {
-      sysD = "Tu adaptes l'ACCROCHE ORIGINALE du candidat pour cibler une offre. Objectif : on doit croire que c'est LUI qui l'a ecrite.\n" +
-        "Regles : garde la longueur (a une phrase pres), la structure, le rythme et le vocabulaire de l'original ; reprends ses tournures. " +
-        "Adapte VRAIMENT au contenu de l'annonce : cite le NOM de l'entreprise et l'INTITULE du poste, evoque le secteur, ajuste les competences mises en avant a ce que demande l'offre (uniquement a partir de son parcours reel). " +
+      sysD = "Tu adaptes l'ACCROCHE ORIGINALE du candidat pour cibler une offre precise. Objectif : on doit croire que c'est LUI qui l'a ecrite, et qu'elle est taillee sur mesure pour CETTE offre.\n" +
+        "Regles : garde une longueur proche de l'original (a une ou deux phrases pres), la premiere personne, et des tournures qui restent credibles venant du candidat.\n" +
+        "Adapte EN PROFONDEUR, pas en surface : cite le NOM de l'entreprise et l'INTITULE du poste ; parmi les competences/experiences REELLES du candidat (jamais d'invention), choisis et mets en avant celles qui repondent le mieux a CETTE offre ; " +
+        "ajuste le registre et le vocabulaire a la culture probable du secteur/de l'entreprise (ex: registre factuel et chiffre pour la finance/le M&A, plus direct et energique pour une startup, plus institutionnel pour un grand groupe ou le secteur public) ; evoque le secteur d'activite si pertinent.\n" +
         "Pas de 'Madame, Monsieur', pas de signature, pas de commentaire.\n" + STYLE_RULES +
-        "SORTIE : exactement DEUX versions separees par une ligne ne contenant QUE ---. " +
-        "V1 (avant ---) : tres proche de l'original, juste poste/entreprise integres. " +
-        "V2 (apres ---) : plus adaptee a l'offre (competences ajustees, secteur evoque), meme style et meme longueur. " +
-        "Aucun titre ni etiquette. Si aucune accroche fournie : redige 4-6 phrases sobres depuis le CV, meme format 2 versions.";
+        "SORTIE : une seule version, prete a l'emploi, sans titre, sans etiquette, sans guillemets. Si aucune accroche fournie : redige 4-6 phrases sobres depuis le CV, en respectant les memes regles d'adaptation.\n" +
+        (ctx.profilCible ? "Un 'PROFIL CIBLE DECLARE' peut etre fourni : c'est un INDICE d'appoint, utile seulement quand l'annonce ci-dessous est courte/vague. Il ne doit JAMAIS contredire ni dominer le contenu reel de l'annonce - l'annonce prime toujours." : "");
       usr = "Poste: " + (ctx.poste || "") + "\nEntreprise: " + (ctx.entreprise || "") +
         "\nLieu: " + (ctx.lieu || "") +
         (ctx.offre ? ("\n\nDetails de l'offre: " + ("" + ctx.offre).slice(0, 1500)) : "") +
+        (ctx.profilCible ? ("\n\nProfil cible declare par le candidat (indice d'appoint si l'annonce est peu detaillee): " + ("" + ctx.profilCible).slice(0, 200)) : "") +
         (ctx.intro ? ("\n\nACCROCHE ORIGINALE A ADAPTER (garde sa longueur, son style et ses tournures):\n" + ("" + ctx.intro).slice(0, 800)) : "") +
         (ctx.cv ? ("\n\nCV (extrait, pour le contexte uniquement): " + ("" + ctx.cv).slice(0, 1800)) : "");
     } else {
@@ -434,7 +483,7 @@ module.exports = async function handler(req, res) {
     if (customSys) sysD = customSys.slice(0, 4000);
     // Langue de sortie (accroche multilingue) : anglais si demandé, sinon français par défaut
     const lang = ("" + (body.lang || "fr")).toLowerCase();
-    if (lang === "en") sysD += "\n\nIMPORTANT: Write the ENTIRE response in natural, professional ENGLISH (not French). Keep the same rules and structure; if two versions are requested, keep the two-version format separated by a line containing only ---.";
+    if (lang === "en") sysD += "\n\nIMPORTANT: Write the ENTIRE response in natural, professional ENGLISH (not French). Keep the same rules and structure.";
     try {
       const out = await callAI(base, key, model,
         [{ role: "system", content: sysD }, { role: "user", content: usr }],

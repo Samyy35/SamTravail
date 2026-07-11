@@ -39,6 +39,7 @@
     --shadow-lg:0 20px 50px rgba(12,27,42,.16);
     --overlay:rgba(8,18,30,.32);
     --glow:rgba(255,111,94,.20);
+    --sig:var(--accent); /* défaut pour .of-bic/.of-btn.sig hors contexte "secteur" (offre/marque écrasent --sig localement) */
   }
   [data-theme="dark"]{
     /* Chantier 6 : plus de relief — fond nettement plus sombre que les cartes (avant : quasi identiques) */
@@ -94,8 +95,8 @@
 
   .bm-mobile-actions{display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%;}
   .bm-mobile-actions .bookmarklet-btn{cursor:pointer;text-align:center;}
-  /* stat live */
-  .stat-live{border-color:var(--accent);background:var(--accent-soft);}
+  /* stat live — sélecteur double pour battre .stat-card (défini plus bas, même spécificité sinon) */
+  .stat-card.stat-live{border-color:var(--accent);background:var(--accent-soft);}
   .brand h1{font-family:var(--display);font-size:27px;font-weight:600;letter-spacing:-.5px;}
   .brand .tag{color:var(--text-dim);font-size:13px;margin-top:-2px;}
   .greeting{text-align:right;margin-left:auto;}
@@ -111,12 +112,12 @@
 
   /* DASHBOARD BENTO (widgets Carte/Messagerie/Découverte/mineurs) */
   .bento-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
-  .bento-card{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+  .bento-card{background:color-mix(in srgb,var(--sig) 3%,var(--surface));border:1px solid color-mix(in srgb,var(--sig) 12%,var(--border-light));border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
   .bento-card.clickable{cursor:pointer;transition:.15s ease;}
   .bento-card.clickable:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--accent);}
   .bento-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-  .bento-title{font-size:13.5px;font-weight:650;color:var(--text);display:flex;align-items:center;gap:7px;}
-  .bento-title .ic{width:16px;height:16px;color:var(--accent);flex-shrink:0;}
+  .bento-title{font-size:13.5px;font-weight:650;color:var(--text);display:flex;align-items:center;gap:9px;}
+  .bento-title .ic{width:13px;height:13px;color:color-mix(in srgb,var(--sig) 78%,var(--text));background:color-mix(in srgb,var(--sig) 15%,transparent);border-radius:7px;padding:5px;box-sizing:content-box;flex-shrink:0;}
   .bento-refresh{background:none;border:none;color:var(--text-mute);cursor:pointer;padding:5px;border-radius:8px;transition:.15s;display:flex;}
   .bento-refresh:hover{color:var(--accent);background:var(--accent-soft);}
   .bento-refresh .ic{width:15px;height:15px;}
@@ -157,8 +158,8 @@
   .mail-mini-row .mmr-actions .ic{width:13px;height:13px;}
   .bento-discover .btn{width:100%;justify-content:flex-start;margin-top:8px;}
   .bento-discover .btn:first-of-type{margin-top:0;}
-  .bento-mini{display:flex;align-items:center;gap:9px;padding:14px 16px;font-size:13px;font-weight:600;color:var(--text-dim);}
-  .bento-mini .ic{width:16px;height:16px;color:var(--accent);flex-shrink:0;}
+  .bento-mini{display:flex;align-items:center;gap:11px;padding:14px 16px;font-size:13px;font-weight:600;color:var(--text-dim);}
+  .bento-mini .ic{width:13px;height:13px;color:color-mix(in srgb,var(--sig) 78%,var(--text));background:color-mix(in srgb,var(--sig) 15%,transparent);border-radius:7px;padding:5px;box-sizing:content-box;flex-shrink:0;}
   .mini-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:1px 7px;}
   .titles-sugg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
   .title-chip{font-size:12px;font-weight:600;background:var(--accent-soft);color:var(--accent);border:none;border-radius:999px;padding:5px 11px;cursor:pointer;transition:.15s;}
@@ -185,10 +186,11 @@
   .bento-done-bar{display:flex;justify-content:center;margin:14px 0 4px;}
 
   /* TIMELINE repliable */
-  .timeline-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow);}
+  .timeline-wrap{background:color-mix(in srgb,var(--sig) 3%,var(--surface));border:1px solid color-mix(in srgb,var(--sig) 12%,var(--border));border-radius:var(--radius);margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow);}
   .timeline-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;user-select:none;gap:14px;flex-wrap:wrap;}
   .timeline-head:hover{background:var(--surface-2);}
   .tl-title{font-family:var(--display);font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1;min-width:0;}
+  .tl-title .ic{width:14px;height:14px;color:color-mix(in srgb,var(--sig) 78%,var(--text));background:color-mix(in srgb,var(--sig) 15%,transparent);border-radius:8px;padding:6px;box-sizing:content-box;flex-shrink:0;}
   .tl-next{display:inline-flex;gap:7px;flex-wrap:wrap;}
   .tl-mini{font-family:var(--font);font-size:11.5px;font-weight:500;background:var(--surface-2);padding:3px 10px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;}
   .tl-mini .ic{width:13px;height:13px;}
@@ -338,15 +340,160 @@
   .match-badge.m-high{background:var(--green);color:#fff;}
   .match-badge.m-mid{background:var(--orange);color:#fff;}
   .match-badge.m-low{background:var(--surface-3);color:var(--text-dim);}
+
+  /* ===== Fiche Offre v2 : carte compacte + fiche immersive (préfixe of- pour ne heurter aucune classe existante) =====
+     --sig est posé au cas par cas (couleur du secteur, déjà dans SECTORS) ; le reste de l'ambiance (m1/m2/m3, teintes)
+     se déduit de --sig via color-mix, donc ça marche pour TOUS les secteurs (y compris personnalisés), sans palette
+     à maintenir à la main. Réutilise les tokens réels de l'app (--surface/--accent/--text-dim/--shadow/--radius…). */
+  .of-list{display:flex;flex-direction:column;gap:9px;}
+  .of-oc{position:relative;background:var(--surface);border:1px solid var(--border-light);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s,border-color .25s;}
+  .of-oc:hover,.of-oc.open{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--sig) 38%,var(--border-light));}
+  .of-oc.is-super{border-color:color-mix(in srgb,var(--gold) 45%,var(--border-light));}
+  .of-oc .of-spine{position:absolute;left:0;top:0;bottom:0;width:4px;
+    background:linear-gradient(180deg,var(--sig),color-mix(in srgb,var(--sig) 65%,#0b0e18));}
+  .of-head{display:flex;align-items:center;gap:12px;padding:11px 14px 11px 17px;cursor:pointer;}
+  .of-logo{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:grid;place-items:center;font-weight:750;font-size:15px;color:#fff;overflow:hidden;
+    background:linear-gradient(140deg,color-mix(in srgb,var(--sig) 88%,#fff 8%),color-mix(in srgb,var(--sig) 72%,#0b0e18 22%));
+    box-shadow:0 5px 13px -7px color-mix(in srgb,var(--sig) 70%,transparent);}
+  .of-logo img{width:100%;height:100%;object-fit:cover;}
+  .of-tt{flex:1;min-width:0;}
+  .of-title{font-size:14px;font-weight:660;letter-spacing:-.012em;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
+  .of-co{margin-top:2px;font-size:12px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px;}
+  .of-co .of-sep{opacity:.45;}
+  .of-co .of-star{color:var(--gold);flex-shrink:0;cursor:pointer;}
+  .of-co .of-star svg{width:12px;height:12px;vertical-align:-1px;}
+  .of-co .of-new{flex-shrink:0;font-size:10px;font-weight:800;letter-spacing:.03em;color:var(--green);background:color-mix(in srgb,var(--green) 14%,transparent);border-radius:5px;padding:1px 5px;}
+  .of-meta{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .of-fav{width:30px;height:30px;flex-shrink:0;border-radius:8px;border:1px solid var(--border-light);background:var(--surface);color:var(--text-mute);cursor:pointer;display:grid;place-items:center;transition:.16s;}
+  .of-fav:hover{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 42%,transparent);}
+  .of-fav.on{color:#fff;background:var(--gold);border-color:var(--gold);}
+  .of-fav.pop{animation:ofPop .42s;}
+  .of-fav svg{width:15px;height:15px;}
+  .of-suggest{width:30px;height:30px;flex-shrink:0;border-radius:8px;border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);background:color-mix(in srgb,var(--gold) 14%,transparent);color:var(--gold);cursor:pointer;display:grid;place-items:center;}
+  .of-suggest svg{width:14px;height:14px;}
+  .of-more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s cubic-bezier(.2,.7,.2,1);}
+  .of-oc:hover .of-more,.of-oc.open .of-more,.of-oc:focus-within .of-more{grid-template-rows:1fr;}
+  .of-more-in{overflow:hidden;min-height:0;}
+  .of-more-pad{padding:0 15px 13px 17px;}
+  .of-desc{font-size:12.5px;color:var(--text-dim);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .of-desc.empty{font-style:italic;color:var(--text-mute);}
+  .of-row{display:flex;align-items:center;gap:8px;margin-top:11px;}
+  .of-pills{display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:0;}
+  .of-acts{display:flex;gap:7px;flex-shrink:0;}
+  .of-pill{font-size:11px;font-weight:600;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:3px 8px;white-space:nowrap;}
+  .of-pill b{color:var(--text);font-weight:660;}
+  .of-btn{font-family:var(--font);font-size:12px;font-weight:600;border-radius:9px;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:.15s;border:1px solid var(--border);background:var(--surface);color:var(--text);letter-spacing:-.01em;white-space:nowrap;}
+  .of-btn:hover{border-color:var(--text-mute);}
+  .of-btn svg{width:14px;height:14px;flex-shrink:0;}
+  .of-btn.ghost{background:transparent;color:var(--text-dim);}
+  .of-btn.ghost:hover{color:var(--text);background:var(--surface-2);}
+  .of-btn.sig{background:color-mix(in srgb,var(--sig) 13%,var(--surface));border-color:color-mix(in srgb,var(--sig) 32%,transparent);color:color-mix(in srgb,var(--sig) 78%,var(--text));}
+  .of-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 7px 18px -9px var(--accent);}
+  .of-btn.primary:hover{filter:brightness(1.06);}
+  .of-btn.mini{padding:6px 10px;font-size:11.5px;}
+  .of-btn.sent{background:var(--green)!important;border-color:var(--green)!important;color:#fff!important;}
+  .of-done{display:flex;align-items:center;gap:9px;padding:13px 16px;font-size:13px;font-weight:600;color:var(--green);}
+  .of-done svg{width:16px;height:16px;}
+  .of-done .of-undo{margin-left:auto;background:transparent;border:0;color:var(--text-dim);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;}
+  .of-oc.applied{animation:ofApplied .5s forwards;}
+  .of-oc.done{background:color-mix(in srgb,var(--green) 8%,var(--surface));border-color:color-mix(in srgb,var(--green) 35%,transparent);}
+  /* anneau de score, unifié liste + fiche */
+  .of-ring{position:relative;flex-shrink:0;}
+  .of-ring svg{transform:rotate(-90deg);display:block;}
+  .of-ring .of-track{stroke:color-mix(in srgb,var(--tier) 20%,transparent);}
+  .of-ring .of-fill{stroke:var(--tier);stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.2,.7,.2,1);}
+  .of-ring .of-rv{position:absolute;inset:0;display:grid;place-items:center;color:var(--tier);font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+  .of-ring.on-dark .of-track{stroke:rgba(255,255,255,.28);}
+  .of-ring.on-dark .of-rv{color:#fff;}
+  /* fiche détaillée */
+  .of-fiche{max-width:660px;margin:0 auto;border-radius:24px;overflow:hidden;background:var(--surface);border:1px solid var(--border-light);box-shadow:var(--shadow-lg);}
+  .of-hero{position:relative;padding:22px 24px 20px;isolation:isolate;color:#fff;min-height:172px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;}
+  .of-hero::before{content:"";position:absolute;inset:0;z-index:-2;
+    background:radial-gradient(90% 70% at 78% -10%,color-mix(in srgb,var(--sig) 80%,transparent),transparent 60%),
+      radial-gradient(70% 90% at 8% 8%,color-mix(in srgb,var(--sig) 60%,transparent),transparent 62%),
+      radial-gradient(140% 100% at 50% 130%,color-mix(in srgb,var(--sig) 55%,#04050a 78%),transparent 70%),
+      linear-gradient(162deg,color-mix(in srgb,var(--sig) 78%,#0b0e18 10%),color-mix(in srgb,var(--sig) 45%,#04050a 80%) 92%);}
+  .of-hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:linear-gradient(183deg,rgba(0,0,0,.05) 0%,transparent 40%,rgba(0,0,0,.5) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    background-size:cover,120px 120px;mix-blend-mode:soft-light;opacity:.5;}
+  .of-hero-score{position:absolute;top:18px;right:60px;}
+  /* étoiles d'affinité dans le hero (marque) : équivalent visuel de l'anneau de score, sur fond sombre */
+  .of-hero-score .rv-stars{display:inline-flex;gap:2px;}
+  .of-hero-score .rv-stars .s{font-size:19px;line-height:1;color:rgba(255,255,255,.35);cursor:pointer;transition:transform .12s,color .12s;filter:drop-shadow(0 1px 3px rgba(0,0,0,.3));}
+  .of-hero-score .rv-stars .s:hover{transform:scale(1.15);}
+  .of-hero-score .rv-stars .s.on{color:#ffd166;}
+  .of-hero .x{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);color:#fff;backdrop-filter:blur(4px);}
+  .of-hero .x:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.4);color:#fff;}
+  .of-hero-row{display:flex;align-items:flex-end;gap:14px;}
+  .of-hero-logo{width:54px;height:54px;border-radius:15px;flex-shrink:0;display:grid;place-items:center;font-size:21px;font-weight:750;color:#fff;overflow:hidden;
+    background:color-mix(in srgb,#fff 15%,transparent);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(5px);box-shadow:0 8px 22px -9px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.3);}
+  .of-hero-logo img{width:100%;height:100%;object-fit:cover;}
+  .of-hero-tt{flex:1;min-width:0;}
+  .of-hero-sector{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.8);}
+  .of-hero-title{font-size:23px;font-weight:750;letter-spacing:-.03em;line-height:1.1;margin-top:4px;text-shadow:0 1px 12px rgba(0,0,0,.3);}
+  .of-hero-title[contenteditable]:focus{outline:none;border-bottom:1px dashed rgba(255,255,255,.5);}
+  .of-hero-co{margin-top:6px;font-size:13.5px;color:rgba(255,255,255,.92);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .of-hero-co [contenteditable]:focus{outline:none;border-bottom:1px dashed rgba(255,255,255,.5);}
+  .of-hero-co .of-brand{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:2px 8px 2px 6px;font-size:11px;font-weight:600;cursor:pointer;}
+  .of-hero-co .of-brand svg{width:11px;height:11px;}
+  .of-hero-co .of-addbrand{background:rgba(255,255,255,.12);border:1px dashed rgba(255,255,255,.4);border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);cursor:pointer;font-family:var(--font);}
+  .of-specs{display:flex;flex-wrap:wrap;background:var(--surface-2);border-bottom:1px solid var(--border);}
+  .of-spec{flex:1 0 auto;min-width:96px;padding:11px 15px;border-right:1px solid var(--border);}
+  .of-spec:last-child{border-right:0;}
+  .of-spec .of-k{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text-mute);}
+  .of-spec .of-v{margin-top:3px;font-size:13.5px;font-weight:640;letter-spacing:-.01em;color:var(--text);font-variant-numeric:tabular-nums;}
+  .of-spec .of-v.accent{color:color-mix(in srgb,var(--sig) 74%,var(--text));}
+  .of-spec .of-v[contenteditable]:focus{outline:none;}
+  .of-actbar{display:flex;align-items:center;gap:8px;padding:13px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .of-actbar .of-spacer{flex:1;}
+  .of-content{padding:20px 22px 22px;}
+  .of-blk{margin-top:22px;}
+  .of-blk:first-child{margin-top:0;}
+  .of-blk-h{font-size:13px;font-weight:680;letter-spacing:-.005em;color:var(--text);display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+  .of-blk-h .of-bic{width:23px;height:23px;border-radius:8px;flex-shrink:0;display:grid;place-items:center;background:color-mix(in srgb,var(--sig) 15%,transparent);color:color-mix(in srgb,var(--sig) 78%,var(--text));}
+  .of-blk-h .of-bic svg{width:12.5px;height:12.5px;}
+  .of-blk-h .of-rule{flex:1;height:1px;background:var(--border);margin-left:2px;}
+  .of-blk-h .of-editbtn{background:none;border:none;color:var(--text-mute);cursor:pointer;padding:2px;display:grid;place-items:center;}
+  .of-blk-h .of-editbtn:hover{color:var(--text);}
+  .of-blk-h .of-editbtn svg{width:13px;height:13px;}
+  .of-prose{font-size:13.5px;color:var(--text-dim);line-height:1.62;}
+  .of-prose p{margin:0 0 8px;}
+  .of-prose strong{color:var(--text);font-weight:620;}
+  .of-desc-wrap{position:relative;}
+  .of-desc-clip{max-height:118px;overflow:hidden;transition:max-height .42s cubic-bezier(.2,.7,.2,1);}
+  .of-desc-wrap.open .of-desc-clip{max-height:2400px;}
+  .of-desc-fade{position:absolute;left:0;right:0;bottom:0;height:52px;pointer-events:none;background:linear-gradient(transparent,var(--surface));transition:opacity .3s;}
+  .of-desc-wrap.open .of-desc-fade{opacity:0;}
+  .of-desc-toggle{margin-top:8px;background:transparent;border:0;color:var(--accent);font-family:var(--font);font-size:12.5px;font-weight:620;cursor:pointer;padding:2px 0;display:inline-flex;align-items:center;gap:5px;}
+  .of-desc-toggle svg{width:13px;height:13px;transition:transform .3s;}
+  .of-desc-toggle.of-open svg{transform:rotate(180deg);}
+  .of-empty-note{font-size:12.5px;color:var(--text-mute);font-style:italic;}
+  .of-map{height:150px;border-radius:13px;overflow:hidden;position:relative;border:1px solid var(--border);}
+  .of-links{display:flex;flex-wrap:wrap;gap:7px;}
+  .of-lk{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:550;color:var(--text-dim);background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:5px 11px;text-decoration:none;transition:.15s;cursor:pointer;}
+  .of-lk:hover{color:var(--text);border-color:var(--text-mute);}
+  .of-lk svg{width:12px;height:12px;color:var(--text-mute);}
+  .of-lk.full{color:color-mix(in srgb,var(--sig) 72%,var(--text));border-color:color-mix(in srgb,var(--sig) 30%,transparent);background:color-mix(in srgb,var(--sig) 8%,var(--surface));}
+  .of-lk.full svg{color:inherit;}
+  .of-rows{display:flex;flex-direction:column;gap:7px;}
+  .of-lrow{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;}
+  .of-lrow .of-r-tt{flex:1;min-width:0;font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .of-lrow a.of-rlink{font-size:11.5px;color:var(--accent);text-decoration:none;font-weight:600;flex-shrink:0;}
+  .of-notes{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;font-family:var(--font);font-size:12.5px;color:var(--text);resize:vertical;min-height:56px;}
+  .of-notes::placeholder{color:var(--text-mute);}
+  .of-plane{position:fixed;z-index:99;pointer-events:none;color:var(--green);filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));}
+  .of-plane svg{width:26px;height:26px;}
+  @keyframes ofPop{0%{transform:scale(1);}35%{transform:scale(1.4);}65%{transform:scale(.88);}100%{transform:scale(1);}}
+  @keyframes ofApplied{40%{transform:translateX(6px);}100%{transform:translateX(70px);opacity:0;}}
+  @keyframes ofFly{to{transform:translate(150px,-190px) rotate(24deg) scale(.5);opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.of-oc,.of-fiche,.of-plane{animation:none!important;transition:none!important;}}
+  @media (max-width:560px){.of-hero-title{font-size:20px;}.of-spec{min-width:84px;}}
+
   /* Modal critères */
   .crit-block{margin-bottom:16px;}
   .crit-label .ic{width:14px;height:14px;vertical-align:-.13em;margin-right:5px;color:var(--text-mute);}
   .crit-label{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text);}
-  .crit-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;}
-  .crit-stars{display:flex;gap:4px;}
-  .crit-stars .star{cursor:pointer;font-size:16px;color:var(--surface-3);transition:.1s;user-select:none;}
-  .crit-stars .star.on{color:var(--gold);}
-  .crit-stars .star.zero{font-size:13px;color:var(--text-mute);}
   .crit-in{width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-family:var(--font);font-size:13px;}
   .crit-in:focus{outline:none;border-color:var(--accent);}
   .crit-hint{font-size:11px;color:var(--text-mute);margin-top:5px;}
@@ -454,12 +601,12 @@
   .streak b{color:var(--gold);} .streak-best{color:var(--text-dim);font-size:11px;margin-left:4px;}
   /* Stats / Bilan */
   .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px;}
-  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;box-shadow:var(--shadow);}
+  .stat-card{background:color-mix(in srgb,var(--sig) 3%,var(--surface));border:1px solid color-mix(in srgb,var(--sig) 12%,var(--border));border-radius:var(--radius-sm);padding:18px;text-align:center;box-shadow:var(--shadow);}
   .stat-n{font-family:var(--display);font-size:30px;font-weight:600;color:var(--text);}
   .stat-l{font-size:12px;color:var(--text-dim);margin-top:4px;}
-  .bilan-block{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px;}
-  .bilan-h{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:9px;}
-  .bilan-h .ic{width:18px;height:18px;color:var(--accent);}
+  .bilan-block{background:color-mix(in srgb,var(--sig) 3%,var(--surface));border:1px solid color-mix(in srgb,var(--sig) 12%,var(--border));border-radius:var(--radius);padding:18px;margin-bottom:18px;}
+  .bilan-h{font-family:var(--display);font-size:16px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .bilan-h .ic{width:14px;height:14px;color:color-mix(in srgb,var(--sig) 78%,var(--text));background:color-mix(in srgb,var(--sig) 15%,transparent);border-radius:8px;padding:6px;box-sizing:content-box;flex-shrink:0;}
   .bilan-note{font-size:12px;color:var(--text-dim);margin-top:10px;}
   .bilan-sub{font-family:var(--font);font-size:12px;font-weight:400;color:var(--text-mute);}
   .heatmap{display:grid;grid-template-rows:repeat(7,12px);grid-auto-flow:column;grid-auto-columns:12px;gap:3px;overflow-x:auto;padding-bottom:4px;}
@@ -916,6 +1063,9 @@
   .pdact.on{color:#fff;}
   .pdact.rollback{border-color:var(--accent);color:var(--accent);}
   .pdact.rollback:hover{background:var(--accent);color:#fff;}
+  /* variante icône seule : le statut ACTUEL est déjà affiché juste au-dessus (badge coloré pc-score-inline),
+     inutile de répéter son libellé en toutes lettres sur chacun des boutons de changement de statut. */
+  .pdact.icon{padding:0;width:34px;height:34px;justify-content:center;gap:0;flex-shrink:0;}
   /* ===== Barre d'actions contextuelles EN HAUT des fiches (offre « à trier » + suivi) — placement homogène ===== */
   .fiche-top{margin-bottom:2px;}
   .fiche-actbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 18px;padding-bottom:16px;border-bottom:1px solid var(--border);}
@@ -927,13 +1077,8 @@
   .fiche-actbar .pdact.rollback{margin-left:0;}
   @media(max-width:520px){.fiche-actbar .fa-spacer{flex-basis:100%;height:0;}}
   /* ===== Messagerie (Outlook / Microsoft Graph) ===== */
-  .mzg-connect{max-width:520px;margin:30px auto;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 26px;box-shadow:var(--shadow);}
-  .mzg-connect-ico{width:54px;height:54px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin:0 auto 14px;}
-  .mzg-connect-ico .ic{width:28px;height:28px;}
-  .mzg-connect-h{font-family:var(--display);font-size:20px;font-weight:650;margin-bottom:8px;}
   .mzg-connect-p{font-size:13px;color:var(--text-dim);line-height:1.55;margin-bottom:16px;}
   .mzg-input{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:10px;font-family:var(--font);font-size:13px;margin-bottom:12px;background:var(--surface-2);color:var(--text);box-sizing:border-box;}
-  .mzg-connect .btn.primary{width:100%;justify-content:center;margin-bottom:8px;}
   .mzg-steps{text-align:left;font-size:12.5px;color:var(--text-dim);line-height:1.65;padding-left:18px;margin:8px 0;}
   .mzg-steps code{background:var(--surface-3);padding:1px 5px;border-radius:5px;font-size:11.5px;word-break:break-all;}
   .mzg-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
@@ -943,7 +1088,7 @@
   .mzg-error{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--red-soft);border:1px solid var(--red);color:var(--red);border-radius:11px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:14px;}
   .mzg-error span{flex:1;min-width:160px;}
   .mzg-warn{display:flex;align-items:flex-start;gap:10px;background:var(--orange-soft);border:1px solid var(--orange);color:var(--text);border-radius:11px;padding:11px 14px;font-size:12.5px;line-height:1.5;margin-bottom:16px;}
-  .mail-onb{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:16px;}
+  .mail-onb{background:color-mix(in srgb,var(--sig) 5%,var(--surface-2));border:1px solid color-mix(in srgb,var(--sig) 14%,var(--border));border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;}
   .mail-onb-p{margin:0 0 8px;font-size:12.5px;line-height:1.55;color:var(--text-dim);}
   .mail-onb-p:last-child{margin-bottom:0;}
   .mail-onb-warn{color:var(--orange);font-weight:600;white-space:nowrap;}
@@ -970,10 +1115,10 @@
   .mzg-text-toggle:hover{color:var(--accent);}
   .mzg-text-toggle .ic{width:13px;height:13px;}
   .mzg-body-text{white-space:pre-wrap;font-size:13px;color:var(--text-dim);line-height:1.6;padding:12px;background:var(--surface-2);border-radius:10px;max-height:56vh;overflow:auto;}
-  .mzg-compose{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:16px;transition:.15s;}
+  .mzg-compose{background:color-mix(in srgb,var(--sig) 4%,var(--surface));border:1px solid color-mix(in srgb,var(--sig) 15%,var(--border));border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:16px;transition:.15s;}
   .mzg-compose.drag{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-  .mzg-compose-h{font-family:var(--display);font-size:15px;font-weight:650;display:flex;align-items:center;gap:7px;margin-bottom:5px;}
-  .mzg-compose-h .ic{width:16px;height:16px;color:var(--accent);}
+  .mzg-compose-h{font-family:var(--display);font-size:15px;font-weight:650;display:flex;align-items:center;gap:9px;margin-bottom:5px;}
+  .mzg-compose-h .ic{width:13px;height:13px;color:color-mix(in srgb,var(--sig) 78%,var(--text));background:color-mix(in srgb,var(--sig) 15%,transparent);border-radius:7px;padding:5px;box-sizing:content-box;}
   .mzg-compose-p{font-size:12.5px;color:var(--text-dim);line-height:1.5;margin-bottom:10px;}
   .mzg-paste{width:100%;box-sizing:border-box;padding:11px 13px;border:1px solid var(--border);border-radius:10px;font-family:var(--font);font-size:12.5px;line-height:1.5;background:var(--surface-2);color:var(--text);resize:vertical;}
   .mzg-compose-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;}
@@ -1009,7 +1154,7 @@
   .mzg-row.archived{opacity:.6;}
   .mzg-unread-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:middle;}
   .mzg-inbox-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-  .mzg-inbox-title{font-size:13px;font-weight:600;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;} .mzg-inbox-title .ic{width:15px;height:15px;}
+  .mzg-inbox-title{font-size:13px;font-weight:600;color:var(--text-dim);display:inline-flex;align-items:center;gap:8px;} .mzg-inbox-title .ic{width:13px;height:13px;color:color-mix(in srgb,var(--sig) 78%,var(--text));background:color-mix(in srgb,var(--sig) 15%,transparent);border-radius:7px;padding:5px;box-sizing:content-box;}
   #mailSyncBtn.on{border-color:var(--green);color:var(--green);}
   .lettre-lang{font-size:12px;color:var(--text-dim);display:inline-flex;align-items:center;gap:5px;}
   .lettre-lang .vers-btn{padding:3px 9px;}
@@ -1360,9 +1505,10 @@
   .rv-d2 .reve-sector,.rv-d2 .reve-foot{display:none;}
   .rv-d3 .reve-sector,.rv-d3 .reve-foot{display:none;}
   .rv-d3 .rstar{font-size:12px;}
-  .reve-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;cursor:pointer;transition:.15s;}
+  .reve-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;cursor:pointer;transition:transform .18s cubic-bezier(.2,.7,.2,1),box-shadow .18s,border-color .18s;}
   .reve-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow);}
-  .reve-logo{width:52px;height:52px;border-radius:13px;background:var(--surface-2);border:1px solid var(--border);display:grid;place-items:center;font-family:var(--display);font-size:22px;font-weight:600;color:var(--text-dim);overflow:hidden;}
+  /* logo en cercle = repère "Marque" (vs le carré arrondi des Offres) — même convention que la fiche détaillée */
+  .reve-logo{width:52px;height:52px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:grid;place-items:center;font-family:var(--display);font-size:22px;font-weight:600;color:var(--text-dim);overflow:hidden;}
   .reve-logo img{width:100%;height:100%;object-fit:contain;padding:7px;}
   .reve-name{font-size:13.5px;font-weight:700;line-height:1.25;}
   .reve-sector{font-size:11px;color:var(--text-dim);}
@@ -1634,7 +1780,7 @@
     .ocard-hover{display:flex;flex-direction:column;gap:9px;border-top:1px dashed var(--border);margin-top:3px;padding-top:10px;}
   }
   /* ===== Tableau de bord : tuiles cockpit ===== */
-  .todo{display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid transparent;border-radius:var(--radius-sm);padding:14px 15px;cursor:pointer;transition:.16s ease;box-shadow:0 2px 8px rgba(12,27,42,.10);}
+  .todo{display:flex;align-items:center;gap:13px;background:color-mix(in srgb,var(--sig) 3%,var(--surface));border:1px solid transparent;border-radius:var(--radius-sm);padding:14px 15px;cursor:pointer;transition:.16s ease;box-shadow:0 2px 8px rgba(12,27,42,.10);}
   .todo:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(12,27,42,.16);}
   .todo-ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--surface-2);color:var(--text-mute);flex-shrink:0;}
   .todo-ic .ic{width:19px;height:19px;}
@@ -1781,6 +1927,13 @@
   #veille-grid.ultra .ocard{padding:9px 11px;}
   #veille-grid.ultra .ocard-logo{width:30px;height:30px;font-size:14px;}
   #veille-grid.ultra .ocard-title{font-size:13.5px;}
+  /* mêmes réglages de densité, pour la carte offre v2 (.of-*) */
+  #veille-grid.compact .of-head{padding:8px 11px 8px 15px;gap:9px;}
+  #veille-grid.compact .of-logo{width:32px;height:32px;font-size:13.5px;border-radius:9px;}
+  #veille-grid.compact .of-fav{width:26px;height:26px;}
+  #veille-grid.ultra .of-head{padding:7px 9px 7px 13px;}
+  #veille-grid.ultra .of-logo{width:28px;height:28px;font-size:13px;}
+  #veille-grid.ultra .of-title{font-size:13px;}
 </style>
 </head>
 <body>
@@ -1814,7 +1967,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v115</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v118</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -2241,17 +2394,11 @@
   }
 
   function openCriteres(){
-    const secKeys=SECTORS.map(s=>s.key).concat(["Autre"]);
     const box=document.getElementById("modalBox");
     box.innerHTML=`
       <div class="modal-head"><h3>${ic("gear")} Critères avancés</h3><button class="x" onclick="closeModal()">✕</button></div>
       <p class="modal-sub">Réglage fin de la pondération. Le plus simple reste le <a href="#" class="wiz-advanced-link" onclick="event.preventDefault();openCompatQuiz();">quiz de compatibilité</a> ; ici tu ajustes chaque critère à la main.</p>
-      ${(matchCriteria.arbre&&(matchCriteria.arbre.industries.length||matchCriteria.arbre.types.length||matchCriteria.arbre.fiches.length))?`<div class="crit-block"><div class="crit-label">${ic("target")} Ton profil (défini au quiz)</div><div class="crit-arbre">${["industries","types","fiches"].map(k=>(matchCriteria.arbre[k]||[]).map(n=>`<span class="wiz-tag" style="cursor:default;">${esc(n.label)}</span>`).join("")).join("")}</div><div class="crit-hint">Repasse le <a href="#" class="wiz-advanced-link" onclick="event.preventDefault();openCompatQuiz();">quiz</a> pour le modifier.</div></div>`:""}
-      <div class="crit-block"><div class="crit-label">${ic("building")} Secteurs (priorité 0 à 3)</div>
-        ${secKeys.map(k=>`<div class="crit-row"><span>${esc(k)}</span><div class="crit-stars" data-sec="${esc(k)}">
-          ${[0,1,2,3].map(n=>`<span class="star ${(matchCriteria.secteurs[k]||0)>=n&&n>0?'on':''} ${n===0?'zero':''}" onclick="setSecW('${esc(k)}',${n})">${n===0?'∅':'★'}</span>`).join("")}
-        </div></div>`).join("")}
-      </div>
+      ${(matchCriteria.arbre&&(matchCriteria.arbre.industries.length||matchCriteria.arbre.types.length||matchCriteria.arbre.fiches.length))?`<div class="crit-block"><div class="crit-label">${ic("target")} Ton profil (défini au quiz)</div><div class="crit-arbre">${["industries","types","fiches"].map(k=>(matchCriteria.arbre[k]||[]).map(n=>`<span class="wiz-tag" style="cursor:default;">${esc(n.label)}</span>`).join("")).join("")}</div><div class="crit-hint">Repasse le <a href="#" class="wiz-advanced-link" onclick="event.preventDefault();openCompatQuiz();">quiz</a> pour le modifier.</div></div>`:`<div class="crit-block"><div class="crit-hint">${ic("target")} Les secteurs prioritaires se définissent via le <a href="#" class="wiz-advanced-link" onclick="event.preventDefault();openCompatQuiz();">quiz de compatibilité</a>.</div></div>`}
       <div class="crit-block"><div class="crit-label">${ic("pin")} Lieux préférés (+15)</div>
         <input class="crit-in" id="crit-lieux" value="${esc(matchCriteria.lieuxPref.join(", "))}" />
         <div class="crit-hint">Villes, régions ou n° de département, séparés par virgule.</div>
@@ -2271,7 +2418,6 @@
       <div class="modal-actions"><button class="btn ghost" onclick="openCompatQuiz()">${ic("target")}<span>← Revenir au quiz</span></button><button class="btn btn-validate" onclick="saveCriteres()">${ic("save")}<span>Enregistrer mes critères</span></button></div>`;
     document.getElementById("modalBg").classList.add("open");
   }
-  function setSecW(sec,n){ matchCriteria.secteurs[sec]=n; openCriteres(); }
   async function persistMatchCriteria(){
     let critErr=null;
     if(sb){ const {error}=await sb.from("parametres").upsert({cle:"matchCriteria",valeur:matchCriteria,updated_at:new Date().toISOString()},{onConflict:"user_id,cle"}); critErr=error; }
@@ -3902,51 +4048,131 @@
       const card=el.closest(".ocard,.swipe-card"); if(card&&card.scrollIntoView)card.scrollIntoView({block:"nearest",behavior:"smooth"});
     }
   }
+  // ===== Fiche Offre v2 : helpers visuels (anneau de score, titres de section, célébration "postulé") =====
+  // Le score porte le sens par la couleur (vert fort / orange moyen / gris faible), repris des paliers déjà
+  // utilisés par .match-badge ailleurs dans l'app — mêmes seuils, même code couleur.
+  function ofTierColor(score){ return score>=75?"var(--green)":score>=55?"var(--orange)":"var(--text-mute)"; }
+  function ofRing(score,size,onDark){
+    const s=Math.max(0,Math.min(100,score||0)), r=(size/2)-2.5, c=2*Math.PI*r, off=(c*(1-s/100)).toFixed(1);
+    return `<div class="of-ring${onDark?" on-dark":""}" style="--tier:${ofTierColor(s)};width:${size}px;height:${size}px" title="Score de match ${s}/100 (réglable dans Critères)">
+      <svg width="${size}" height="${size}"><circle class="of-track" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke-width="2.5"/><circle class="of-fill" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke-width="2.5" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off}"/></svg>
+      <span class="of-rv" style="font-size:${(size*0.4).toFixed(0)}px">${s}</span></div>`;
+  }
+  function ofAnimRings(scope){
+    (scope||document).querySelectorAll(".of-ring .of-fill").forEach(f=>{
+      const target=f.getAttribute("stroke-dashoffset"), full=f.getAttribute("stroke-dasharray");
+      f.style.strokeDashoffset=full; requestAnimationFrame(()=>requestAnimationFrame(()=>{ f.style.strokeDashoffset=target; }));
+    });
+  }
+  // Titre de section : jeton icône coloré (teinté secteur) + libellé + filet, remplace l'eyebrow grise plate.
+  function ofBlkH(icon,label,asideHtml,editHtml){
+    return `<div class="of-blk-h"><span class="of-bic">${ic(icon)}</span>${esc(label)}<span class="of-rule"></span>${editHtml||""}${asideHtml?`<span>${asideHtml}</span>`:""}</div>`;
+  }
+  function ofToggleDesc(){
+    const w=document.getElementById("ocDescWrap"); if(!w) return;
+    const clip=w.querySelector(".of-desc-clip"), opening=!w.classList.contains("open");
+    w.classList.toggle("open"); if(clip) clip.style.maxHeight=opening?clip.scrollHeight+"px":"";
+    const btn=document.getElementById("ocDescToggle");
+    if(btn){ btn.classList.toggle("of-open",opening); btn.childNodes[0].nodeValue=opening?"Réduire ":"Dérouler "; }
+  }
+  // La description réelle change après coup (édition, reformulation IA async) : on observe #ocDesc et on
+  // ré-évalue à chaque changement si le bouton "Dérouler" doit apparaître, plutôt que de figer une décision
+  // au premier rendu (qui serait fausse dès que le contenu change).
+  function ofDescWatch(){
+    const box=document.getElementById("ocDesc"), wrap=document.getElementById("ocDescWrap"); if(!box||!wrap) return;
+    const toggle=document.getElementById("ocDescToggle");
+    // NB : ne touche JAMAIS la classe "open" ici pour le cas "contenu court" — sinon l'état affiché par le
+    // bouton (ouvert/fermé) se désynchronise de la réalité (bug vécu : un 1er contenu court marque "open" à
+    // tort, puis un contenu plus long arrivé ensuite hérite de ce faux "open", et cliquer "Dérouler" bascule
+    // alors vers FERMÉ au lieu d'ouvrir). Seul ofToggleDesc() doit changer "open" ; measure() ne fait que
+    // décider si le bouton doit être visible, et garder la hauteur repliée/dépliée à jour.
+    const measure=()=>{
+      if(!document.body.contains(box)) return;
+      const clip=wrap.querySelector(".of-desc-clip"); if(!clip) return;
+      const long=box.scrollHeight>140;
+      if(toggle) toggle.style.display=long?"":"none";
+      if(!long){ clip.style.maxHeight=""; return; }
+      clip.style.maxHeight=wrap.classList.contains("open")?clip.scrollHeight+"px":"";
+    };
+    measure();
+    if(window.MutationObserver){
+      const mo=new MutationObserver(()=>{ if(!document.body.contains(box)){ mo.disconnect(); return; } measure(); });
+      mo.observe(box,{childList:true,subtree:true,characterData:true});
+    }
+  }
+  // Entrer en édition doit toujours déplier la zone (sinon le textarea serait coupé par le clamp).
+  function ofToggleDescEdit(id,src,btn){
+    toggleDescEdit(id,src,btn);
+    const w=document.getElementById("ocDescWrap");
+    if(w){ w.classList.add("open"); const clip=w.querySelector(".of-desc-clip"); if(clip) clip.style.maxHeight=""; }
+  }
+  // "J'ai postulé" : petit envol + son, purement visuel — n'intervient jamais dans la logique réelle
+  // (markAsApplied garde son comportement exact : ajout au Suivi, toast "Annuler", etc.)
+  function ofSwoosh(){
+    try{
+      const A=window.AudioContext||window.webkitAudioContext; if(!A) return;
+      const c=new A(), o=c.createOscillator(), g=c.createGain();
+      o.type="sine"; o.frequency.setValueAtTime(520,c.currentTime); o.frequency.exponentialRampToValueAtTime(1300,c.currentTime+.13);
+      g.gain.setValueAtTime(.0001,c.currentTime); g.gain.exponentialRampToValueAtTime(.09,c.currentTime+.03); g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.3);
+      o.connect(g).connect(c.destination); o.start(); o.stop(c.currentTime+.32);
+    }catch(e){}
+  }
+  function ofCelebrate(btn){
+    if(!btn||matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+    ofSwoosh();
+    const r=btn.getBoundingClientRect();
+    const p=document.createElement("div"); p.className="of-plane"; p.innerHTML=ic("send");
+    p.style.left=(r.left+r.width/2-13)+"px"; p.style.top=(r.top+r.height/2-13)+"px";
+    p.style.animation="ofFly .7s cubic-bezier(.4,0,.5,1) forwards";
+    document.body.appendChild(p); setTimeout(()=>p.remove(),720);
+  }
+  function ofApply(oData,btn){ ofCelebrate(btn); markAsApplied(oData); }
+
   function gridCard(o){
     const st=statusMap[o.id]?statusMap[o.id].statut:null;
     const sec=detectSector(o);
     const oData=esc(JSON.stringify(o));
     const sc=matchScore(o);
-    const scClass=sc>=75?"hi":sc>=55?"mid":"lo";
     const b=followedBrand(o.entreprise);
     const kept=(st==="apostuler"||st==="super");
     // logo auto : og:image capté / marque suivie / Clearbit -> repli favicon -> monogramme coloré par secteur
     const logo=offerLogo(o), logoDom=logoDomainOf(o);
     const ini=esc((o.entreprise||o.titre||"?").trim().slice(0,1).toUpperCase());
-    const logoInner=logo
-      ? `<img src="${esc(logo)}" alt="" onerror="logoErr(this,'${esc(logoDom)}','${ini}','${sec.c}')">`
-      : ini;
-    const logoCls=logo?"":"mono";
-    const logoStyle=logo?"":`background:${sec.c}1f;color:${sec.c};`;
-    // ligne méta sobre : source · date d'ajout · secteur
+    const logoInner=logo?`<img src="${esc(logo)}" alt="" onerror="logoErr(this,'${esc(logoDom)}','${ini}','${sec.c}')">`:ini;
     const dateAdd=offerAddedDate(o);
-    const sub=[`<span class="ocard-src" title="Méthode d'ajout">${ic("link")} ${esc(offerSource(o))}</span>`,
-      dateAdd?`<span>${esc(dateAdd)}</span>`:"",
-      `<span class="ocard-aff ${scClass}" title="Score d'affinité ${sc}% (réglable dans Critères)">${ic("target")} ${sc}</span>`].filter(Boolean).join('<span class="dot">·</span>');
-    return `<div class="ocard ${st?'is-'+st:''}">
-      <div class="ocard-main">
-        <div class="ocard-logo ${logoCls}" style="${logoStyle}" onclick='openOfferCard(${oData})' title="Voir la fiche complète">${logoInner}</div>
-        <div class="ocard-tt" onclick='openOfferCard(${oData})' title="Voir la fiche complète">
-          <div class="ocard-title">${esc(o.titre||"—")}</div>
-          <div class="ocard-co">${esc(o.entreprise||"")}${b?` <span class="ocard-brand" title="Marque suivie" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}${o.lieu?`<span class="dot">·</span>${esc(o.lieu)}`:""}${o.isNew&&!st?' <span class="ocard-new">Nouveau</span>':""}${mailSuggestFor(mailOfferKey(o))?` <span class="ocard-suggest" onclick='event.stopPropagation();openMailSuggest("${esc(mailOfferKey(o))}")' title="Réponse reçue par e-mail — proposer de la passer au Suivi">${ic("bell")} Réponse</span>`:""}</div>
+    const pills=[`<span class="of-pill">${esc(offerSource(o))}</span>`,
+      o.typeContrat?`<span class="of-pill">${esc(o.typeContrat)}</span>`:"",
+      dateAdd?`<span class="of-pill">${esc(dateAdd)}</span>`:""].filter(Boolean).join("");
+    const tags=renderTagsInline(o);
+    return `<div class="ocard of-oc ${st?'is-'+st:''}" style="--sig:${sec.c}" tabindex="0">
+      <div class="of-spine"></div>
+      <div class="of-head" onclick='openOfferCard(${oData})' title="Voir la fiche complète">
+        <div class="of-logo">${logoInner}</div>
+        <div class="of-tt">
+          <div class="of-title">${esc(o.titre||"—")}</div>
+          <div class="of-co">${esc(o.entreprise||"")}${b?` <span class="of-star" title="Marque suivie" onclick='event.stopPropagation();openBrandCard("${b.id}")'>${ic("star")}</span>`:""}${o.lieu?`<span class="of-sep">·</span>${esc(o.lieu)}`:""}${o.isNew&&!st?' <span class="of-new">Nouveau</span>':""}</div>
         </div>
-        <div class="ocard-rate">
-          <button class="rate star ${st==="super"?"on":""}" onclick='setCoeur(${oData},${st!=="super"})' title="${st==="super"?"Coup de cœur — cliquer pour retirer":"Marquer en coup de cœur"}">${ic("star")}</button>
-        </div>
-      </div>
-      <div class="ocard-sub">${sub}</div>
-      <div class="ocard-hover">
-        <div class="ocard-desc desc-rich">${o.description?formatDescription(o.descriptionFmt||o.description):'<span class="muted">Pas de description fournie.</span>'}</div>
-        <div class="c-tags" id="tags-${o.id}">${renderTagsInline(o)}</div>
-        ${kept?`<div class="ocard-prep"><button class="btn ghost sm" onclick='openLettre(${oData})'>${ic("sparkle")}<span>Candidature${lettreFor(o.lien||o.id)?" ✓":""}</span></button><button class="btn primary sm" onclick='markAsApplied(${oData})'>${ic("mail")}<span>J'ai postulé → Suivi</span></button></div>`:""}
-        <div class="ocard-hover-acts">
-          <a class="btn ghost sm" href="${esc(o.lien)}" target="_blank" rel="noopener" title="Ouvrir l'offre">${ic("doc")}<span>Ouvrir</span></a>
-          ${(o.lieu||o.lat)?`<button class="btn ghost sm" onclick='openOfferMap(${oData})' title="Carte">${ic("pin")}<span>Carte</span></button>`:""}
-          <button class="btn ghost sm" onclick='toggleCompare("${o.id}")' title="Comparer">${ic("scale")}<span>${compareIds.includes(o.id)?"Sélectionnée":"Comparer"}</span></button>
-          <button class="btn ghost sm danger" onclick='markOffer(${oData},"ignore")' title="Retirer de la pile">${ic("ban")}<span>Passer</span></button>
-          <button class="btn ghost sm danger" onclick='confirmDeleteOffer("${o.id}")' title="Supprimer définitivement">${ic("trash")}<span>Supprimer</span></button>
+        <div class="of-meta">
+          ${ofRing(sc,34)}
+          ${mailSuggestFor(mailOfferKey(o))?`<button type="button" class="of-suggest" onclick='event.stopPropagation();openMailSuggest("${esc(mailOfferKey(o))}")' title="Réponse reçue par e-mail — proposer de la passer au Suivi">${ic("bell")}</button>`:""}
+          <button type="button" class="of-fav ${st==="super"?"on":""}" onclick='event.stopPropagation();setCoeur(${oData},${st!=="super"})' title="${st==="super"?"Coup de cœur — cliquer pour retirer":"Marquer en coup de cœur"}">${ic("star")}</button>
         </div>
       </div>
+      <div class="of-more"><div class="of-more-in"><div class="of-more-pad">
+        <div class="of-desc${o.description?"":" empty"}">${o.description?formatDescription(o.descriptionFmt||o.description).replace(/<[^>]*>/g," "):"Pas encore de description — l’offre reste triable au score."}</div>
+        ${tags?`<div class="c-tags" id="tags-${o.id}" style="margin-top:9px;">${tags}</div>`:""}
+        ${kept?`<div class="of-row"><div class="of-pills">${pills}</div><div class="of-acts">
+          <button type="button" class="of-btn ghost mini" onclick='event.stopPropagation();openLettre(${oData})' title="Adapter le CV">${ic("sparkle")}<span>${lettreFor(o.lien||o.id)?"CV ✓":"Adapter"}</span></button>
+          <button type="button" class="of-btn primary mini" onclick='event.stopPropagation();ofApply(${oData},this)'>${ic("send")}<span>Postulé</span></button>
+        </div></div>`:""}
+        <div class="of-row"><div class="of-pills">${kept?"":pills}</div><div class="of-acts">
+          <a class="of-btn ghost mini" href="${esc(o.lien)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Ouvrir l'annonce">${ic("doc")}</a>
+          ${(o.lieu||o.lat)?`<button type="button" class="of-btn ghost mini" onclick='event.stopPropagation();openOfferMap(${oData})' title="Carte">${ic("pin")}</button>`:""}
+          <button type="button" class="of-btn ghost mini" onclick='event.stopPropagation();toggleCompare("${o.id}")' title="Comparer">${ic("scale")}</button>
+          <button type="button" class="of-btn ghost mini" onclick='event.stopPropagation();markOffer(${oData},"ignore")' title="Passer">${ic("ban")}</button>
+          <button type="button" class="of-btn ghost mini" onclick='event.stopPropagation();confirmDeleteOffer("${o.id}")' title="Supprimer">${ic("trash")}</button>
+        </div></div>
+      </div></div></div>
     </div>`;
   }
   async function markOffer(o,statut){
@@ -4407,18 +4633,19 @@
   function closeDupModal(){_dupQueue=[];finishAddLinks();}
   function finishAddLinks(){
     addLinksData=[];closeModal();
-    if(window._captureMode){ flashCenter("Offre ajout\u00e9e \u2713"); captureFinish(); return; }
+    if(window._captureMode){ flashCenter("Offre ajout\u00e9e \u2713"); captureFinish("Offre ajout\u00e9e \u2713"); return; }
     setView("offres");setVeilleFilter("all");renderVeille();renderCockpit();renderStatsBadges();flashCenter("Offres enregistr\u00e9es");
   }
   // Fin de capture (pop-up bookmarklet) : la FEN\u00caTRE PARENTE ferme la pop-up (fiable), + replis
-  function captureFinish(){
+  function captureFinish(label){
     if(!window._captureMode) return false;
+    label=label||"Offre ajout\u00e9e \u2713";
     if(getCaptureAutoClose()){
       try{ if(window.opener && !window.opener.closed) window.opener.postMessage("st-close","*"); }catch(e){}
       setTimeout(captureClose,450);                 // backup : auto-close interne
-      setTimeout(()=>showCaptureDone(true),1100);   // repli ultime : bouton 1-clic si toujours ouvert
+      setTimeout(()=>showCaptureDone(true,label),1100);   // repli ultime : bouton 1-clic si toujours ouvert
     } else {
-      showCaptureDone(false);
+      showCaptureDone(false,label);
     }
     return true;
   }
@@ -4431,13 +4658,13 @@
     try{ window.open("","_self"); window.close(); }catch(e){}
   }
   // \u00c9cran de confirmation dans la pop-up : se ferme tout seul si possible, sinon bouton \u00ab Fermer \u00bb (1 clic = fiable)
-  function showCaptureDone(autoTried){
+  function showCaptureDone(autoTried,label){
     let el=document.getElementById("captureDone");
     if(!el){ el=document.createElement("div"); el.id="captureDone"; document.body.appendChild(el); }
     el.className="capture-done";
     el.innerHTML=`<div class="cd-card">
       <div class="cd-ico">${ic("check")}</div>
-      <div class="cd-h">Offre ajout\u00e9e \u2713</div>
+      <div class="cd-h">${esc(label||"Offre ajout\u00e9e \u2713")}</div>
       <div class="cd-p">${autoTried?"Ton navigateur n'a pas autoris\u00e9 la fermeture auto. Clique pour fermer cette fen\u00eatre :":"Tu peux fermer cette fen\u00eatre."}</div>
       <button class="btn primary" onclick="captureClose()">${ic("ban")}<span>Fermer la fen\u00eatre</span></button>
     </div>`;
@@ -5545,10 +5772,10 @@
       <div class="fiche-actbar">
         <span class="fa-label">${ic("send")} Faire évoluer</span>
         <div class="fa-group">
-          ${["Envoyé","Screening","Entretien","Offre reçue","Refusé"].map(k=>{const cc=pipeColor(k);const on=p.statut===k;return `<button class="pdact ${on?"on":""}" onclick="changePipeStatut('${p.id}','${k}',this);setTimeout(()=>openPipeCard('${p.id}'),320)" style="${on?`background:${cc};border-color:${cc};color:#fff;`:`color:${cc};border-color:${cc}55;`}">${ic(KICON[k]||"minus")} ${esc(kLabel((KCOLS.find(c=>c.key===k)||{label:k}).label))}</button>`;}).join("")}
+          ${["Envoyé","Screening","Entretien","Offre reçue","Refusé"].map(k=>{const cc=pipeColor(k);const on=p.statut===k;const lbl=kLabel((KCOLS.find(c=>c.key===k)||{label:k}).label);return `<button class="pdact icon ${on?"on":""}" onclick="changePipeStatut('${p.id}','${k}',this);setTimeout(()=>openPipeCard('${p.id}'),320)" style="${on?`background:${cc};border-color:${cc};color:#fff;`:`color:${cc};border-color:${cc}55;`}" title="${esc(lbl)}${on?" (actuel)":""}">${ic(KICON[k]||"minus")}</button>`;}).join("")}
         </div>
         <span class="fa-sep"></span>
-        <button class="pdact rollback" onclick="closeModal();rollbackToTriage('${p.id}')" title="Renvoyer l'offre dans « À trier »">${ic("undo")} À trier</button>
+        <button class="pdact icon rollback" onclick="closeModal();rollbackToTriage('${p.id}')" title="Renvoyer l'offre dans « À trier »">${ic("undo")}</button>
       </div>
       <div class="fiche-2col">
       <div class="fiche-col">
@@ -5578,7 +5805,7 @@
       ${pipeMissingHTML(p)}
       <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
         <button class="btn ghost" onclick="closeModal()">Fermer</button>
-        ${lettreFor(p.lien_offre||p.id)?`<button class="btn ghost" onclick='openLettre(${esc(JSON.stringify(p))})'>${ic("sparkle")}<span>Candidature</span></button>`:""}
+        ${lettreFor(p.lien_offre||p.id)?`<button class="btn ghost" onclick='openLettre(${esc(JSON.stringify(p))})'>${ic("sparkle")}<span>Adapter le CV ✓</span></button>`:""}
         <button class="btn" onclick='openModal("pipeline",${esc(JSON.stringify(p))})'>${ic("pencil")}<span>Éditer</span></button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
@@ -6086,7 +6313,14 @@
     if(!n) return [];
     return reseau.filter(r=>(r.entreprise||"").toLowerCase().trim()===n);
   }
-  // Fiche détaillée d'une marque (clic sur une carte)
+  // Champ générique éditable d'une marque (mirroring saveOfferNotes/savePipeNotes) — sert pour "Pourquoi cette boîte".
+  async function saveBrandField(id,field,value){
+    const e=reve.find(x=>String(x.id)===String(id)); if(!e) return;
+    e[field]=value;
+    if(sb){ try{ await sb.from("entreprises_reve").update({[field]:value}).eq("id",id); }catch(x){} }
+  }
+  // Fiche détaillée d'une marque (clic sur une carte) — même langage que la fiche Offre (of-*), affinité en
+  // étoiles à la place de l'anneau de score (ce sont deux notions différentes : compatibilité vs coup de cœur).
   function openBrandCard(id){
     const e=reve.find(x=>String(x.id)===String(id));if(!e)return;
     const logo=brandLogo(e);
@@ -6098,56 +6332,82 @@
     const detected=brandDetectedOffers(e);
     const contacts=contactsFor(e.entreprise);
     const note=e.note||0;
-    const stars=[1,2,3,4,5].map(n=>`<span class="rstar big ${n<=note?"on":""}" onclick="setBrandNote('${e.id}',${n})">★</span>`).join("");
     const ds=e.derniere_visite?Math.floor((Date.now()-new Date(e.derniere_visite))/86400000):null;
-    const visiteLbl=ds===null?"jamais visitée ici":ds===0?"aujourd'hui":ds===1?"hier":"il y a "+ds+" jours";
+    const visiteLbl=ds===null?"jamais visitée":ds===0?"aujourd'hui":ds===1?"hier":"il y a "+ds+" j";
+    const ini=esc((e.entreprise||"?").slice(0,1).toUpperCase());
+    const sec=detectSector({entreprise:e.entreprise,description:(e.secteur||"")+" "+(e.description||"")});
+    // offres liées = objets réels (pas juste un lien externe) -> ouvrent la VRAIE fiche en un clic
     const offLines=[
-      ...kept.map(o=>({ico:"heart",label:"Gardée",titre:o.titre,lien:o.lien})),
-      ...pipe.map(p=>({ico:KICON[p.statut]||"minus",label:kLabel((KCOLS.find(c=>c.key===p.statut)||{label:p.statut}).label),titre:p.poste,lien:p.lien_offre})),
+      ...kept.map(o=>({stlabel:"Gardée",stcolor:"var(--gold)",titre:o.titre,go:()=>{},oData:esc(JSON.stringify(o))})),
+      ...pipe.map(p=>({stlabel:kLabel((KCOLS.find(c=>c.key===p.statut)||{label:p.statut}).label),stcolor:pipeColor(p.statut),titre:p.poste,pid:p.id})),
     ];
+    const hasDesc=!!e.description;
     const box=document.getElementById("modalBox");
     box.classList.add("wide");
     box.innerHTML=`
-      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:11px;">${logo?`<img src="${logo}" style="width:44px;height:44px;border-radius:10px;" onerror="this.style.display='none'">`:""}${esc(e.entreprise||"Marque")}</h3><button class="x" onclick="closeModal()">✕</button></div>
-      <div class="fiche-2col">
-      <div class="fiche-col">
-      <div class="pc-badges">
-        ${e.secteur?`<span class="pc-badge">${ic("building")} ${esc(e.secteur)}</span>`:""}
-        ${e.ville?`<span class="pc-badge">${ic("pin")} ${esc(e.ville)}</span>`:""}
-        <span class="pc-badge">${ic("clock")} ${visiteLbl}</span>
-      </div>
-      <div class="ci-strip" id="ci-brand-${e.id}"></div>
-      <div class="reve-stars-row">${stars}<span class="reve-stars-lbl">${note?note+"/5":"pas encore notée"}</span></div>
-      ${e.description?`<div class="brand-desc">${esc(e.description)}</div>`:""}
-      <div class="pc-links">
-        <a href="#" class="full site-link" onclick="visitBrand('${e.id}','${esc(site)}');return false;">${ic("building")} Voir le site${dom?` · <span class="site-dom">${esc(dom)}</span>`:""}</a>
-        <a href="#" class="full" onclick="searchBrandOffers('${esc((e.entreprise||"").replace(/'/g,"\\'"))}');return false;" style="background:var(--accent-soft);color:var(--accent);border-color:var(--accent);">${ic("search")} Chercher ses offres</a>
-        <a href="#" class="full" onclick="openSpontanee('${e.id}');return false;" style="background:var(--purple-soft);color:var(--purple);border-color:var(--purple);">${ic("mail")} Candidature spontanée</a>
-        <a href="${cl.wiki}" target="_blank" rel="noopener" title="Wikipédia">${ic("book")}</a>
-        <a href="${gmaps}" target="_blank" rel="noopener" title="Maps">${ic("pin")}</a>
-        <a href="${cl.avis}" target="_blank" rel="noopener" title="Avis">${ic("starcircle")}</a>
-        <a href="${cl.societe}" target="_blank" rel="noopener" title="CA">${ic("chart")}</a>
-      </div>
-      ${(e.site&&!isAtsHost(e.site))?sitePreviewHTML(e.site,e.entreprise||"Site"):""}
-      ${e.pourquoi?`<div class="pc-section-h">Pourquoi cette boîte</div><div class="pc-notes">${esc(e.pourquoi)}</div>`:""}
-      </div>
-      <div class="fiche-col">
-      <div class="pc-section-h">Offres liées ${offLines.length?`(${offLines.length})`:""}</div>
-      ${offLines.length?`<div class="brand-offers">${offLines.map(o=>`<div class="brand-off-row"><span class="brand-off-stat">${ic(o.ico)} ${esc(o.label)}</span><span class="brand-off-titre">${esc(o.titre||"—")}</span>${o.lien?`<a href="${esc(o.lien)}" target="_blank" rel="noopener" class="rel-link">voir</a>`:""}</div>`).join("")}</div>`:'<div class="brand-off-empty">Aucune offre liée pour l\'instant. Quand tu garderas ou postuleras à une offre de cette boîte, elle apparaîtra ici.</div>'}
-      ${detected.length?`<div class="pc-section-h">${ic("search")} Offres détectées (${detected.length}) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-mute);">— à rattacher</span></div>
-      <div class="brand-offers">${detected.map(o=>{const od=esc(JSON.stringify(o));return `<div class="brand-off-row detected"><span class="brand-off-titre" title="${esc(o.titre||'')}">${esc(o.titre||"—")}${o.lieu?` <span style="color:var(--text-mute);">· ${esc(o.lieu)}</span>`:""}</span><span class="brand-det-acts"><button class="btn primary sm" onclick='brandRattach(${od},"apostuler","${e.id}")' title="Valider → à postuler">${ic("check")}</button><button class="btn ghost sm" onclick='brandRattach(${od},"ignore","${e.id}")' title="Ignorer">${ic("ban")}</button></span></div>`;}).join("")}</div>`:""}
-      ${contacts.length?`<div class="pc-section-h">${ic("user")} Contacts (${contacts.length})</div>
-      <div class="brand-offers">${contacts.map(r=>`<div class="brand-off-row"><span class="brand-off-stat">${ic("user")} ${esc(((r.prenom||"")+" "+(r.nom||"")).trim()||"Contact")}</span><span class="brand-off-titre">${esc(r.poste||"")}${r.statut?` · ${esc(r.statut)}`:""}</span>${r.lien_linkedin?`<a href="${esc(r.lien_linkedin)}" target="_blank" rel="noopener" class="rel-link">LinkedIn</a>`:""}</div>`).join("")}</div>`:""}
-      </div>
-      </div>
-      <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
-        <button class="btn danger" onclick="delRow('entreprises_reve','${e.id}')">Supprimer</button>
-        <button class="btn ghost" onclick="closeModal()">Fermer</button>
-        <button class="btn" onclick='openModal("reve",${esc(JSON.stringify(e))})'>${ic("pencil")}<span>Éditer</span></button>
+      <div class="of-fiche" style="--sig:${sec.c}">
+        <div class="of-hero">
+          <button class="x" onclick="closeModal()">✕</button>
+          <div class="of-hero-score"><span class="rv-stars big" title="Ton affinité">${[1,2,3,4,5].map(n=>`<span class="s ${n<=note?'on':''}" onclick="setBrandNote('${e.id}',${n});openBrandCard('${e.id}')">★</span>`).join("")}</span></div>
+          <div class="of-hero-row">
+            <div class="of-hero-logo" style="border-radius:50%;">${logo?`<img src="${esc(logo)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${ini}';">`:ini}</div>
+            <div class="of-hero-tt">
+              ${e.secteur?`<div class="of-hero-sector">${esc(e.secteur)}</div>`:""}
+              <div class="of-hero-title">${esc(e.entreprise||"Marque")}</div>
+              <div class="of-hero-co">${e.ville?esc(e.ville):"Ville non précisée"}</div>
+            </div>
+          </div>
+        </div>
+        <div class="of-specs">
+          ${e.secteur?`<div class="of-spec"><div class="of-k">Secteur</div><div class="of-v">${esc(e.secteur)}</div></div>`:""}
+          <div class="of-spec"><div class="of-k">Dernière visite</div><div class="of-v">${visiteLbl}</div></div>
+          <div class="of-spec"><div class="of-k">Offres liées</div><div class="of-v accent num">${offLines.length}</div></div>
+          ${detected.length?`<div class="of-spec"><div class="of-k">À rattacher</div><div class="of-v accent num">${detected.length}</div></div>`:""}
+        </div>
+        <div class="of-actbar">
+          <button type="button" class="of-btn sig" onclick="visitBrand('${e.id}','${esc(site)}')" title="${dom?esc(dom):'Ouvrir le site'}">${ic("building")}<span>Voir le site</span></button>
+          <button type="button" class="of-btn ghost" onclick="searchBrandOffers('${esc((e.entreprise||"").replace(/'/g,"\\'"))}')">${ic("search")}<span>Chercher ses offres</span></button>
+          <span class="of-spacer"></span>
+          <button type="button" class="of-btn primary" onclick="openSpontanee('${e.id}')">${ic("mail")}<span>Candidature spontanée</span></button>
+        </div>
+        <div class="of-content">
+          <div class="of-blk">
+            ${ofBlkH("building","La boîte")}
+            ${hasDesc
+              ? `<div class="of-desc-wrap" id="ocDescWrap"><div class="of-desc-clip"><div class="of-prose" id="ocDesc"><p>${esc(e.description)}</p></div></div><div class="of-desc-fade"></div></div><button type="button" class="of-desc-toggle" id="ocDescToggle" onclick="ofToggleDesc()" style="display:none;">Dérouler ${ic("chevron")}</button>`
+              : `<div class="of-empty-note">Pas de description enregistrée pour cette entreprise.</div>`}
+          </div>
+          <div class="of-blk">
+            ${ofBlkH("doc","Offres liées",offLines.length||null)}
+            ${offLines.length?`<div class="of-rows">${offLines.map(o=>`<div class="of-lrow" style="cursor:pointer;" onclick='${o.pid?`closeModal();openPipeCard("${o.pid}")`:`closeModal();openOfferCard(${o.oData})`}'><span class="of-pill" style="color:${o.stcolor};background:color-mix(in srgb,${o.stcolor} 16%,transparent);border-color:transparent;">${esc(o.stlabel)}</span><div class="of-r-tt">${esc(o.titre||"—")}</div></div>`).join("")}</div>`:`<div class="of-empty-note">Aucune offre liée pour l'instant. Dès que tu gardes ou postules à une offre de cette boîte, elle apparaît ici.</div>`}
+            ${detected.length?`<div style="margin-top:11px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;">${ic("search")} À rattacher</div><div class="of-rows" style="margin-top:7px;">${detected.map(o=>{const od=esc(JSON.stringify(o));return `<div class="of-lrow"><div class="of-r-tt">${esc(o.titre||"—")}${o.lieu?` · ${esc(o.lieu)}`:""}</div><button type="button" class="of-btn ghost mini" onclick='brandRattach(${od},"apostuler","${e.id}")' title="Valider → à postuler">${ic("check")}</button><button type="button" class="of-btn ghost mini" onclick='brandRattach(${od},"ignore","${e.id}")' title="Ignorer">${ic("ban")}</button></div>`;}).join("")}</div>`:""}
+          </div>
+          ${e.ville?`<div class="of-blk">${ofBlkH("pin","Localisation")}<div class="of-map" id="brMap"><div class="mini-map-loading">Chargement de la carte…</div></div></div>`:""}
+          ${contacts.length?`<div class="of-blk">${ofBlkH("user","Contacts",contacts.length)}<div class="of-rows">${contacts.map(r=>`<div class="of-lrow"><div class="of-r-tt">${esc(((r.prenom||"")+" "+(r.nom||"")).trim()||"Contact")}${r.poste?` · ${esc(r.poste)}`:""}</div>${r.lien_linkedin?`<a class="of-rlink" href="${esc(r.lien_linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`:""}</div>`).join("")}</div>`:""}
+          ${(e.site&&!isAtsHost(e.site))?`<div class="of-blk">${ofBlkH("eye","Aperçu du site")}<div id="brSitePrev">${sitePreviewHTML(e.site,e.entreprise||"Site").replace(/<div class="pc-section-h">.*?<\/div>/,"")}</div></div>`:""}
+          <div class="of-blk">${ofBlkH("building","Infos société")}<div class="company-info" id="ci-brand-${e.id}"><span class="ci-na">Chargement infos société…</span></div></div>
+          <div class="of-blk">
+            ${ofBlkH("link","Liens utiles")}
+            <div class="of-links"><a class="of-lk" href="${cl.wiki}" target="_blank" rel="noopener">${ic("book")} Wikipédia</a><a class="of-lk" href="${gmaps}" target="_blank" rel="noopener">${ic("pin")} Maps</a><a class="of-lk" href="${cl.avis}" target="_blank" rel="noopener">${ic("starcircle")} Avis</a><a class="of-lk" href="${cl.societe}" target="_blank" rel="noopener">${ic("chart")} CA</a></div>
+          </div>
+          <div class="of-blk">${ofBlkH("pencil","Pourquoi cette boîte")}<textarea class="of-notes" placeholder="Ta stratégie, ce qui te fait envie, contacts à activer…" onblur="saveBrandField('${e.id}','pourquoi',this.value)">${esc(e.pourquoi||"")}</textarea></div>
+          <div class="of-blk" style="display:flex;gap:8px;justify-content:flex-end;padding-top:6px;border-top:1px solid var(--border);">
+            <button type="button" class="btn ghost" onclick='openModal("reve",${esc(JSON.stringify(e))})'>${ic("pencil")}<span>Éditer les champs</span></button>
+            <button type="button" class="btn danger" onclick="delRow('entreprises_reve','${e.id}')">${ic("trash")}<span>Supprimer</span></button>
+          </div>
+        </div>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
+    ofDescWatch();
     if(e.site)loadSitePreview(e.site);
-    if(e.entreprise)loadCompanyInto("ci-brand-"+e.id, e.entreprise);   // infos officielles (effectif/activité/création) en direct
+    if(e.entreprise)loadCompanyInto("ci-brand-"+e.id, e.entreprise);   // infos officielles (effectif/activité/création) en direct — conservé même si le strip n'est plus affiché nulle part par défaut
+    (async()=>{
+      const mb=document.getElementById("brMap"); if(!mb||typeof L==="undefined"||!e.ville) return;
+      const g=await geocode(e.ville);
+      if(!g){ mb.innerHTML='<a class="mini-map-loading" style="color:var(--accent);text-decoration:none;" href="'+gmaps+'" target="_blank" rel="noopener">'+ic("pin")+' '+esc(e.ville)+' — voir sur Google Maps</a>'; return; }
+      mb.innerHTML="";
+      try{ const map=L.map(mb,{scrollWheelZoom:true,attributionControl:false}).setView([g.lat,g.lon],10); L.tileLayer(tileUrl(),{maxZoom:18}).addTo(map); L.marker([g.lat,g.lon],{icon:pinIcon()}).addTo(map); setTimeout(()=>{try{map.invalidateSize();}catch(err){}},250); }catch(err){}
+    })();
   }
   // ===== Capture Marque — pop-up épurée (Apple-like) + enrichissement fiable (annuaire officiel FR + JSON-LD) =====
   let _capBrand=null, _capNote=0;
@@ -6221,7 +6481,7 @@
     const btn=document.querySelector(".bcap-save"); if(btn){ btn.disabled=true; btn.innerHTML='<span class="spinner sp-s"></span> Ajout…'; }
     const res=await _saveRowWithSchemaRetry("entreprises_reve", Object.assign({},obj), null);
     if(res && res.error){ if(btn){ btn.disabled=false; btn.innerHTML=ic("check")+"<span>Ajouter aux marques</span>"; } flashCenter("Échec : "+(res.error.message||res.error),"info"); return; }
-    if(window._captureMode){ flashCenter("Marque ajoutée ✓"); captureFinish(); return; }   // ferme la pop-up de capture
+    if(window._captureMode){ flashCenter("Marque ajoutée ✓"); captureFinish("Marque ajoutée ✓"); return; }   // ferme la pop-up de capture
     closeModal(); flashCenter("« "+entreprise+" » ajoutée ✓");
     try{ await loadAll(); refreshAll(); }catch(e){}
   }
@@ -6333,60 +6593,65 @@
     const dateStr=o.dateCreation?new Date(o.dateCreation).toLocaleDateString("fr-FR"):"";
     const oData=esc(JSON.stringify(o));
     const contacts=contactsFor(o.entreprise);
+    const hasDesc=!!(o.descriptionFmt||o.description);
+    const specs=[["Lieu","lieu",o.lieu],["Contrat","typeContrat",o.typeContrat],["Salaire","salaire",o.salaire,"accent"],["Expérience","experience",o.experience]]
+      .map(([k,f,v,cls])=>`<div class="of-spec"><div class="of-k">${k}</div><div class="of-v ${cls||""} fiche-ed" data-field="${f}" data-id="${o.id}" data-src="offer" data-ph="${k}" onclick="editFicheField(this)">${esc(v||"—")}</div></div>`).join("")
+      +`<div class="of-spec"><div class="of-k">Secteur</div><div class="of-v" style="color:${sec.c};">${esc(sec.key)}</div></div>`
+      +(dateStr?`<div class="of-spec"><div class="of-k">Ajoutée</div><div class="of-v">${dateStr}</div></div>`:"");
     const box=document.getElementById("modalBox");
     box.classList.add("wide");
     box.innerHTML=`
-      <div class="modal-head"><h3 style="display:flex;align-items:center;gap:12px;"><span class="pc-logo">${lg?`<img src="${esc(lg)}" alt="" onerror="logoErr(this,'${esc(lgDom)}','${ini}','')">`:ini}</span><span class="fiche-ed" data-field="titre" data-id="${o.id}" data-src="offer" data-ph="Titre du poste" onclick="editFicheField(this)">${esc(o.titre||"Offre")}</span></h3><button class="x" onclick="closeModal()">✕</button></div>
-      <div class="fiche-top">
-        <div class="pc-company"><span class="fiche-ed" data-field="entreprise" data-id="${o.id}" data-src="offer" data-ph="Entreprise" onclick="editFicheField(this)">${esc(o.entreprise||"—")}</span>${b?` <span class="ocard-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${b.id}")' style="cursor:pointer;">${ic("star")}</span>`:(o.entreprise?` <button class="brand-quickadd" onclick="quickAddBrandFromOffer('${o.id}',this)" title="Cette entreprise n'est pas dans Mes marques">+ marque</button>`:"")}</div>
-        <div class="pc-meta-clean">
-          <span class="pc-score-inline" title="Score de match">${sc}<small>/100</small></span>
-          <span class="fiche-ed" data-field="lieu" data-id="${o.id}" data-src="offer" data-ph="Ville" onclick="editFicheField(this)">${esc(o.lieu||"—")}</span>
-          <span class="dot">·</span><span class="fiche-ed" data-field="typeContrat" data-id="${o.id}" data-src="offer" data-ph="Contrat" onclick="editFicheField(this)">${esc(o.typeContrat||"—")}</span>
-          <span class="dot">·</span><span class="fiche-ed" data-field="salaire" data-id="${o.id}" data-src="offer" data-ph="Salaire" onclick="editFicheField(this)">${esc(o.salaire||"—")}</span>
-          <span class="dot">·</span><span class="fiche-ed" data-field="experience" data-id="${o.id}" data-src="offer" data-ph="Expérience" onclick="editFicheField(this)">${esc(o.experience||"—")}</span>
-          <span class="dot">·</span><span style="color:${sec.c};">${esc(sec.key)}</span>
-          ${dateStr?`<span class="dot">·</span><span>${dateStr}</span>`:""}
+      <div class="of-fiche" style="--sig:${sec.c}">
+        <div class="of-hero">
+          <button class="x" onclick="closeModal()">✕</button>
+          <div class="of-hero-score">${ofRing(sc,46,true)}</div>
+          <div class="of-hero-row">
+            <div class="of-hero-logo">${lg?`<img src="${esc(lg)}" alt="" onerror="logoErr(this,'${esc(lgDom)}','${ini}','')">`:ini}</div>
+            <div class="of-hero-tt">
+              <div class="of-hero-sector">${esc(sec.key)}</div>
+              <div class="of-hero-title fiche-ed" data-field="titre" data-id="${o.id}" data-src="offer" data-ph="Titre du poste" onclick="editFicheField(this)">${esc(o.titre||"Offre")}</div>
+              <div class="of-hero-co">
+                <span class="fiche-ed" data-field="entreprise" data-id="${o.id}" data-src="offer" data-ph="Entreprise" onclick="editFicheField(this)">${esc(o.entreprise||"—")}</span>
+                ${b?`<span class="of-brand" title="Marque suivie" onclick='closeModal();openBrandCard("${b.id}")'>${ic("star")} Suivie</span>`:(o.entreprise?`<button type="button" class="of-addbrand" onclick="quickAddBrandFromOffer('${o.id}',this)" title="Cette entreprise n'est pas dans Mes marques">+ marque</button>`:"")}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="fiche-actbar">
-        <div class="fa-group">
-          <button class="pdact ${st==="super"?"on":""}" onclick='offerCardCoeur(${oData})' style="${st==="super"?"background:var(--gold);border-color:var(--gold);color:#fff;":"color:var(--gold);border-color:var(--gold)55;"}" title="${st==="super"?"Coup de cœur — cliquer pour retirer":"Marquer en coup de cœur"}">${ic("star")} Coup de cœur</button>
-          <button class="pdact" onclick='openLettre(${oData})' title="Rédiger l'accroche + éditer le CV pour cette offre">${ic("sparkle")} Adapter le CV${lettreFor(o.lien||o.id)?" ✓":""}</button>
-          <span class="fa-sep"></span>
-          <button class="pdact" onclick='markOfferFromCard(${oData},"ignore")' title="Passer / retirer de la pile">${ic("ban")} Passer</button>
+        <div class="of-specs">${specs}</div>
+        <div class="of-actbar">
+          <button type="button" class="of-btn sig ${st==="super"?"on":""}" onclick='offerCardCoeur(${oData})' title="${st==="super"?"Coup de cœur — cliquer pour retirer":"Marquer en coup de cœur"}" ${st==="super"?'style="background:var(--gold);border-color:var(--gold);color:#fff;"':""}>${ic("star")}<span>Coup de cœur</span></button>
+          <button type="button" class="of-btn ghost" onclick='openLettre(${oData})' title="Rédiger l'accroche + éditer le CV pour cette offre">${ic("sparkle")}<span>Adapter le CV${lettreFor(o.lien||o.id)?" ✓":""}</span></button>
+          <button type="button" class="of-btn ghost" onclick='toggleCompare("${o.id}")' title="Comparer">${ic("scale")}<span>Comparer</span></button>
+          <button type="button" class="of-btn ghost" onclick='markOfferFromCard(${oData},"ignore")' title="Passer / retirer de la pile">${ic("ban")}<span>Passer</span></button>
+          <span class="of-spacer"></span>
+          <button type="button" class="of-btn primary" onclick='ofApply(${oData},this);setTimeout(closeModal,260);'>${ic("send")}<span>J'ai postulé</span></button>
         </div>
-        <span class="fa-spacer"></span>
-        <button class="btn primary sm" onclick='closeModal();markAsApplied(${oData})'>${ic("mail")} J'ai postulé →</button>
-      </div>
-      <div class="fiche-2col">
-      <div class="fiche-col">
-        <div class="pc-section-h">${ic("doc")} Description <button class="fiche-desc-edit" onclick="toggleDescEdit('${o.id}','offer',this)" title="Modifier la description">${ic("pencil")}</button></div>
-        ${(o.descriptionFmt||o.description)?`<div id="ocDesc" class="pc-notes desc-rich oc-desc-full">${formatDescription(o.descriptionFmt||o.description)}</div>`:`<div id="ocDesc" class="pc-notes"><span class="muted">Pas de description fournie. Clique le crayon pour en écrire une.</span></div>`}
-        <div class="pc-section-h">${ic("pencil")} Notes</div>
-        <textarea class="pc-notes-input" placeholder="Notes rapides (ex : pendant un appel avec le recruteur)…" onblur="saveOfferNotes('${o.id}',this.value)">${esc(o.notes||"")}</textarea>
-      </div>
-      <div class="fiche-col">
-        <div class="pc-section-h">${ic("link")} Liens utiles <button class="fiche-desc-edit" onclick="editOfferLink('${o.id}',this)" title="Modifier le lien de l'offre">${ic("pencil")}</button></div>
-        <div class="pc-links" id="ocLinks">
-          <a href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre" class="full site-link">${ic("doc")} Voir l'annonce</a>
-          <a href="${cl.site}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("building")}</span><span>Site</span></a>
-          <a href="${cl.wiki}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("book")}</span><span>Wikipédia</span></a>
-          <a href="${cl.avis}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("starcircle")}</span><span>Avis</span></a>
-          <a href="${cl.societe}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("chart")}</span><span>CA</span></a>
-          <a href="${gmaps}" target="_blank" rel="noopener"><span class="pcl-ic">${ic("pin")}</span><span>Maps</span></a>
+        <div class="of-content">
+          <div class="of-blk">
+            ${ofBlkH("doc","Description",null,`<button type="button" class="of-editbtn" onclick="ofToggleDescEdit('${o.id}','offer',this)" title="Modifier la description">${ic("pencil")}</button>`)}
+            <div class="of-desc-wrap" id="ocDescWrap"><div class="of-desc-clip"><div class="of-prose desc-rich" id="ocDesc">${hasDesc?formatDescription(o.descriptionFmt||o.description):`<span class="of-empty-note">Pas de description fournie. Clique le crayon pour en écrire une.</span>`}</div></div><div class="of-desc-fade"></div></div>
+            <button type="button" class="of-desc-toggle" id="ocDescToggle" onclick="ofToggleDesc()" style="display:none;">Dérouler ${ic("chevron")}</button>
+          </div>
+          ${(o.lieu||o.lat)?`<div class="of-blk">${ofBlkH("pin","Localisation")}<div class="of-map" id="ocMap"><div class="mini-map-loading">Chargement de la carte…</div></div></div>`:""}
+          <div class="of-blk">
+            ${ofBlkH("link","Liens utiles",null,`<button type="button" class="of-editbtn" onclick="editOfferLink('${o.id}',this)" title="Modifier le lien de l'offre">${ic("pencil")}</button>`)}
+            <div class="of-links" id="ocLinks">
+              <a class="of-lk full" href="${esc(o.lien)}" target="_blank" rel="noopener" title="Voir l'offre">${ic("doc")} Voir l'annonce</a>
+              <a class="of-lk" href="${cl.site}" target="_blank" rel="noopener">${ic("building")} Site</a>
+              <a class="of-lk" href="${cl.wiki}" target="_blank" rel="noopener">${ic("book")} Wikipédia</a>
+              <a class="of-lk" href="${cl.avis}" target="_blank" rel="noopener">${ic("starcircle")} Avis</a>
+              <a class="of-lk" href="${cl.societe}" target="_blank" rel="noopener">${ic("chart")} CA</a>
+              <a class="of-lk" href="${gmaps}" target="_blank" rel="noopener">${ic("pin")} Maps</a>
+            </div>
+          </div>
+          ${contacts.length?`<div class="of-blk">${ofBlkH("user","Contacts",contacts.length)}<div class="of-rows">${contacts.map(r=>`<div class="of-lrow"><div class="of-r-tt">${esc(((r.prenom||"")+" "+(r.nom||"")).trim()||"Contact")}${r.poste?` · ${esc(r.poste)}`:""}${r.statut?` · ${esc(r.statut)}`:""}</div>${r.lien_linkedin?`<a class="of-rlink" href="${esc(r.lien_linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`:""}</div>`).join("")}</div></div>`:""}
+          <div class="of-blk">${ofBlkH("building","Infos société")}<div class="company-info" id="ci-oc-${o.id}"><span class="ci-na">Chargement infos société…</span></div></div>
+          <div class="of-blk">${ofBlkH("pencil","Notes")}<textarea class="of-notes" placeholder="Notes rapides (ex : pendant un appel avec le recruteur)…" onblur="saveOfferNotes('${o.id}',this.value)">${esc(o.notes||"")}</textarea></div>
         </div>
-        ${(o.lieu||o.lat)?`<div id="ocMap" class="offer-map" style="height:220px;margin-top:12px;"><div class="mini-map-loading">Chargement de la carte…</div></div>`:""}
-        ${contacts.length?`<div class="pc-section-h">${ic("user")} Contacts chez ${esc(o.entreprise||"cette entreprise")} (${contacts.length})</div>
-        <div class="brand-offers">${contacts.map(r=>`<div class="brand-off-row"><span class="brand-off-stat">${ic("user")} ${esc(((r.prenom||"")+" "+(r.nom||"")).trim()||"Contact")}</span><span class="brand-off-titre">${esc(r.poste||"")}${r.statut?` · ${esc(r.statut)}`:""}</span>${r.lien_linkedin?`<a href="${esc(r.lien_linkedin)}" target="_blank" rel="noopener" class="rel-link">LinkedIn</a>`:""}</div>`).join("")}</div>`:""}
-        <div class="pc-section-h">${ic("building")} Infos société</div>
-        <div class="company-info" id="ci-oc-${o.id}"><span class="ci-na">Chargement infos société…</span></div>
-      </div>
-      </div>
-      <div class="modal-actions flow-foot" style="flex-direction:row;justify-content:flex-end;">
-        <button class="btn ghost" onclick="closeModal()">Fermer</button>
       </div>`;
     document.getElementById("modalBg").classList.add("open");
+    ofAnimRings(box);
+    ofDescWatch();
     loadCompanyInto("ci-oc-"+o.id, o.entreprise);
     aiFormatDescription(o,"ocDesc");
     (async()=>{

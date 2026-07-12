@@ -1042,6 +1042,10 @@
 
   /* Fiches détaillées (offre/marque) : plus larges + 2 colonnes sur desktop */
   .modal.wide{width:min(980px,95vw);}
+  /* Coquille pour les fiches immersives .of- (offre + marque) : la fiche EST la modale.
+     Sans elle, la fiche (qui a déjà son propre fond/bordure/radius) flottait dans une grosse boîte blanche padée -> cadre blanc moche. */
+  .modal.of-shell{background:transparent;border:none;box-shadow:none;padding:0;width:min(740px,94vw);border-radius:24px;}
+  .modal.of-shell .of-fiche{max-width:none;width:100%;box-shadow:none;margin:0;}
   .fiche-2col{display:grid;grid-template-columns:1fr;gap:0 26px;}
   .fiche-2col .fiche-col{min-width:0;}
   @media(min-width:780px){.fiche-2col{grid-template-columns:1fr 1fr;align-items:start;}}
@@ -1505,7 +1509,7 @@
   .rv-d2 .reve-sector,.rv-d2 .reve-foot{display:none;}
   .rv-d3 .reve-sector,.rv-d3 .reve-foot{display:none;}
   .rv-d3 .rstar{font-size:12px;}
-  .reve-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;cursor:pointer;transition:transform .18s cubic-bezier(.2,.7,.2,1),box-shadow .18s,border-color .18s;}
+  .reve-card{background:color-mix(in srgb,var(--sig) 3%,var(--surface));border:1px solid color-mix(in srgb,var(--sig) 12%,var(--border));border-radius:14px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;cursor:pointer;transition:transform .18s cubic-bezier(.2,.7,.2,1),box-shadow .18s,border-color .18s;}
   .reve-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow);}
   /* logo en cercle = repère "Marque" (vs le carré arrondi des Offres) — même convention que la fiche détaillée */
   .reve-logo{width:52px;height:52px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:grid;place-items:center;font-family:var(--display);font-size:22px;font-weight:600;color:var(--text-dim);overflow:hidden;}
@@ -1967,7 +1971,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v118</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v119</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -6343,7 +6347,7 @@
     ];
     const hasDesc=!!e.description;
     const box=document.getElementById("modalBox");
-    box.classList.add("wide");
+    box.classList.add("of-shell");
     box.innerHTML=`
       <div class="of-fiche" style="--sig:${sec.c}">
         <div class="of-hero">
@@ -6599,7 +6603,7 @@
       +`<div class="of-spec"><div class="of-k">Secteur</div><div class="of-v" style="color:${sec.c};">${esc(sec.key)}</div></div>`
       +(dateStr?`<div class="of-spec"><div class="of-k">Ajoutée</div><div class="of-v">${dateStr}</div></div>`:"");
     const box=document.getElementById("modalBox");
-    box.classList.add("wide");
+    box.classList.add("of-shell");
     box.innerHTML=`
       <div class="of-fiche" style="--sig:${sec.c}">
         <div class="of-hero">
@@ -6971,7 +6975,7 @@
     box.innerHTML=html;
     document.getElementById("modalBg").classList.add("open");
   }
-  function closeModal(){try{if(window.tinymce&&tinymce.remove)tinymce.remove();}catch(e){}_cvEd=null;document.getElementById("modalBg").classList.remove("open");const mb=document.getElementById("modalBox");if(mb)mb.classList.remove("wide");editing=null;}
+  function closeModal(){try{if(window.tinymce&&tinymce.remove)tinymce.remove();}catch(e){}_cvEd=null;document.getElementById("modalBg").classList.remove("open");const mb=document.getElementById("modalBox");if(mb)mb.classList.remove("wide","of-shell");editing=null;}
   // note en étoiles : maj de la valeur cachée + visuel
   function setModalStars(k,n){
     const inp=document.getElementById("m-"+k); if(inp)inp.value=n?n:"";

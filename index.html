@@ -408,11 +408,13 @@
   /* fiche détaillée */
   .of-fiche{max-width:660px;margin:0 auto;border-radius:24px;overflow:hidden;background:var(--surface);border:1px solid var(--border-light);box-shadow:var(--shadow-lg);}
   .of-hero{position:relative;padding:22px 24px 20px;isolation:isolate;color:#fff;min-height:172px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;}
+  /* Ambiance secteur assagie (moins saturée / plus profonde) — la version précédente était jugée trop agressive.
+     Couche .hero-photo pré-câblée dessous pour une future image contextuelle (secteur/entreprise). */
   .of-hero::before{content:"";position:absolute;inset:0;z-index:-2;
-    background:radial-gradient(90% 70% at 78% -10%,color-mix(in srgb,var(--sig) 80%,transparent),transparent 60%),
-      radial-gradient(70% 90% at 8% 8%,color-mix(in srgb,var(--sig) 60%,transparent),transparent 62%),
-      radial-gradient(140% 100% at 50% 130%,color-mix(in srgb,var(--sig) 55%,#04050a 78%),transparent 70%),
-      linear-gradient(162deg,color-mix(in srgb,var(--sig) 78%,#0b0e18 10%),color-mix(in srgb,var(--sig) 45%,#04050a 80%) 92%);}
+    background:radial-gradient(95% 75% at 80% -12%,color-mix(in srgb,var(--sig) 58%,transparent),transparent 62%),
+      radial-gradient(75% 95% at 6% 6%,color-mix(in srgb,var(--sig) 40%,transparent),transparent 64%),
+      radial-gradient(150% 110% at 50% 135%,color-mix(in srgb,var(--sig) 42%,#05070e 82%),transparent 72%),
+      linear-gradient(162deg,color-mix(in srgb,var(--sig) 58%,#0c111e 12%),color-mix(in srgb,var(--sig) 30%,#05070e 84%) 92%);}
   .of-hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
     background:linear-gradient(183deg,rgba(0,0,0,.05) 0%,transparent 40%,rgba(0,0,0,.5) 100%),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
@@ -1044,8 +1046,10 @@
   .modal.wide{width:min(980px,95vw);}
   /* Coquille pour les fiches immersives .of- (offre + marque) : la fiche EST la modale.
      Sans elle, la fiche (qui a déjà son propre fond/bordure/radius) flottait dans une grosse boîte blanche padée -> cadre blanc moche. */
-  .modal.of-shell{background:transparent;border:none;box-shadow:none;padding:0;width:min(740px,94vw);border-radius:24px;}
-  .modal.of-shell .of-fiche{max-width:none;width:100%;box-shadow:none;margin:0;}
+  .modal.of-shell{background:transparent;border:none;box-shadow:var(--shadow-lg);padding:0;width:min(740px,94vw);border-radius:24px;}
+  /* la fiche remplit la coquille SANS bordure ni ombre propres (sinon liseré blanc sur le hero sombre) ;
+     l'élévation est portée par la coquille elle-même. */
+  .modal.of-shell .of-fiche{max-width:none;width:100%;box-shadow:none;border:none;margin:0;border-radius:24px;}
   .fiche-2col{display:grid;grid-template-columns:1fr;gap:0 26px;}
   .fiche-2col .fiche-col{min-width:0;}
   @media(min-width:780px){.fiche-2col{grid-template-columns:1fr 1fr;align-items:start;}}
@@ -1731,9 +1735,8 @@
   #veille-grid .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;align-items:start;}
   .ocard{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px;display:flex;flex-direction:column;gap:9px;transition:border-color .16s,box-shadow .16s;}
   .ocard:hover{border-color:var(--border-light);box-shadow:var(--shadow);}
-  .ocard.is-super{box-shadow:inset 3px 0 0 var(--gold);}
-  .ocard.is-apostuler{box-shadow:inset 3px 0 0 var(--accent);}
-  .ocard.is-reflexion{box-shadow:inset 3px 0 0 var(--cyan);}
+  /* Statut désormais porté par la nouvelle carte (.of-spine sectoriel + .of-oc.is-super bord doré) ;
+     les anciennes barres inset .ocard.is-* se superposaient au spine (orange sur bleu) -> retirées. */
   .ocard.is-ignore{opacity:.5;}
   .ocard-main{display:flex;gap:12px;align-items:flex-start;}
   .ocard-logo{flex-shrink:0;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;overflow:hidden;background:var(--surface-2);border:1px solid var(--border);font-family:var(--display);font-weight:700;font-size:17px;color:var(--text-dim);cursor:pointer;}
@@ -1971,7 +1974,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v119</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v120</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -7611,8 +7614,7 @@
     if(sec==="recherche"){
       return `<div class="set-section-title">Préférences de recherche</div>
         <p class="set-section-sub">Dis à l'app ce qui compte pour toi : les offres qui correspondent remontent automatiquement en haut de ta pile.</p>
-        <button class="set-card" onclick="closeModal();openCompatQuiz();"><span class="set-card-ic">${ic("target")}</span><span class="set-card-tx"><b>Score de compatibilité</b><span>Le quiz : industrie › type › fiche de poste, puis lieu &amp; contrat</span></span><span class="set-card-chev">›</span></button>
-        <button class="set-card" onclick="closeModal();openCriteres();"><span class="set-card-ic">${ic("sliders")}</span><span class="set-card-tx"><b>Critères avancés</b><span>Réglage fin de la pondération de chaque critère</span></span><span class="set-card-chev">›</span></button>`;
+        <button class="set-card" onclick="closeModal();openCompatQuiz();"><span class="set-card-ic">${ic("target")}</span><span class="set-card-tx"><b>Score de compatibilité</b><span>Le quiz unique : industrie › type › fiche de poste, puis lieu &amp; contrat. Réglages avancés accessibles depuis le quiz.</span></span><span class="set-card-chev">›</span></button>`;
     }
     if(sec==="integrations"){
       return `<div class="set-section-title">Intégrations & API</div>

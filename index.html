@@ -408,13 +408,17 @@
   /* fiche détaillée */
   .of-fiche{max-width:660px;margin:0 auto;border-radius:24px;overflow:hidden;background:var(--surface);border:1px solid var(--border-light);box-shadow:var(--shadow-lg);}
   .of-hero{position:relative;padding:22px 24px 20px;isolation:isolate;color:#fff;min-height:172px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;}
-  /* Ambiance secteur assagie (moins saturée / plus profonde) — la version précédente était jugée trop agressive.
-     Couche .hero-photo pré-câblée dessous pour une future image contextuelle (secteur/entreprise). */
+  /* Ambiance secteur = palette 3 tons (comme la maquette) : m1 medium / m2 brillant / m3 profond, dérivés
+     de --sig → dégradé riche et profond (fini l'aplat monochrome « agressif »). Marche pour tous les secteurs.
+     Couche .of-hero-photo pré-câblée dessous pour une future image contextuelle (secteur/entreprise). */
   .of-hero::before{content:"";position:absolute;inset:0;z-index:-2;
-    background:radial-gradient(95% 75% at 80% -12%,color-mix(in srgb,var(--sig) 58%,transparent),transparent 62%),
-      radial-gradient(75% 95% at 6% 6%,color-mix(in srgb,var(--sig) 40%,transparent),transparent 64%),
-      radial-gradient(150% 110% at 50% 135%,color-mix(in srgb,var(--sig) 42%,#05070e 82%),transparent 72%),
-      linear-gradient(162deg,color-mix(in srgb,var(--sig) 58%,#0c111e 12%),color-mix(in srgb,var(--sig) 30%,#05070e 84%) 92%);}
+    --m1:color-mix(in srgb,var(--sig) 56%,#0e1730);
+    --m2:color-mix(in srgb,var(--sig) 84%,#12203f);
+    --m3:color-mix(in srgb,var(--sig) 20%,#05060d);
+    background:radial-gradient(90% 70% at 78% -10%,color-mix(in srgb,var(--m2) 80%,transparent),transparent 60%),
+      radial-gradient(70% 90% at 8% 8%,color-mix(in srgb,var(--m1) 65%,transparent),transparent 62%),
+      radial-gradient(140% 100% at 50% 130%,color-mix(in srgb,var(--m3) 96%,#000),transparent 70%),
+      linear-gradient(162deg,var(--m1),var(--m3) 92%);}
   .of-hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
     background:linear-gradient(183deg,rgba(0,0,0,.05) 0%,transparent 40%,rgba(0,0,0,.5) 100%),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
@@ -484,6 +488,22 @@
   .of-lrow a.of-rlink{font-size:11.5px;color:var(--accent);text-decoration:none;font-weight:600;flex-shrink:0;}
   .of-notes{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;font-family:var(--font);font-size:12.5px;color:var(--text);resize:vertical;min-height:56px;}
   .of-notes::placeholder{color:var(--text-mute);}
+  /* ===== Marque — passe de finition (.of-bfx, portée de la maquette) : matière, bandeau de faits arrondi/intégré,
+     boutons avec relief, sous-surfaces teintées secteur. Appliqué à la fiche Marque uniquement. ===== */
+  .of-fiche.of-bfx{background:linear-gradient(180deg,color-mix(in srgb,var(--sig) 5%,var(--surface)),var(--surface) 270px);}
+  .of-bfx .of-hero{min-height:188px;}
+  .of-bfx .of-specs{margin:14px 16px 2px;border:0;border-radius:15px;background:color-mix(in srgb,var(--sig) 7%,var(--surface-2));box-shadow:inset 0 0 0 1px var(--border);padding:2px;}
+  .of-bfx .of-spec{border-right:0;position:relative;min-width:90px;padding:11px 16px;}
+  .of-bfx .of-spec+.of-spec::before{content:"";position:absolute;left:0;top:24%;bottom:24%;width:1px;background:var(--border);}
+  .of-bfx .of-actbar{background:color-mix(in srgb,var(--sig) 4%,var(--surface));}
+  .of-bfx .of-btn{box-shadow:0 1px 1.5px rgba(13,17,23,.05);}
+  .of-bfx .of-btn.ghost{background:var(--surface);border-color:var(--border);}
+  .of-bfx .of-btn.ghost:hover{background:color-mix(in srgb,var(--sig) 9%,var(--surface));border-color:color-mix(in srgb,var(--sig) 30%,transparent);color:color-mix(in srgb,var(--sig) 72%,var(--text));transform:translateY(-1px);}
+  .of-bfx .of-btn.sig{box-shadow:0 5px 14px -7px color-mix(in srgb,var(--sig) 55%,transparent);}
+  .of-bfx .of-btn.primary{background:linear-gradient(180deg,color-mix(in srgb,#fff 16%,var(--accent)),var(--accent));}
+  .of-bfx .of-notes,.of-bfx .of-lrow{background:color-mix(in srgb,var(--sig) 4%,var(--surface-2));}
+  .of-bfx .of-lk{background:color-mix(in srgb,var(--sig) 5%,var(--surface-2));}
+  .of-bfx .of-lk.full{background:color-mix(in srgb,var(--sig) 12%,var(--surface));}
   .of-plane{position:fixed;z-index:99;pointer-events:none;color:var(--green);filter:drop-shadow(0 6px 10px rgba(0,0,0,.25));}
   .of-plane svg{width:26px;height:26px;}
   @keyframes ofPop{0%{transform:scale(1);}35%{transform:scale(1.4);}65%{transform:scale(.88);}100%{transform:scale(1);}}
@@ -1974,7 +1994,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v120</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v121</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -4369,7 +4389,10 @@
     const origin=window.location.origin;
     // Repli CSP = le scraper inline ci-dessus (stringifié, espaces compactés, appelé avec l'origine de l'appli).
     const inline="("+bmInlineScraper.toString().replace(/\s+/g," ")+")('"+origin+"')";
-    return "javascript:(function(){var s=document.createElement('script');s.src='"+origin+"/bm-offer.js?v='+Date.now();s.onerror=function(){try{"+inline+"}catch(e){window.open('"+origin+"/?capture=1&addUrl='+encodeURIComponent(location.href),'_blank');}};document.head.appendChild(s);})();";
+    // Repli déclenché SOIT par onerror SOIT par un délai (certains sites bloquent bm-offer.js via CSP SANS
+    // émettre d'erreur -> le drapeau window.__STBM_RAN reste absent, on lance alors le scraper inline).
+    const fb="function(){if(!window.__STBM_RAN){try{"+inline+"}catch(e){window.open('"+origin+"/?capture=1&addUrl='+encodeURIComponent(location.href),'_blank');}}}";
+    return "javascript:(function(){var f="+fb+";var s=document.createElement('script');s.src='"+origin+"/bm-offer.js?v='+Date.now();s.onerror=f;document.head.appendChild(s);setTimeout(f,1500);})();";
   }
   // État d'attente affiché dans la pop-up pendant que le favori interroge l'API de l'ATS (Greenhouse/Lever/...)
   // avant de connaître le contenu final : la pop-up s'ouvre tout de suite (contrainte anti-bloqueur de pop-up),
@@ -6352,7 +6375,7 @@
     const box=document.getElementById("modalBox");
     box.classList.add("of-shell");
     box.innerHTML=`
-      <div class="of-fiche" style="--sig:${sec.c}">
+      <div class="of-fiche of-bfx" style="--sig:${sec.c}">
         <div class="of-hero">
           <button class="x" onclick="closeModal()">✕</button>
           <div class="of-hero-score"><span class="rv-stars big" title="Ton affinité">${[1,2,3,4,5].map(n=>`<span class="s ${n<=note?'on':''}" onclick="setBrandNote('${e.id}',${n});openBrandCard('${e.id}')">★</span>`).join("")}</span></div>

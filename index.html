@@ -1994,7 +1994,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v121</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v122</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -4162,7 +4162,7 @@
     const sc=matchScore(o);
     const b=followedBrand(o.entreprise);
     const kept=(st==="apostuler"||st==="super");
-    // logo auto : og:image capté / marque suivie / Clearbit -> repli favicon -> monogramme coloré par secteur
+    // logo auto : og:image capté / marque suivie / favicon Google -> monogramme coloré par secteur
     const logo=offerLogo(o), logoDom=logoDomainOf(o);
     const ini=esc((o.entreprise||o.titre||"?").trim().slice(0,1).toUpperCase());
     const logoInner=logo?`<img src="${esc(logo)}" alt="" onerror="logoErr(this,'${esc(logoDom)}','${ini}','${sec.c}')">`:ini;
@@ -4387,13 +4387,12 @@
   }
   function bookmarkletCode(){
     const origin=window.location.origin;
-    // Le scraper de secours
+    // Repli CSP = le scraper inline ci-dessus (stringifié, espaces compactés, appelé avec l'origine de l'appli).
     const inline="("+bmInlineScraper.toString().replace(/\s+/g," ")+")('"+origin+"')";
-    
-    // On remet la vraie logique, mais on passe le timeout de 1500 à 5000 (5 secondes)
+    // Repli déclenché SOIT par onerror SOIT par un délai (certains sites bloquent bm-offer.js via CSP SANS
+    // émettre d'erreur -> le drapeau window.__STBM_RAN reste absent, on lance alors le scraper inline).
     const fb="function(){if(!window.__STBM_RAN){try{"+inline+"}catch(e){window.open('"+origin+"/?capture=1&addUrl='+encodeURIComponent(location.href),'_blank');}}}";
-    return "javascript:(function(){var f="+fb+";var s=document.createElement('script');s.src='"+origin+"/bm-offer.js?v='+Date.now();s.onerror=f;document.head.appendChild(s);setTimeout(f,5000);})();";
-  }
+    return "javascript:(function(){var f="+fb+";var s=document.createElement('script');s.src='"+origin+"/bm-offer.js?v='+Date.now();s.onerror=f;document.head.appendChild(s);setTimeout(f,1500);})();";
   }
   // État d'attente affiché dans la pop-up pendant que le favori interroge l'API de l'ATS (Greenhouse/Lever/...)
   // avant de connaître le contenu final : la pop-up s'ouvre tout de suite (contrainte anti-bloqueur de pop-up),
@@ -5900,16 +5899,18 @@
   }
   // meilleur domaine pour le repli favicon (offre OU marque suivie liée)
   function logoDomainOf(o){ const d=offerDomain(o); if(d) return d; const b=o&&followedBrand(o.entreprise); return b?brandDomain(b):""; }
-  // Niveau 1 (auto) : og:image capté -> marque suivie (favicon fiable) -> Clearbit depuis le domaine
+  // Niveau 1 (auto) : og:image capté -> marque suivie (favicon fiable) -> favicon Google depuis le domaine
+  // (Clearbit retiré : son API logo publique bloque/échoue trop souvent depuis son rachat par HubSpot,
+  // ce qui retardait l'affichage avant de retomber sur le même favicon Google de toute façon.)
   function offerLogo(o){
     if(o&&o.logo) return o.logo;                          // og:image / hiringOrganization.logo (capté au bookmarklet)
     const b=o&&followedBrand(o.entreprise);
     if(b){ const bl=brandLogo(b); if(bl) return bl; }      // logo de la marque suivie (favicon Google, fiable)
     const d=offerDomain(o);
-    if(d) return "https://logo.clearbit.com/"+d;           // Clearbit depuis le domaine société (repli favicon géré par logoErr)
+    if(d) return "https://www.google.com/s2/favicons?sz=128&domain="+encodeURIComponent(d);
     return "";
   }
-  // chaîne de repli d'une <img> de logo : Clearbit échoue -> favicon Google -> monogramme coloré
+  // chaîne de repli d'une <img> de logo : favicon échoue -> monogramme coloré
   function logoErr(img,dom,ini,col){
     if(dom && !img.dataset.fb){ img.dataset.fb="1"; img.src="https://www.google.com/s2/favicons?sz=128&domain="+encodeURIComponent(dom); return; }
     const p=img.parentElement; if(!p) return;

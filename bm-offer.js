@@ -5,6 +5,10 @@
 (function () {
   "use strict";
 
+  // Drapeau : ce script s'est bien exécuté. Le favori-loader vérifie ce drapeau après un court délai ;
+  // s'il est absent (script bloqué par la CSP du site SANS déclencher onerror), il lance le repli inline.
+  try { window.__STBM_RAN = 1; } catch (e) {}
+
   // ---- origine de l'appli (Sam'Travail), déduite de l'URL depuis laquelle CE script a été chargé ----
   var APP = (function () {
     try {

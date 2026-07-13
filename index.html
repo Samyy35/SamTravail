@@ -4389,7 +4389,7 @@
     const origin=window.location.origin;
     // Repli CSP = le scraper inline ci-dessus (stringifié, espaces compactés, appelé avec l'origine de l'appli).
     const inline="("+bmInlineScraper.toString().replace(/\s+/g," ")+")('"+origin+"')";
-   return "javascript:(function(){ try{"+inline+"}catch(e){window.open('"+origin+"/?capture=1&addUrl='+encodeURIComponent(location.href),'_blank');} })();";
+    return "javascript:(function(){ try{"+inline+"}catch(e){window.open('"+origin+"/?capture=1&addUrl='+encodeURIComponent(location.href),'_blank');} })();";
   }
   // État d'attente affiché dans la pop-up pendant que le favori interroge l'API de l'ATS (Greenhouse/Lever/...)
   // avant de connaître le contenu final : la pop-up s'ouvre tout de suite (contrainte anti-bloqueur de pop-up),

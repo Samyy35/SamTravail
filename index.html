@@ -4387,9 +4387,13 @@
   }
   function bookmarkletCode(){
     const origin=window.location.origin;
-    // Repli CSP = le scraper inline ci-dessus (stringifié, espaces compactés, appelé avec l'origine de l'appli).
+    // Le scraper de secours
     const inline="("+bmInlineScraper.toString().replace(/\s+/g," ")+")('"+origin+"')";
-    return "javascript:(function(){ try{"+inline+"}catch(e){window.open('"+origin+"/?capture=1&addUrl='+encodeURIComponent(location.href),'_blank');} })();";
+    
+    // On remet la vraie logique, mais on passe le timeout de 1500 à 5000 (5 secondes)
+    const fb="function(){if(!window.__STBM_RAN){try{"+inline+"}catch(e){window.open('"+origin+"/?capture=1&addUrl='+encodeURIComponent(location.href),'_blank');}}}";
+    return "javascript:(function(){var f="+fb+";var s=document.createElement('script');s.src='"+origin+"/bm-offer.js?v='+Date.now();s.onerror=f;document.head.appendChild(s);setTimeout(f,5000);})();";
+  }
   }
   // État d'attente affiché dans la pop-up pendant que le favori interroge l'API de l'ATS (Greenhouse/Lever/...)
   // avant de connaître le contenu final : la pop-up s'ouvre tout de suite (contrainte anti-bloqueur de pop-up),

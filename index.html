@@ -1994,7 +1994,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v123</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v124</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -4377,6 +4377,19 @@
         }
       }
     }catch(_b){}
+    var HOST=location.hostname;
+    function Q(sels){for(var qi=0;qi<sels.length;qi++){var qe;try{qe=document.querySelector(sels[qi]);}catch(_q){qe=null;}if(qe){var qt=(qe.innerText||qe.textContent||'').replace(/\s+/g,' ').trim();if(qt)return qt;}}return '';}
+    if(HOST.indexOf('indeed')>=0){
+      var it=Q(['h2[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=jobsearch-JobInfoHeader-title]','[data-testid=simpler-jobTitle]','[data-testid=viewJobTitle]','.jobsearch-JobInfoHeader-title']);
+      if(it&&!/s[ée]curit|just a moment|captcha|cloudflare|bienvenue/i.test(it))t=it;
+      var ie=Q(['[data-testid=inlineHeader-companyName] a','[data-testid=inlineHeader-companyName]','[data-company-name=true]']);if(ie)e=ie;
+      var il=Q(['[data-testid=inlineHeader-companyLocation] div','[data-testid=inlineHeader-companyLocation]','[data-testid=job-location]']);if(il)l=il;
+      var idd=document.querySelector('#jobDescriptionText,.jobsearch-JobComponent-description');if(idd){var idt=(idd.innerText||idd.textContent||'').replace(/\s+/g,' ').trim();if(idt.length>50)ds=idt;}
+    }else if(HOST.indexOf('linkedin')>=0){
+      var lt=Q(['.job-details-jobs-unified-top-card__job-title','.jobs-unified-top-card__job-title','.topcard__title']);if(lt)t=lt;
+      var lc=Q(['.job-details-jobs-unified-top-card__company-name a','.job-details-jobs-unified-top-card__company-name','.topcard__org-name-link']);if(lc)e=lc;
+      var ldd=document.querySelector('.jobs-description__content,.jobs-box__html-content,#job-details');if(ldd){var ldt=(ldd.innerText||ldd.textContent||'').replace(/\s+/g,' ').trim();if(ldt.length>50)ds=ldt;}
+    }
     if(!t){var h=document.querySelector('h1');t=(h?(h.innerText||h.textContent||''):'').replace(/\s+/g,' ').trim()||meta('og:title')||meta('twitter:title')||document.title||'';}
     if(!e)e=meta('og:site_name')||'';
     ds=strip(ds).slice(0,5000);
@@ -4470,13 +4483,21 @@
     // Le bookmarklet capture l'URL ET le titre de la page (depuis TON navigateur = pas de blocage)
     const bookmarklet=bookmarkletCode();
     const box=document.getElementById("modalBox");
-    box.innerHTML=`
-      <div class="modal-head"><h3>${ic("plus")} Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>
+    // Ouvert par le favori (prefillUrl présent) -> workflow ÉPURÉ : pas de zone de collage de lien ni d'astuce
+    // (le lien est déjà capté, l'extraction se lance toute seule). On garde un input + bouton CACHÉS pour que
+    // fetchLinkInfos() continue de fonctionner à l'identique. Le collage manuel garde l'UI complète.
+    const capture=!!prefillUrl;
+    box.innerHTML= capture
+      ? `<div class="modal-head"><h3>${ic("plus")} Ajouter cette offre</h3><button class="x" onclick="closeModal()">✕</button></div>
+      <input type="hidden" id="linksInput" value="${esc(prefillUrl)}">
+      <button id="fetchLinksBtn" style="display:none;" aria-hidden="true"></button>
+      <div class="draft-status" id="aiEnrichStatus" style="display:none;"></div><div id="linksPreview"></div>`
+      : `<div class="modal-head"><h3>${ic("plus")} Ajouter des offres par lien</h3><button class="x" onclick="closeModal()">✕</button></div>
       <p class="modal-sub">Colle un ou plusieurs liens d'offres (un par ligne). L'app récupère les infos, tu vérifies, puis tout part dans <b>À postuler</b>.</p>
-      <textarea id="linksInput" class="links-area" rows="5" placeholder="https://www.welcometothejungle.com/fr/companies/.../jobs/...&#10;https://www.apec.fr/candidat/recherche-emploi.../detail-offre/...&#10;https://carrieres.exemple.fr/offre/...">${prefillUrl?esc(prefillUrl):""}</textarea>
+      <textarea id="linksInput" class="links-area" rows="5" placeholder="https://www.welcometothejungle.com/fr/companies/.../jobs/...&#10;https://www.apec.fr/candidat/recherche-emploi.../detail-offre/...&#10;https://carrieres.exemple.fr/offre/..."></textarea>
       <div class="modal-actions">
         <button class="btn" id="fetchLinksBtn" onclick="fetchLinkInfos()">${ic("search")}<span>Récupérer les infos</span></button>
-        <details class="bookmarklet-help" ${prefillUrl?"":"open"}><summary>${ic("info")} Astuce : ajout en 1 clic depuis le web (recommandé)</summary>
+        <details class="bookmarklet-help" open><summary>${ic("info")} Astuce : ajout en 1 clic depuis le web (recommandé)</summary>
           <p><b>Pourquoi ?</b> Certains sites (LinkedIn, Indeed) bloquent la récupération automatique. Le bookmarklet capture l'offre depuis <b>ton</b> navigateur, donc ça marche partout.</p>
           <p><b>Installation (une fois) :</b> affiche ta barre de favoris (Ctrl+Maj+B), puis <b>glisse</b> ce bouton dedans :</p>
           <a class="bookmarklet-btn" href="${bookmarklet}" onclick="return false;">${ic("link")} Sam'Travail</a>

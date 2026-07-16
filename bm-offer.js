@@ -447,7 +447,7 @@
     try { window.addEventListener("message", function (ev) { if (ev && ev.data === "st-close" && w) { try { w.close(); } catch (e) {} } }); } catch (e) {}
     var win = w;
     if (!win) {
-      win = window.open(url, "samtravail_capture", "width=500,height=680,scrollbars=yes");
+      win = window.open(url, "samtravail_capture", "width=680,height=840,scrollbars=yes");
       if (win) win.focus(); else window.open(url, "_blank");
     } else {
       try { win.location.href = url; win.focus(); } catch (e) { window.open(url, "_blank"); }

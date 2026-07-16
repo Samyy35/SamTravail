@@ -174,6 +174,6 @@
   }
   var w;
   try { window.addEventListener("message", function (ev) { if (ev && ev.data === "st-close" && w) { try { w.close(); } catch (e) {} } }); } catch (e) {}
-  w = window.open(buildUrl(), "samtravail_capture", "width=520,height=720,scrollbars=yes");
+  w = window.open(buildUrl(), "samtravail_capture", "width=680,height=840,scrollbars=yes");
   if (w) w.focus(); else window.open(buildUrl(), "_blank");
 })();

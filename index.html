@@ -677,6 +677,13 @@
   .pc-del:hover{background:var(--red);color:#fff;}
   .q-chip{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;}
   .q-full{background:var(--green);color:#fff;} .q-partial{background:var(--orange);color:#fff;} .q-empty{background:var(--surface);color:var(--text-dim);border:1px solid var(--border);}
+  /* Indicateur de complétude d'extraction : pastille discrète (vert/orange/rouge) façon Apple, avec halo doux.
+     Remplace l'ancien chip texte « bien récupéré » (trop bavard). Le libellé passe en tooltip. */
+  .q-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;position:relative;}
+  .q-dot::after{content:"";position:absolute;inset:-3px;border-radius:50%;background:currentColor;opacity:.16;}
+  .q-dot.q-d-full{background:var(--green);color:var(--green);}
+  .q-dot.q-d-partial{background:var(--orange);color:var(--orange);}
+  .q-dot.q-d-empty{background:var(--red);color:var(--red);}
   .pc-in{width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:var(--font);font-size:12.5px;margin-bottom:7px;}
   .pc-in:focus{outline:none;border-color:var(--accent);}
   .pc-title{font-weight:600;font-size:13.5px;}
@@ -1994,7 +2001,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v125</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v126</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -4588,7 +4595,9 @@
         const missingSpec=(!o.lieu||!o.salaire||!o.typeContrat)&&(o.description||"").length>150;
         return (missingKey||missingSpec)&&(o.description||o.titre);
       });
-      if(!todo.length) return;
+      // Descriptions à mettre en forme par l'IA DANS la pop-up (persisté -> jamais refait au re-clic).
+      const fmtTodo=addLinksData.map((o,i)=>({o,i})).filter(x=>!x.o.descriptionFmt && (""+(x.o.description||"")).length>=300);
+      if(!todo.length && !fmtTodo.length) return;
       showCaptureLoader("Analyse et optimisation en cours…");   // garde la boussole pendant l'enrichissement IA
       let touched=0;
       for(const {o,i} of todo){
@@ -4606,6 +4615,21 @@
       // re-rend seulement si tu n'es pas en train de taper dans la preview
       const prev=document.getElementById("linksPreview");
       if(touched && prev && !prev.contains(document.activeElement)) renderLinksPreview();
+      // Mise en forme IA de la description, DANS la pop-up + persistée dans l'offre (sauvée à l'ajout, plus JAMAIS
+      // refaite au re-clic grâce à descriptionFmt). Silencieuse (la desc n'est pas affichée dans l'aperçu) et NON
+      // bloquante : tu peux cliquer « Ajouter » avant la fin — saveDescriptionFmt persiste même après l'ajout.
+      for(const {o,i} of fmtTodo){
+        const cur=o; if(!cur||cur.descriptionFmt) continue;   // ref stable : marche même si tu as déjà cliqué « Ajouter »
+        const raw=(""+(cur.description||"")); if(raw.length<300) continue;   // courte -> l'algo local suffit
+        try{
+          const fj=await aiSort({mode:"format",description:raw.slice(0,5500),text:raw.slice(0,5500)},16000);
+          const txt=(fj&&fj.ok&&fj.text)?(""+fj.text).trim():"";
+          if(txt&&txt.length>=80&&!/madame|monsieur|cordialement|candidature spontan|veuillez agréer/i.test(txt)){
+            cur.descriptionFmt=txt;
+            try{ await saveDescriptionFmt(cur); }catch(e){}
+          }
+        }catch(e){}
+      }
     } finally {
       hideCaptureLoader();   // la boussole disparaît quand TOUT le traitement async est terminé
     }
@@ -4615,7 +4639,9 @@
     const prev=document.getElementById("linksPreview");
     if(!addLinksData.length){prev.innerHTML="";return;}
     prev.innerHTML='<div class="preview-head">Vérifie et corrige si besoin :</div>'+addLinksData.map((o,i)=>{
-      const q=o._quality==="full"?'<span class="q-chip q-full">'+ic("check")+' bien récupéré</span>':o._quality==="partial"?'<span class="q-chip q-partial">'+ic("alert")+' partiel</span>':'<span class="q-chip q-empty">'+ic("ban")+' à compléter</span>';
+      const qlab=o._quality==="full"?"Extraction complète":o._quality==="partial"?"Extraction partielle — vérifie les champs vides":"Peu d'infos extraites — à compléter à la main";
+      const qcls=o._quality==="full"?"q-d-full":o._quality==="partial"?"q-d-partial":"q-d-empty";
+      const q='<span class="q-dot '+qcls+'" title="'+qlab+'"></span>';
       return `<div class="preview-card">
         <div class="pc-top">${q}${(findDuplicate(o)?'<span class="q-chip q-dup">'+ic("alert")+' doublon ?</span>':"")}${matchBadge(o)}<span class="pc-src">${esc(o.source||"")}</span><button class="pc-del" onclick="removeLink(${i})" title="Retirer">✕</button></div>
         <input class="pc-in pc-title" placeholder="Titre du poste" value="${esc(o.titre)}" oninput="addLinksData[${i}].titre=this.value" />

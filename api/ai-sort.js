@@ -256,7 +256,8 @@ module.exports = async function handler(req, res) {
     const sysF =
       "Reformate la DESCRIPTION d'une offre d'emploi (texte brut mal structure) en texte clair et aere, en francais. " +
       "Regroupe en sections pertinentes (titre seul sur sa ligne suivi de ':', ex: 'Missions :', 'Profil recherche :', 'Avantages :'). " +
-      "Puces en '- ' pour les listes. N'INVENTE ni ne SUPPRIME aucune info (garde chiffres, lieux, technos, contrat, salaire) : tu REORGANISES seulement. " +
+      "IMPÉRATIF : mets CHAQUE élément d'une énumération (mission, tâche, compétence, prérequis, avantage) sur SA PROPRE LIGNE commençant par '- ' — jamais une liste en ligne séparée par des virgules ou des points-virgules. " +
+      "N'INVENTE ni ne SUPPRIME aucune info (garde chiffres, lieux, technos, contrat, salaire) : tu REORGANISES seulement. " +
       "Pas de markdown ni de gras, aucune phrase d'intro (ne commence pas par 'Voici'). Reponds UNIQUEMENT par le texte reformate.";
     try {
       const out = await callAI(base, key, model,
@@ -534,7 +535,9 @@ module.exports = async function handler(req, res) {
     "Regles : 'titre' = l'intitule du poste SEUL, sans le nom de l'entreprise ni la ville. " +
     "'typeContrat' doit valoir l'un de : CDI, CDD, Alternance, Stage, Interim, Freelance, " +
     "'Temps partiel', 'Temps plein', Saisonnier — ou \"\" si indetermine. " +
-    "'salaire' = la remuneration telle qu'ecrite. 'experience' = l'experience demandee. " +
+    "'salaire' = la remuneration telle qu'ecrite (courte, ex: '45-55 k€'). " +
+    "'experience' = le niveau demande INTERPRETE en 1 a 4 MOTS MAX (ex: 'Debutant accepte', 'Junior, 1 an', " +
+    "'2-3 ans', 'Confirme 5+ ans'), JAMAIS une phrase ni un paragraphe. " +
     "Si le 'titre' fourni est absent, vide ou manifestement faux (ex: 'security check', " +
     "'verification', 'just a moment', 'captcha'), DEDUIS l'intitule reel du poste a partir " +
     "de la description et du contexte. " +
@@ -543,7 +546,7 @@ module.exports = async function handler(req, res) {
   try {
     const out = await callAI(base, key, model,
       [{ role: "system", content: sys },
-       { role: "user", content: "URL: " + url + "\n\nTEXTE DE L'OFFRE :\n" + text }], 900);
+       { role: "user", content: "URL: " + url + "\n\nTEXTE DE L'OFFRE :\n" + text }], 320);
     if (!out.ok) { res.status(200).json({ ok: false, reason: "ai_error", status: out.status }); return; }
     let content = (out.parsed && out.parsed.choices && out.parsed.choices[0] &&
       out.parsed.choices[0].message && out.parsed.choices[0].message.content) || "";

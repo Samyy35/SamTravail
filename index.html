@@ -2001,7 +2001,7 @@
   <header>
     <div class="brand">
       <div class="brand-mark" onclick="toggleTheme()" title="Changer le thème" role="button" tabindex="0" style="cursor:pointer;"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 7l3.4 9.6L20 14.5l-3.4 2.1z" fill="#fff"/><path d="M20 33l-3.4-9.6L20 25.5l3.4-2.1z" fill="#fff" fill-opacity="0.55"/></svg></div>
-      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v126</span></div></div>
+      <div><h1>Sam'Travail</h1><div class="tag"><span style="opacity:.35;font-size:11px;">v127</span></div></div>
     </div>
     <div class="greeting">
       <div class="hi" id="greet" onclick="askName()" title="Changer mon prénom" style="cursor:pointer;">Bienvenue 👋</div>
@@ -4592,11 +4592,11 @@
       const todo=addLinksData.map((o,i)=>({o,i})).filter(x=>{
         const o=x.o;
         const missingKey=!o.entreprise||!o.titre;
-        const missingSpec=(!o.lieu||!o.salaire||!o.typeContrat)&&(o.description||"").length>150;
+        const missingSpec=(!o.lieu||!o.salaire||!o.typeContrat)&&(o.description||"").length>110;
         return (missingKey||missingSpec)&&(o.description||o.titre);
       });
       // Descriptions à mettre en forme par l'IA DANS la pop-up (persisté -> jamais refait au re-clic).
-      const fmtTodo=addLinksData.map((o,i)=>({o,i})).filter(x=>!x.o.descriptionFmt && (""+(x.o.description||"")).length>=300);
+      const fmtTodo=addLinksData.map((o,i)=>({o,i})).filter(x=>!x.o.descriptionFmt && (""+(x.o.description||"")).length>=180);
       if(!todo.length && !fmtTodo.length) return;
       showCaptureLoader("Analyse et optimisation en cours…");   // garde la boussole pendant l'enrichissement IA
       let touched=0;
@@ -4620,7 +4620,7 @@
       // bloquante : tu peux cliquer « Ajouter » avant la fin — saveDescriptionFmt persiste même après l'ajout.
       for(const {o,i} of fmtTodo){
         const cur=o; if(!cur||cur.descriptionFmt) continue;   // ref stable : marche même si tu as déjà cliqué « Ajouter »
-        const raw=(""+(cur.description||"")); if(raw.length<300) continue;   // courte -> l'algo local suffit
+        const raw=(""+(cur.description||"")); if(raw.length<180) continue;   // courte -> l'algo local suffit
         try{
           const fj=await aiSort({mode:"format",description:raw.slice(0,5500),text:raw.slice(0,5500)},16000);
           const txt=(fj&&fj.ok&&fj.text)?(""+fj.text).trim():"";
